@@ -27,7 +27,7 @@
 
         <plugin.version.surefire>3.0.0-M5</plugin.version.surefire>
         <plugin.version.javadoc>3.3.1</plugin.version.javadoc>
-        <plugin.version.jacoco>0.8.6</plugin.version.jacoco>
+        <plugin.version.jacoco>0.8.7</plugin.version.jacoco>
         <plugin.version.fmt>2.9.1</plugin.version.fmt>
     </properties>
 
