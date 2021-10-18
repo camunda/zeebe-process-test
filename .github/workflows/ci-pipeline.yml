@@ -26,6 +26,7 @@ jobs:
       - name: Set up Java environment
         uses: actions/setup-java@v2.3.1
         with:
+          distribution: temurin
           java-version: 8
           gpg-private-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
           gpg-passphrase: MAVEN_CENTRAL_GPG_PASSPHRASE
