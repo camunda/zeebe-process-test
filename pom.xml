@@ -11,33 +11,44 @@
 
     <name>Camunda Cloud Testing</name>
 
+    <scm>
+        <url>https://github.com/camunda-cloud/camunda-cloud-testing</url>
+        <connection>scm:git:git@github.com:camunda-cloud/camunda-cloud-testing.git</connection>
+        <developerConnection>scm:git:git@github.com:camunda-cloud/camunda-cloud-testing.git
+        </developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <asserj.version>3.21.0</asserj.version>
+        <assertj.version>3.21.0</assertj.version>
         <junit.version>5.8.1</junit.version>
-        <maven.surefire.version>3.0.0-M5</maven.surefire.version>
+
+        <plugin.version.surefire>3.0.0-M5</plugin.version.surefire>
+        <plugin.version.javadoc>3.2.0</plugin.version.javadoc>
+        <plugin.version.jacoco>0.8.6</plugin.version.jacoco>
+        <plugin.version.fmt>2.10</plugin.version.fmt>
     </properties>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-surefire-plugin</artifactId>
-                  <version>${maven.surefire.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>${asserj.version}</version>
+            <version>${assertj.version}</version>
         </dependency>
-
 
         <!-- Test scope-->
         <dependency>
@@ -46,13 +57,79 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <configuration>
+                    <rules>
+                        <dependencyConvergence/>
+                    </rules>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${plugin.version.javadoc}</version>
+            </plugin>
+
+            <!-- Google code format plugin -->
+            <plugin>
+                <groupId>com.coveo</groupId>
+                <artifactId>fmt-maven-plugin</artifactId>
+                <version>${plugin.version.fmt}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- JaCoCo Plugin -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${plugin.version.jacoco}</version>
+                <executions>
+                    <execution>
+                        <id>coverage-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>coverage-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <!-- Threshold -->
+                </executions>
+            </plugin>
+
+            <!-- Surefire plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${plugin.version.surefire}</version>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
