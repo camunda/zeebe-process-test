@@ -54,4 +54,20 @@ public class ProcessInstanceAssertions extends
 
     return this;
   }
+
+  public ProcessInstanceAssertions isTerminated() {
+    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
+        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withBpmnElementType(BpmnElementType.PROCESS)
+            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
+            .stream()
+            .findFirst();
+
+    if (!processInstanceRecord.isPresent()) {
+      failWithMessage("Process with key %s was not terminated", actual.getProcessInstanceKey());
+    }
+
+    return this;
+  }
 }

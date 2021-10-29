@@ -12,6 +12,7 @@ import org.camunda.community.eze.EmbeddedZeebeEngine;
 import org.camunda.community.eze.RecordStreamSource;
 import org.junit.jupiter.api.Test;
 
+// TODO remove Thread.sleeps
 @EmbeddedZeebeEngine
 class ProcessInstanceAssertionsTest {
 
@@ -19,7 +20,7 @@ class ProcessInstanceAssertionsTest {
   private RecordStreamSource recordStreamSource;
 
   @Test
-  public void testProcessInstanceIsStarted() {
+  public void testProcessInstanceIsStarted() throws InterruptedException {
     // given
     deployProcess();
 
@@ -45,7 +46,8 @@ class ProcessInstanceAssertionsTest {
   }
 
   @Test
-  public void testProcessInstanceIsNotStartedIfProcessInstanceKeyNoMatch() {
+  public void testProcessInstanceIsNotStartedIfProcessInstanceKeyNoMatch()
+      throws InterruptedException {
     // given
     deployProcess();
     startProcessInstance();
@@ -73,7 +75,7 @@ class ProcessInstanceAssertionsTest {
   }
 
   @Test
-  public void testProcessInstanceNotCompleted() {
+  public void testProcessInstanceNotCompleted() throws InterruptedException {
     // given
     deployProcess();
 
@@ -85,6 +87,33 @@ class ProcessInstanceAssertionsTest {
         String.format("Process with key %s was not started", instanceEvent.getProcessInstanceKey()));
   }
 
+  @Test
+  public void testProcessInstanceTerminated() throws InterruptedException {
+    // given
+    deployProcess();
+    final ProcessInstanceEvent instanceEvent = startProcessInstance();
+
+    // when
+    client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
+    Thread.sleep(100);
+
+    // then
+    assertThat(instanceEvent, recordStreamSource).isTerminated();
+  }
+
+  @Test
+  public void testProcessInstanceNotTerminated() throws InterruptedException {
+    // given
+    deployProcess();
+
+    // when
+    final ProcessInstanceEvent instanceEvent = startProcessInstance();
+
+    // then
+    assertThrows(AssertionError.class, assertThat(instanceEvent, recordStreamSource)::isTerminated,
+        String.format("Process with key %s was not terminated", instanceEvent.getProcessInstanceKey()));
+  }
+
   private void deployProcess() {
     client.newDeployCommand()
         .addResourceFromClasspath("process-instance.bpmn")
@@ -92,15 +121,16 @@ class ProcessInstanceAssertionsTest {
         .join();
   }
 
-  private ProcessInstanceEvent startProcessInstance() {
-    return client.newCreateInstanceCommand()
+  private ProcessInstanceEvent startProcessInstance() throws InterruptedException {
+    final ProcessInstanceEvent instanceEvent = client.newCreateInstanceCommand()
         .bpmnProcessId("processinstance")
         .latestVersion()
         .send()
         .join();
+    Thread.sleep(100);
+    return instanceEvent;
   }
 
-  //TODO remove Thread.sleeps
   private void completeTask(final String elementId) throws InterruptedException {
     Thread.sleep(100);
     recordStreamSource.jobRecords()
