@@ -59,6 +59,32 @@ class ProcessInstanceAssertionsTest {
         "Process with key -1 was not started");
   }
 
+  @Test
+  public void testProcessInstanceIsCompleted() throws InterruptedException {
+    // given
+    deployProcess();
+    final ProcessInstanceEvent instanceEvent = startProcessInstance();
+
+    // when
+    completeTask("servicetask");
+
+    // then
+    assertThat(instanceEvent, recordStreamSource).isCompleted();
+  }
+
+  @Test
+  public void testProcessInstanceNotCompleted() {
+    // given
+    deployProcess();
+
+    // when
+    final ProcessInstanceEvent instanceEvent = startProcessInstance();
+
+    // then
+    assertThrows(AssertionError.class, assertThat(instanceEvent, recordStreamSource)::isCompleted,
+        String.format("Process with key %s was not started", instanceEvent.getProcessInstanceKey()));
+  }
+
   private void deployProcess() {
     client.newDeployCommand()
         .addResourceFromClasspath("process-instance.bpmn")
@@ -72,5 +98,17 @@ class ProcessInstanceAssertionsTest {
         .latestVersion()
         .send()
         .join();
+  }
+
+  //TODO remove Thread.sleeps
+  private void completeTask(final String elementId) throws InterruptedException {
+    Thread.sleep(100);
+    recordStreamSource.jobRecords()
+        .withElementId(elementId)
+        .forEach(record ->
+            client.newCompleteCommand(record.getKey())
+                .send()
+                .join());
+    Thread.sleep(100);
   }
 }

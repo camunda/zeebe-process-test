@@ -2,6 +2,7 @@ package io.camunda.testing.assertions;
 
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import java.util.Optional;
@@ -33,6 +34,22 @@ public class ProcessInstanceAssertions extends
 
     if (!processInstanceRecord.isPresent()) {
       failWithMessage("Process with key %s was not started", actual.getProcessInstanceKey());
+    }
+
+    return this;
+  }
+
+  public ProcessInstanceAssertions isCompleted() {
+    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
+        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withBpmnElementType(BpmnElementType.PROCESS)
+            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
+            .stream()
+            .findFirst();
+
+    if (!processInstanceRecord.isPresent()) {
+      failWithMessage("Process with key %s was not completed", actual.getProcessInstanceKey());
     }
 
     return this;

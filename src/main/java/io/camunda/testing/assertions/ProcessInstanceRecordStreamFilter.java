@@ -1,6 +1,7 @@
 package io.camunda.testing.assertions;
 
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import java.util.stream.Stream;
@@ -24,6 +25,11 @@ public class ProcessInstanceRecordStreamFilter {
   public ProcessInstanceRecordStreamFilter withBpmnElementType(
       final BpmnElementType bpmnElementType) {
     stream = stream.filter(record -> record.getValue().getBpmnElementType() == bpmnElementType);
+    return this;
+  }
+
+  public ProcessInstanceRecordStreamFilter withIntent(final ProcessInstanceIntent intent) {
+    stream = stream.filter(record -> record.getIntent() == intent);
     return this;
   }
 
