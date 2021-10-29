@@ -33,6 +33,11 @@ public class ProcessInstanceRecordStreamFilter {
     return this;
   }
 
+  public ProcessInstanceRecordStreamFilter withElementId(final String elementId) {
+    stream = stream.filter(record -> record.getValue().getElementId().equals(elementId));
+    return this;
+  }
+
   public Stream<Record<ProcessInstanceRecordValue>> stream() {
     return stream;
   }

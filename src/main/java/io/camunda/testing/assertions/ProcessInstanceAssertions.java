@@ -70,4 +70,29 @@ public class ProcessInstanceAssertions extends
 
     return this;
   }
+
+  public ProcessInstanceAssertions hasPassed(final String elementId) {
+    return hasPassed(elementId, 1);
+  }
+
+  public ProcessInstanceAssertions hasNotPassed(final String elementId) {
+    return hasPassed(elementId, 0);
+  }
+
+  public ProcessInstanceAssertions hasPassed(final String elementId, final int times) {
+    final long count = StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withElementId(elementId)
+        .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
+        .stream()
+        .count();
+
+    if (count != times) {
+      failWithActualExpectedAndMessage(count, times,
+          "Expected element with id %s to be passed %s times",
+          elementId, times);
+    }
+
+    return this;
+  }
 }
