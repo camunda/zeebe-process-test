@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0vjlomv" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="1.1.0">
+  <bpmn:process id="processinstance" name="process instance" isExecutable="true">
+    <bpmn:startEvent id="startevent" name="Start event">
+      <bpmn:outgoing>Flow_0gk7cr0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="endevent" name="End event">
+      <bpmn:incoming>Flow_0cw7eu9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0gk7cr0" sourceRef="startevent" targetRef="servicetask" />
+    <bpmn:sequenceFlow id="Flow_0cw7eu9" sourceRef="servicetask" targetRef="endevent" />
+    <bpmn:serviceTask id="servicetask" name="service task">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="test" retries="1" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0gk7cr0</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cw7eu9</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="processinstance">
+      <bpmndi:BPMNEdge id="Flow_0gk7cr0_di" bpmnElement="Flow_0gk7cr0">
+        <di:waypoint x="215" y="97" />
+        <di:waypoint x="250" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cw7eu9_di" bpmnElement="Flow_0cw7eu9">
+        <di:waypoint x="350" y="97" />
+        <di:waypoint x="382" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="startevent">
+        <dc:Bounds x="179" y="79" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="170" y="122" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_031yvb4_di" bpmnElement="endevent">
+        <dc:Bounds x="382" y="79" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="375" y="122" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fjovnb_di" bpmnElement="servicetask">
+        <dc:Bounds x="250" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
