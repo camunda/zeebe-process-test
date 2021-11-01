@@ -5,7 +5,10 @@ import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.assertj.core.api.AbstractAssert;
 import org.camunda.community.eze.RecordStreamSource;
 
@@ -20,7 +23,8 @@ public class ProcessInstanceAssertions extends
     this.recordStreamSource = recordStreamSource;
   }
 
-  public static ProcessInstanceAssertions assertThat(final ProcessInstanceEvent actual, final RecordStreamSource recordStreamSource) {
+  public static ProcessInstanceAssertions assertThat(final ProcessInstanceEvent actual,
+      final RecordStreamSource recordStreamSource) {
     return new ProcessInstanceAssertions(actual, recordStreamSource);
   }
 
@@ -91,6 +95,24 @@ public class ProcessInstanceAssertions extends
       failWithActualExpectedAndMessage(count, times,
           "Expected element with id %s to be passed %s times",
           elementId, times);
+    }
+
+    return this;
+  }
+
+  public ProcessInstanceAssertions isWaitingAt(final String elementId) {
+    final List<Record<ProcessInstanceRecordValue>> elementProcessInstanceRecords =
+        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withElementId(elementId)
+            .stream()
+            .collect(Collectors.toList());
+    final Record<ProcessInstanceRecordValue> lastRecord =
+        elementProcessInstanceRecords.get(elementProcessInstanceRecords.size() - 1);
+
+    if (lastRecord.getIntent() != ProcessInstanceIntent.ELEMENT_ACTIVATED) {
+      failWithMessage("Process with key %s is not waiting at element with id %s",
+          actual.getProcessInstanceKey(), elementId);
     }
 
     return this;

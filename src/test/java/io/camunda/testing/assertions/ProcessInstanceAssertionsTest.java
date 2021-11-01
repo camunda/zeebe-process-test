@@ -11,7 +11,6 @@ import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import java.util.Collections;
-import java.util.Map;
 import org.camunda.community.eze.EmbeddedZeebeEngine;
 import org.camunda.community.eze.RecordStreamSource;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,9 @@ import org.junit.jupiter.api.Test;
 // TODO remove Thread.sleeps
 @EmbeddedZeebeEngine
 class ProcessInstanceAssertionsTest {
+
+  private static final String PROCESS_ID = "processinstance";
+  private static final String ELEMENT_ID = "servicetask";
 
   private ZeebeClient client;
   private RecordStreamSource recordStreamSource;
@@ -72,7 +74,7 @@ class ProcessInstanceAssertionsTest {
     final ProcessInstanceEvent instanceEvent = startProcessInstance();
 
     // when
-    completeTask("servicetask");
+    completeTask();
 
     // then
     assertThat(instanceEvent, recordStreamSource).isCompleted();
@@ -125,10 +127,10 @@ class ProcessInstanceAssertionsTest {
     final ProcessInstanceEvent instanceEvent = startProcessInstance();
 
     // when
-    completeTask("servicetask");
+    completeTask();
 
     // then
-    assertThat(instanceEvent, recordStreamSource).hasPassed("servicetask");
+    assertThat(instanceEvent, recordStreamSource).hasPassed(ELEMENT_ID);
   }
 
   @Test
@@ -141,8 +143,8 @@ class ProcessInstanceAssertionsTest {
 
     // then
     assertThrows(AssertionError.class,
-        () -> assertThat(instanceEvent, recordStreamSource).hasPassed("servicetask"),
-        "Expected element with id servicetask to be passed 1 times");
+        () -> assertThat(instanceEvent, recordStreamSource).hasPassed(ELEMENT_ID),
+        String.format("Expected element with id %s to be passed 1 times", ELEMENT_ID));
   }
 
   @Test
@@ -154,7 +156,7 @@ class ProcessInstanceAssertionsTest {
     final ProcessInstanceEvent instanceEvent = startProcessInstance();
 
     // then
-    assertThat(instanceEvent, recordStreamSource).hasNotPassed("servicetask");
+    assertThat(instanceEvent, recordStreamSource).hasNotPassed(ELEMENT_ID);
   }
 
   @Test
@@ -164,12 +166,12 @@ class ProcessInstanceAssertionsTest {
     final ProcessInstanceEvent instanceEvent = startProcessInstance();
 
     // when
-    completeTask("servicetask");
+    completeTask();
 
     // then
     assertThrows(AssertionError.class,
-        () -> assertThat(instanceEvent, recordStreamSource).hasNotPassed("servicetask"),
-        "Expected element with id servicetask to be passed 0 times");
+        () -> assertThat(instanceEvent, recordStreamSource).hasNotPassed(ELEMENT_ID),
+        String.format("Expected element with id %s to be passed 0 times", ELEMENT_ID));
   }
 
   @Test
@@ -181,11 +183,39 @@ class ProcessInstanceAssertionsTest {
 
     // when
     for (int i = 0; i < 5; i++) {
-      completeTask("servicetask");
+      completeTask();
     }
 
     // then
-    assertThat(instanceEvent, recordStreamSource).hasPassed("servicetask", totalLoops);
+    assertThat(instanceEvent, recordStreamSource).hasPassed(ELEMENT_ID, totalLoops);
+  }
+
+  @Test
+  public void testProcessInstanceIsWaitingAt() throws InterruptedException {
+    // given
+    deployProcess();
+
+    // when
+    final ProcessInstanceEvent instanceEvent = startProcessInstance();
+
+    // then
+    assertThat(instanceEvent, recordStreamSource).isWaitingAt(ELEMENT_ID);
+  }
+
+  @Test
+  public void testProcessInstanceIsNotWaitingAt() throws InterruptedException {
+    // given
+    deployProcess();
+    final ProcessInstanceEvent instanceEvent = startProcessInstance();
+
+    // when
+    completeTask();
+
+    // then
+    assertThrows(AssertionError.class, () -> assertThat(instanceEvent, recordStreamSource)
+            .isWaitingAt("servicetask"),
+        String.format("Process with key %s is not waiting at element with id %s",
+            instanceEvent.getProcessInstanceKey(), ELEMENT_ID));
   }
 
   private void deployProcess() {
@@ -201,7 +231,7 @@ class ProcessInstanceAssertionsTest {
 
   private ProcessInstanceEvent startProcessInstance(final int totalLoops) throws InterruptedException {
     final ProcessInstanceEvent instanceEvent = client.newCreateInstanceCommand()
-        .bpmnProcessId("processinstance")
+        .bpmnProcessId(PROCESS_ID)
         .latestVersion()
         .variables(Collections.singletonMap("totalLoops", totalLoops))
         .send()
@@ -211,10 +241,10 @@ class ProcessInstanceAssertionsTest {
   }
 
   // TODO we need a proper way to complete jobs instead of this hack
-  private void completeTask(final String elementId) throws InterruptedException {
+  private void completeTask() throws InterruptedException {
     Thread.sleep(100);
     Record<JobRecordValue> lastRecord = null;
-    for (Record<JobRecordValue> record : recordStreamSource.jobRecords().withElementId(elementId)) {
+    for (Record<JobRecordValue> record : recordStreamSource.jobRecords().withElementId(ELEMENT_ID)) {
         if (record.getIntent().equals(JobIntent.CREATED)) {
           lastRecord = record;
       }
