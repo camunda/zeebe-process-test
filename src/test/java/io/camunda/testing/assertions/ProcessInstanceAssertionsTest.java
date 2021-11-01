@@ -124,6 +124,19 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThat(instanceEvent).isWaitingAt(ELEMENT_ID);
     }
+
+    @Test
+    public void testProcessInstanceIsNotWaitingAt() throws InterruptedException {
+      // given
+      deployProcess();
+      final ProcessInstanceEvent instanceEvent = startProcessInstance();
+
+      // when
+      completeTask();
+
+      // then
+      assertThat(instanceEvent).isNotWaitingAt(ELEMENT_ID);
+    }
   }
 
   // These tests are just for assertion testing purposes. These should not be used as examples.
@@ -220,7 +233,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAt() throws InterruptedException {
+    public void testProcessInstanceIsWaitingAtError() throws InterruptedException {
       // given
       deployProcess();
       final ProcessInstanceEvent instanceEvent = startProcessInstance();
@@ -230,8 +243,22 @@ class ProcessInstanceAssertionsTest {
 
       // then
       assertThrows(AssertionError.class, () -> assertThat(instanceEvent)
-              .isWaitingAt("servicetask"),
+              .isWaitingAt(ELEMENT_ID),
           String.format("Process with key %s is not waiting at element with id %s",
+              instanceEvent.getProcessInstanceKey(), ELEMENT_ID));
+    }
+
+    @Test
+    public void testProcessInstanceIsNotWaitingAtError() throws InterruptedException {
+      // given
+      deployProcess();
+
+      // when
+      final ProcessInstanceEvent instanceEvent = startProcessInstance();
+
+      // then
+      assertThrows(AssertionError.class, () -> assertThat(instanceEvent).isNotWaitingAt(ELEMENT_ID),
+          String.format("Process with key %s is waiting at element with id %s",
               instanceEvent.getProcessInstanceKey(), ELEMENT_ID));
     }
   }

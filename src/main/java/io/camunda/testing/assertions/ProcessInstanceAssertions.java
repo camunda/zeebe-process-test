@@ -114,4 +114,22 @@ public class ProcessInstanceAssertions
 
     return this;
   }
+
+  public ProcessInstanceAssertions isNotWaitingAt(final String elementId) {
+    final List<Record<ProcessInstanceRecordValue>> elementProcessInstanceRecords =
+        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+            .withProcessInstanceKey(actual.getProcessInstanceKey()).withElementId(elementId)
+            .stream()
+            .collect(Collectors.toList());
+    final Record<ProcessInstanceRecordValue> lastRecord =
+        elementProcessInstanceRecords.get(elementProcessInstanceRecords.size() - 1);
+
+    if (lastRecord.getIntent() == ProcessInstanceIntent.ELEMENT_ACTIVATED) {
+      failWithMessage(
+          "Process with key %s is waiting at element with id %s",
+          actual.getProcessInstanceKey(), elementId);
+    }
+
+    return this;
+  }
 }
