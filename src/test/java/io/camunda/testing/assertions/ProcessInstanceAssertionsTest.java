@@ -1,6 +1,7 @@
 package io.camunda.testing.assertions;
 
 import static io.camunda.testing.assertions.ProcessInstanceAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -155,7 +156,9 @@ class ProcessInstanceAssertionsTest {
       when(mockInstanceEvent.getProcessInstanceKey()).thenReturn(-1L);
 
       // then
-      assertThrows(AssertionError.class, assertThat(mockInstanceEvent)::isStarted,
+      assertThrows(
+          AssertionError.class,
+          assertThat(mockInstanceEvent)::isStarted,
           "Process with key -1 was not started");
     }
 
@@ -171,8 +174,9 @@ class ProcessInstanceAssertionsTest {
       when(mockInstanceEvent.getProcessInstanceKey()).thenReturn(-1L);
 
       // then
-      assertThrows(AssertionError.class, assertThat(mockInstanceEvent)::isStarted,
-          "Process with key -1 was not started");
+      assertThatThrownBy(() -> assertThat(mockInstanceEvent).isStarted())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("Process with key -1 was not started");
     }
 
     @Test
@@ -184,9 +188,10 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance();
 
       // then
-      assertThrows(AssertionError.class, assertThat(instanceEvent)::isCompleted,
-          String.format("Process with key %s was not started",
-              instanceEvent.getProcessInstanceKey()));
+      assertThatThrownBy(() -> assertThat(instanceEvent).isCompleted())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s was not completed", instanceEvent.getProcessInstanceKey());
     }
 
     @Test
@@ -198,9 +203,10 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance();
 
       // then
-      assertThrows(AssertionError.class, assertThat(instanceEvent)::isTerminated,
-          String.format("Process with key %s was not terminated",
-              instanceEvent.getProcessInstanceKey()));
+      assertThatThrownBy(() -> assertThat(instanceEvent).isTerminated())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s was not terminated", instanceEvent.getProcessInstanceKey());
     }
 
     @Test
@@ -212,9 +218,9 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance();
 
       // then
-      assertThrows(AssertionError.class,
-          () -> assertThat(instanceEvent).hasPassed(ELEMENT_ID),
-          String.format("Expected element with id %s to be passed 1 times", ELEMENT_ID));
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasPassed(ELEMENT_ID))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("Expected element with id %s to be passed 1 times", ELEMENT_ID);
     }
 
     @Test
@@ -227,9 +233,9 @@ class ProcessInstanceAssertionsTest {
       completeTask();
 
       // then
-      assertThrows(AssertionError.class,
-          () -> assertThat(instanceEvent).hasNotPassed(ELEMENT_ID),
-          String.format("Expected element with id %s to be passed 0 times", ELEMENT_ID));
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasNotPassed(ELEMENT_ID))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("Expected element with id %s to be passed 0 times", ELEMENT_ID);
     }
 
     @Test
@@ -242,10 +248,11 @@ class ProcessInstanceAssertionsTest {
       completeTask();
 
       // then
-      assertThrows(AssertionError.class, () -> assertThat(instanceEvent)
-              .isWaitingAt(ELEMENT_ID),
-          String.format("Process with key %s is not waiting at element with id %s",
-              instanceEvent.getProcessInstanceKey(), ELEMENT_ID));
+      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAt(ELEMENT_ID))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s is not waiting at element with id %s",
+              instanceEvent.getProcessInstanceKey(), ELEMENT_ID);
     }
 
     @Test
@@ -257,17 +264,16 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance();
 
       // then
-      assertThrows(AssertionError.class, () -> assertThat(instanceEvent).isNotWaitingAt(ELEMENT_ID),
-          String.format("Process with key %s is waiting at element with id %s",
-              instanceEvent.getProcessInstanceKey(), ELEMENT_ID));
+      assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAt(ELEMENT_ID))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s is waiting at element with id %s",
+              instanceEvent.getProcessInstanceKey(), ELEMENT_ID);
     }
   }
 
   private void deployProcess() {
-    client.newDeployCommand()
-        .addResourceFromClasspath("process-instance.bpmn")
-        .send()
-        .join();
+    client.newDeployCommand().addResourceFromClasspath("process-instance.bpmn").send().join();
   }
 
   private ProcessInstanceEvent startProcessInstance() throws InterruptedException {
@@ -276,12 +282,14 @@ class ProcessInstanceAssertionsTest {
 
   private ProcessInstanceEvent startProcessInstance(final int totalLoops)
       throws InterruptedException {
-    final ProcessInstanceEvent instanceEvent = client.newCreateInstanceCommand()
-        .bpmnProcessId(PROCESS_ID)
-        .latestVersion()
-        .variables(Collections.singletonMap("totalLoops", totalLoops))
-        .send()
-        .join();
+    final ProcessInstanceEvent instanceEvent =
+        client
+            .newCreateInstanceCommand()
+            .bpmnProcessId(PROCESS_ID)
+            .latestVersion()
+            .variables(Collections.singletonMap("totalLoops", totalLoops))
+            .send()
+            .join();
     Thread.sleep(100);
     return instanceEvent;
   }
@@ -290,16 +298,13 @@ class ProcessInstanceAssertionsTest {
   private void completeTask() throws InterruptedException {
     Thread.sleep(100);
     Record<JobRecordValue> lastRecord = null;
-    for (Record<JobRecordValue> record : engine.jobRecords()
-        .withElementId(ELEMENT_ID)) {
+    for (Record<JobRecordValue> record : engine.jobRecords().withElementId(ELEMENT_ID)) {
       if (record.getIntent().equals(JobIntent.CREATED)) {
         lastRecord = record;
       }
     }
     if (lastRecord != null) {
-      client.newCompleteCommand(lastRecord.getKey())
-          .send()
-          .join();
+      client.newCompleteCommand(lastRecord.getKey()).send().join();
     }
     Thread.sleep(100);
   }
