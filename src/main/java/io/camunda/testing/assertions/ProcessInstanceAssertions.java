@@ -5,8 +5,12 @@ import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.camunda.community.eze.RecordStreamSource;
@@ -97,39 +101,56 @@ public class ProcessInstanceAssertions
     return this;
   }
 
-  public ProcessInstanceAssertions isWaitingAt(final String elementId) {
-    final List<Record<ProcessInstanceRecordValue>> elementProcessInstanceRecords =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey()).withElementId(elementId)
-            .stream()
-            .collect(Collectors.toList());
-    final Record<ProcessInstanceRecordValue> lastRecord =
-        elementProcessInstanceRecords.get(elementProcessInstanceRecords.size() - 1);
+  public ProcessInstanceAssertions isWaitingAt(final String... elementIds) {
+    final List<String> activatedElements = Arrays.stream(elementIds)
+        .filter(((Predicate<String>) this::isWaitingAtElement).negate())
+        .collect(Collectors.toList());
 
-    if (lastRecord.getIntent() != ProcessInstanceIntent.ELEMENT_ACTIVATED) {
-      failWithMessage(
-          "Process with key %s is not waiting at element with id %s",
-          actual.getProcessInstanceKey(), elementId);
+    if (!activatedElements.isEmpty()) {
+      final String errorMessage =
+          String.format("Process with key %s is not waiting at element(s) with id(s) %s",
+              actual.getProcessInstanceKey(), String.join(", ", activatedElements));
+      failWithMessage(errorMessage);
     }
-
     return this;
   }
 
-  public ProcessInstanceAssertions isNotWaitingAt(final String elementId) {
-    final List<Record<ProcessInstanceRecordValue>> elementProcessInstanceRecords =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey()).withElementId(elementId)
-            .stream()
-            .collect(Collectors.toList());
-    final Record<ProcessInstanceRecordValue> lastRecord =
-        elementProcessInstanceRecords.get(elementProcessInstanceRecords.size() - 1);
+  public ProcessInstanceAssertions isNotWaitingAt(final String... elementIds) {
+    final List<String> activatedElements = Arrays.stream(elementIds)
+        .filter(this::isWaitingAtElement)
+        .collect(Collectors.toList());
 
-    if (lastRecord.getIntent() == ProcessInstanceIntent.ELEMENT_ACTIVATED) {
-      failWithMessage(
-          "Process with key %s is waiting at element with id %s",
-          actual.getProcessInstanceKey(), elementId);
+    if (!activatedElements.isEmpty()) {
+      final String errorMessage =
+          String.format("Process with key %s is waiting at element(s) with id(s) %s",
+              actual.getProcessInstanceKey(), String.join(", ", activatedElements));
+      failWithMessage(errorMessage);
+    }
+    return this;
+  }
+
+  // TODO if waiting at any element with this id returns true. Maybe add a counter so we can check
+  // we are waiting at multiple elements with the same id
+  private boolean isWaitingAtElement(final String elementId) {
+    final Map<Long, List<Record<ProcessInstanceRecordValue>>> recordsMap =
+        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withElementId(elementId)
+            .stream()
+            .collect(Collectors.groupingBy(record -> record.getValue().getFlowScopeKey()));
+
+    if (recordsMap.isEmpty()) {
+      return false;
     }
 
-    return this;
+    for (Entry<Long, List<Record<ProcessInstanceRecordValue>>> entry : recordsMap.entrySet()) {
+      final Record<ProcessInstanceRecordValue> lastRecord =
+          entry.getValue().get(entry.getValue().size() - 1);
+      if (lastRecord.getIntent() == ProcessInstanceIntent.ELEMENT_ACTIVATED) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
