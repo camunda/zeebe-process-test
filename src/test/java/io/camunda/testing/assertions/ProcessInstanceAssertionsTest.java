@@ -322,12 +322,14 @@ class ProcessInstanceAssertionsTest {
       completeTask("servicetask3");
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAt("servicetask1", "servicetask2", "servicetask3"))
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingAt("servicetask1", "servicetask2", "servicetask3"))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s is not waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(),
-              "servicetask1, servicetask2, servicetask3");
+              instanceEvent.getProcessInstanceKey(), "servicetask1, servicetask2, servicetask3");
     }
 
     @Test
@@ -364,7 +366,8 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtMulitpleElementsError() throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingAtMulitpleElementsError()
+        throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
 
@@ -372,12 +375,14 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAt("servicetask1", "servicetask2", "servicetask3"))
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .isNotWaitingAt("servicetask1", "servicetask2", "servicetask3"))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s is waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(),
-              "servicetask1, servicetask2, servicetask3");
+              instanceEvent.getProcessInstanceKey(), "servicetask1, servicetask2, servicetask3");
     }
   }
 
@@ -385,12 +390,13 @@ class ProcessInstanceAssertionsTest {
     client.newDeployCommand().addResourceFromClasspath(process).send().join();
   }
 
-  private ProcessInstanceEvent startProcessInstance(final String processId) throws InterruptedException {
+  private ProcessInstanceEvent startProcessInstance(final String processId)
+      throws InterruptedException {
     return startProcessInstance(processId, new HashMap<>());
   }
 
-  private ProcessInstanceEvent startProcessInstance(final String processId, final Map<String, Object> variables)
-      throws InterruptedException {
+  private ProcessInstanceEvent startProcessInstance(
+      final String processId, final Map<String, Object> variables) throws InterruptedException {
     final ProcessInstanceEvent instanceEvent =
         client
             .newCreateInstanceCommand()

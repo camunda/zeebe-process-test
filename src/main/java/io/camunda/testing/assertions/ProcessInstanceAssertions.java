@@ -102,13 +102,15 @@ public class ProcessInstanceAssertions
   }
 
   public ProcessInstanceAssertions isWaitingAt(final String... elementIds) {
-    final List<String> activatedElements = Arrays.stream(elementIds)
-        .filter(((Predicate<String>) this::isWaitingAtElement).negate())
-        .collect(Collectors.toList());
+    final List<String> activatedElements =
+        Arrays.stream(elementIds)
+            .filter(((Predicate<String>) this::isWaitingAtElement).negate())
+            .collect(Collectors.toList());
 
     if (!activatedElements.isEmpty()) {
       final String errorMessage =
-          String.format("Process with key %s is not waiting at element(s) with id(s) %s",
+          String.format(
+              "Process with key %s is not waiting at element(s) with id(s) %s",
               actual.getProcessInstanceKey(), String.join(", ", activatedElements));
       failWithMessage(errorMessage);
     }
@@ -116,13 +118,13 @@ public class ProcessInstanceAssertions
   }
 
   public ProcessInstanceAssertions isNotWaitingAt(final String... elementIds) {
-    final List<String> activatedElements = Arrays.stream(elementIds)
-        .filter(this::isWaitingAtElement)
-        .collect(Collectors.toList());
+    final List<String> activatedElements =
+        Arrays.stream(elementIds).filter(this::isWaitingAtElement).collect(Collectors.toList());
 
     if (!activatedElements.isEmpty()) {
       final String errorMessage =
-          String.format("Process with key %s is waiting at element(s) with id(s) %s",
+          String.format(
+              "Process with key %s is waiting at element(s) with id(s) %s",
               actual.getProcessInstanceKey(), String.join(", ", activatedElements));
       failWithMessage(errorMessage);
     }
