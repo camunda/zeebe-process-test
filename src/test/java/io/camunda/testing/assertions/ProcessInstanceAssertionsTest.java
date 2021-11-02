@@ -27,6 +27,8 @@ class ProcessInstanceAssertionsTest {
   public static final String PROCESS_INSTANCE_BPMN = "process-instance.bpmn";
   public static final String PROCESS_ID = "processinstance";
   public static final String ELEMENT_ID = "servicetask";
+  public static final String MULTIPLE_TASKS_BPMN = "multiple-tasks.bpmn";
+  public static final String MULTIPLE_TASKS_PROCESS_ID = "multiple-tasks";
 
   private ZeebeClient client;
   private ZeebeEngine engine;
@@ -41,10 +43,10 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceIsStarted() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
 
       // when
-      final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", 1));
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).isStarted();
@@ -54,8 +56,8 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceIsCompleted() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", 1));
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
 
       // when
       completeTask(ELEMENT_ID);
@@ -68,8 +70,8 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceTerminated() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", 1));
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
 
       // when
       client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
@@ -83,8 +85,8 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceHasPassed() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", 1));
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
 
       // when
       completeTask(ELEMENT_ID);
@@ -97,10 +99,10 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceHasNotPassed() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
 
       // when
-      final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", 1));
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).hasNotPassed(ELEMENT_ID);
@@ -111,8 +113,8 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final int totalLoops = 5;
-      final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", totalLoops));
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", totalLoops);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
 
       // when
       for (int i = 0; i < 5; i++) {
@@ -126,10 +128,10 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessInstanceIsWaitingAt() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
+      deployProcess(MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
       assertThat(instanceEvent).isWaitingAt("servicetask1");
@@ -138,10 +140,10 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessIsWaitingAtMultipleElements() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
+      deployProcess(MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
       assertThat(instanceEvent).isWaitingAt("servicetask1", "servicetask2", "servicetask3");
@@ -150,8 +152,8 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessInstanceIsNotWaitingAt() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      deployProcess(MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
       completeTask("servicetask1");
@@ -163,8 +165,8 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessInstanceIsNotWaitingAtMulitpleElements() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      deployProcess(MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
       completeTask("servicetask1");
@@ -178,8 +180,8 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessInstanceIsNotWaitingAtNonExistingElement() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      deployProcess(MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
       completeTask("non-existing-task");
@@ -294,8 +296,8 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessInstanceIsWaitingAtError() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      deployProcess(MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
       completeTask("servicetask1");
@@ -311,8 +313,8 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessInstanceIsWaitingAtMultipleElementsError() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      deployProcess(MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
       completeTask("servicetask1");
@@ -331,8 +333,8 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessInstanceWaitingAtNonExistingElementError() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      deployProcess(MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
       completeTask("non-existing-task");
@@ -348,10 +350,10 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessInstanceIsNotWaitingAtError() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
+      deployProcess(MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAt("servicetask1"))
@@ -364,10 +366,10 @@ class ProcessInstanceAssertionsTest {
     @Test
     public void testProcessInstanceIsNotWaitingAtMulitpleElementsError() throws InterruptedException {
       // given
-      deployProcess("multiple-tasks.bpmn");
+      deployProcess(MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance("multiple-tasks");
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAt("servicetask1", "servicetask2", "servicetask3"))
