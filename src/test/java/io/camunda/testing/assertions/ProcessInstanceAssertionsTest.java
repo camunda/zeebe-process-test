@@ -25,10 +25,13 @@ import org.junit.jupiter.api.Test;
 class ProcessInstanceAssertionsTest {
 
   public static final String PROCESS_INSTANCE_BPMN = "process-instance.bpmn";
-  public static final String PROCESS_ID = "processinstance";
+  public static final String PROCESS_INSTANCE_ID = "processinstance";
   public static final String ELEMENT_ID = "servicetask";
   public static final String MULTIPLE_TASKS_BPMN = "multiple-tasks.bpmn";
   public static final String MULTIPLE_TASKS_PROCESS_ID = "multiple-tasks";
+  public static final String MESSAGE_EVENT_BPMN = "message-event.bpmn";
+  public static final String MESSAGE_EVENT_PROCESS_ID = "message-event";
+  public static final String MESSAGE_NAME = "message";
 
   private ZeebeClient client;
   private ZeebeEngine engine;
@@ -46,7 +49,8 @@ class ProcessInstanceAssertionsTest {
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThat(instanceEvent).isStarted();
@@ -57,7 +61,8 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // when
       completeTask(ELEMENT_ID);
@@ -71,7 +76,8 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // when
       client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
@@ -86,7 +92,8 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // when
       completeTask(ELEMENT_ID);
@@ -102,7 +109,8 @@ class ProcessInstanceAssertionsTest {
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThat(instanceEvent).hasNotPassed(ELEMENT_ID);
@@ -114,7 +122,8 @@ class ProcessInstanceAssertionsTest {
       deployProcess(PROCESS_INSTANCE_BPMN);
       final int totalLoops = 5;
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", totalLoops);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_ID, variables);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // when
       for (int i = 0; i < 5; i++) {
@@ -189,6 +198,37 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThat(instanceEvent).isNotWaitingAt("non-existing-task");
     }
+
+    @Test
+    public void testProcessInstanceIsWaitingForMessage() throws InterruptedException {
+      // given
+      deployProcess(MESSAGE_EVENT_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap("correlationKey", "key");
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+
+      // then
+      assertThat(instanceEvent).isWaitingForMessage(MESSAGE_NAME);
+    }
+
+    @Test
+    public void testProcessInstanceIsNotWaitingForMessage() throws InterruptedException {
+      // given
+      deployProcess(MESSAGE_EVENT_BPMN);
+      final String correlationKey = "key";
+      final Map<String, Object> variables =
+          Collections.singletonMap("correlationKey", correlationKey);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+
+      // when
+      sendMessage(MESSAGE_NAME, correlationKey);
+
+      // then
+      assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME);
+    }
   }
 
   // These tests are just for assertion testing purposes. These should not be used as examples.
@@ -218,7 +258,7 @@ class ProcessInstanceAssertionsTest {
         throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      startProcessInstance(PROCESS_ID);
+      startProcessInstance(PROCESS_INSTANCE_ID);
       final ProcessInstanceEvent mockInstanceEvent = mock(ProcessInstanceEvent.class);
 
       // when
@@ -237,7 +277,7 @@ class ProcessInstanceAssertionsTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isCompleted())
@@ -253,7 +293,7 @@ class ProcessInstanceAssertionsTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isTerminated())
@@ -269,7 +309,7 @@ class ProcessInstanceAssertionsTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).hasPassed(ELEMENT_ID))
@@ -282,7 +322,7 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
 
       // when
       completeTask(ELEMENT_ID);
@@ -384,6 +424,47 @@ class ProcessInstanceAssertionsTest {
               "Process with key %s is waiting at element(s) with id(s) %s",
               instanceEvent.getProcessInstanceKey(), "servicetask1, servicetask2, servicetask3");
     }
+
+    @Test
+    public void testProcessInstanceIsWaitingForMessageError() throws InterruptedException {
+      // given
+      deployProcess(MESSAGE_EVENT_BPMN);
+      final String correlationKey = "key";
+      final Map<String, Object> variables =
+          Collections.singletonMap("correlationKey", correlationKey);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+
+      // when
+      sendMessage(MESSAGE_NAME, correlationKey);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingForMessage(MESSAGE_NAME))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s is not waiting for message(s) with name(s) %s",
+              instanceEvent.getProcessInstanceKey(), MESSAGE_NAME);
+    }
+
+    @Test
+    public void testProcessInstanceIsNotWaitingForMessageError() throws InterruptedException {
+      // given
+      deployProcess(MESSAGE_EVENT_BPMN);
+      final String correlationKey = "key";
+      final Map<String, Object> variables =
+          Collections.singletonMap("correlationKey", correlationKey);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s is waiting for message(s) with name(s) %s",
+              instanceEvent.getProcessInstanceKey(), MESSAGE_NAME);
+    }
   }
 
   private void deployProcess(final String process) {
@@ -421,6 +502,17 @@ class ProcessInstanceAssertionsTest {
     if (lastRecord != null) {
       client.newCompleteCommand(lastRecord.getKey()).send().join();
     }
+    Thread.sleep(100);
+  }
+
+  private void sendMessage(final String messsageName, final String correlationKey)
+      throws InterruptedException {
+    client
+        .newPublishMessageCommand()
+        .messageName(messsageName)
+        .correlationKey(correlationKey)
+        .send()
+        .join();
     Thread.sleep(100);
   }
 }
