@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0vjlomv" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="1.1.0">
-  <bpmn:process id="processinstance" name="process instance" isExecutable="true">
+  <bpmn:process id="looping-servicetask" name="looping servicetask" isExecutable="true">
     <bpmn:startEvent id="startevent" name="Start event">
       <bpmn:extensionElements>
         <zeebe:ioMapping>
@@ -36,7 +36,17 @@
     </bpmn:sequenceFlow>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="processinstance">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="looping-servicetask">
+      <bpmndi:BPMNEdge id="Flow_0wjr3ms_di" bpmnElement="Flow_0wjr3ms">
+        <di:waypoint x="410" y="142" />
+        <di:waypoint x="410" y="80" />
+        <di:waypoint x="300" y="80" />
+        <di:waypoint x="300" y="127" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_117ogjm_di" bpmnElement="Flow_117ogjm">
+        <di:waypoint x="435" y="167" />
+        <di:waypoint x="482" y="167" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0cw7eu9_di" bpmnElement="Flow_0cw7eu9">
         <di:waypoint x="350" y="167" />
         <di:waypoint x="385" y="167" />
@@ -45,30 +55,20 @@
         <di:waypoint x="215" y="167" />
         <di:waypoint x="250" y="167" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_117ogjm_di" bpmnElement="Flow_117ogjm">
-        <di:waypoint x="435" y="167" />
-        <di:waypoint x="482" y="167" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0wjr3ms_di" bpmnElement="Flow_0wjr3ms">
-        <di:waypoint x="410" y="142" />
-        <di:waypoint x="410" y="80" />
-        <di:waypoint x="300" y="80" />
-        <di:waypoint x="300" y="127" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="startevent">
         <dc:Bounds x="179" y="149" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="170" y="192" width="54" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0fjovnb_di" bpmnElement="servicetask">
-        <dc:Bounds x="250" y="127" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_031yvb4_di" bpmnElement="endevent">
         <dc:Bounds x="482" y="149" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="475" y="192" width="50" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fjovnb_di" bpmnElement="servicetask">
+        <dc:Bounds x="250" y="127" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0fhwf5d_di" bpmnElement="Gateway_0fhwf5d" isMarkerVisible="true">
         <dc:Bounds x="385" y="142" width="50" height="50" />

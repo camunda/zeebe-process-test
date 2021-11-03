@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 @ZeebeAssertions
 class ProcessInstanceAssertionsTest {
 
-  public static final String PROCESS_INSTANCE_BPMN = "process-instance.bpmn";
-  public static final String PROCESS_INSTANCE_ID = "processinstance";
+  public static final String PROCESS_INSTANCE_BPMN = "looping-servicetask.bpmn";
+  public static final String PROCESS_INSTANCE_ID = "looping-servicetask";
   public static final String ELEMENT_ID = "servicetask";
   public static final String MULTIPLE_TASKS_BPMN = "multiple-tasks.bpmn";
   public static final String MULTIPLE_TASKS_PROCESS_ID = "multiple-tasks";
