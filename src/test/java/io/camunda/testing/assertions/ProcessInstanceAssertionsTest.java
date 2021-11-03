@@ -143,7 +143,7 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
-      assertThat(instanceEvent).isWaitingAt("servicetask1");
+      assertThat(instanceEvent).isWaitingAtElement("servicetask1");
     }
 
     @Test
@@ -155,7 +155,7 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
-      assertThat(instanceEvent).isWaitingAt("servicetask1", "servicetask2", "servicetask3");
+      assertThat(instanceEvent).isWaitingAtElement("servicetask1", "servicetask2", "servicetask3");
     }
 
     @Test
@@ -168,7 +168,7 @@ class ProcessInstanceAssertionsTest {
       completeTask("servicetask1");
 
       // then
-      assertThat(instanceEvent).isNotWaitingAt("servicetask1");
+      assertThat(instanceEvent).isNotWaitingAtElement("servicetask1");
     }
 
     @Test
@@ -183,7 +183,8 @@ class ProcessInstanceAssertionsTest {
       completeTask("servicetask3");
 
       // then
-      assertThat(instanceEvent).isNotWaitingAt("servicetask1", "servicetask2", "servicetask3");
+      assertThat(instanceEvent)
+          .isNotWaitingAtElement("servicetask1", "servicetask2", "servicetask3");
     }
 
     @Test
@@ -196,7 +197,7 @@ class ProcessInstanceAssertionsTest {
       completeTask("non-existing-task");
 
       // then
-      assertThat(instanceEvent).isNotWaitingAt("non-existing-task");
+      assertThat(instanceEvent).isNotWaitingAtElement("non-existing-task");
     }
 
     @Test
@@ -343,7 +344,7 @@ class ProcessInstanceAssertionsTest {
       completeTask("servicetask1");
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAt("servicetask1"))
+      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement("servicetask1"))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s is not waiting at element(s) with id(s) %s",
@@ -365,7 +366,7 @@ class ProcessInstanceAssertionsTest {
       assertThatThrownBy(
               () ->
                   assertThat(instanceEvent)
-                      .isWaitingAt("servicetask1", "servicetask2", "servicetask3"))
+                      .isWaitingAtElement("servicetask1", "servicetask2", "servicetask3"))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s is not waiting at element(s) with id(s) %s",
@@ -382,7 +383,7 @@ class ProcessInstanceAssertionsTest {
       completeTask("non-existing-task");
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAt("non-existing-task"))
+      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement("non-existing-task"))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s is not waiting at element(s) with id(s) %s",
@@ -398,7 +399,7 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAt("servicetask1"))
+      assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAtElement("servicetask1"))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s is waiting at element(s) with id(s) %s",
@@ -418,7 +419,7 @@ class ProcessInstanceAssertionsTest {
       assertThatThrownBy(
               () ->
                   assertThat(instanceEvent)
-                      .isNotWaitingAt("servicetask1", "servicetask2", "servicetask3"))
+                      .isNotWaitingAtElement("servicetask1", "servicetask2", "servicetask3"))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s is waiting at element(s) with id(s) %s",

@@ -150,7 +150,7 @@ public class ProcessInstanceAssertions
    * @param elementIds The ids of the elements
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isWaitingAt(final String... elementIds) {
+  public ProcessInstanceAssertions isWaitingAtElement(final String... elementIds) {
     final List<String> notActivatedElements =
         Arrays.stream(elementIds)
             .filter(((Predicate<String>) this::isWaitingAtElement).negate())
@@ -173,7 +173,7 @@ public class ProcessInstanceAssertions
    * @param elementIds The ids of the elements
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isNotWaitingAt(final String... elementIds) {
+  public ProcessInstanceAssertions isNotWaitingAtElement(final String... elementIds) {
     final List<String> activatedElements =
         Arrays.stream(elementIds).filter(this::isWaitingAtElement).collect(Collectors.toList());
 
