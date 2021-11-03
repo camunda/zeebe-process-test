@@ -1,5 +1,6 @@
 package io.camunda.testing.assertions;
 
+import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.Intent;

@@ -1,4 +1,4 @@
-package io.camunda.testing.assertions;
+package io.camunda.testing.filters;
 
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
