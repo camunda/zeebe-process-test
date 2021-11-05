@@ -4,6 +4,7 @@ import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
+import java.util.Arrays;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -35,6 +36,12 @@ public class ProcessInstanceRecordStreamFilter {
 
   public ProcessInstanceRecordStreamFilter withElementId(final String elementId) {
     stream = stream.filter(record -> record.getValue().getElementId().equals(elementId));
+    return this;
+  }
+
+  public ProcessInstanceRecordStreamFilter withElementIdIn(final String... elementIds) {
+    stream = stream
+        .filter(record -> Arrays.asList(elementIds).contains(record.getValue().getElementId()));
     return this;
   }
 

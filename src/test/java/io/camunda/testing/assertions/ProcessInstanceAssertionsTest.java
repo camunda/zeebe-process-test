@@ -131,7 +131,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassed() throws InterruptedException {
+    public void testProcessInstanceHasPassedElement() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
@@ -146,7 +146,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceHasNotPassed() throws InterruptedException {
+    public void testProcessInstanceHasNotPassedElement() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
@@ -160,7 +160,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedMultipleTimes() throws InterruptedException {
+    public void testProcessInstanceHasPassedElementMultipleTimes() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final int totalLoops = 5;
@@ -175,6 +175,21 @@ class ProcessInstanceAssertionsTest {
 
       // then
       assertThat(instanceEvent).hasPassedElement(ELEMENT_ID, totalLoops);
+    }
+
+    @Test
+    public void testProcessInstanceHasPassedElementsInOrder() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // when
+      completeTask(ELEMENT_ID);
+
+      // then
+      assertThat(instanceEvent).hasPassedElementInOrder("startevent", ELEMENT_ID, "endevent");
     }
 
     @Test
@@ -399,7 +414,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedError() throws InterruptedException {
+    public void testProcessInstanceHasPassedElementError() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
 
@@ -414,7 +429,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceHasNotPassedError() throws InterruptedException {
+    public void testProcessInstanceHasNotPassedElementError() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
@@ -427,6 +442,25 @@ class ProcessInstanceAssertionsTest {
       assertThatThrownBy(() -> assertThat(instanceEvent).hasNotPassedElement(ELEMENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage("Expected element with id %s to be passed 0 times", ELEMENT_ID);
+    }
+
+    @Test
+    public void testProcessInstanceHasPassedElementsInOrderError() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // when
+      completeTask(ELEMENT_ID);
+
+      // then
+      assertThatThrownBy(() ->
+          assertThat(instanceEvent).hasPassedElementInOrder("endevent", ELEMENT_ID, "startevent"))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("\nexpected: [\"endevent\", \"servicetask\", \"startevent\"]\n "
+              + "but was: [\"startevent\", \"servicetask\", \"endevent\"]");
     }
 
     @Test

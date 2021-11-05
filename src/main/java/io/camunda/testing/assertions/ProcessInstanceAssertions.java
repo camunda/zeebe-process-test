@@ -1,5 +1,7 @@
 package io.camunda.testing.assertions;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.Record;
@@ -192,6 +194,28 @@ public class ProcessInstanceAssertions
       failWithActualExpectedAndMessage(
           count, times, "Expected element with id %s to be passed %s times", elementId, times);
     }
+
+    return this;
+  }
+
+  /**
+   * Verifies the expectation that the process instance has passed the given elements in order.
+   *
+   * @param elementIds The element ids
+   * @return this {@link ProcessInstanceAssertions}
+   */
+  public ProcessInstanceAssertions hasPassedElementInOrder(final String... elementIds) {
+    final List<String> foundElementRecords =
+        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withElementIdIn(elementIds)
+            .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING)
+            .stream()
+            .map(Record::getValue)
+            .map(ProcessInstanceRecordValue::getElementId)
+            .collect(Collectors.toList());
+
+    assertThat(foundElementRecords).isEqualTo(Arrays.asList(elementIds));
 
     return this;
   }
