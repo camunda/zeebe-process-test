@@ -11,6 +11,7 @@ import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,8 @@ public class ProcessInstanceAssertions
 
   private RecordStreamSource recordStreamSource;
 
-  public ProcessInstanceAssertions(final ProcessInstanceEvent actual,
-      final RecordStreamSource recordStreamSource) {
+  public ProcessInstanceAssertions(
+      final ProcessInstanceEvent actual, final RecordStreamSource recordStreamSource) {
     super(actual, ProcessInstanceAssertions.class);
     this.recordStreamSource = recordStreamSource;
   }
@@ -61,10 +62,11 @@ public class ProcessInstanceAssertions
     final boolean isActive =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
             .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS)
-            .stream()
-            .noneMatch(record -> record.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED
-                || record.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED);
+            .withBpmnElementType(BpmnElementType.PROCESS).stream()
+            .noneMatch(
+                record ->
+                    record.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED
+                        || record.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED);
 
     if (!isActive) {
       failWithMessage("Process with key %s is not active", actual.getProcessInstanceKey());
@@ -207,10 +209,8 @@ public class ProcessInstanceAssertions
   public ProcessInstanceAssertions hasPassedElementInOrder(final String... elementIds) {
     final List<String> foundElementRecords =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withElementIdIn(elementIds)
-            .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING)
-            .stream()
+            .withProcessInstanceKey(actual.getProcessInstanceKey()).withElementIdIn(elementIds)
+            .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING).stream()
             .map(Record::getValue)
             .map(ProcessInstanceRecordValue::getElementId)
             .collect(Collectors.toList());
@@ -266,7 +266,6 @@ public class ProcessInstanceAssertions
 
   // TODO if waiting at any element with this id returns true. Maybe add a counter so we can check
   // we are waiting at multiple elements with the same id
-
   /**
    * Checks if the process instance is currently waiting at an element with a specific element id.
    *
@@ -293,6 +292,52 @@ public class ProcessInstanceAssertions
     }
 
     return false;
+  }
+
+  /**
+   * Verifies the expectation that the process instance is currently waiting at the specified
+   * elements, and not at any other element.
+   *
+   * @param elementIds The ids of the elements
+   * @return this {@link ProcessInstanceAssertions}
+   */
+  public ProcessInstanceAssertions isWaitingExactlyAtElements(final String... elementIds) {
+    final List<String> shouldBeWaitingAt = Arrays.asList(elementIds);
+    final List<String> wrongfullyWaitingElementIds = new ArrayList<>();
+    final List<String> wrongfullyNotWaitingElementIds = new ArrayList<>();
+
+    StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withoutBpmnElementType(BpmnElementType.PROCESS)
+        .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING).stream()
+        .map(Record::getValue)
+        .map(ProcessInstanceRecordValue::getElementId)
+        .forEach(
+            id -> {
+              if (shouldBeWaitingAt.contains(id) && !isWaitingAtElement(id)) {
+                // not waiting for the element we want to wait for!
+                wrongfullyNotWaitingElementIds.add(id);
+              } else if (!shouldBeWaitingAt.contains(id) && isWaitingAtElement(id)) {
+                // waiting for an element we don't want to wait for!
+                wrongfullyWaitingElementIds.add(id);
+              }
+            });
+
+    if (!wrongfullyWaitingElementIds.isEmpty()) {
+      final String errorMessage =
+          String.format(
+              "Process with key %s is waiting at element(s) with id(s) %s",
+              actual.getProcessInstanceKey(), String.join(", ", wrongfullyWaitingElementIds));
+      failWithMessage(errorMessage);
+    } else if (!wrongfullyNotWaitingElementIds.isEmpty()) {
+      final String errorMessage =
+          String.format(
+              "Process with key %s is not waiting at element(s) with id(s) %s",
+              actual.getProcessInstanceKey(), String.join(", ", wrongfullyNotWaitingElementIds));
+      failWithMessage(errorMessage);
+    }
+
+    return this;
   }
 
   /**

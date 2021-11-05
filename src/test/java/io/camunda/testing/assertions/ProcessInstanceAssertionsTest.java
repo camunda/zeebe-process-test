@@ -2,7 +2,6 @@ package io.camunda.testing.assertions;
 
 import static io.camunda.testing.assertions.BpmnAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -259,6 +258,19 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
+    public void testProcessInstanceIsWaitingExactlyAtElements() throws InterruptedException {
+      // given
+      deployProcess(MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+
+      // when
+      completeTask("servicetask1");
+
+      // then
+      assertThat(instanceEvent).isWaitingExactlyAtElements("servicetask2", "servicetask3");
+    }
+
+    @Test
     public void testProcessInstanceIsWaitingForMessage() throws InterruptedException {
       // given
       deployProcess(MESSAGE_EVENT_BPMN);
@@ -342,8 +354,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isActive())
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is not active", instanceEvent.getProcessInstanceKey());
+          .hasMessage("Process with key %s is not active", instanceEvent.getProcessInstanceKey());
     }
 
     @Test
@@ -375,8 +386,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotCompleted())
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s was completed", instanceEvent.getProcessInstanceKey());
+          .hasMessage("Process with key %s was completed", instanceEvent.getProcessInstanceKey());
     }
 
     @Test
@@ -409,8 +419,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotTerminated())
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s was terminated", instanceEvent.getProcessInstanceKey());
+          .hasMessage("Process with key %s was terminated", instanceEvent.getProcessInstanceKey());
     }
 
     @Test
@@ -456,11 +465,14 @@ class ProcessInstanceAssertionsTest {
       completeTask(ELEMENT_ID);
 
       // then
-      assertThatThrownBy(() ->
-          assertThat(instanceEvent).hasPassedElementInOrder("endevent", ELEMENT_ID, "startevent"))
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .hasPassedElementInOrder("endevent", ELEMENT_ID, "startevent"))
           .isInstanceOf(AssertionError.class)
-          .hasMessage("\nexpected: [\"endevent\", \"servicetask\", \"startevent\"]\n "
-              + "but was: [\"startevent\", \"servicetask\", \"endevent\"]");
+          .hasMessage(
+              "\nexpected: [\"endevent\", \"servicetask\", \"startevent\"]\n "
+                  + "but was: [\"startevent\", \"servicetask\", \"endevent\"]");
     }
 
     @Test
@@ -553,6 +565,53 @@ class ProcessInstanceAssertionsTest {
           .hasMessage(
               "Process with key %s is waiting at element(s) with id(s) %s",
               instanceEvent.getProcessInstanceKey(), "servicetask1, servicetask2, servicetask3");
+    }
+
+    @Test
+    public void testProcessInstanceIsWaitingExactlyAtElementsError_tooManyElements()
+        throws InterruptedException {
+      // given
+      deployProcess(MULTIPLE_TASKS_BPMN);
+
+      // when
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingExactlyAtElements("servicetask1"))
+          .isInstanceOf(AssertionError.class)
+          .hasMessageContainingAll(
+              String.format(
+                  "Process with key %s is waiting at element(s) with id(s)",
+                  instanceEvent.getProcessInstanceKey()),
+              "servicetask2",
+              "servicetask3")
+          .hasMessageNotContaining("servicetask1");
+    }
+
+    @Test
+    public void testProcessInstanceIsWaitingExactlyAtElementsError_tooLittleElements()
+        throws InterruptedException {
+      // given
+      deployProcess(MULTIPLE_TASKS_BPMN);
+
+      // when
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      completeTask("servicetask1");
+      completeTask("servicetask2");
+
+      // then
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingExactlyAtElements("servicetask1", "servicetask2", "servicetask3"))
+          .isInstanceOf(AssertionError.class)
+          .hasMessageContainingAll(
+              String.format(
+                  "Process with key %s is not waiting at element(s) with id(s)",
+                  instanceEvent.getProcessInstanceKey()),
+              "servicetask1",
+              "servicetask2")
+          .hasMessageNotContaining("servicetask3");
     }
 
     @Test

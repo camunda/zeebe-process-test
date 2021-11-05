@@ -29,6 +29,12 @@ public class ProcessInstanceRecordStreamFilter {
     return this;
   }
 
+  public ProcessInstanceRecordStreamFilter withoutBpmnElementType(
+      final BpmnElementType bpmnElementType) {
+    stream = stream.filter(record -> record.getValue().getBpmnElementType() != bpmnElementType);
+    return this;
+  }
+
   public ProcessInstanceRecordStreamFilter withIntent(final ProcessInstanceIntent intent) {
     stream = stream.filter(record -> record.getIntent() == intent);
     return this;
@@ -40,8 +46,9 @@ public class ProcessInstanceRecordStreamFilter {
   }
 
   public ProcessInstanceRecordStreamFilter withElementIdIn(final String... elementIds) {
-    stream = stream
-        .filter(record -> Arrays.asList(elementIds).contains(record.getValue().getElementId()));
+    stream =
+        stream.filter(
+            record -> Arrays.asList(elementIds).contains(record.getValue().getElementId()));
     return this;
   }
 
