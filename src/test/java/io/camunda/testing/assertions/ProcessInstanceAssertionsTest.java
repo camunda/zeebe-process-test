@@ -2,6 +2,7 @@ package io.camunda.testing.assertions;
 
 import static io.camunda.testing.assertions.BpmnAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.in;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -86,7 +87,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceTerminated() throws InterruptedException {
+    public void testProcessInstanceIsTerminated() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
@@ -99,6 +100,20 @@ class ProcessInstanceAssertionsTest {
 
       // then
       assertThat(instanceEvent).isTerminated();
+    }
+
+    @Test
+    public void testProcessInstanceIsNotTerminated() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // then
+      assertThat(instanceEvent).isNotTerminated();
     }
 
     @Test
@@ -319,7 +334,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceNotTerminated() throws InterruptedException {
+    public void testProcessInstanceIsTerminatedError() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
 
@@ -332,6 +347,24 @@ class ProcessInstanceAssertionsTest {
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s was not terminated", instanceEvent.getProcessInstanceKey());
+    }
+
+    @Test
+    public void testProcessInstanceIsNotTerminatedError() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+
+      // when
+      client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
+      Thread.sleep(100);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).isNotTerminated())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s was terminated", instanceEvent.getProcessInstanceKey());
     }
 
     @Test

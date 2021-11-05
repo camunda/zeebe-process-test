@@ -111,6 +111,26 @@ public class ProcessInstanceAssertions
   }
 
   /**
+   * Verifies the expectation that the process instance is not terminated.
+   *
+   * @return this {@link ProcessInstanceAssertions}
+   */
+  public ProcessInstanceAssertions isNotTerminated() {
+    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
+        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withBpmnElementType(BpmnElementType.PROCESS)
+            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED).stream()
+            .findFirst();
+
+    if (processInstanceRecord.isPresent()) {
+      failWithMessage("Process with key %s was terminated", actual.getProcessInstanceKey());
+    }
+
+    return this;
+  }
+
+  /**
    * Verifies the expectation that the process instance has passed an element with a specific
    * element id exactly one time.
    *
