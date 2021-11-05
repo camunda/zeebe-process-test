@@ -71,6 +71,26 @@ public class ProcessInstanceAssertions
   }
 
   /**
+   * Verifies the expectation that the process instance is not completed.
+   *
+   * @return this {@link ProcessInstanceAssertions}
+   */
+  public ProcessInstanceAssertions isNotCompleted() {
+    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
+        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withBpmnElementType(BpmnElementType.PROCESS)
+            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED).stream()
+            .findFirst();
+
+    if (processInstanceRecord.isPresent()) {
+      failWithMessage("Process with key %s was completed", actual.getProcessInstanceKey());
+    }
+
+    return this;
+  }
+
+  /**
    * Verifies the expectation that the process instance is terminated.
    *
    * @return this {@link ProcessInstanceAssertions}

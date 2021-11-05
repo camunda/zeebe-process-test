@@ -72,6 +72,20 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
+    public void testProcessInstanceIsNotCompleted() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // then
+      assertThat(instanceEvent).isNotCompleted();
+    }
+
+    @Test
     public void testProcessInstanceTerminated() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
@@ -272,7 +286,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceNotCompleted() throws InterruptedException {
+    public void testProcessInstanceIsCompletedError() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
 
@@ -285,6 +299,23 @@ class ProcessInstanceAssertionsTest {
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s was not completed", instanceEvent.getProcessInstanceKey());
+    }
+
+    @Test
+    public void testProcessInstanceIsNotCompletedError() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+
+      // when
+      completeTask(ELEMENT_ID);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).isNotCompleted())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s was completed", instanceEvent.getProcessInstanceKey());
     }
 
     @Test
