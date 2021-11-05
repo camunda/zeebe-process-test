@@ -1,6 +1,6 @@
 package io.camunda.testing.assertions;
 
-import static io.camunda.testing.assertions.ProcessInstanceAssertions.assertThat;
+import static io.camunda.testing.assertions.BpmnAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;

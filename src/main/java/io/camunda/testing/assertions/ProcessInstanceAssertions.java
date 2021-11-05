@@ -24,18 +24,10 @@ public class ProcessInstanceAssertions
 
   private RecordStreamSource recordStreamSource;
 
-  public ProcessInstanceAssertions(final ProcessInstanceEvent actual) {
+  public ProcessInstanceAssertions(final ProcessInstanceEvent actual,
+      final RecordStreamSource recordStreamSource) {
     super(actual, ProcessInstanceAssertions.class);
-    this.recordStreamSource = BpmnAssertions.recordStreamSource.get();
-    if (recordStreamSource == null) {
-      failWithMessage(
-          "No RecordStreamSource is set. Please use the @ZeebeAssertions "
-              + "extenstion and declare a RecordStreamSource field");
-    }
-  }
-
-  public static ProcessInstanceAssertions assertThat(final ProcessInstanceEvent actual) {
-    return new ProcessInstanceAssertions(actual);
+    this.recordStreamSource = recordStreamSource;
   }
 
   /**
