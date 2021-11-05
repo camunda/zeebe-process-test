@@ -51,6 +51,27 @@ public class ProcessInstanceAssertions
   }
 
   /**
+   * Verifies the expectation that the process instance is active.
+   *
+   * @return this {@link ProcessInstanceAssertions}
+   */
+  public ProcessInstanceAssertions isActive() {
+    final boolean isActive =
+        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withBpmnElementType(BpmnElementType.PROCESS)
+            .stream()
+            .noneMatch(record -> record.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED
+                || record.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED);
+
+    if (!isActive) {
+      failWithMessage("Process with key %s is not active", actual.getProcessInstanceKey());
+    }
+
+    return this;
+  }
+
+  /**
    * Verifies the expectation that the process instance is completed.
    *
    * @return this {@link ProcessInstanceAssertions}

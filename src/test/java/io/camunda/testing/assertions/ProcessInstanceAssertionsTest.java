@@ -58,6 +58,20 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
+    public void testProcessInstanceIsActive() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // then
+      assertThat(instanceEvent).isActive();
+    }
+
+    @Test
     public void testProcessInstanceIsCompleted() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
@@ -268,7 +282,7 @@ class ProcessInstanceAssertionsTest {
     private RecordStreamSource recordStreamSource;
 
     @Test
-    public void testProcessInstanceIsNotStarted() {
+    public void testProcessInstanceIsStartedError() {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent mockInstanceEvent = mock(ProcessInstanceEvent.class);
@@ -298,6 +312,23 @@ class ProcessInstanceAssertionsTest {
       assertThatThrownBy(() -> assertThat(mockInstanceEvent).isStarted())
           .isInstanceOf(AssertionError.class)
           .hasMessage("Process with key -1 was not started");
+    }
+
+    @Test
+    public void testProcessInstanceIsActiveError() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+
+      // when
+      completeTask(ELEMENT_ID);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).isActive())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s is not active", instanceEvent.getProcessInstanceKey());
     }
 
     @Test
