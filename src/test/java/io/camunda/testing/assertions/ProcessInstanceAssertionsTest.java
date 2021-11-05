@@ -99,7 +99,7 @@ class ProcessInstanceAssertionsTest {
       completeTask(ELEMENT_ID);
 
       // then
-      assertThat(instanceEvent).hasPassed(ELEMENT_ID);
+      assertThat(instanceEvent).hasPassedElement(ELEMENT_ID);
     }
 
     @Test
@@ -113,7 +113,7 @@ class ProcessInstanceAssertionsTest {
           startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // then
-      assertThat(instanceEvent).hasNotPassed(ELEMENT_ID);
+      assertThat(instanceEvent).hasNotPassedElement(ELEMENT_ID);
     }
 
     @Test
@@ -131,7 +131,7 @@ class ProcessInstanceAssertionsTest {
       }
 
       // then
-      assertThat(instanceEvent).hasPassed(ELEMENT_ID, totalLoops);
+      assertThat(instanceEvent).hasPassedElement(ELEMENT_ID, totalLoops);
     }
 
     @Test
@@ -313,7 +313,7 @@ class ProcessInstanceAssertionsTest {
           startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).hasPassed(ELEMENT_ID))
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasPassedElement(ELEMENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage("Expected element with id %s to be passed 1 times", ELEMENT_ID);
     }
@@ -329,7 +329,7 @@ class ProcessInstanceAssertionsTest {
       completeTask(ELEMENT_ID);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).hasNotPassed(ELEMENT_ID))
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasNotPassedElement(ELEMENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage("Expected element with id %s to be passed 0 times", ELEMENT_ID);
     }

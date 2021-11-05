@@ -97,8 +97,8 @@ public class ProcessInstanceAssertions
    * @param elementId The id of the element
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions hasPassed(final String elementId) {
-    return hasPassed(elementId, 1);
+  public ProcessInstanceAssertions hasPassedElement(final String elementId) {
+    return hasPassedElement(elementId, 1);
   }
 
   /**
@@ -108,8 +108,8 @@ public class ProcessInstanceAssertions
    * @param elementId The id of the element
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions hasNotPassed(final String elementId) {
-    return hasPassed(elementId, 0);
+  public ProcessInstanceAssertions hasNotPassedElement(final String elementId) {
+    return hasPassedElement(elementId, 0);
   }
 
   /**
@@ -120,7 +120,7 @@ public class ProcessInstanceAssertions
    * @param times The amount of times the element should be passed
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions hasPassed(final String elementId, final int times) {
+  public ProcessInstanceAssertions hasPassedElement(final String elementId, final int times) {
     final long count =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
             .withProcessInstanceKey(actual.getProcessInstanceKey()).withElementId(elementId)
