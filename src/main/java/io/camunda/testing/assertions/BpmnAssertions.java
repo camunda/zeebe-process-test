@@ -11,6 +11,10 @@ public abstract class BpmnAssertions {
     BpmnAssertions.recordStreamSource.set(recordStreamSource);
   }
 
+  public static void tearDown() {
+    recordStreamSource.remove();
+  }
+
   public static ProcessInstanceAssertions assertThat(final ProcessInstanceEvent instanceEvent) {
     return new ProcessInstanceAssertions(instanceEvent, getRecordStreamSource());
   }
