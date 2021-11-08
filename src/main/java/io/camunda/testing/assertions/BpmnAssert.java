@@ -1,6 +1,7 @@
 package io.camunda.testing.assertions;
 
 import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import org.camunda.community.eze.RecordStreamSource;
 
@@ -22,6 +23,10 @@ public abstract class BpmnAssert {
 
   public static JobAssert assertThat(final ActivatedJob activatedJob) {
     return new JobAssert(activatedJob);
+  }
+
+  public static DeploymentAssert assertThat(final DeploymentEvent deploymentEvent) {
+    return new DeploymentAssert(deploymentEvent, getRecordStreamSource());
   }
 
   private static RecordStreamSource getRecordStreamSource() {
