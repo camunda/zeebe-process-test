@@ -10,13 +10,16 @@ import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
+import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.SoftAssertions;
 import org.camunda.community.eze.RecordStreamSource;
 
@@ -387,5 +390,35 @@ public class ProcessInstanceAssertions
               }
             });
     return openMessageSubscriptions;
+  }
+
+  public ProcessInstanceAssertions hasVariable(final String name) {
+    extractVariables()
+        .withFailMessage(
+            "Process with key %s does not contain variable with name %s",
+            actual.getProcessInstanceKey(), name)
+        .containsKey(name);
+    return this;
+  }
+
+  public ProcessInstanceAssertions hasVariableWithValue(final String name, final String value) {
+    extractVariables()
+        .withFailMessage(
+            "Process with key %s does not contain variable with name %s and value %s",
+            actual.getProcessInstanceKey(), name, value)
+        .containsEntry(name, value);
+    return this;
+  }
+
+  public MapAssert<String, String> extractVariables() {
+    final Map<String, String> variables =
+        StreamFilter.variable(recordStreamSource)
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .stream()
+            .map(Record::getValue)
+            .collect(Collectors.toMap(VariableRecordValue::getName, VariableRecordValue::getValue));
+
+    return new MapAssert<>(variables);
   }
 }

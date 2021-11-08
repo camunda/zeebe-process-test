@@ -15,6 +15,7 @@ import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.camunda.community.eze.RecordStreamSource;
 import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
@@ -305,6 +306,34 @@ class ProcessInstanceAssertionsTest {
 
       // then
       assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME);
+    }
+
+    @Test
+    public void testProcessInstanceHasVariable() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // then
+      assertThat(instanceEvent).hasVariable(VAR_TOTAL_LOOPS);
+    }
+
+    @Test
+    public void testProcessInstanceHasVariableWithValue() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // then
+      assertThat(instanceEvent).hasVariableWithValue(VAR_TOTAL_LOOPS, "1");
     }
   }
 
@@ -678,6 +707,44 @@ class ProcessInstanceAssertionsTest {
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("not to contain", MESSAGE_NAME);
+    }
+
+    @Test
+    public void testProcessInstanceHasVariableFailure() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final String variable = "variable";
+
+      // when
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_INSTANCE_ID);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasVariable(variable))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s does not contain variable with name %s",
+              instanceEvent.getProcessInstanceKey(), variable);
+    }
+
+    @Test
+    public void testProcessInstanceHasVariableWithValueFailure() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final String variable = "variable";
+      final String variableValue = "wrongvalue";
+      final Map<String, Object> variables = Collections.singletonMap(variable, "value");
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // then
+      assertThatThrownBy(
+              () -> assertThat(instanceEvent).hasVariableWithValue(variable, variableValue))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s does not contain variable with name %s and value %s",
+              instanceEvent.getProcessInstanceKey(), variable, variableValue);
     }
   }
 
