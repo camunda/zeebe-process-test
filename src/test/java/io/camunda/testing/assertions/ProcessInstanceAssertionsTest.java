@@ -471,8 +471,9 @@ class ProcessInstanceAssertionsTest {
                       .hasPassedElementInOrder("endevent", ELEMENT_ID, "startevent"))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
-              "\nexpected: [\"endevent\", \"servicetask\", \"startevent\"]\n "
-                  + "but was: [\"startevent\", \"servicetask\", \"endevent\"]");
+              "[Ordered elements] \n"
+                  + "expected: [\"endevent\", \"servicetask\", \"startevent\"]\n"
+                  + " but was: [\"startevent\", \"servicetask\", \"endevent\"]");
     }
 
     @Test
@@ -493,7 +494,8 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingAtMultipleElementsFailure() throws InterruptedException {
+    public void testProcessInstanceIsWaitingAtMultipleElementsFailure()
+        throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
@@ -515,7 +517,8 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceWaitingAtNonExistingElementFailure() throws InterruptedException {
+    public void testProcessInstanceWaitingAtNonExistingElementFailure()
+        throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);

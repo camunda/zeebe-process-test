@@ -46,9 +46,9 @@ public class ProcessInstanceAssertions
             .withBpmnElementType(BpmnElementType.PROCESS).stream()
             .findFirst();
 
-    if (!processInstanceRecord.isPresent()) {
-      failWithMessage("Process with key %s was not started", actual.getProcessInstanceKey());
-    }
+    assertThat(processInstanceRecord.isPresent())
+        .withFailMessage("Process with key %s was not started", actual.getProcessInstanceKey())
+        .isTrue();
 
     return this;
   }
@@ -68,9 +68,9 @@ public class ProcessInstanceAssertions
                     record.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED
                         || record.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED);
 
-    if (!isActive) {
-      failWithMessage("Process with key %s is not active", actual.getProcessInstanceKey());
-    }
+    assertThat(isActive)
+        .withFailMessage("Process with key %s is not active", actual.getProcessInstanceKey())
+        .isTrue();
 
     return this;
   }
@@ -88,9 +88,9 @@ public class ProcessInstanceAssertions
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED).stream()
             .findFirst();
 
-    if (!processInstanceRecord.isPresent()) {
-      failWithMessage("Process with key %s was not completed", actual.getProcessInstanceKey());
-    }
+    assertThat(processInstanceRecord.isPresent())
+        .withFailMessage("Process with key %s was not completed", actual.getProcessInstanceKey())
+        .isTrue();
 
     return this;
   }
@@ -108,9 +108,9 @@ public class ProcessInstanceAssertions
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED).stream()
             .findFirst();
 
-    if (processInstanceRecord.isPresent()) {
-      failWithMessage("Process with key %s was completed", actual.getProcessInstanceKey());
-    }
+    assertThat(processInstanceRecord.isPresent())
+        .withFailMessage("Process with key %s was completed", actual.getProcessInstanceKey())
+        .isFalse();
 
     return this;
   }
@@ -128,9 +128,9 @@ public class ProcessInstanceAssertions
             .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED).stream()
             .findFirst();
 
-    if (!processInstanceRecord.isPresent()) {
-      failWithMessage("Process with key %s was not terminated", actual.getProcessInstanceKey());
-    }
+    assertThat(processInstanceRecord.isPresent())
+        .withFailMessage("Process with key %s was not terminated", actual.getProcessInstanceKey())
+        .isTrue();
 
     return this;
   }
@@ -148,9 +148,9 @@ public class ProcessInstanceAssertions
             .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED).stream()
             .findFirst();
 
-    if (processInstanceRecord.isPresent()) {
-      failWithMessage("Process with key %s was terminated", actual.getProcessInstanceKey());
-    }
+    assertThat(processInstanceRecord.isPresent())
+        .withFailMessage("Process with key %s was terminated", actual.getProcessInstanceKey())
+        .isFalse();
 
     return this;
   }
@@ -192,10 +192,9 @@ public class ProcessInstanceAssertions
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED).stream()
             .count();
 
-    if (count != times) {
-      failWithActualExpectedAndMessage(
-          count, times, "Expected element with id %s to be passed %s times", elementId, times);
-    }
+    assertThat(count)
+        .withFailMessage("Expected element with id %s to be passed %s times", elementId, times)
+        .isEqualTo(times);
 
     return this;
   }
@@ -215,7 +214,9 @@ public class ProcessInstanceAssertions
             .map(ProcessInstanceRecordValue::getElementId)
             .collect(Collectors.toList());
 
-    assertThat(foundElementRecords).isEqualTo(Arrays.asList(elementIds));
+    assertThat(foundElementRecords)
+        .describedAs("Ordered elements")
+        .isEqualTo(Arrays.asList(elementIds));
 
     return this;
   }
@@ -233,13 +234,12 @@ public class ProcessInstanceAssertions
             .filter(((Predicate<String>) this::isWaitingAtElement).negate())
             .collect(Collectors.toList());
 
-    if (!notActivatedElements.isEmpty()) {
-      final String errorMessage =
-          String.format(
-              "Process with key %s is not waiting at element(s) with id(s) %s",
-              actual.getProcessInstanceKey(), String.join(", ", notActivatedElements));
-      failWithMessage(errorMessage);
-    }
+    assertThat(notActivatedElements.isEmpty())
+        .withFailMessage(
+            "Process with key %s is not waiting at element(s) with id(s) %s",
+            actual.getProcessInstanceKey(), String.join(", ", notActivatedElements))
+        .isTrue();
+
     return this;
   }
 
@@ -254,24 +254,23 @@ public class ProcessInstanceAssertions
     final List<String> activatedElements =
         Arrays.stream(elementIds).filter(this::isWaitingAtElement).collect(Collectors.toList());
 
-    if (!activatedElements.isEmpty()) {
-      final String errorMessage =
-          String.format(
-              "Process with key %s is waiting at element(s) with id(s) %s",
-              actual.getProcessInstanceKey(), String.join(", ", activatedElements));
-      failWithMessage(errorMessage);
-    }
+    assertThat(activatedElements.isEmpty())
+        .withFailMessage(
+            "Process with key %s is waiting at element(s) with id(s) %s",
+            actual.getProcessInstanceKey(), String.join(", ", activatedElements))
+        .isTrue();
+
     return this;
   }
 
-  // TODO if waiting at any element with this id returns true. Maybe add a counter so we can check
-  // we are waiting at multiple elements with the same id
   /**
    * Checks if the process instance is currently waiting at an element with a specific element id.
    *
    * @param elementId The id of the element
    * @return boolean indicating whether the process instance is waiting at the element
    */
+  // TODO if waiting at any element with this id returns true. Maybe add a counter so we can check
+  // we are waiting at multiple elements with the same id
   private boolean isWaitingAtElement(final String elementId) {
     final Map<Long, List<Record<ProcessInstanceRecordValue>>> recordsMap =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
@@ -323,19 +322,16 @@ public class ProcessInstanceAssertions
               }
             });
 
-    if (!wrongfullyWaitingElementIds.isEmpty()) {
-      final String errorMessage =
-          String.format(
-              "Process with key %s is waiting at element(s) with id(s) %s",
-              actual.getProcessInstanceKey(), String.join(", ", wrongfullyWaitingElementIds));
-      failWithMessage(errorMessage);
-    } else if (!wrongfullyNotWaitingElementIds.isEmpty()) {
-      final String errorMessage =
-          String.format(
-              "Process with key %s is not waiting at element(s) with id(s) %s",
-              actual.getProcessInstanceKey(), String.join(", ", wrongfullyNotWaitingElementIds));
-      failWithMessage(errorMessage);
-    }
+    assertThat(wrongfullyWaitingElementIds.isEmpty())
+        .withFailMessage(
+            "Process with key %s is waiting at element(s) with id(s) %s",
+            actual.getProcessInstanceKey(), String.join(", ", wrongfullyWaitingElementIds))
+        .isTrue();
+    assertThat(wrongfullyNotWaitingElementIds.isEmpty())
+        .withFailMessage(
+            "Process with key %s is not waiting at element(s) with id(s) %s",
+            actual.getProcessInstanceKey(), String.join(", ", wrongfullyNotWaitingElementIds))
+        .isTrue();
 
     return this;
   }
@@ -353,14 +349,12 @@ public class ProcessInstanceAssertions
             .filter(((Predicate<String>) this::isWaitingForMessage).negate())
             .collect(Collectors.toList());
 
-    if (!notCreatedProcessMessageSubscriptions.isEmpty()) {
-      final String errorMessage =
-          String.format(
-              "Process with key %s is not waiting for message(s) with name(s) %s",
-              actual.getProcessInstanceKey(),
-              String.join(", ", notCreatedProcessMessageSubscriptions));
-      failWithMessage(errorMessage);
-    }
+    assertThat(notCreatedProcessMessageSubscriptions.isEmpty())
+        .withFailMessage(
+            "Process with key %s is not waiting for message(s) with name(s) %s",
+            actual.getProcessInstanceKey(),
+            String.join(", ", notCreatedProcessMessageSubscriptions))
+        .isTrue();
 
     return this;
   }
@@ -376,14 +370,11 @@ public class ProcessInstanceAssertions
     final List<String> createdProcessMessageSubscriptions =
         Arrays.stream(messageNames).filter(this::isWaitingForMessage).collect(Collectors.toList());
 
-    if (!createdProcessMessageSubscriptions.isEmpty()) {
-      final String errorMessage =
-          String.format(
-              "Process with key %s is waiting for message(s) with name(s) %s",
-              actual.getProcessInstanceKey(),
-              String.join(", ", createdProcessMessageSubscriptions));
-      failWithMessage(errorMessage);
-    }
+    assertThat(createdProcessMessageSubscriptions.isEmpty())
+        .withFailMessage(
+            "Process with key %s is waiting for message(s) with name(s) %s",
+            actual.getProcessInstanceKey(), String.join(", ", createdProcessMessageSubscriptions))
+        .isTrue();
 
     return this;
   }
