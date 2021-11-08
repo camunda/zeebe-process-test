@@ -43,7 +43,8 @@ public class ProcessInstanceAssertions
     final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
             .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS).stream()
+            .withBpmnElementType(BpmnElementType.PROCESS)
+            .stream()
             .findFirst();
 
     assertThat(processInstanceRecord.isPresent())
@@ -62,7 +63,8 @@ public class ProcessInstanceAssertions
     final boolean isActive =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
             .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS).stream()
+            .withBpmnElementType(BpmnElementType.PROCESS)
+            .stream()
             .noneMatch(
                 record ->
                     record.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED
@@ -85,7 +87,8 @@ public class ProcessInstanceAssertions
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
             .withProcessInstanceKey(actual.getProcessInstanceKey())
             .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED).stream()
+            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
+            .stream()
             .findFirst();
 
     assertThat(processInstanceRecord.isPresent())
@@ -105,7 +108,8 @@ public class ProcessInstanceAssertions
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
             .withProcessInstanceKey(actual.getProcessInstanceKey())
             .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED).stream()
+            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
+            .stream()
             .findFirst();
 
     assertThat(processInstanceRecord.isPresent())
@@ -125,7 +129,8 @@ public class ProcessInstanceAssertions
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
             .withProcessInstanceKey(actual.getProcessInstanceKey())
             .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED).stream()
+            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
+            .stream()
             .findFirst();
 
     assertThat(processInstanceRecord.isPresent())
@@ -145,7 +150,8 @@ public class ProcessInstanceAssertions
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
             .withProcessInstanceKey(actual.getProcessInstanceKey())
             .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED).stream()
+            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
+            .stream()
             .findFirst();
 
     assertThat(processInstanceRecord.isPresent())
@@ -188,8 +194,10 @@ public class ProcessInstanceAssertions
   public ProcessInstanceAssertions hasPassedElement(final String elementId, final int times) {
     final long count =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey()).withElementId(elementId)
-            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED).stream()
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withElementId(elementId)
+            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
+            .stream()
             .count();
 
     assertThat(count)
@@ -208,8 +216,10 @@ public class ProcessInstanceAssertions
   public ProcessInstanceAssertions hasPassedElementInOrder(final String... elementIds) {
     final List<String> foundElementRecords =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey()).withElementIdIn(elementIds)
-            .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING).stream()
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withElementIdIn(elementIds)
+            .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING)
+            .stream()
             .map(Record::getValue)
             .map(ProcessInstanceRecordValue::getElementId)
             .collect(Collectors.toList());
@@ -274,7 +284,8 @@ public class ProcessInstanceAssertions
   private boolean isWaitingAtElement(final String elementId) {
     final Map<Long, List<Record<ProcessInstanceRecordValue>>> recordsMap =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey()).withElementId(elementId)
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withElementId(elementId)
             .stream()
             .collect(Collectors.groupingBy(record -> record.getValue().getFlowScopeKey()));
 
@@ -308,7 +319,8 @@ public class ProcessInstanceAssertions
     StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
         .withProcessInstanceKey(actual.getProcessInstanceKey())
         .withoutBpmnElementType(BpmnElementType.PROCESS)
-        .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING).stream()
+        .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING)
+        .stream()
         .map(Record::getValue)
         .map(ProcessInstanceRecordValue::getElementId)
         .forEach(
@@ -389,7 +401,8 @@ public class ProcessInstanceAssertions
     final Map<Long, List<Record<ProcessMessageSubscriptionRecordValue>>> recordsMap =
         StreamFilter.processMessageSubscription(
                 recordStreamSource.processMessageSubscriptionRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey()).withMessageName(messageName)
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withMessageName(messageName)
             .stream()
             .collect(Collectors.groupingBy(record -> record.getValue().getElementInstanceKey()));
 

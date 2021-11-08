@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.camunda</groupId>
@@ -12,25 +10,36 @@
   <name>Camunda Cloud Testing</name>
 
   <scm>
-    <url>https://github.com/camunda-cloud/camunda-cloud-testing</url>
     <connection>scm:git:git@github.com:camunda-cloud/camunda-cloud-testing.git</connection>
-    <developerConnection>scm:git:git@github.com:camunda-cloud/camunda-cloud-testing.git
-    </developerConnection>
+    <developerConnection>scm:git:git@github.com:camunda-cloud/camunda-cloud-testing.git</developerConnection>
     <tag>HEAD</tag>
+    <url>https://github.com/camunda-cloud/camunda-cloud-testing</url>
   </scm>
 
   <properties>
+    <dependency.assertj.version>3.21.0</dependency.assertj.version>
+    <dependency.errorprone.version>2.5.1</dependency.errorprone.version>
+    <dependency.eze.version>0.4.0</dependency.eze.version>
+    <dependency.guava.version>30.1.1-jre</dependency.guava.version>
+    <dependency.jackson.version>2.12.5</dependency.jackson.version>
+    <dependency.jna.version>5.8.0</dependency.jna.version>
+    <dependency.junit.version>5.8.1</dependency.junit.version>
+    <dependency.mockito.version>4.0.0</dependency.mockito.version>
+    <dependency.netty.version>4.1.68.Final</dependency.netty.version>
+    <dependency.protobuf.version>3.18.0</dependency.protobuf.version>
+    <dependency.scala.version>2.13.6</dependency.scala.version>
+    <dependency.slf4j.version>1.7.32</dependency.slf4j.version>
+
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
-    <assertj.version>3.21.0</assertj.version>
-    <junit.version>5.8.1</junit.version>
-    <eze.version>0.4.0</eze.version>
-    <netty.version>4.1.68.Final</netty.version>
 
-    <plugin.version.surefire>3.0.0-M5</plugin.version.surefire>
-    <plugin.version.javadoc>3.3.1</plugin.version.javadoc>
-    <plugin.version.jacoco>0.8.7</plugin.version.jacoco>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
+    <plugin.version.googlejavaformat>1.12.0</plugin.version.googlejavaformat>
+    <plugin.version.jacoco>0.8.7</plugin.version.jacoco>
+    <plugin.version.javadoc>3.3.1</plugin.version.javadoc>
+    <plugin.version.maven-enforcer>3.0.0</plugin.version.maven-enforcer>
+    <plugin.version.spotless>2.17.3</plugin.version.spotless>
+    <plugin.version.surefire>3.0.0-M5</plugin.version.surefire>
   </properties>
 
   <dependencyManagement>
@@ -38,7 +47,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>${junit.version}</version>
+        <version>${dependency.junit.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -46,69 +55,69 @@
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>${assertj.version}</version>
+        <version>${dependency.assertj.version}</version>
       </dependency>
 
       <!-- Only for dependency convergence issues -->
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.18.0</version>
+        <version>${dependency.protobuf.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>30.1.1-jre</version>
+        <version>${dependency.guava.version}</version>
       </dependency>
       <dependency>
         <groupId>net.java.dev.jna</groupId>
         <artifactId>jna</artifactId>
-        <version>5.8.0</version>
+        <version>${dependency.jna.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.32</version>
+        <version>${dependency.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.5.1</version>
+        <version>${dependency.errorprone.version}</version>
       </dependency>
       <dependency>
         <groupId>org.scala-lang</groupId>
         <artifactId>scala-library</artifactId>
-        <version>2.13.6</version>
+        <version>${dependency.scala.version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-handler</artifactId>
-        <version>${netty.version}</version>
+        <version>${dependency.netty.version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-common</artifactId>
-        <version>${netty.version}</version>
+        <version>${dependency.netty.version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-buffer</artifactId>
-        <version>${netty.version}</version>
+        <version>${dependency.netty.version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport</artifactId>
-        <version>${netty.version}</version>
+        <version>${dependency.netty.version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec</artifactId>
-        <version>${netty.version}</version>
+        <version>${dependency.netty.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.12.5</version>
+        <version>${dependency.jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
@@ -120,7 +129,7 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>4.0.0</version>
+        <version>${dependency.mockito.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -137,7 +146,7 @@
     <dependency>
       <groupId>org.camunda.community</groupId>
       <artifactId>eze-junit-extension</artifactId>
-      <version>${eze.version}</version>
+      <version>${dependency.eze.version}</version>
     </dependency>
     <!-- Test scope-->
     <dependency>
@@ -152,18 +161,18 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>${plugin.version.maven-enforcer}</version>
         <configuration>
           <rules>
-            <dependencyConvergence/>
+            <dependencyConvergence />
           </rules>
         </configuration>
         <executions>
           <execution>
-            <phase>verify</phase>
             <goals>
               <goal>enforce</goal>
             </goals>
+            <phase>verify</phase>
           </execution>
         </executions>
       </plugin>
@@ -176,14 +185,30 @@
 
       <!-- Google code format plugin -->
       <plugin>
-        <groupId>com.coveo</groupId>
-        <artifactId>fmt-maven-plugin</artifactId>
-        <version>${plugin.version.fmt}</version>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>${plugin.version.spotless}</version>
+        <configuration>
+          <java>
+            <googleJavaFormat>
+              <version>${plugin.version.googlejavaformat}</version>
+              <style>GOOGLE</style>
+            </googleJavaFormat>
+          </java>
+          <pom>
+            <sortPom>
+              <expandEmptyElements>false</expandEmptyElements>
+              <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+              <sortProperties>true</sortProperties>
+            </sortPom>
+          </pom>
+        </configuration>
         <executions>
           <execution>
             <goals>
-              <goal>format</goal>
+              <goal>apply</goal>
             </goals>
+            <phase>compile</phase>
           </execution>
         </executions>
       </plugin>
@@ -202,10 +227,10 @@
           </execution>
           <execution>
             <id>coverage-report</id>
-            <phase>post-integration-test</phase>
             <goals>
               <goal>report</goal>
             </goals>
+            <phase>post-integration-test</phase>
           </execution>
           <!-- Threshold -->
         </executions>
