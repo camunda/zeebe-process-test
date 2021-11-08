@@ -309,7 +309,7 @@ class ProcessInstanceAssertionsTest {
     private RecordStreamSource recordStreamSource;
 
     @Test
-    public void testProcessInstanceIsStartedError() {
+    public void testProcessInstanceIsStartedFailure() {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent mockInstanceEvent = mock(ProcessInstanceEvent.class);
@@ -342,7 +342,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsActiveError() throws InterruptedException {
+    public void testProcessInstanceIsActiveFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
@@ -358,7 +358,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsCompletedError() throws InterruptedException {
+    public void testProcessInstanceIsCompletedFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
 
@@ -374,7 +374,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotCompletedError() throws InterruptedException {
+    public void testProcessInstanceIsNotCompletedFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
@@ -390,7 +390,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsTerminatedError() throws InterruptedException {
+    public void testProcessInstanceIsTerminatedFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
 
@@ -406,7 +406,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotTerminatedError() throws InterruptedException {
+    public void testProcessInstanceIsNotTerminatedFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
@@ -423,7 +423,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedElementError() throws InterruptedException {
+    public void testProcessInstanceHasPassedElementFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
 
@@ -438,7 +438,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceHasNotPassedElementError() throws InterruptedException {
+    public void testProcessInstanceHasNotPassedElementFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
@@ -454,7 +454,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedElementsInOrderError() throws InterruptedException {
+    public void testProcessInstanceHasPassedElementsInOrderFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
@@ -476,7 +476,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingAtError() throws InterruptedException {
+    public void testProcessInstanceIsWaitingAtFailure() throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
@@ -493,7 +493,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingAtMultipleElementsError() throws InterruptedException {
+    public void testProcessInstanceIsWaitingAtMultipleElementsFailure() throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
@@ -515,7 +515,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceWaitingAtNonExistingElementError() throws InterruptedException {
+    public void testProcessInstanceWaitingAtNonExistingElementFailure() throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
@@ -532,7 +532,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtError() throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingAtFailure() throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
 
@@ -548,7 +548,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtMulitpleElementsError()
+    public void testProcessInstanceIsNotWaitingAtMulitpleElementsFailure()
         throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
@@ -568,7 +568,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElementsError_tooManyElements()
+    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooManyElements()
         throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
@@ -589,7 +589,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElementsError_tooLittleElements()
+    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooLittleElements()
         throws InterruptedException {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
@@ -615,7 +615,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingForMessageError() throws InterruptedException {
+    public void testProcessInstanceIsWaitingForMessageFailure() throws InterruptedException {
       // given
       deployProcess(MESSAGE_EVENT_BPMN);
       final String correlationKey = "key";
@@ -636,7 +636,7 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingForMessageError() throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingForMessageFailure() throws InterruptedException {
       // given
       deployProcess(MESSAGE_EVENT_BPMN);
       final String correlationKey = "key";
