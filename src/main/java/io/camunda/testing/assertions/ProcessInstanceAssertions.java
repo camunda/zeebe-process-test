@@ -40,14 +40,16 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isStarted() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
+    final boolean isStarted =
         StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
             .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
             .withBpmnElementType(BpmnElementType.PROCESS)
             .stream()
-            .findFirst();
+            .findFirst()
+            .isPresent();
 
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isStarted)
         .withFailMessage("Process with key %s was not started", actual.getProcessInstanceKey())
         .isTrue();
 
@@ -83,18 +85,9 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isCompleted() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
-            .stream()
-            .findFirst();
-
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isCompleted(actual.getProcessInstanceKey()))
         .withFailMessage("Process with key %s was not completed", actual.getProcessInstanceKey())
         .isTrue();
-
     return this;
   }
 
@@ -104,19 +97,25 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isNotCompleted() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
-            .stream()
-            .findFirst();
-
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isCompleted(actual.getProcessInstanceKey()))
         .withFailMessage("Process with key %s was completed", actual.getProcessInstanceKey())
         .isFalse();
-
     return this;
+  }
+
+  /**
+   * Checks if a process instance has been completed
+   *
+   * @param processInstanceKey the key of the process instance
+   * @return boolean indicating whether the process instance has been completed
+   */
+  private boolean isCompleted(final long processInstanceKey) {
+    return StreamFilter.processInstance(recordStreamSource)
+        .withProcessInstanceKey(processInstanceKey)
+        .withBpmnElementType(BpmnElementType.PROCESS)
+        .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED).stream()
+        .findFirst()
+        .isPresent();
   }
 
   /**
@@ -125,18 +124,9 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isTerminated() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
-            .stream()
-            .findFirst();
-
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isTerminated(actual.getProcessInstanceKey()))
         .withFailMessage("Process with key %s was not terminated", actual.getProcessInstanceKey())
         .isTrue();
-
     return this;
   }
 
@@ -146,19 +136,25 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isNotTerminated() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
-            .stream()
-            .findFirst();
-
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isTerminated(actual.getProcessInstanceKey()))
         .withFailMessage("Process with key %s was terminated", actual.getProcessInstanceKey())
         .isFalse();
-
     return this;
+  }
+
+  /**
+   * Checks if a process instance has been terminated
+   *
+   * @param processInstanceKey the key of the process instance
+   * @return boolean indicating whether the process instance has been terminated
+   */
+  private boolean isTerminated(final long processInstanceKey) {
+    return StreamFilter.processInstance(recordStreamSource)
+        .withProcessInstanceKey(processInstanceKey)
+        .withBpmnElementType(BpmnElementType.PROCESS)
+        .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED).stream()
+        .findFirst()
+        .isPresent();
   }
 
   /**
