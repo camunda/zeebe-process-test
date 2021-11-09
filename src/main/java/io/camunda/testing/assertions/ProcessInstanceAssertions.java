@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.Record;
-import io.camunda.zeebe.protocol.record.intent.Intent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
@@ -14,9 +13,6 @@ import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordVa
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
@@ -232,20 +228,22 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance is currently waiting at one or more
    * specified elements.
    *
-   * @param elementIds The ids of the elements
+   * @param elementIdsVarArg The ids of the elements
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isWaitingAtElement(final String... elementIds) {
-    final List<String> notActivatedElements =
-        Arrays.stream(elementIds)
-            .filter(((Predicate<String>) this::isWaitingAtElement).negate())
-            .collect(Collectors.toList());
+  public ProcessInstanceAssertions isWaitingAtElement(final String... elementIdsVarArg) {
+    final List<String> elementIds = Arrays.asList(elementIdsVarArg);
+    final List<String> elementsInWaitState = getElementsInWaitState();
 
-    assertThat(notActivatedElements.isEmpty())
+    final List<String> differences = elementIds.stream()
+        .filter(element -> !elementsInWaitState.contains(element))
+        .collect(Collectors.toList());
+
+    assertThat(elementsInWaitState)
         .withFailMessage(
             "Process with key %s is not waiting at element(s) with id(s) %s",
-            actual.getProcessInstanceKey(), String.join(", ", notActivatedElements))
-        .isTrue();
+            actual.getProcessInstanceKey(), String.join(", ", differences))
+        .containsAll(elementIds);
 
     return this;
   }
@@ -254,62 +252,59 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance is currently not waiting at one or more
    * specified elements.
    *
-   * @param elementIds The ids of the elements
+   * @param elementIdsVarArg The ids of the elements
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isNotWaitingAtElement(final String... elementIds) {
-    final List<String> activatedElements =
-        Arrays.stream(elementIds).filter(this::isWaitingAtElement).collect(Collectors.toList());
+  public ProcessInstanceAssertions isNotWaitingAtElement(final String... elementIdsVarArg) {
+    final List<String> elementIds = Arrays.asList(elementIdsVarArg);
+    final List<String> elementsInWaitState = getElementsInWaitState();
 
-    assertThat(activatedElements.isEmpty())
+    final List<String> similarities = elementIds.stream()
+        .filter(elementsInWaitState::contains)
+        .collect(Collectors.toList());
+
+    assertThat(elementsInWaitState)
         .withFailMessage(
             "Process with key %s is waiting at element(s) with id(s) %s",
-            actual.getProcessInstanceKey(), String.join(", ", activatedElements))
-        .isTrue();
+            actual.getProcessInstanceKey(), String.join(", ", similarities))
+        .doesNotContainAnyElementsOf(elementIds);
 
     return this;
   }
 
   /**
-   * Checks if the process instance is currently waiting at an element with a specific element id.
+   * Gets the elements that are currently in a waiting state.
    *
-   * @param elementId The id of the element
-   * @return boolean indicating whether the process instance is waiting at the element
+   * @return list containing the element ids of the elements in a waiting state
    */
-  // TODO if waiting at any element with this id returns true. Maybe add a counter so we can check
-  // we are waiting at multiple elements with the same id
-  private boolean isWaitingAtElement(final String elementId) {
-    final Map<Long, List<Record<ProcessInstanceRecordValue>>> recordsMap =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withElementId(elementId)
-            .stream()
-            .collect(Collectors.groupingBy(record -> record.getValue().getFlowScopeKey()));
-
-    if (recordsMap.isEmpty()) {
-      return false;
-    }
-
-    for (Entry<Long, List<Record<ProcessInstanceRecordValue>>> entry : recordsMap.entrySet()) {
-      final Record<ProcessInstanceRecordValue> lastRecord =
-          entry.getValue().get(entry.getValue().size() - 1);
-      if (lastRecord.getIntent() == ProcessInstanceIntent.ELEMENT_ACTIVATED) {
-        return true;
-      }
-    }
-
-    return false;
+  private List<String> getElementsInWaitState() {
+    final List<String> elementsInWaitState = new ArrayList<>();
+    StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withoutBpmnElementType(BpmnElementType.PROCESS)
+        .stream()
+        .collect(Collectors.toMap(
+            record -> String.format("%s-%s", record.getValue().getElementId(), record.getValue().getFlowScopeKey()),
+            record -> record,
+            (existing, replacement) -> replacement))
+        .forEach((key, record) -> {
+          if (record.getIntent().equals(ProcessInstanceIntent.ELEMENT_ACTIVATED)) {
+            elementsInWaitState.add(record.getValue().getElementId());
+          }
+        });
+    return elementsInWaitState;
   }
 
   /**
    * Verifies the expectation that the process instance is currently waiting at the specified
    * elements, and not at any other element.
    *
-   * @param elementIds The ids of the elements
+   * @param elementIdsVarArg The ids of the elements
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isWaitingExactlyAtElements(final String... elementIds) {
-    final List<String> shouldBeWaitingAt = Arrays.asList(elementIds);
+  public ProcessInstanceAssertions isWaitingExactlyAtElements(final String... elementIdsVarArg) {
+    final List<String> elementIds = Arrays.asList(elementIdsVarArg);
+    final List<String> elementsInWaitState = getElementsInWaitState();
     final List<String> wrongfullyWaitingElementIds = new ArrayList<>();
     final List<String> wrongfullyNotWaitingElementIds = new ArrayList<>();
 
@@ -322,8 +317,8 @@ public class ProcessInstanceAssertions
         .map(ProcessInstanceRecordValue::getElementId)
         .forEach(
             id -> {
-              final boolean shouldBeWaitingAtElement = shouldBeWaitingAt.contains(id);
-              final boolean isWaitingAtElement = isWaitingAtElement(id);
+              final boolean shouldBeWaitingAtElement = elementIds.contains(id);
+              final boolean isWaitingAtElement = elementsInWaitState.contains(id);
               if (shouldBeWaitingAtElement && !isWaitingAtElement) {
                 wrongfullyNotWaitingElementIds.add(id);
               } else if (!shouldBeWaitingAtElement && isWaitingAtElement) {
