@@ -494,9 +494,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement(SERVICETASK_1))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is not waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(), SERVICETASK_1);
+          .hasMessageContainingAll("to contain", SERVICETASK_1);
     }
 
     @Test
@@ -517,9 +515,7 @@ class ProcessInstanceAssertionsTest {
                   assertThat(instanceEvent)
                       .isWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is not waiting at element(s) with id(s) %s, %s, %s",
-              instanceEvent.getProcessInstanceKey(), SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
+          .hasMessageContainingAll("to contain:", SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
     }
 
     @Test
@@ -536,9 +532,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement(nonExistingTaskId))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is not waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(), nonExistingTaskId);
+          .hasMessageContainingAll("to contain", nonExistingTaskId);
     }
 
     @Test
@@ -552,9 +546,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAtElement(SERVICETASK_1))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(), SERVICETASK_1);
+          .hasMessageContainingAll("not to contain", SERVICETASK_1);
     }
 
     @Test
@@ -572,9 +564,7 @@ class ProcessInstanceAssertionsTest {
                   assertThat(instanceEvent)
                       .isNotWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is waiting at element(s) with id(s) %s, %s, %s",
-              instanceEvent.getProcessInstanceKey(), SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
+          .hasMessageContainingAll("not to contain", SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
     }
 
     @Test
@@ -669,9 +659,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingForMessage(MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is not waiting for message(s) with name(s) %s",
-              instanceEvent.getProcessInstanceKey(), MESSAGE_NAME);
+          .hasMessageContainingAll("to contain:", MESSAGE_NAME);
     }
 
     @Test
@@ -689,9 +677,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is waiting for message(s) with name(s) %s",
-              instanceEvent.getProcessInstanceKey(), MESSAGE_NAME);
+          .hasMessageContainingAll("not to contain", MESSAGE_NAME);
     }
   }
 

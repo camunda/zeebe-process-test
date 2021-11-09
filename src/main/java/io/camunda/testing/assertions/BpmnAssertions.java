@@ -11,7 +11,7 @@ public abstract class BpmnAssertions {
     BpmnAssertions.recordStreamSource.set(recordStreamSource);
   }
 
-  public static void tearDown() {
+  public static void reset() {
     recordStreamSource.remove();
   }
 

@@ -29,6 +29,6 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
 
   @Override
   public void afterEach(final ExtensionContext extensionContext) {
-    BpmnAssertions.tearDown();
+    BpmnAssertions.reset();
   }
 }
