@@ -1,6 +1,7 @@
 package io.camunda.testing.filters;
 
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -28,6 +29,12 @@ public class ProcessMessageSubscriptionRecordStreamFilter {
   public ProcessMessageSubscriptionRecordStreamFilter withMessageName(final String messageName) {
     return new ProcessMessageSubscriptionRecordStreamFilter(
         stream.filter(record -> record.getValue().getMessageName().equals(messageName)));
+  }
+
+  public ProcessMessageSubscriptionRecordStreamFilter withRejectionType(
+      final RejectionType rejectionType) {
+    return new ProcessMessageSubscriptionRecordStreamFilter(
+        stream.filter(record -> record.getRejectionType() == rejectionType));
   }
 
   public Stream<Record<ProcessMessageSubscriptionRecordValue>> stream() {

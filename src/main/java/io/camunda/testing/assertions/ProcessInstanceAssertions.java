@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
@@ -40,6 +41,7 @@ public class ProcessInstanceAssertions
     final boolean isStarted =
         StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
             .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
             .withBpmnElementType(BpmnElementType.PROCESS)
             .stream()
@@ -62,6 +64,7 @@ public class ProcessInstanceAssertions
     final boolean isActive =
         StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
             .withBpmnElementType(BpmnElementType.PROCESS)
             .stream()
             .noneMatch(
@@ -108,6 +111,7 @@ public class ProcessInstanceAssertions
   private boolean isProcessInstanceCompleted() {
     return StreamFilter.processInstance(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
         .withBpmnElementType(BpmnElementType.PROCESS)
         .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
         .stream()
@@ -147,6 +151,7 @@ public class ProcessInstanceAssertions
   private boolean isProcessInstanceTerminated() {
     return StreamFilter.processInstance(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
         .withBpmnElementType(BpmnElementType.PROCESS)
         .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
         .stream()
@@ -188,6 +193,7 @@ public class ProcessInstanceAssertions
     final long count =
         StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
             .withElementId(elementId)
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
             .stream()
@@ -210,6 +216,7 @@ public class ProcessInstanceAssertions
     final List<String> foundElementRecords =
         StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
             .withElementIdIn(elementIds)
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
             .stream()
@@ -265,6 +272,7 @@ public class ProcessInstanceAssertions
     final Set<String> elementsInWaitState = new HashSet<>();
     StreamFilter.processInstance(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
         .withoutBpmnElementType(BpmnElementType.PROCESS)
         .stream()
         .collect(
@@ -299,6 +307,7 @@ public class ProcessInstanceAssertions
 
     StreamFilter.processInstance(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
         .withoutBpmnElementType(BpmnElementType.PROCESS)
         .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
         .stream()
@@ -375,6 +384,7 @@ public class ProcessInstanceAssertions
     final Set<String> openMessageSubscriptions = new HashSet<>();
     StreamFilter.processMessageSubscription(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
         .stream()
         .collect(
             Collectors.toMap(

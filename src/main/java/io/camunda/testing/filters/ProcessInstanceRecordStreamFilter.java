@@ -1,6 +1,7 @@
 package io.camunda.testing.filters;
 
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
@@ -53,6 +54,11 @@ public class ProcessInstanceRecordStreamFilter {
     return new ProcessInstanceRecordStreamFilter(
         stream.filter(
             record -> Arrays.asList(elementIds).contains(record.getValue().getElementId())));
+  }
+
+  public ProcessInstanceRecordStreamFilter withRejectionType(final RejectionType rejectionType) {
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getRejectionType() == rejectionType));
   }
 
   public Stream<Record<ProcessInstanceRecordValue>> stream() {
