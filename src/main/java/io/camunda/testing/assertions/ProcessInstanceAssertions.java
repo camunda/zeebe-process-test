@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.SoftAssertions;
 import org.camunda.community.eze.RecordStreamSource;
 
 public class ProcessInstanceAssertions
@@ -321,25 +322,27 @@ public class ProcessInstanceAssertions
         .map(ProcessInstanceRecordValue::getElementId)
         .forEach(
             id -> {
-              if (shouldBeWaitingAt.contains(id) && !isWaitingAtElement(id)) {
-                // not waiting for the element we want to wait for!
+              final boolean shouldBeWaitingAtElement = shouldBeWaitingAt.contains(id);
+              final boolean isWaitingAtElement = isWaitingAtElement(id);
+              if (shouldBeWaitingAtElement && !isWaitingAtElement) {
                 wrongfullyNotWaitingElementIds.add(id);
-              } else if (!shouldBeWaitingAt.contains(id) && isWaitingAtElement(id)) {
-                // waiting for an element we don't want to wait for!
+              } else if (!shouldBeWaitingAtElement && isWaitingAtElement) {
                 wrongfullyWaitingElementIds.add(id);
               }
             });
 
-    assertThat(wrongfullyWaitingElementIds.isEmpty())
+    final SoftAssertions softly = new SoftAssertions();
+    softly.assertThat(wrongfullyWaitingElementIds.isEmpty())
         .withFailMessage(
             "Process with key %s is waiting at element(s) with id(s) %s",
             actual.getProcessInstanceKey(), String.join(", ", wrongfullyWaitingElementIds))
         .isTrue();
-    assertThat(wrongfullyNotWaitingElementIds.isEmpty())
+    softly.assertThat(wrongfullyNotWaitingElementIds.isEmpty())
         .withFailMessage(
             "Process with key %s is not waiting at element(s) with id(s) %s",
             actual.getProcessInstanceKey(), String.join(", ", wrongfullyNotWaitingElementIds))
         .isTrue();
+    softly.assertAll();
 
     return this;
   }

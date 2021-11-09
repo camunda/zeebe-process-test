@@ -618,6 +618,34 @@ class ProcessInstanceAssertionsTest {
     }
 
     @Test
+    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_combination()
+        throws InterruptedException {
+      // given
+      deployProcess(MULTIPLE_TASKS_BPMN);
+
+      // when
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      completeTask("servicetask1");
+      completeTask("servicetask2");
+
+      // then
+      assertThatThrownBy(
+          () ->
+              assertThat(instanceEvent)
+                  .isWaitingExactlyAtElements("servicetask1", "servicetask2"))
+          .isInstanceOf(AssertionError.class)
+          .hasMessageContainingAll(
+              String.format(
+                  "Process with key %s is not waiting at element(s) with id(s)",
+                  instanceEvent.getProcessInstanceKey()),
+              "servicetask1",
+              "servicetask2",
+              String.format("Process with key %s is waiting at element(s) with id(s)",
+                  instanceEvent.getProcessInstanceKey()),
+              "servicetask3");
+    }
+
+    @Test
     public void testProcessInstanceIsWaitingForMessageFailure() throws InterruptedException {
       // given
       deployProcess(MESSAGE_EVENT_BPMN);
