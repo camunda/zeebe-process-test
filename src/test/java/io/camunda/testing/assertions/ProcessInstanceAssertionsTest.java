@@ -246,8 +246,7 @@ class ProcessInstanceAssertionsTest {
       completeTask(SERVICETASK_3);
 
       // then
-      assertThat(instanceEvent)
-          .isNotWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
+      assertThat(instanceEvent).isNotWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
     }
 
     @Test
@@ -638,9 +637,9 @@ class ProcessInstanceAssertionsTest {
 
       // then
       assertThatThrownBy(
-          () ->
-              assertThat(instanceEvent)
-                  .isWaitingExactlyAtElements(SERVICETASK_1, SERVICETASK_2))
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingExactlyAtElements(SERVICETASK_1, SERVICETASK_2))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               String.format(
@@ -648,7 +647,8 @@ class ProcessInstanceAssertionsTest {
                   instanceEvent.getProcessInstanceKey()),
               SERVICETASK_1,
               SERVICETASK_2,
-              String.format("Process with key %s is waiting at element(s) with id(s)",
+              String.format(
+                  "Process with key %s is waiting at element(s) with id(s)",
                   instanceEvent.getProcessInstanceKey()),
               SERVICETASK_3);
     }

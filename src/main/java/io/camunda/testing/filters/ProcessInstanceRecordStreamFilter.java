@@ -23,35 +23,36 @@ public class ProcessInstanceRecordStreamFilter {
   }
 
   public ProcessInstanceRecordStreamFilter withProcessInstanceKey(final long processInstanceKey) {
-    return new ProcessInstanceRecordStreamFilter(stream
-        .filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey));
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey));
   }
 
   public ProcessInstanceRecordStreamFilter withBpmnElementType(
       final BpmnElementType bpmnElementType) {
-    return new ProcessInstanceRecordStreamFilter(stream
-        .filter(record -> record.getValue().getBpmnElementType() == bpmnElementType));
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getValue().getBpmnElementType() == bpmnElementType));
   }
 
   public ProcessInstanceRecordStreamFilter withoutBpmnElementType(
       final BpmnElementType bpmnElementType) {
-    return new ProcessInstanceRecordStreamFilter(stream
-        .filter(record -> record.getValue().getBpmnElementType() != bpmnElementType));
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getValue().getBpmnElementType() != bpmnElementType));
   }
 
   public ProcessInstanceRecordStreamFilter withIntent(final ProcessInstanceIntent intent) {
-    return new ProcessInstanceRecordStreamFilter(stream
-        .filter(record -> record.getIntent() == intent));
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getIntent() == intent));
   }
 
   public ProcessInstanceRecordStreamFilter withElementId(final String elementId) {
-    return new ProcessInstanceRecordStreamFilter(stream
-        .filter(record -> record.getValue().getElementId().equals(elementId)));
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getValue().getElementId().equals(elementId)));
   }
 
   public ProcessInstanceRecordStreamFilter withElementIdIn(final String... elementIds) {
-    return new ProcessInstanceRecordStreamFilter(stream
-        .filter(record -> Arrays.asList(elementIds).contains(record.getValue().getElementId())));
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(
+            record -> Arrays.asList(elementIds).contains(record.getValue().getElementId())));
   }
 
   public Stream<Record<ProcessInstanceRecordValue>> stream() {

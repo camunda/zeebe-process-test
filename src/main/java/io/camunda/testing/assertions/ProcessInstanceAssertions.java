@@ -9,11 +9,9 @@ import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
-import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.SoftAssertions;
@@ -110,7 +108,8 @@ public class ProcessInstanceAssertions
     return StreamFilter.processInstance(recordStreamSource)
         .withProcessInstanceKey(processInstanceKey)
         .withBpmnElementType(BpmnElementType.PROCESS)
-        .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED).stream()
+        .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
+        .stream()
         .findFirst()
         .isPresent();
   }
@@ -149,7 +148,8 @@ public class ProcessInstanceAssertions
     return StreamFilter.processInstance(recordStreamSource)
         .withProcessInstanceKey(processInstanceKey)
         .withBpmnElementType(BpmnElementType.PROCESS)
-        .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED).stream()
+        .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
+        .stream()
         .findFirst()
         .isPresent();
   }
@@ -235,9 +235,10 @@ public class ProcessInstanceAssertions
     final List<String> elementIds = Arrays.asList(elementIdsVarArg);
     final List<String> elementsInWaitState = getElementsInWaitState();
 
-    final List<String> differences = elementIds.stream()
-        .filter(element -> !elementsInWaitState.contains(element))
-        .collect(Collectors.toList());
+    final List<String> differences =
+        elementIds.stream()
+            .filter(element -> !elementsInWaitState.contains(element))
+            .collect(Collectors.toList());
 
     assertThat(elementsInWaitState)
         .withFailMessage(
@@ -259,9 +260,8 @@ public class ProcessInstanceAssertions
     final List<String> elementIds = Arrays.asList(elementIdsVarArg);
     final List<String> elementsInWaitState = getElementsInWaitState();
 
-    final List<String> similarities = elementIds.stream()
-        .filter(elementsInWaitState::contains)
-        .collect(Collectors.toList());
+    final List<String> similarities =
+        elementIds.stream().filter(elementsInWaitState::contains).collect(Collectors.toList());
 
     assertThat(elementsInWaitState)
         .withFailMessage(
@@ -283,15 +283,20 @@ public class ProcessInstanceAssertions
         .withProcessInstanceKey(actual.getProcessInstanceKey())
         .withoutBpmnElementType(BpmnElementType.PROCESS)
         .stream()
-        .collect(Collectors.toMap(
-            record -> String.format("%s-%s", record.getValue().getElementId(), record.getValue().getFlowScopeKey()),
-            record -> record,
-            (existing, replacement) -> replacement))
-        .forEach((key, record) -> {
-          if (record.getIntent().equals(ProcessInstanceIntent.ELEMENT_ACTIVATED)) {
-            elementsInWaitState.add(record.getValue().getElementId());
-          }
-        });
+        .collect(
+            Collectors.toMap(
+                record ->
+                    String.format(
+                        "%s-%s",
+                        record.getValue().getElementId(), record.getValue().getFlowScopeKey()),
+                record -> record,
+                (existing, replacement) -> replacement))
+        .forEach(
+            (key, record) -> {
+              if (record.getIntent().equals(ProcessInstanceIntent.ELEMENT_ACTIVATED)) {
+                elementsInWaitState.add(record.getValue().getElementId());
+              }
+            });
     return elementsInWaitState;
   }
 
@@ -327,12 +332,14 @@ public class ProcessInstanceAssertions
             });
 
     final SoftAssertions softly = new SoftAssertions();
-    softly.assertThat(wrongfullyWaitingElementIds.isEmpty())
+    softly
+        .assertThat(wrongfullyWaitingElementIds.isEmpty())
         .withFailMessage(
             "Process with key %s is waiting at element(s) with id(s) %s",
             actual.getProcessInstanceKey(), String.join(", ", wrongfullyWaitingElementIds))
         .isTrue();
-    softly.assertThat(wrongfullyNotWaitingElementIds.isEmpty())
+    softly
+        .assertThat(wrongfullyNotWaitingElementIds.isEmpty())
         .withFailMessage(
             "Process with key %s is not waiting at element(s) with id(s) %s",
             actual.getProcessInstanceKey(), String.join(", ", wrongfullyNotWaitingElementIds))
@@ -353,15 +360,15 @@ public class ProcessInstanceAssertions
     final List<String> messageNames = Arrays.asList(messageNamesVarArg);
     final List<String> openMessageSubscriptions = getOpenMessageSubscriptions();
 
-    final List<String> differences = messageNames.stream()
-        .filter(element -> !openMessageSubscriptions.contains(element))
-        .collect(Collectors.toList());
+    final List<String> differences =
+        messageNames.stream()
+            .filter(element -> !openMessageSubscriptions.contains(element))
+            .collect(Collectors.toList());
 
     assertThat(openMessageSubscriptions)
         .withFailMessage(
             "Process with key %s is not waiting for message(s) with name(s) %s",
-            actual.getProcessInstanceKey(),
-            String.join(", ", differences))
+            actual.getProcessInstanceKey(), String.join(", ", differences))
         .containsAll(messageNames);
 
     return this;
@@ -378,15 +385,15 @@ public class ProcessInstanceAssertions
     final List<String> messageNames = Arrays.asList(messageNamesVarArg);
     final List<String> openMessageSubscriptions = getOpenMessageSubscriptions();
 
-    final List<String> similarities = messageNames.stream()
-        .filter(openMessageSubscriptions::contains)
-        .collect(Collectors.toList());
+    final List<String> similarities =
+        messageNames.stream()
+            .filter(openMessageSubscriptions::contains)
+            .collect(Collectors.toList());
 
     assertThat(openMessageSubscriptions)
         .withFailMessage(
             "Process with key %s is waiting for message(s) with name(s) %s",
-            actual.getProcessInstanceKey(),
-            String.join(", ", similarities))
+            actual.getProcessInstanceKey(), String.join(", ", similarities))
         .doesNotContainAnyElementsOf(messageNames);
 
     return this;
@@ -402,16 +409,18 @@ public class ProcessInstanceAssertions
     StreamFilter.processMessageSubscription(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
         .stream()
-        .collect(Collectors.toMap(
-            record -> record.getValue().getElementInstanceKey(),
-            record -> record,
-            (existing, replacement) -> replacement))
-        .forEach((key, record) -> {
-          if (record.getIntent().equals(ProcessMessageSubscriptionIntent.CREATING) ||
-              record.getIntent().equals(ProcessMessageSubscriptionIntent.CREATED)) {
-            openMessageSubscriptions.add(record.getValue().getMessageName());
-          }
-        });
+        .collect(
+            Collectors.toMap(
+                record -> record.getValue().getElementInstanceKey(),
+                record -> record,
+                (existing, replacement) -> replacement))
+        .forEach(
+            (key, record) -> {
+              if (record.getIntent().equals(ProcessMessageSubscriptionIntent.CREATING)
+                  || record.getIntent().equals(ProcessMessageSubscriptionIntent.CREATED)) {
+                openMessageSubscriptions.add(record.getValue().getMessageName());
+              }
+            });
     return openMessageSubscriptions;
   }
 }

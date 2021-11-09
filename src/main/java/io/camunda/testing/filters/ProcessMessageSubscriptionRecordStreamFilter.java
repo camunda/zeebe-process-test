@@ -21,13 +21,13 @@ public class ProcessMessageSubscriptionRecordStreamFilter {
 
   public ProcessMessageSubscriptionRecordStreamFilter withProcessInstanceKey(
       final long processInstanceKey) {
-    return new ProcessMessageSubscriptionRecordStreamFilter(stream
-        .filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey));
+    return new ProcessMessageSubscriptionRecordStreamFilter(
+        stream.filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey));
   }
 
   public ProcessMessageSubscriptionRecordStreamFilter withMessageName(final String messageName) {
-    return new ProcessMessageSubscriptionRecordStreamFilter(stream
-        .filter(record -> record.getValue().getMessageName().equals(messageName)));
+    return new ProcessMessageSubscriptionRecordStreamFilter(
+        stream.filter(record -> record.getValue().getMessageName().equals(messageName)));
   }
 
   public Stream<Record<ProcessMessageSubscriptionRecordValue>> stream() {
