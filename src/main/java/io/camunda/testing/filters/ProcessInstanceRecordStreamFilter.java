@@ -10,46 +10,48 @@ import java.util.stream.StreamSupport;
 
 public class ProcessInstanceRecordStreamFilter {
 
-  private Stream<Record<ProcessInstanceRecordValue>> stream;
+  private final Stream<Record<ProcessInstanceRecordValue>> stream;
 
   public ProcessInstanceRecordStreamFilter(
       final Iterable<Record<ProcessInstanceRecordValue>> records) {
     stream = StreamSupport.stream(records.spliterator(), false);
   }
 
+  public ProcessInstanceRecordStreamFilter(
+      final Stream<Record<ProcessInstanceRecordValue>> stream) {
+    this.stream = stream;
+  }
+
   public ProcessInstanceRecordStreamFilter withProcessInstanceKey(final long processInstanceKey) {
-    stream =
-        stream.filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey);
-    return this;
+    return new ProcessInstanceRecordStreamFilter(stream
+        .filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey));
   }
 
   public ProcessInstanceRecordStreamFilter withBpmnElementType(
       final BpmnElementType bpmnElementType) {
-    stream = stream.filter(record -> record.getValue().getBpmnElementType() == bpmnElementType);
-    return this;
+    return new ProcessInstanceRecordStreamFilter(stream
+        .filter(record -> record.getValue().getBpmnElementType() == bpmnElementType));
   }
 
   public ProcessInstanceRecordStreamFilter withoutBpmnElementType(
       final BpmnElementType bpmnElementType) {
-    stream = stream.filter(record -> record.getValue().getBpmnElementType() != bpmnElementType);
-    return this;
+    return new ProcessInstanceRecordStreamFilter(stream
+        .filter(record -> record.getValue().getBpmnElementType() != bpmnElementType));
   }
 
   public ProcessInstanceRecordStreamFilter withIntent(final ProcessInstanceIntent intent) {
-    stream = stream.filter(record -> record.getIntent() == intent);
-    return this;
+    return new ProcessInstanceRecordStreamFilter(stream
+        .filter(record -> record.getIntent() == intent));
   }
 
   public ProcessInstanceRecordStreamFilter withElementId(final String elementId) {
-    stream = stream.filter(record -> record.getValue().getElementId().equals(elementId));
-    return this;
+    return new ProcessInstanceRecordStreamFilter(stream
+        .filter(record -> record.getValue().getElementId().equals(elementId)));
   }
 
   public ProcessInstanceRecordStreamFilter withElementIdIn(final String... elementIds) {
-    stream =
-        stream.filter(
-            record -> Arrays.asList(elementIds).contains(record.getValue().getElementId()));
-    return this;
+    return new ProcessInstanceRecordStreamFilter(stream
+        .filter(record -> Arrays.asList(elementIds).contains(record.getValue().getElementId())));
   }
 
   public Stream<Record<ProcessInstanceRecordValue>> stream() {

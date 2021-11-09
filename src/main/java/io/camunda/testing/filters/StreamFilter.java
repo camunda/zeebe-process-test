@@ -1,18 +1,14 @@
 package io.camunda.testing.filters;
 
-import io.camunda.zeebe.protocol.record.Record;
-import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
-import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
+import org.camunda.community.eze.RecordStreamSource;
 
 public class StreamFilter {
 
-  public static ProcessInstanceRecordStreamFilter processInstance(
-      final Iterable<Record<ProcessInstanceRecordValue>> records) {
-    return new ProcessInstanceRecordStreamFilter(records);
+  public static ProcessInstanceRecordStreamFilter processInstance(final RecordStreamSource recordStreamSource) {
+    return new ProcessInstanceRecordStreamFilter(recordStreamSource.processInstanceRecords());
   }
 
-  public static ProcessMessageSubscriptionRecordStreamFilter processMessageSubscription(
-      final Iterable<Record<ProcessMessageSubscriptionRecordValue>> records) {
-    return new ProcessMessageSubscriptionRecordStreamFilter(records);
+  public static ProcessMessageSubscriptionRecordStreamFilter processMessageSubscription(final RecordStreamSource recordStreamSource) {
+    return new ProcessMessageSubscriptionRecordStreamFilter(recordStreamSource.processMessageSubscriptionRecords());
   }
 }

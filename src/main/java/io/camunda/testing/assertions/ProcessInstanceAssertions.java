@@ -38,7 +38,7 @@ public class ProcessInstanceAssertions
    */
   public ProcessInstanceAssertions isStarted() {
     final boolean isStarted =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
             .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
             .withBpmnElementType(BpmnElementType.PROCESS)
@@ -60,7 +60,7 @@ public class ProcessInstanceAssertions
    */
   public ProcessInstanceAssertions isActive() {
     final boolean isActive =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
             .withBpmnElementType(BpmnElementType.PROCESS)
             .stream()
@@ -186,7 +186,7 @@ public class ProcessInstanceAssertions
    */
   public ProcessInstanceAssertions hasPassedElement(final String elementId, final int times) {
     final long count =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
             .withElementId(elementId)
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
@@ -208,7 +208,7 @@ public class ProcessInstanceAssertions
    */
   public ProcessInstanceAssertions hasPassedElementInOrder(final String... elementIds) {
     final List<String> foundElementRecords =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
             .withElementIdIn(elementIds)
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
@@ -279,7 +279,7 @@ public class ProcessInstanceAssertions
    */
   private List<String> getElementsInWaitState() {
     final List<String> elementsInWaitState = new ArrayList<>();
-    StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+    StreamFilter.processInstance(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
         .withoutBpmnElementType(BpmnElementType.PROCESS)
         .stream()
@@ -308,7 +308,7 @@ public class ProcessInstanceAssertions
     final List<String> wrongfullyWaitingElementIds = new ArrayList<>();
     final List<String> wrongfullyNotWaitingElementIds = new ArrayList<>();
 
-    StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+    StreamFilter.processInstance(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
         .withoutBpmnElementType(BpmnElementType.PROCESS)
         .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
@@ -399,7 +399,7 @@ public class ProcessInstanceAssertions
    */
   private List<String> getOpenMessageSubscriptions() {
     final List<String> openMessageSubscriptions = new ArrayList<>();
-    StreamFilter.processMessageSubscription(recordStreamSource.processMessageSubscriptionRecords())
+    StreamFilter.processMessageSubscription(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
         .stream()
         .collect(Collectors.toMap(
