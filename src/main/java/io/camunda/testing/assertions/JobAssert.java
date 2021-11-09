@@ -7,8 +7,6 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.data.Offset;
 
-// TODO discuss name: job assertions, service task assertions, worker assertions
-
 /** Assertions for {@code ActivatedJob} instances */
 public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
 
@@ -27,8 +25,8 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
     final String actualElementId = actual.getElementId();
 
     assertThat(actualElementId)
-        .overridingErrorMessage(
-            "Job is not associated with expected element id '%s' but is instead associated with '%s'",
+        .withFailMessage(
+            "Job is not associated with expected element id '%s' but is instead associated with '%s'.",
             expectedElementId, actualElementId)
         .isEqualTo(expectedElementId);
     return this;
@@ -62,8 +60,8 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
     final String actualBpmnProcessId = actual.getBpmnProcessId();
 
     assertThat(actualBpmnProcessId)
-        .overridingErrorMessage(
-            "Job is not associated with BPMN process id '%s' but is instead associated with '%s'",
+        .withFailMessage(
+            "Job is not associated with BPMN process id '%s' but is instead associated with '%s'.",
             expectedBpmnProcessId, actualBpmnProcessId)
         .isEqualTo(expectedBpmnProcessId);
     return this;
@@ -79,8 +77,9 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
     final int actualRetries = actual.getRetries();
 
     assertThat(actualRetries)
-        .overridingErrorMessage(
-            "Job does not have %d retries but instead %d", expectedRetries, actualRetries)
+        .withFailMessage(
+            "Job does not have %d retries, as expected, but instead has %d retries.",
+            expectedRetries, actualRetries)
         .isEqualTo(expectedRetries);
     return this;
   }
