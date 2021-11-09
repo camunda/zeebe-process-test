@@ -235,15 +235,12 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance is currently waiting at one or more
    * specified elements.
    *
-   * @param elementIdsVarArg The ids of the elements
+   * @param elementIds The ids of the elements
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isWaitingAtElement(final String... elementIdsVarArg) {
-    final List<String> elementIds = Arrays.asList(elementIdsVarArg);
+  public ProcessInstanceAssertions isWaitingAtElement(final String... elementIds) {
     final Set<String> elementsInWaitState = getElementsInWaitState();
-
-    assertThat(elementsInWaitState).containsAll(elementIds);
-
+    assertThat(elementsInWaitState).containsAll(Arrays.asList(elementIds));
     return this;
   }
 
@@ -251,15 +248,12 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance is currently not waiting at one or more
    * specified elements.
    *
-   * @param elementIdsVarArg The ids of the elements
+   * @param elementIds The ids of the elements
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isNotWaitingAtElement(final String... elementIdsVarArg) {
-    final List<String> elementIds = Arrays.asList(elementIdsVarArg);
+  public ProcessInstanceAssertions isNotWaitingAtElement(final String... elementIds) {
     final Set<String> elementsInWaitState = getElementsInWaitState();
-
-    assertThat(elementsInWaitState).doesNotContainAnyElementsOf(elementIds);
-
+    assertThat(elementsInWaitState).doesNotContainAnyElementsOf(Arrays.asList(elementIds));
     return this;
   }
 
@@ -347,15 +341,12 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance is currently waiting to receive one or more
    * specified messages.
    *
-   * @param messageNamesVarArg Names of the messages
+   * @param messageNames Names of the messages
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isWaitingForMessage(final String... messageNamesVarArg) {
-    final List<String> messageNames = Arrays.asList(messageNamesVarArg);
+  public ProcessInstanceAssertions isWaitingForMessage(final String... messageNames) {
     final Set<String> openMessageSubscriptions = getOpenMessageSubscriptions();
-
-    assertThat(openMessageSubscriptions).containsAll(messageNames);
-
+    assertThat(openMessageSubscriptions).containsAll(Arrays.asList(messageNames));
     return this;
   }
 
@@ -363,15 +354,12 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance is currently not waiting to receive one or
    * more specified messages.
    *
-   * @param messageNamesVarArg Names of the messages
+   * @param messageNames Names of the messages
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isNotWaitingForMessage(final String... messageNamesVarArg) {
-    final List<String> messageNames = Arrays.asList(messageNamesVarArg);
+  public ProcessInstanceAssertions isNotWaitingForMessage(final String... messageNames) {
     final Set<String> openMessageSubscriptions = getOpenMessageSubscriptions();
-
-    assertThat(openMessageSubscriptions).doesNotContainAnyElementsOf(messageNames);
-
+    assertThat(openMessageSubscriptions).doesNotContainAnyElementsOf(Arrays.asList(messageNames));
     return this;
   }
 
