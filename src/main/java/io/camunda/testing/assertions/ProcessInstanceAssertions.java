@@ -351,21 +351,23 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance is currently waiting to receive one or more
    * specified messages.
    *
-   * @param messageNames Names of the messages
+   * @param messageNamesVarArg Names of the messages
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isWaitingForMessage(final String... messageNames) {
-    final List<String> notCreatedProcessMessageSubscriptions =
-        Arrays.stream(messageNames)
-            .filter(((Predicate<String>) this::isWaitingForMessage).negate())
-            .collect(Collectors.toList());
+  public ProcessInstanceAssertions isWaitingForMessage(final String... messageNamesVarArg) {
+    final List<String> messageNames = Arrays.asList(messageNamesVarArg);
+    final List<String> openMessageSubscriptions = getOpenMessageSubscriptions();
 
-    assertThat(notCreatedProcessMessageSubscriptions.isEmpty())
+    final List<String> differences = messageNames.stream()
+        .filter(element -> !openMessageSubscriptions.contains(element))
+        .collect(Collectors.toList());
+
+    assertThat(openMessageSubscriptions)
         .withFailMessage(
             "Process with key %s is not waiting for message(s) with name(s) %s",
             actual.getProcessInstanceKey(),
-            String.join(", ", notCreatedProcessMessageSubscriptions))
-        .isTrue();
+            String.join(", ", differences))
+        .containsAll(messageNames);
 
     return this;
   }
@@ -374,52 +376,47 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance is currently not waiting to receive one or
    * more specified messages.
    *
-   * @param messageNames Names of the messages
+   * @param messageNamesVarArg Names of the messages
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isNotWaitingForMessage(final String... messageNames) {
-    final List<String> createdProcessMessageSubscriptions =
-        Arrays.stream(messageNames).filter(this::isWaitingForMessage).collect(Collectors.toList());
+  public ProcessInstanceAssertions isNotWaitingForMessage(final String... messageNamesVarArg) {
+    final List<String> messageNames = Arrays.asList(messageNamesVarArg);
+    final List<String> openMessageSubscriptions = getOpenMessageSubscriptions();
 
-    assertThat(createdProcessMessageSubscriptions.isEmpty())
+    final List<String> similarities = messageNames.stream()
+        .filter(openMessageSubscriptions::contains)
+        .collect(Collectors.toList());
+
+    assertThat(openMessageSubscriptions)
         .withFailMessage(
             "Process with key %s is waiting for message(s) with name(s) %s",
-            actual.getProcessInstanceKey(), String.join(", ", createdProcessMessageSubscriptions))
-        .isTrue();
+            actual.getProcessInstanceKey(),
+            String.join(", ", similarities))
+        .doesNotContainAnyElementsOf(messageNames);
 
     return this;
   }
 
   /**
-   * Checks if the process instance is currently waiting for a message with a specific message name.
+   * Gets the currently open message subscription from the record stream source
    *
-   * @param messageName The name of the message
-   * @return boolean indicating whether the process instance is waiting for the message
+   * @return list containing the message names of the open message subscriptions
    */
-  private boolean isWaitingForMessage(final String messageName) {
-    final Map<Long, List<Record<ProcessMessageSubscriptionRecordValue>>> recordsMap =
-        StreamFilter.processMessageSubscription(
-                recordStreamSource.processMessageSubscriptionRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withMessageName(messageName)
-            .stream()
-            .collect(Collectors.groupingBy(record -> record.getValue().getElementInstanceKey()));
-
-    if (recordsMap.isEmpty()) {
-      return false;
-    }
-
-    for (Entry<Long, List<Record<ProcessMessageSubscriptionRecordValue>>> entry :
-        recordsMap.entrySet()) {
-      final Record<ProcessMessageSubscriptionRecordValue> lastRecord =
-          entry.getValue().get(entry.getValue().size() - 1);
-      final Intent intent = lastRecord.getIntent();
-      if (intent.equals(ProcessMessageSubscriptionIntent.CREATING)
-          || intent.equals(ProcessMessageSubscriptionIntent.CREATED)) {
-        return true;
-      }
-    }
-
-    return false;
+  private List<String> getOpenMessageSubscriptions() {
+    final List<String> openMessageSubscriptions = new ArrayList<>();
+    StreamFilter.processMessageSubscription(recordStreamSource.processMessageSubscriptionRecords())
+        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .stream()
+        .collect(Collectors.toMap(
+            record -> record.getValue().getElementInstanceKey(),
+            record -> record,
+            (existing, replacement) -> replacement))
+        .forEach((key, record) -> {
+          if (record.getIntent().equals(ProcessMessageSubscriptionIntent.CREATING) ||
+              record.getIntent().equals(ProcessMessageSubscriptionIntent.CREATED)) {
+            openMessageSubscriptions.add(record.getValue().getMessageName());
+          }
+        });
+    return openMessageSubscriptions;
   }
 }
