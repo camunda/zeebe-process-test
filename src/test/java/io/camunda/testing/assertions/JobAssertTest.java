@@ -16,6 +16,7 @@ import io.camunda.zeebe.client.api.response.ActivatedJob;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.camunda.community.eze.RecordStreamSource;
 import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
@@ -141,6 +142,29 @@ class JobAssertTest {
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       assertThat(actual).hasNoIncidents();
+    }
+
+    @Test
+    void testExtractLatestIncident() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      client
+          .newThrowErrorCommand(actual.getKey())
+          .errorCode("error")
+          .errorMessage("error occurred")
+          .send()
+          .join();
+
+      final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
+
+      // then
+      Assertions.assertThat(incidentAssert).isNotNull();
     }
 
     @Test
@@ -317,6 +341,22 @@ class JobAssertTest {
       assertThatThrownBy(() -> assertThat(actual).hasNoIncidents())
           .isInstanceOf(AssertionError.class)
           .hasMessage("Incidents were raised for this job");
+    }
+
+    @Test
+    void testExtractLatestIncidentFailure() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+
+      // then
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      assertThatThrownBy(() -> assertThat(actual).extractLatestIncident())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No incidents were raised for this job");
     }
   }
 }

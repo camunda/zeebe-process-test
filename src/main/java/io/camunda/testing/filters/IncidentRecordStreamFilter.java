@@ -2,6 +2,7 @@ package io.camunda.testing.filters;
 
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
+import io.camunda.zeebe.protocol.record.intent.IncidentIntent;
 import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -30,6 +31,10 @@ public class IncidentRecordStreamFilter {
   public IncidentRecordStreamFilter withJobKey(final long jobKey) {
     return new IncidentRecordStreamFilter(
         stream.filter(record -> record.getValue().getJobKey() == jobKey));
+  }
+
+  public IncidentRecordStreamFilter withIntent(final IncidentIntent intent) {
+    return new IncidentRecordStreamFilter(stream.filter(record -> record.getIntent() == intent));
   }
 
   public Stream<Record<IncidentRecordValue>> stream() {

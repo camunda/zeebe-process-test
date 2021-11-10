@@ -5,7 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.camunda.testing.filters.IncidentRecordStreamFilter;
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
+import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.data.Offset;
@@ -98,7 +102,8 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
    * @return this {@link JobAssert}
    */
   public JobAssert hasAnyIncidents() {
-    final boolean incidentsWereRaised = getIncidentRecords().stream().findFirst().isPresent();
+    final boolean incidentsWereRaised =
+        getIncidentCreatedRecords().stream().findFirst().isPresent();
 
     assertThat(incidentsWereRaised)
         .withFailMessage("No incidents were raised for this job")
@@ -112,7 +117,8 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
    * @return this {@link JobAssert}
    */
   public JobAssert hasNoIncidents() {
-    final boolean noIncidentsWereRaised = !getIncidentRecords().stream().findFirst().isPresent();
+    final boolean noIncidentsWereRaised =
+        !getIncidentCreatedRecords().stream().findFirst().isPresent();
 
     assertThat(noIncidentsWereRaised)
         .withFailMessage("Incidents were raised for this job")
@@ -120,7 +126,24 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
     return this;
   }
 
-  private IncidentRecordStreamFilter getIncidentRecords() {
+  /**
+   * Extracts the latest incident
+   *
+   * @return {@link IncidentAssert} for the latest incident
+   */
+  public IncidentAssert extractLatestIncident() {
+    hasAnyIncidents();
+
+    final List<Record<IncidentRecordValue>> incidentCreatedRecords =
+        getIncidentCreatedRecords().stream().collect(Collectors.toList());
+
+    final Record<IncidentRecordValue> latestIncidentRecord =
+        incidentCreatedRecords.get(incidentCreatedRecords.size() - 1);
+
+    return new IncidentAssert(latestIncidentRecord.getKey(), recordStreamSource);
+  }
+
+  private IncidentRecordStreamFilter getIncidentCreatedRecords() {
     return StreamFilter.incident(recordStreamSource)
         .withRejectionType(RejectionType.NULL_VAL)
         .withJobKey(actual.getKey());

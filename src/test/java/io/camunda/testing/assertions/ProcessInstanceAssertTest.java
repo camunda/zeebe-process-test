@@ -17,6 +17,7 @@ import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.camunda.community.eze.RecordStreamSource;
 import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
@@ -401,6 +402,28 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThat(instanceEvent).hasNoIncidents();
+    }
+
+    @Test
+    public void testExtractLatestIncident() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+
+      final Map<String, Object> variables =
+          Collections.singletonMap(VAR_TOTAL_LOOPS, "invalid value"); // will cause incident
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
+      completeTask(SERVICETASK);
+
+      final IncidentAssert incidentAssert = assertThat(instanceEvent).extractLatestIncident();
+
+      // then
+
+      Assertions.assertThat(incidentAssert).isNotNull();
     }
   }
 
@@ -894,6 +917,21 @@ class ProcessInstanceAssertTest {
       assertThatThrownBy(() -> assertThat(instanceEvent).hasNoIncidents())
           .isInstanceOf(AssertionError.class)
           .hasMessage("Incidents were raised for this process instance");
+    }
+
+    @Test
+    public void testExtractLatestIncidentFailure() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).extractLatestIncident())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No incidents were raised for this process instance");
     }
   }
 
