@@ -24,7 +24,8 @@ public class VariableRecordStreamFilter {
   }
 
   public VariableRecordStreamFilter withRejectionType(final RejectionType rejectionType) {
-    return new VariableRecordStreamFilter(stream.filter(record -> record.getRejectionType() == rejectionType));
+    return new VariableRecordStreamFilter(
+        stream.filter(record -> record.getRejectionType() == rejectionType));
   }
 
   public Stream<Record<VariableRecordValue>> stream() {

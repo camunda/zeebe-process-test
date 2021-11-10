@@ -15,7 +15,6 @@ import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.camunda.community.eze.RecordStreamSource;
 import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
@@ -326,7 +325,7 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceHasVariableWithValue() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, "1");
 
       // when
       final ProcessInstanceEvent instanceEvent =
@@ -713,17 +712,18 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceHasVariableFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final String variable = "variable";
+      final String expectedVariable = "variable";
+      final String actualVariable = "loopAmount";
 
       // when
       final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_INSTANCE_ID);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).hasVariable(variable))
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasVariable(expectedVariable))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
-              "Process with key %s does not contain variable with name %s",
-              instanceEvent.getProcessInstanceKey(), variable);
+              "Process with key %s does not contain variable with name `%s`. Available variables are: [%s]",
+              instanceEvent.getProcessInstanceKey(), expectedVariable, actualVariable);
     }
 
     @Test
@@ -731,8 +731,9 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final String variable = "variable";
-      final String variableValue = "wrongvalue";
-      final Map<String, Object> variables = Collections.singletonMap(variable, "value");
+      final String expectedValue = "expectedValue";
+      final String actualValue = "actualValue";
+      final Map<String, Object> variables = Collections.singletonMap(variable, actualValue);
 
       // when
       final ProcessInstanceEvent instanceEvent =
@@ -740,11 +741,11 @@ class ProcessInstanceAssertionsTest {
 
       // then
       assertThatThrownBy(
-              () -> assertThat(instanceEvent).hasVariableWithValue(variable, variableValue))
+              () -> assertThat(instanceEvent).hasVariableWithValue(variable, expectedValue))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
-              "Process with key %s does not contain variable with name %s and value %s",
-              instanceEvent.getProcessInstanceKey(), variable, variableValue);
+              "Variable '%s' does not have value '%s', as expected, but instead has the value '\"%s\"'",
+              variable, expectedValue, actualValue);
     }
   }
 
