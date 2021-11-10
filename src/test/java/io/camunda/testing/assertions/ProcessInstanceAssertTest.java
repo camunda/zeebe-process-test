@@ -1,6 +1,6 @@
 package io.camunda.testing.assertions;
 
-import static io.camunda.testing.assertions.BpmnAssertions.assertThat;
+import static io.camunda.testing.assertions.BpmnAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 // TODO remove Thread.sleeps
 @ZeebeAssertions
-class ProcessInstanceAssertionsTest {
+class ProcessInstanceAssertTest {
 
   public static final String PROCESS_INSTANCE_BPMN = "looping-servicetask.bpmn";
   public static final String PROCESS_INSTANCE_ID = "looping-servicetask";

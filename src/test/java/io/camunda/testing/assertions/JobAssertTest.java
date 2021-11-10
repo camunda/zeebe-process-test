@@ -1,6 +1,6 @@
 package io.camunda.testing.assertions;
 
-import static io.camunda.testing.assertions.BpmnAssertions.assertThat;
+import static io.camunda.testing.assertions.BpmnAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.data.Offset.offset;

@@ -4,20 +4,20 @@ import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import org.camunda.community.eze.RecordStreamSource;
 
-public abstract class BpmnAssertions {
+public abstract class BpmnAssert {
 
   static ThreadLocal<RecordStreamSource> recordStreamSource = new ThreadLocal<>();
 
   public static void init(final RecordStreamSource recordStreamSource) {
-    BpmnAssertions.recordStreamSource.set(recordStreamSource);
+    BpmnAssert.recordStreamSource.set(recordStreamSource);
   }
 
   public static void reset() {
     recordStreamSource.remove();
   }
 
-  public static ProcessInstanceAssertions assertThat(final ProcessInstanceEvent instanceEvent) {
-    return new ProcessInstanceAssertions(instanceEvent, getRecordStreamSource());
+  public static ProcessInstanceAssert assertThat(final ProcessInstanceEvent instanceEvent) {
+    return new ProcessInstanceAssert(instanceEvent, getRecordStreamSource());
   }
 
   public static JobAssert assertThat(final ActivatedJob activatedJob) {

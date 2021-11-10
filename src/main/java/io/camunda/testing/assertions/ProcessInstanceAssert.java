@@ -23,14 +23,14 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.SoftAssertions;
 import org.camunda.community.eze.RecordStreamSource;
 
-public class ProcessInstanceAssertions
-    extends AbstractAssert<ProcessInstanceAssertions, ProcessInstanceEvent> {
+public class ProcessInstanceAssert
+    extends AbstractAssert<ProcessInstanceAssert, ProcessInstanceEvent> {
 
   private RecordStreamSource recordStreamSource;
 
-  public ProcessInstanceAssertions(
+  public ProcessInstanceAssert(
       final ProcessInstanceEvent actual, final RecordStreamSource recordStreamSource) {
-    super(actual, ProcessInstanceAssertions.class);
+    super(actual, ProcessInstanceAssert.class);
     this.recordStreamSource = recordStreamSource;
   }
 
@@ -38,9 +38,9 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance is started. This will also be true when the
    * process has been completed or terminated.
    *
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isStarted() {
+  public ProcessInstanceAssert isStarted() {
     final boolean isStarted =
         StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
@@ -61,9 +61,9 @@ public class ProcessInstanceAssertions
   /**
    * Verifies the expectation that the process instance is active.
    *
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isActive() {
+  public ProcessInstanceAssert isActive() {
     final boolean isActive =
         StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
@@ -85,9 +85,9 @@ public class ProcessInstanceAssertions
   /**
    * Verifies the expectation that the process instance is completed.
    *
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isCompleted() {
+  public ProcessInstanceAssert isCompleted() {
     assertThat(isProcessInstanceCompleted())
         .withFailMessage("Process with key %s was not completed", actual.getProcessInstanceKey())
         .isTrue();
@@ -97,9 +97,9 @@ public class ProcessInstanceAssertions
   /**
    * Verifies the expectation that the process instance is not completed.
    *
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isNotCompleted() {
+  public ProcessInstanceAssert isNotCompleted() {
     assertThat(isProcessInstanceCompleted())
         .withFailMessage("Process with key %s was completed", actual.getProcessInstanceKey())
         .isFalse();
@@ -125,9 +125,9 @@ public class ProcessInstanceAssertions
   /**
    * Verifies the expectation that the process instance is terminated.
    *
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isTerminated() {
+  public ProcessInstanceAssert isTerminated() {
     assertThat(isProcessInstanceTerminated())
         .withFailMessage("Process with key %s was not terminated", actual.getProcessInstanceKey())
         .isTrue();
@@ -137,9 +137,9 @@ public class ProcessInstanceAssertions
   /**
    * Verifies the expectation that the process instance is not terminated.
    *
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isNotTerminated() {
+  public ProcessInstanceAssert isNotTerminated() {
     assertThat(isProcessInstanceTerminated())
         .withFailMessage("Process with key %s was terminated", actual.getProcessInstanceKey())
         .isFalse();
@@ -167,9 +167,9 @@ public class ProcessInstanceAssertions
    * element id exactly one time.
    *
    * @param elementId The id of the element
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions hasPassedElement(final String elementId) {
+  public ProcessInstanceAssert hasPassedElement(final String elementId) {
     return hasPassedElement(elementId, 1);
   }
 
@@ -178,9 +178,9 @@ public class ProcessInstanceAssertions
    * element id.
    *
    * @param elementId The id of the element
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions hasNotPassedElement(final String elementId) {
+  public ProcessInstanceAssert hasNotPassedElement(final String elementId) {
     return hasPassedElement(elementId, 0);
   }
 
@@ -190,9 +190,9 @@ public class ProcessInstanceAssertions
    *
    * @param elementId The id of the element
    * @param times The amount of times the element should be passed
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions hasPassedElement(final String elementId, final int times) {
+  public ProcessInstanceAssert hasPassedElement(final String elementId, final int times) {
     final long count =
         StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
@@ -213,9 +213,9 @@ public class ProcessInstanceAssertions
    * Verifies the expectation that the process instance has passed the given elements in order.
    *
    * @param elementIds The element ids
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions hasPassedElementInOrder(final String... elementIds) {
+  public ProcessInstanceAssert hasPassedElementInOrder(final String... elementIds) {
     final List<String> foundElementRecords =
         StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
@@ -239,9 +239,9 @@ public class ProcessInstanceAssertions
    * specified elements.
    *
    * @param elementIds The ids of the elements
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isWaitingAtElement(final String... elementIds) {
+  public ProcessInstanceAssert isWaitingAtElement(final String... elementIds) {
     final Set<String> elementsInWaitState = getElementsInWaitState();
     assertThat(elementsInWaitState).containsAll(Arrays.asList(elementIds));
     return this;
@@ -252,9 +252,9 @@ public class ProcessInstanceAssertions
    * specified elements.
    *
    * @param elementIds The ids of the elements
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isNotWaitingAtElement(final String... elementIds) {
+  public ProcessInstanceAssert isNotWaitingAtElement(final String... elementIds) {
     final Set<String> elementsInWaitState = getElementsInWaitState();
     assertThat(elementsInWaitState).doesNotContainAnyElementsOf(Arrays.asList(elementIds));
     return this;
@@ -294,9 +294,9 @@ public class ProcessInstanceAssertions
    * elements, and not at any other element.
    *
    * @param elementIdsVarArg The ids of the elements
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isWaitingExactlyAtElements(final String... elementIdsVarArg) {
+  public ProcessInstanceAssert isWaitingExactlyAtElements(final String... elementIdsVarArg) {
     final List<String> elementIds = Arrays.asList(elementIdsVarArg);
     final Set<String> elementsInWaitState = getElementsInWaitState();
     final List<String> wrongfullyWaitingElementIds = new ArrayList<>();
@@ -345,9 +345,9 @@ public class ProcessInstanceAssertions
    * specified messages.
    *
    * @param messageNames Names of the messages
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isWaitingForMessage(final String... messageNames) {
+  public ProcessInstanceAssert isWaitingForMessage(final String... messageNames) {
     final Set<String> openMessageSubscriptions = getOpenMessageSubscriptions();
     assertThat(openMessageSubscriptions).containsAll(Arrays.asList(messageNames));
     return this;
@@ -358,9 +358,9 @@ public class ProcessInstanceAssertions
    * more specified messages.
    *
    * @param messageNames Names of the messages
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions isNotWaitingForMessage(final String... messageNames) {
+  public ProcessInstanceAssert isNotWaitingForMessage(final String... messageNames) {
     final Set<String> openMessageSubscriptions = getOpenMessageSubscriptions();
     assertThat(openMessageSubscriptions).doesNotContainAnyElementsOf(Arrays.asList(messageNames));
     return this;
@@ -396,9 +396,9 @@ public class ProcessInstanceAssertions
    * Verifies the process instance has a variable with the specified name
    *
    * @param name The name of the variable
-   * @return this ${@link ProcessInstanceAssertions}
+   * @return this ${@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions hasVariable(final String name) {
+  public ProcessInstanceAssert hasVariable(final String name) {
     final Map<String, String> variables = getProcessInstanceVariables();
     return assertVariableInMapOfVariables(name, variables);
   }
@@ -412,9 +412,9 @@ public class ProcessInstanceAssertions
    *
    * @param name The name of the variable
    * @param variables The map of variables
-   * @return this ${@link ProcessInstanceAssertions}
+   * @return this ${@link ProcessInstanceAssert}
    */
-  private ProcessInstanceAssertions assertVariableInMapOfVariables(
+  private ProcessInstanceAssert assertVariableInMapOfVariables(
       final String name, final Map<String, String> variables) {
     assertThat(variables)
         .withFailMessage(
@@ -429,9 +429,9 @@ public class ProcessInstanceAssertions
    *
    * @param name The name of the variable
    * @param value The value of the variable
-   * @return this ${@link ProcessInstanceAssertions}
+   * @return this ${@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssertions hasVariableWithValue(final String name, final String value) {
+  public ProcessInstanceAssert hasVariableWithValue(final String name, final String value) {
     final ZeebeObjectMapper mapper = new ZeebeObjectMapper();
     final String mappedValue = mapper.toJson(value);
     final Map<String, String> variables = getProcessInstanceVariables();
