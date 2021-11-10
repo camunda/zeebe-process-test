@@ -744,8 +744,10 @@ class ProcessInstanceAssertionsTest {
               () -> assertThat(instanceEvent).hasVariableWithValue(variable, expectedValue))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
-              "Variable '%s' does not have value '%s', as expected, but instead has the value '\"%s\"'",
-              variable, expectedValue, actualValue);
+              "The variable '%s' does not have the expected value. The value passed in"
+                  + " ('%s') is internally mapped to a JSON String that yields '\"%s\"'. However, the "
+                  + "actual value (as JSON String) is '\"%s\".",
+              variable, expectedValue, expectedValue, actualValue);
     }
   }
 

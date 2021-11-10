@@ -392,6 +392,12 @@ public class ProcessInstanceAssertions
     return openMessageSubscriptions;
   }
 
+  /**
+   * Verifies the process instance has a variable with the specified name
+   *
+   * @param name The name of the variable
+   * @return this ${@link ProcessInstanceAssertions}
+   */
   public ProcessInstanceAssertions hasVariable(final String name) {
     final Map<String, String> variables = getProcessInstanceVariables();
     return assertVariableInMapOfVariables(name, variables);
@@ -418,6 +424,13 @@ public class ProcessInstanceAssertions
     return this;
   }
 
+  /**
+   * Verifies the process instance has a variable with a specific value.
+   *
+   * @param name The name of the variable
+   * @param value The value of the variable
+   * @return this ${@link ProcessInstanceAssertions}
+   */
   public ProcessInstanceAssertions hasVariableWithValue(final String name, final String value) {
     final ZeebeObjectMapper mapper = new ZeebeObjectMapper();
     final String mappedValue = mapper.toJson(value);
@@ -426,13 +439,20 @@ public class ProcessInstanceAssertions
     assertVariableInMapOfVariables(name, variables);
     assertThat(variables)
         .withFailMessage(
-            "Variable '%s' does not have value '%s', as expected, but instead has the value '%s'",
-            name, value, variables.get(name))
+            "The variable '%s' does not have the expected value. The value passed in"
+                + " ('%s') is internally mapped to a JSON String that yields '%s'. However, the "
+                + "actual value (as JSON String) is '%s.",
+            name, value, mappedValue, variables.get(name))
         .containsEntry(name, mappedValue);
 
     return this;
   }
 
+  /**
+   * Returns a Map of variables that belong to this process instance
+   *
+   * @return map of variables
+   */
   private Map<String, String> getProcessInstanceVariables() {
     return StreamFilter.variable(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
