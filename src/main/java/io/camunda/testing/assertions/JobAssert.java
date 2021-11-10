@@ -2,16 +2,23 @@ package io.camunda.testing.assertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.camunda.testing.filters.IncidentRecordStreamFiler;
+import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.protocol.record.RejectionType;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.data.Offset;
+import org.camunda.community.eze.RecordStreamSource;
 
 /** Assertions for {@code ActivatedJob} instances */
 public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
 
-  public JobAssert(final ActivatedJob actual) {
+  private final RecordStreamSource recordStreamSource;
+
+  public JobAssert(final ActivatedJob actual, final RecordStreamSource recordStreamSource) {
     super(actual, JobAssert.class);
+    this.recordStreamSource = recordStreamSource;
   }
 
   /**
@@ -82,6 +89,41 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
             expectedRetries, actualRetries)
         .isEqualTo(expectedRetries);
     return this;
+  }
+
+  /**
+   * Asserts whether any incidents were raised for this job (regardless of whether these incidents
+   * are active or already resolved)
+   *
+   * @return this {@link JobAssert}
+   */
+  public JobAssert hasAnyIncidents() {
+    final boolean incidentsWereRaised = getIncidentRecords().stream().findFirst().isPresent();
+
+    assertThat(incidentsWereRaised)
+        .withFailMessage("No incidents were raised for this job")
+        .isTrue();
+    return this;
+  }
+
+  /**
+   * Asserts whether no incidents were raised for this job
+   *
+   * @return this {@link JobAssert}
+   */
+  public JobAssert hasNoIncidents() {
+    final boolean noIncidentsWereRaised = !getIncidentRecords().stream().findFirst().isPresent();
+
+    assertThat(noIncidentsWereRaised)
+        .withFailMessage("Incidents were raised for this job")
+        .isTrue();
+    return this;
+  }
+
+  private IncidentRecordStreamFiler getIncidentRecords() {
+    return StreamFilter.incident(recordStreamSource)
+        .withRejectionType(RejectionType.NULL_VAL)
+        .withJobKey(actual.getKey());
   }
 
   /**

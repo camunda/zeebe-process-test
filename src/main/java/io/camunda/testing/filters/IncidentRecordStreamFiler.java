@@ -27,6 +27,11 @@ public class IncidentRecordStreamFiler {
         stream.filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey));
   }
 
+  public IncidentRecordStreamFiler withJobKey(final long jobKey) {
+    return new IncidentRecordStreamFiler(
+        stream.filter(record -> record.getValue().getJobKey() == jobKey));
+  }
+
   public Stream<Record<IncidentRecordValue>> stream() {
     return stream;
   }

@@ -107,6 +107,42 @@ class JobAssertTest {
     }
 
     @Test
+    void testHasAnyIncidents() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      client
+          .newThrowErrorCommand(actual.getKey())
+          .errorCode("error")
+          .errorMessage("error occurred")
+          .send()
+          .join();
+
+      // then
+
+      assertThat(actual).hasAnyIncidents();
+    }
+
+    @Test
+    void testHasNoIncidents() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+
+      // then
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      assertThat(actual).hasNoIncidents();
+    }
+
+    @Test
     void testExtractingVariables() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -242,6 +278,44 @@ class JobAssertTest {
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Job does not have %d retries, as expected, but instead has %d retries.", 12345, 1);
+    }
+
+    @Test
+    void testHasAnyIncidentsFailure() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+
+      // then
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      assertThatThrownBy(() -> assertThat(actual).hasAnyIncidents())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No incidents were raised for this job");
+    }
+
+    @Test
+    void testHasNoIncidentsFailure() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      client
+          .newThrowErrorCommand(actual.getKey())
+          .errorCode("error")
+          .errorMessage("error occurred")
+          .send()
+          .join();
+
+      // then
+      assertThatThrownBy(() -> assertThat(actual).hasNoIncidents())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("Incidents were raised for this job");
     }
   }
 }
