@@ -23,6 +23,10 @@ public class StreamFilter {
     return new MessageRecordStreamFilter(recordStreamSource.messageRecords());
   }
 
+  public static IncidentRecordStreamFiler incident(final RecordStreamSource recordStreamSource) {
+    return new IncidentRecordStreamFiler(recordStreamSource.incidentRecords());
+  }
+
   public static MessageStartEventSubscriptionStreamFilter messageStartEventSubscription(
       final RecordStreamSource recordStreamSource) {
     return new MessageStartEventSubscriptionStreamFilter(
