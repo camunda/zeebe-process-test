@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.data.Offset.offset;
 
 import io.camunda.testing.extensions.ZeebeAssertions;
+import io.camunda.testing.util.Utilities;
 import io.camunda.testing.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;

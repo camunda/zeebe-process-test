@@ -6,29 +6,29 @@ import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class IncidentRecordStreamFiler {
+public class IncidentRecordStreamFilter {
   private final Stream<Record<IncidentRecordValue>> stream;
 
-  public IncidentRecordStreamFiler(final Iterable<Record<IncidentRecordValue>> records) {
+  public IncidentRecordStreamFilter(final Iterable<Record<IncidentRecordValue>> records) {
     stream = StreamSupport.stream(records.spliterator(), false);
   }
 
-  public IncidentRecordStreamFiler(final Stream<Record<IncidentRecordValue>> stream) {
+  public IncidentRecordStreamFilter(final Stream<Record<IncidentRecordValue>> stream) {
     this.stream = stream;
   }
 
-  public IncidentRecordStreamFiler withRejectionType(final RejectionType rejectionType) {
-    return new IncidentRecordStreamFiler(
+  public IncidentRecordStreamFilter withRejectionType(final RejectionType rejectionType) {
+    return new IncidentRecordStreamFilter(
         stream.filter(record -> record.getRejectionType() == rejectionType));
   }
 
-  public IncidentRecordStreamFiler withProcessInstanceKey(final long processInstanceKey) {
-    return new IncidentRecordStreamFiler(
+  public IncidentRecordStreamFilter withProcessInstanceKey(final long processInstanceKey) {
+    return new IncidentRecordStreamFilter(
         stream.filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey));
   }
 
-  public IncidentRecordStreamFiler withJobKey(final long jobKey) {
-    return new IncidentRecordStreamFiler(
+  public IncidentRecordStreamFilter withJobKey(final long jobKey) {
+    return new IncidentRecordStreamFilter(
         stream.filter(record -> record.getValue().getJobKey() == jobKey));
   }
 

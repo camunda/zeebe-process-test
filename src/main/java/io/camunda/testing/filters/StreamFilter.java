@@ -23,8 +23,8 @@ public class StreamFilter {
     return new MessageRecordStreamFilter(recordStreamSource.messageRecords());
   }
 
-  public static IncidentRecordStreamFiler incident(final RecordStreamSource recordStreamSource) {
-    return new IncidentRecordStreamFiler(recordStreamSource.incidentRecords());
+  public static IncidentRecordStreamFilter incident(final RecordStreamSource recordStreamSource) {
+    return new IncidentRecordStreamFilter(recordStreamSource.incidentRecords());
   }
 
   public static MessageStartEventSubscriptionStreamFilter messageStartEventSubscription(

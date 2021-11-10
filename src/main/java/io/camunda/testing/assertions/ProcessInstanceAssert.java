@@ -2,7 +2,7 @@ package io.camunda.testing.assertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.testing.filters.IncidentRecordStreamFiler;
+import io.camunda.testing.filters.IncidentRecordStreamFilter;
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.protocol.record.Record;
@@ -539,7 +539,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
     return this;
   }
 
-  private IncidentRecordStreamFiler getIncidentRecords() {
+  private IncidentRecordStreamFilter getIncidentRecords() {
     return StreamFilter.incident(recordStreamSource)
         .withRejectionType(RejectionType.NULL_VAL)
         .withProcessInstanceKey(actual);
