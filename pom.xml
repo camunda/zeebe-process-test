@@ -18,7 +18,7 @@
 
   <properties>
     <dependency.assertj.version>3.21.0</dependency.assertj.version>
-    <dependency.errorprone.version>2.5.1</dependency.errorprone.version>
+    <dependency.errorprone.version>2.10.0</dependency.errorprone.version>
     <dependency.eze.version>0.4.0</dependency.eze.version>
     <dependency.guava.version>30.1.1-jre</dependency.guava.version>
     <dependency.jackson.version>2.12.5</dependency.jackson.version>
