@@ -21,7 +21,7 @@
     <dependency.errorprone.version>2.10.0</dependency.errorprone.version>
     <dependency.eze.version>0.5.0</dependency.eze.version>
     <dependency.guava.version>31.0.1-jre</dependency.guava.version>
-    <dependency.jackson.version>2.12.5</dependency.jackson.version>
+    <dependency.jackson.version>2.13.0</dependency.jackson.version>
     <dependency.jna.version>5.10.0</dependency.jna.version>
     <dependency.junit.version>5.8.1</dependency.junit.version>
     <dependency.mockito.version>4.0.0</dependency.mockito.version>
@@ -91,33 +91,17 @@
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
-        <artifactId>netty-handler</artifactId>
+        <artifactId>netty-bom</artifactId>
         <version>${dependency.netty.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-common</artifactId>
-        <version>${dependency.netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-buffer</artifactId>
-        <version>${dependency.netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-transport</artifactId>
-        <version>${dependency.netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-codec</artifactId>
-        <version>${dependency.netty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
         <version>${dependency.jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
