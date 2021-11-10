@@ -21,4 +21,13 @@ public class IncidentRecordStreamFiler {
     return new IncidentRecordStreamFiler(
         stream.filter(record -> record.getRejectionType() == rejectionType));
   }
+
+  public IncidentRecordStreamFiler withProcessInstanceKey(final long processInstanceKey) {
+    return new IncidentRecordStreamFiler(
+        stream.filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey));
+  }
+
+  public Stream<Record<IncidentRecordValue>> stream() {
+    return stream;
+  }
 }

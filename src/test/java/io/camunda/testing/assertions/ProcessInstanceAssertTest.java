@@ -7,6 +7,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.camunda.testing.extensions.ZeebeAssertions;
+import io.camunda.testing.util.Utilities;
+import io.camunda.testing.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.Record;
@@ -367,6 +369,38 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThat(instanceEvent).hasCorrelatedMessageByCorrelationKey(correlationKey, 1);
+    }
+
+    @Test
+    public void testHasAnyIncidents() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+
+      final Map<String, Object> variables =
+          Collections.singletonMap(VAR_TOTAL_LOOPS, "invalid value"); // will cause incident
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
+      completeTask(SERVICETASK);
+
+      // then
+      assertThat(instanceEvent).hasAnyIncidents();
+    }
+
+    @Test
+    public void testHasNoIncidents() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // then
+      assertThat(instanceEvent).hasNoIncidents();
     }
   }
 
@@ -827,6 +861,40 @@ class ProcessInstanceAssertTest {
                   + "times, but was %d times",
               correlationKey, 1, 0);
     }
+
+    public void testHasAnyIncidentsFailure() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasAnyIncidents())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No incidents were raised for this process instance");
+    }
+
+    @Test
+    public void testHasNoIncidentsFailure() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      final Map<String, Object> variables =
+          Collections.singletonMap(VAR_TOTAL_LOOPS, "invalid value"); // will cause incident
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
+      completeTask(SERVICETASK);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasNoIncidents())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("Incidents were raised for this process instance");
+    }
   }
 
   private void deployProcess(final String process) {
@@ -856,7 +924,7 @@ class ProcessInstanceAssertTest {
   private void completeTask(final String elementId) throws InterruptedException {
     Thread.sleep(100);
     Record<JobRecordValue> lastRecord = null;
-    for (Record<JobRecordValue> record : engine.jobRecords().withElementId(elementId)) {
+    for (final Record<JobRecordValue> record : engine.jobRecords().withElementId(elementId)) {
       if (record.getIntent().equals(JobIntent.CREATED)) {
         lastRecord = record;
       }
