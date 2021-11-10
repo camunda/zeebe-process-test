@@ -1,29 +1,40 @@
 package io.camunda.testing.filters;
 
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class ProcessMessageSubscriptionRecordStreamFilter {
 
-  private Stream<Record<ProcessMessageSubscriptionRecordValue>> stream;
+  private final Stream<Record<ProcessMessageSubscriptionRecordValue>> stream;
 
   public ProcessMessageSubscriptionRecordStreamFilter(
       final Iterable<Record<ProcessMessageSubscriptionRecordValue>> records) {
     stream = StreamSupport.stream(records.spliterator(), false);
   }
 
+  public ProcessMessageSubscriptionRecordStreamFilter(
+      final Stream<Record<ProcessMessageSubscriptionRecordValue>> stream) {
+    this.stream = stream;
+  }
+
   public ProcessMessageSubscriptionRecordStreamFilter withProcessInstanceKey(
       final long processInstanceKey) {
-    stream =
-        stream.filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey);
-    return this;
+    return new ProcessMessageSubscriptionRecordStreamFilter(
+        stream.filter(record -> record.getValue().getProcessInstanceKey() == processInstanceKey));
   }
 
   public ProcessMessageSubscriptionRecordStreamFilter withMessageName(final String messageName) {
-    stream = stream.filter(record -> record.getValue().getMessageName().equals(messageName));
-    return this;
+    return new ProcessMessageSubscriptionRecordStreamFilter(
+        stream.filter(record -> record.getValue().getMessageName().equals(messageName)));
+  }
+
+  public ProcessMessageSubscriptionRecordStreamFilter withRejectionType(
+      final RejectionType rejectionType) {
+    return new ProcessMessageSubscriptionRecordStreamFilter(
+        stream.filter(record -> record.getRejectionType() == rejectionType));
   }
 
   public Stream<Record<ProcessMessageSubscriptionRecordValue>> stream() {

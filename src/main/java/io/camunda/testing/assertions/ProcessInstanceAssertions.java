@@ -5,21 +5,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.Record;
-import io.camunda.zeebe.protocol.record.intent.Intent;
+import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
-import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.SoftAssertions;
 import org.camunda.community.eze.RecordStreamSource;
 
 public class ProcessInstanceAssertions
@@ -40,14 +38,17 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isStarted() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+    final boolean isStarted =
+        StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
             .withBpmnElementType(BpmnElementType.PROCESS)
             .stream()
-            .findFirst();
+            .findFirst()
+            .isPresent();
 
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isStarted)
         .withFailMessage("Process with key %s was not started", actual.getProcessInstanceKey())
         .isTrue();
 
@@ -61,8 +62,9 @@ public class ProcessInstanceAssertions
    */
   public ProcessInstanceAssertions isActive() {
     final boolean isActive =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
             .withBpmnElementType(BpmnElementType.PROCESS)
             .stream()
             .noneMatch(
@@ -83,18 +85,9 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isCompleted() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
-            .stream()
-            .findFirst();
-
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isProcessInstanceCompleted())
         .withFailMessage("Process with key %s was not completed", actual.getProcessInstanceKey())
         .isTrue();
-
     return this;
   }
 
@@ -104,19 +97,26 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isNotCompleted() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
-            .stream()
-            .findFirst();
-
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isProcessInstanceCompleted())
         .withFailMessage("Process with key %s was completed", actual.getProcessInstanceKey())
         .isFalse();
-
     return this;
+  }
+
+  /**
+   * Checks if a process instance has been completed
+   *
+   * @return boolean indicating whether the process instance has been completed
+   */
+  private boolean isProcessInstanceCompleted() {
+    return StreamFilter.processInstance(recordStreamSource)
+        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
+        .withBpmnElementType(BpmnElementType.PROCESS)
+        .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
+        .stream()
+        .findFirst()
+        .isPresent();
   }
 
   /**
@@ -125,18 +125,9 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isTerminated() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
-            .stream()
-            .findFirst();
-
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isProcessInstanceTerminated())
         .withFailMessage("Process with key %s was not terminated", actual.getProcessInstanceKey())
         .isTrue();
-
     return this;
   }
 
@@ -146,19 +137,26 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isNotTerminated() {
-    final Optional<Record<ProcessInstanceRecordValue>> processInstanceRecord =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withBpmnElementType(BpmnElementType.PROCESS)
-            .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
-            .stream()
-            .findFirst();
-
-    assertThat(processInstanceRecord.isPresent())
+    assertThat(isProcessInstanceTerminated())
         .withFailMessage("Process with key %s was terminated", actual.getProcessInstanceKey())
         .isFalse();
-
     return this;
+  }
+
+  /**
+   * Checks if a process instance has been terminated
+   *
+   * @return boolean indicating whether the process instance has been terminated
+   */
+  private boolean isProcessInstanceTerminated() {
+    return StreamFilter.processInstance(recordStreamSource)
+        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
+        .withBpmnElementType(BpmnElementType.PROCESS)
+        .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
+        .stream()
+        .findFirst()
+        .isPresent();
   }
 
   /**
@@ -193,8 +191,9 @@ public class ProcessInstanceAssertions
    */
   public ProcessInstanceAssertions hasPassedElement(final String elementId, final int times) {
     final long count =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
             .withElementId(elementId)
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
             .stream()
@@ -215,10 +214,11 @@ public class ProcessInstanceAssertions
    */
   public ProcessInstanceAssertions hasPassedElementInOrder(final String... elementIds) {
     final List<String> foundElementRecords =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+        StreamFilter.processInstance(recordStreamSource)
             .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
             .withElementIdIn(elementIds)
-            .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING)
+            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
             .stream()
             .map(Record::getValue)
             .map(ProcessInstanceRecordValue::getElementId)
@@ -239,17 +239,8 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isWaitingAtElement(final String... elementIds) {
-    final List<String> notActivatedElements =
-        Arrays.stream(elementIds)
-            .filter(((Predicate<String>) this::isWaitingAtElement).negate())
-            .collect(Collectors.toList());
-
-    assertThat(notActivatedElements.isEmpty())
-        .withFailMessage(
-            "Process with key %s is not waiting at element(s) with id(s) %s",
-            actual.getProcessInstanceKey(), String.join(", ", notActivatedElements))
-        .isTrue();
-
+    final Set<String> elementsInWaitState = getElementsInWaitState();
+    assertThat(elementsInWaitState).containsAll(Arrays.asList(elementIds));
     return this;
   }
 
@@ -261,89 +252,87 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isNotWaitingAtElement(final String... elementIds) {
-    final List<String> activatedElements =
-        Arrays.stream(elementIds).filter(this::isWaitingAtElement).collect(Collectors.toList());
-
-    assertThat(activatedElements.isEmpty())
-        .withFailMessage(
-            "Process with key %s is waiting at element(s) with id(s) %s",
-            actual.getProcessInstanceKey(), String.join(", ", activatedElements))
-        .isTrue();
-
+    final Set<String> elementsInWaitState = getElementsInWaitState();
+    assertThat(elementsInWaitState).doesNotContainAnyElementsOf(Arrays.asList(elementIds));
     return this;
   }
 
   /**
-   * Checks if the process instance is currently waiting at an element with a specific element id.
+   * Gets the elements that are currently in a waiting state.
    *
-   * @param elementId The id of the element
-   * @return boolean indicating whether the process instance is waiting at the element
+   * @return set containing the element ids of the elements in a waiting state
    */
-  // TODO if waiting at any element with this id returns true. Maybe add a counter so we can check
-  // we are waiting at multiple elements with the same id
-  private boolean isWaitingAtElement(final String elementId) {
-    final Map<Long, List<Record<ProcessInstanceRecordValue>>> recordsMap =
-        StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withElementId(elementId)
-            .stream()
-            .collect(Collectors.groupingBy(record -> record.getValue().getFlowScopeKey()));
-
-    if (recordsMap.isEmpty()) {
-      return false;
-    }
-
-    for (Entry<Long, List<Record<ProcessInstanceRecordValue>>> entry : recordsMap.entrySet()) {
-      final Record<ProcessInstanceRecordValue> lastRecord =
-          entry.getValue().get(entry.getValue().size() - 1);
-      if (lastRecord.getIntent() == ProcessInstanceIntent.ELEMENT_ACTIVATED) {
-        return true;
-      }
-    }
-
-    return false;
+  private Set<String> getElementsInWaitState() {
+    final Set<String> elementsInWaitState = new HashSet<>();
+    StreamFilter.processInstance(recordStreamSource)
+        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
+        .withoutBpmnElementType(BpmnElementType.PROCESS)
+        .stream()
+        .collect(
+            Collectors.toMap(
+                record ->
+                    String.format(
+                        "%s-%s",
+                        record.getValue().getElementId(), record.getValue().getFlowScopeKey()),
+                record -> record,
+                (existing, replacement) -> replacement))
+        .forEach(
+            (key, record) -> {
+              if (record.getIntent().equals(ProcessInstanceIntent.ELEMENT_ACTIVATED)) {
+                elementsInWaitState.add(record.getValue().getElementId());
+              }
+            });
+    return elementsInWaitState;
   }
 
   /**
    * Verifies the expectation that the process instance is currently waiting at the specified
    * elements, and not at any other element.
    *
-   * @param elementIds The ids of the elements
+   * @param elementIdsVarArg The ids of the elements
    * @return this {@link ProcessInstanceAssertions}
    */
-  public ProcessInstanceAssertions isWaitingExactlyAtElements(final String... elementIds) {
-    final List<String> shouldBeWaitingAt = Arrays.asList(elementIds);
+  public ProcessInstanceAssertions isWaitingExactlyAtElements(final String... elementIdsVarArg) {
+    final List<String> elementIds = Arrays.asList(elementIdsVarArg);
+    final Set<String> elementsInWaitState = getElementsInWaitState();
     final List<String> wrongfullyWaitingElementIds = new ArrayList<>();
     final List<String> wrongfullyNotWaitingElementIds = new ArrayList<>();
 
-    StreamFilter.processInstance(recordStreamSource.processInstanceRecords())
+    StreamFilter.processInstance(recordStreamSource)
         .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
         .withoutBpmnElementType(BpmnElementType.PROCESS)
-        .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATING)
+        .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
         .stream()
         .map(Record::getValue)
         .map(ProcessInstanceRecordValue::getElementId)
+        .distinct()
         .forEach(
             id -> {
-              if (shouldBeWaitingAt.contains(id) && !isWaitingAtElement(id)) {
-                // not waiting for the element we want to wait for!
+              final boolean shouldBeWaitingAtElement = elementIds.contains(id);
+              final boolean isWaitingAtElement = elementsInWaitState.contains(id);
+              if (shouldBeWaitingAtElement && !isWaitingAtElement) {
                 wrongfullyNotWaitingElementIds.add(id);
-              } else if (!shouldBeWaitingAt.contains(id) && isWaitingAtElement(id)) {
-                // waiting for an element we don't want to wait for!
+              } else if (!shouldBeWaitingAtElement && isWaitingAtElement) {
                 wrongfullyWaitingElementIds.add(id);
               }
             });
 
-    assertThat(wrongfullyWaitingElementIds.isEmpty())
+    final SoftAssertions softly = new SoftAssertions();
+    softly
+        .assertThat(wrongfullyWaitingElementIds.isEmpty())
         .withFailMessage(
             "Process with key %s is waiting at element(s) with id(s) %s",
             actual.getProcessInstanceKey(), String.join(", ", wrongfullyWaitingElementIds))
         .isTrue();
-    assertThat(wrongfullyNotWaitingElementIds.isEmpty())
+    softly
+        .assertThat(wrongfullyNotWaitingElementIds.isEmpty())
         .withFailMessage(
             "Process with key %s is not waiting at element(s) with id(s) %s",
             actual.getProcessInstanceKey(), String.join(", ", wrongfullyNotWaitingElementIds))
         .isTrue();
+    softly.assertAll();
 
     return this;
   }
@@ -356,18 +345,8 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isWaitingForMessage(final String... messageNames) {
-    final List<String> notCreatedProcessMessageSubscriptions =
-        Arrays.stream(messageNames)
-            .filter(((Predicate<String>) this::isWaitingForMessage).negate())
-            .collect(Collectors.toList());
-
-    assertThat(notCreatedProcessMessageSubscriptions.isEmpty())
-        .withFailMessage(
-            "Process with key %s is not waiting for message(s) with name(s) %s",
-            actual.getProcessInstanceKey(),
-            String.join(", ", notCreatedProcessMessageSubscriptions))
-        .isTrue();
-
+    final Set<String> openMessageSubscriptions = getOpenMessageSubscriptions();
+    assertThat(openMessageSubscriptions).containsAll(Arrays.asList(messageNames));
     return this;
   }
 
@@ -379,48 +358,34 @@ public class ProcessInstanceAssertions
    * @return this {@link ProcessInstanceAssertions}
    */
   public ProcessInstanceAssertions isNotWaitingForMessage(final String... messageNames) {
-    final List<String> createdProcessMessageSubscriptions =
-        Arrays.stream(messageNames).filter(this::isWaitingForMessage).collect(Collectors.toList());
-
-    assertThat(createdProcessMessageSubscriptions.isEmpty())
-        .withFailMessage(
-            "Process with key %s is waiting for message(s) with name(s) %s",
-            actual.getProcessInstanceKey(), String.join(", ", createdProcessMessageSubscriptions))
-        .isTrue();
-
+    final Set<String> openMessageSubscriptions = getOpenMessageSubscriptions();
+    assertThat(openMessageSubscriptions).doesNotContainAnyElementsOf(Arrays.asList(messageNames));
     return this;
   }
 
   /**
-   * Checks if the process instance is currently waiting for a message with a specific message name.
+   * Gets the currently open message subscription from the record stream source
    *
-   * @param messageName The name of the message
-   * @return boolean indicating whether the process instance is waiting for the message
+   * @return set containing the message names of the open message subscriptions
    */
-  private boolean isWaitingForMessage(final String messageName) {
-    final Map<Long, List<Record<ProcessMessageSubscriptionRecordValue>>> recordsMap =
-        StreamFilter.processMessageSubscription(
-                recordStreamSource.processMessageSubscriptionRecords())
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
-            .withMessageName(messageName)
-            .stream()
-            .collect(Collectors.groupingBy(record -> record.getValue().getElementInstanceKey()));
-
-    if (recordsMap.isEmpty()) {
-      return false;
-    }
-
-    for (Entry<Long, List<Record<ProcessMessageSubscriptionRecordValue>>> entry :
-        recordsMap.entrySet()) {
-      final Record<ProcessMessageSubscriptionRecordValue> lastRecord =
-          entry.getValue().get(entry.getValue().size() - 1);
-      final Intent intent = lastRecord.getIntent();
-      if (intent.equals(ProcessMessageSubscriptionIntent.CREATING)
-          || intent.equals(ProcessMessageSubscriptionIntent.CREATED)) {
-        return true;
-      }
-    }
-
-    return false;
+  private Set<String> getOpenMessageSubscriptions() {
+    final Set<String> openMessageSubscriptions = new HashSet<>();
+    StreamFilter.processMessageSubscription(recordStreamSource)
+        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
+        .stream()
+        .collect(
+            Collectors.toMap(
+                record -> record.getValue().getElementInstanceKey(),
+                record -> record,
+                (existing, replacement) -> replacement))
+        .forEach(
+            (key, record) -> {
+              if (record.getIntent().equals(ProcessMessageSubscriptionIntent.CREATING)
+                  || record.getIntent().equals(ProcessMessageSubscriptionIntent.CREATED)) {
+                openMessageSubscriptions.add(record.getValue().getMessageName());
+              }
+            });
+    return openMessageSubscriptions;
   }
 }

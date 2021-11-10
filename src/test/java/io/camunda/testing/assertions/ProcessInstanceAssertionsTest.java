@@ -26,11 +26,17 @@ class ProcessInstanceAssertionsTest {
 
   public static final String PROCESS_INSTANCE_BPMN = "looping-servicetask.bpmn";
   public static final String PROCESS_INSTANCE_ID = "looping-servicetask";
-  public static final String ELEMENT_ID = "servicetask";
   public static final String MULTIPLE_TASKS_BPMN = "multiple-tasks.bpmn";
   public static final String MULTIPLE_TASKS_PROCESS_ID = "multiple-tasks";
   public static final String MESSAGE_EVENT_BPMN = "message-event.bpmn";
   public static final String MESSAGE_EVENT_PROCESS_ID = "message-event";
+  public static final String STARTEVENT = "startevent";
+  public static final String SERVICETASK = "servicetask";
+  public static final String SERVICETASK_1 = "servicetask1";
+  public static final String SERVICETASK_2 = "servicetask2";
+  public static final String SERVICETASK_3 = "servicetask3";
+  public static final String ENDEVENT = "endevent";
+  public static final String VAR_TOTAL_LOOPS = "totalLoops";
   public static final String MESSAGE_NAME = "message";
 
   private ZeebeClient client;
@@ -46,7 +52,7 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceIsStarted() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
@@ -60,7 +66,7 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceIsActive() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
@@ -74,12 +80,12 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceIsCompleted() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // when
-      completeTask(ELEMENT_ID);
+      completeTask(SERVICETASK);
 
       // then
       assertThat(instanceEvent).isCompleted();
@@ -89,7 +95,7 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceIsNotCompleted() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
@@ -103,7 +109,7 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceIsTerminated() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
@@ -119,7 +125,7 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceIsNotTerminated() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
@@ -133,29 +139,29 @@ class ProcessInstanceAssertionsTest {
     public void testProcessInstanceHasPassedElement() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // when
-      completeTask(ELEMENT_ID);
+      completeTask(SERVICETASK);
 
       // then
-      assertThat(instanceEvent).hasPassedElement(ELEMENT_ID);
+      assertThat(instanceEvent).hasPassedElement(SERVICETASK);
     }
 
     @Test
     public void testProcessInstanceHasNotPassedElement() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // then
-      assertThat(instanceEvent).hasNotPassedElement(ELEMENT_ID);
+      assertThat(instanceEvent).hasNotPassedElement(SERVICETASK);
     }
 
     @Test
@@ -163,32 +169,32 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final int totalLoops = 5;
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", totalLoops);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, totalLoops);
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // when
       for (int i = 0; i < 5; i++) {
-        completeTask(ELEMENT_ID);
+        completeTask(SERVICETASK);
       }
 
       // then
-      assertThat(instanceEvent).hasPassedElement(ELEMENT_ID, totalLoops);
+      assertThat(instanceEvent).hasPassedElement(SERVICETASK, totalLoops);
     }
 
     @Test
     public void testProcessInstanceHasPassedElementsInOrder() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // when
-      completeTask(ELEMENT_ID);
+      completeTask(SERVICETASK);
 
       // then
-      assertThat(instanceEvent).hasPassedElementInOrder("startevent", ELEMENT_ID, "endevent");
+      assertThat(instanceEvent).hasPassedElementInOrder(STARTEVENT, SERVICETASK, ENDEVENT);
     }
 
     @Test
@@ -200,7 +206,7 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
-      assertThat(instanceEvent).isWaitingAtElement("servicetask1");
+      assertThat(instanceEvent).isWaitingAtElement(SERVICETASK_1);
     }
 
     @Test
@@ -212,7 +218,7 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
-      assertThat(instanceEvent).isWaitingAtElement("servicetask1", "servicetask2", "servicetask3");
+      assertThat(instanceEvent).isWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
     }
 
     @Test
@@ -222,10 +228,10 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask("servicetask1");
+      completeTask(SERVICETASK_1);
 
       // then
-      assertThat(instanceEvent).isNotWaitingAtElement("servicetask1");
+      assertThat(instanceEvent).isNotWaitingAtElement(SERVICETASK_1);
     }
 
     @Test
@@ -235,13 +241,12 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask("servicetask1");
-      completeTask("servicetask2");
-      completeTask("servicetask3");
+      completeTask(SERVICETASK_1);
+      completeTask(SERVICETASK_2);
+      completeTask(SERVICETASK_3);
 
       // then
-      assertThat(instanceEvent)
-          .isNotWaitingAtElement("servicetask1", "servicetask2", "servicetask3");
+      assertThat(instanceEvent).isNotWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
     }
 
     @Test
@@ -249,12 +254,13 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      final String nonExistingElementId = "non-existing-task";
 
       // when
-      completeTask("non-existing-task");
+      completeTask(nonExistingElementId);
 
       // then
-      assertThat(instanceEvent).isNotWaitingAtElement("non-existing-task");
+      assertThat(instanceEvent).isNotWaitingAtElement(nonExistingElementId);
     }
 
     @Test
@@ -264,10 +270,10 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask("servicetask1");
+      completeTask(SERVICETASK_1);
 
       // then
-      assertThat(instanceEvent).isWaitingExactlyAtElements("servicetask2", "servicetask3");
+      assertThat(instanceEvent).isWaitingExactlyAtElements(SERVICETASK_2, SERVICETASK_3);
     }
 
     @Test
@@ -346,10 +352,10 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // when
-      completeTask(ELEMENT_ID);
+      completeTask(SERVICETASK);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isActive())
@@ -364,7 +370,7 @@ class ProcessInstanceAssertionsTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isCompleted())
@@ -378,10 +384,10 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // when
-      completeTask(ELEMENT_ID);
+      completeTask(SERVICETASK);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotCompleted())
@@ -396,7 +402,7 @@ class ProcessInstanceAssertionsTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isTerminated())
@@ -410,7 +416,7 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // when
       client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
@@ -429,12 +435,12 @@ class ProcessInstanceAssertionsTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).hasPassedElement(ELEMENT_ID))
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasPassedElement(SERVICETASK))
           .isInstanceOf(AssertionError.class)
-          .hasMessage("Expected element with id %s to be passed 1 times", ELEMENT_ID);
+          .hasMessage("Expected element with id %s to be passed 1 times", SERVICETASK);
     }
 
     @Test
@@ -442,33 +448,33 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap("totalLoops", 1));
+          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // when
-      completeTask(ELEMENT_ID);
+      completeTask(SERVICETASK);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).hasNotPassedElement(ELEMENT_ID))
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasNotPassedElement(SERVICETASK))
           .isInstanceOf(AssertionError.class)
-          .hasMessage("Expected element with id %s to be passed 0 times", ELEMENT_ID);
+          .hasMessage("Expected element with id %s to be passed 0 times", SERVICETASK);
     }
 
     @Test
     public void testProcessInstanceHasPassedElementsInOrderFailure() throws InterruptedException {
       // given
       deployProcess(PROCESS_INSTANCE_BPMN);
-      final Map<String, Object> variables = Collections.singletonMap("totalLoops", 1);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(PROCESS_INSTANCE_ID, variables);
 
       // when
-      completeTask(ELEMENT_ID);
+      completeTask(SERVICETASK);
 
       // then
       assertThatThrownBy(
               () ->
                   assertThat(instanceEvent)
-                      .hasPassedElementInOrder("endevent", ELEMENT_ID, "startevent"))
+                      .hasPassedElementInOrder(ENDEVENT, SERVICETASK, STARTEVENT))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "[Ordered elements] \n"
@@ -483,14 +489,12 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask("servicetask1");
+      completeTask(SERVICETASK_1);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement("servicetask1"))
+      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement(SERVICETASK_1))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is not waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(), "servicetask1");
+          .hasMessageContainingAll("to contain", SERVICETASK_1);
     }
 
     @Test
@@ -501,19 +505,17 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask("servicetask1");
-      completeTask("servicetask2");
-      completeTask("servicetask3");
+      completeTask(SERVICETASK_1);
+      completeTask(SERVICETASK_2);
+      completeTask(SERVICETASK_3);
 
       // then
       assertThatThrownBy(
               () ->
                   assertThat(instanceEvent)
-                      .isWaitingAtElement("servicetask1", "servicetask2", "servicetask3"))
+                      .isWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is not waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(), "servicetask1, servicetask2, servicetask3");
+          .hasMessageContainingAll("to contain:", SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
     }
 
     @Test
@@ -522,16 +524,15 @@ class ProcessInstanceAssertionsTest {
       // given
       deployProcess(MULTIPLE_TASKS_BPMN);
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      final String nonExistingTaskId = "non-existing-task";
 
       // when
-      completeTask("non-existing-task");
+      completeTask(nonExistingTaskId);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement("non-existing-task"))
+      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement(nonExistingTaskId))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is not waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(), "non-existing-task");
+          .hasMessageContainingAll("to contain", nonExistingTaskId);
     }
 
     @Test
@@ -543,11 +544,9 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAtElement("servicetask1"))
+      assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAtElement(SERVICETASK_1))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(), "servicetask1");
+          .hasMessageContainingAll("not to contain", SERVICETASK_1);
     }
 
     @Test
@@ -563,11 +562,9 @@ class ProcessInstanceAssertionsTest {
       assertThatThrownBy(
               () ->
                   assertThat(instanceEvent)
-                      .isNotWaitingAtElement("servicetask1", "servicetask2", "servicetask3"))
+                      .isNotWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is waiting at element(s) with id(s) %s",
-              instanceEvent.getProcessInstanceKey(), "servicetask1, servicetask2, servicetask3");
+          .hasMessageContainingAll("not to contain", SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
     }
 
     @Test
@@ -580,15 +577,15 @@ class ProcessInstanceAssertionsTest {
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingExactlyAtElements("servicetask1"))
+      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingExactlyAtElements(SERVICETASK_1))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               String.format(
                   "Process with key %s is waiting at element(s) with id(s)",
                   instanceEvent.getProcessInstanceKey()),
-              "servicetask2",
-              "servicetask3")
-          .hasMessageNotContaining("servicetask1");
+              SERVICETASK_2,
+              SERVICETASK_3)
+          .hasMessageNotContaining(SERVICETASK_1);
     }
 
     @Test
@@ -599,22 +596,51 @@ class ProcessInstanceAssertionsTest {
 
       // when
       final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
-      completeTask("servicetask1");
-      completeTask("servicetask2");
+      completeTask(SERVICETASK_1);
+      completeTask(SERVICETASK_2);
 
       // then
       assertThatThrownBy(
               () ->
                   assertThat(instanceEvent)
-                      .isWaitingExactlyAtElements("servicetask1", "servicetask2", "servicetask3"))
+                      .isWaitingExactlyAtElements(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               String.format(
                   "Process with key %s is not waiting at element(s) with id(s)",
                   instanceEvent.getProcessInstanceKey()),
-              "servicetask1",
-              "servicetask2")
-          .hasMessageNotContaining("servicetask3");
+              SERVICETASK_1,
+              SERVICETASK_2)
+          .hasMessageNotContaining(SERVICETASK_3);
+    }
+
+    @Test
+    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_combination()
+        throws InterruptedException {
+      // given
+      deployProcess(MULTIPLE_TASKS_BPMN);
+
+      // when
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      completeTask(SERVICETASK_1);
+      completeTask(SERVICETASK_2);
+
+      // then
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingExactlyAtElements(SERVICETASK_1, SERVICETASK_2))
+          .isInstanceOf(AssertionError.class)
+          .hasMessageContainingAll(
+              String.format(
+                  "Process with key %s is not waiting at element(s) with id(s)",
+                  instanceEvent.getProcessInstanceKey()),
+              SERVICETASK_1,
+              SERVICETASK_2,
+              String.format(
+                  "Process with key %s is waiting at element(s) with id(s)",
+                  instanceEvent.getProcessInstanceKey()),
+              SERVICETASK_3);
     }
 
     @Test
@@ -633,9 +659,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingForMessage(MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is not waiting for message(s) with name(s) %s",
-              instanceEvent.getProcessInstanceKey(), MESSAGE_NAME);
+          .hasMessageContainingAll("to contain:", MESSAGE_NAME);
     }
 
     @Test
@@ -653,9 +677,7 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
-              "Process with key %s is waiting for message(s) with name(s) %s",
-              instanceEvent.getProcessInstanceKey(), MESSAGE_NAME);
+          .hasMessageContainingAll("not to contain", MESSAGE_NAME);
     }
   }
 
