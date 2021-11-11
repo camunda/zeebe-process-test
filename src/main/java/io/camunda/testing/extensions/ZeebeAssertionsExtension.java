@@ -1,6 +1,6 @@
 package io.camunda.testing.extensions;
 
-import io.camunda.testing.assertions.BpmnAssertions;
+import io.camunda.testing.assertions.BpmnAssert;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Optional;
@@ -24,11 +24,11 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
     final Object testInstance = extensionContext.getTestInstance().get();
     RecordStreamSource recordStreamSource =
         (RecordStreamSource) recordStreamField.get(testInstance);
-    BpmnAssertions.init(recordStreamSource);
+    BpmnAssert.init(recordStreamSource);
   }
 
   @Override
   public void afterEach(final ExtensionContext extensionContext) {
-    BpmnAssertions.reset();
+    BpmnAssert.reset();
   }
 }
