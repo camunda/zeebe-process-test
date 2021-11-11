@@ -7,13 +7,17 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-// @TODO Use this also in other tests (pihme: I tried, but it got messy quickly with many open PRs)
+// @TODO Use this also in other tests
 public class Utilities {
 
   public static final class ProcessPackLoopingServiceTask {
     public static final String RESOURCE_NAME = "looping-servicetask.bpmn";
     public static final String PROCESS_ID = "looping-servicetask";
-    public static final String ELEMENT_ID = "servicetask";
+
+    public static final String ELEMENT_ID = "servicetask"; // id of the service task
+    public static final String JOB_TYPE = "test"; // job type of service task
+    public static final String TOTAL_LOOPS =
+        "totalLoops"; // variable name to indicate number of loops
   }
 
   public static final class ProcessPackMultipleTasks {
