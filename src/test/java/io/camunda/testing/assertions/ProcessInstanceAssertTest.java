@@ -334,6 +334,40 @@ class ProcessInstanceAssertTest {
       // then
       assertThat(instanceEvent).hasVariableWithValue(VAR_TOTAL_LOOPS, "1");
     }
+
+    @Test
+    public void testHasCorrelatedMessageByName() throws InterruptedException {
+      // given
+      deployProcess(MESSAGE_EVENT_BPMN);
+      final String correlationKey = "key";
+      final Map<String, Object> variables =
+          Collections.singletonMap("correlationKey", correlationKey);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+
+      // when
+      sendMessage(MESSAGE_NAME, correlationKey);
+
+      // then
+      assertThat(instanceEvent).hasCorrelatedMessageByName(MESSAGE_NAME, 1);
+    }
+
+    @Test
+    public void testHasCorrelatedMessageByCorrelationKey() throws InterruptedException {
+      // given
+      deployProcess(MESSAGE_EVENT_BPMN);
+      final String correlationKey = "key";
+      final Map<String, Object> variables =
+          Collections.singletonMap("correlationKey", correlationKey);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+
+      // when
+      sendMessage(MESSAGE_NAME, correlationKey);
+
+      // then
+      assertThat(instanceEvent).hasCorrelatedMessageByCorrelationKey(correlationKey, 1);
+    }
   }
 
   // These tests are just for assertion testing purposes. These should not be used as examples.
@@ -748,6 +782,50 @@ class ProcessInstanceAssertTest {
                   + " ('%s') is internally mapped to a JSON String that yields '\"%s\"'. However, the "
                   + "actual value (as JSON String) is '\"%s\".",
               variable, expectedValue, expectedValue, actualValue);
+    }
+
+    @Test
+    public void testHasCorrelatedMessageByNameFailure() throws InterruptedException {
+      // given
+      deployProcess(MESSAGE_EVENT_BPMN);
+      final String correlationKey = "key";
+      final Map<String, Object> variables =
+          Collections.singletonMap("correlationKey", correlationKey);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+
+      // then
+      assertThatThrownBy(
+              () -> assertThat(instanceEvent).hasCorrelatedMessageByName(MESSAGE_NAME, 1))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Expected message with name '%s' to be correlated %d times, but was %d times",
+              MESSAGE_NAME, 1, 0);
+    }
+
+    @Test
+    public void testHasCorrelatedMessageByCorrelationKeyFailure() throws InterruptedException {
+      // given
+      deployProcess(MESSAGE_EVENT_BPMN);
+      final String correlationKey = "key";
+      final Map<String, Object> variables =
+          Collections.singletonMap("correlationKey", correlationKey);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+
+      // then
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent).hasCorrelatedMessageByCorrelationKey(correlationKey, 1))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Expected message with correlation key '%s' to be correlated %d "
+                  + "times, but was %d times",
+              correlationKey, 1, 0);
     }
   }
 

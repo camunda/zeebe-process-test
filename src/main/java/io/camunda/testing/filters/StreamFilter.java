@@ -18,4 +18,8 @@ public class StreamFilter {
   public static VariableRecordStreamFilter variable(final RecordStreamSource recordStreamSource) {
     return new VariableRecordStreamFilter(recordStreamSource.variableRecords());
   }
+
+  public static MessageRecordStreamFilter message(final RecordStreamSource recordStreamSource) {
+    return new MessageRecordStreamFilter(recordStreamSource.messageRecords());
+  }
 }

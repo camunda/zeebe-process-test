@@ -393,6 +393,61 @@ public class ProcessInstanceAssert
   }
 
   /**
+   * Verifies the expectation that a message with a given name has been correlated a given amount of
+   * times.
+   *
+   * @param messageName The name of the message
+   * @param times The expected amount of times the message is correlated
+   * @return this {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert hasCorrelatedMessageByName(
+      final String messageName, final int times) {
+    final long actualTimes =
+        StreamFilter.processMessageSubscription(recordStreamSource)
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withMessageName(messageName)
+            .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
+            .stream()
+            .count();
+
+    assertThat(actualTimes)
+        .withFailMessage(
+            "Expected message with name '%s' to be correlated %d times, but was %d times",
+            messageName, times, actualTimes)
+        .isEqualTo(times);
+    return this;
+  }
+
+  /**
+   * Verifies the expectation that a message with a given correlation key has been correlated a
+   * given amount of times.
+   *
+   * @param correlationKey The correlation key of the message
+   * @param times The expected amount of times the message is correlated
+   * @return this {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert hasCorrelatedMessageByCorrelationKey(
+      final String correlationKey, final int times) {
+    final long actualTimes =
+        StreamFilter.processMessageSubscription(recordStreamSource)
+            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withCorrelationKey(correlationKey)
+            .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
+            .stream()
+            .count();
+
+    assertThat(actualTimes)
+        .withFailMessage(
+            "Expected message with correlation key '%s' "
+                + "to be correlated %d times, but was %d times",
+            correlationKey, times, actualTimes)
+        .isEqualTo(times);
+    return this;
+  }
+
+  /**
    * Verifies the process instance has a variable with the specified name
    *
    * @param name The name of the variable
