@@ -2,8 +2,8 @@ package io.camunda.testing.assertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.camunda.testing.assertions.ProcessInstanceAssert.ProcessInstanceActual;
 import io.camunda.testing.filters.StreamFilter;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -24,12 +24,12 @@ import org.assertj.core.api.SoftAssertions;
 import org.camunda.community.eze.RecordStreamSource;
 
 public class ProcessInstanceAssert
-    extends AbstractAssert<ProcessInstanceAssert, ProcessInstanceEvent> {
+    extends AbstractAssert<ProcessInstanceAssert, ProcessInstanceActual> {
 
   private RecordStreamSource recordStreamSource;
 
   public ProcessInstanceAssert(
-      final ProcessInstanceEvent actual, final RecordStreamSource recordStreamSource) {
+      final ProcessInstanceActual actual, final RecordStreamSource recordStreamSource) {
     super(actual, ProcessInstanceAssert.class);
     this.recordStreamSource = recordStreamSource;
   }
@@ -515,5 +515,18 @@ public class ProcessInstanceAssert
         .stream()
         .map(Record::getValue)
         .collect(Collectors.toMap(VariableRecordValue::getName, VariableRecordValue::getValue));
+  }
+
+  protected static class ProcessInstanceActual {
+
+    private final long processInstanceKey;
+
+    public ProcessInstanceActual(final long processInstanceKey) {
+      this.processInstanceKey = processInstanceKey;
+    }
+
+    public long getProcessInstanceKey() {
+      return processInstanceKey;
+    }
   }
 }

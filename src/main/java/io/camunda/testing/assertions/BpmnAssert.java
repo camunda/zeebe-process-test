@@ -1,5 +1,6 @@
 package io.camunda.testing.assertions;
 
+import io.camunda.testing.assertions.ProcessInstanceAssert.ProcessInstanceActual;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
@@ -19,7 +20,8 @@ public abstract class BpmnAssert {
   }
 
   public static ProcessInstanceAssert assertThat(final ProcessInstanceEvent instanceEvent) {
-    return new ProcessInstanceAssert(instanceEvent, getRecordStreamSource());
+    return new ProcessInstanceAssert(
+        new ProcessInstanceActual(instanceEvent.getProcessInstanceKey()), getRecordStreamSource());
   }
 
   public static JobAssert assertThat(final ActivatedJob activatedJob) {

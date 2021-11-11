@@ -2,12 +2,16 @@ package io.camunda.testing.assertions;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import io.camunda.testing.assertions.ProcessInstanceAssert.ProcessInstanceActual;
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.MessageIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 import org.camunda.community.eze.RecordStreamSource;
 
 public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageResponse> {
@@ -62,5 +66,25 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
         .isTrue();
 
     return this;
+  }
+
+  public ProcessInstanceAssert extractingProcessInstance() {
+    final List<Long> correlatedProcessInstances =
+        StreamFilter.processMessageSubscription(recordStreamSource)
+            .withMessageKey(actual.getMessageKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
+            .stream()
+            .map(record -> record.getValue().getProcessInstanceKey())
+            .collect(Collectors.toList());
+
+    Assertions.assertThat(correlatedProcessInstances)
+        .withFailMessage(
+            "Expected to find one correlated process instance for message key %d but found %d: %s",
+            actual.getMessageKey(), correlatedProcessInstances.size(), correlatedProcessInstances)
+        .hasSize(1);
+
+    return new ProcessInstanceAssert(
+        new ProcessInstanceActual(correlatedProcessInstances.get(0)), recordStreamSource);
   }
 }

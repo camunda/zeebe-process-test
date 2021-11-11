@@ -22,6 +22,9 @@ import org.junit.jupiter.api.Test;
 @ZeebeAssertions
 class MessageAssertTest {
 
+  public static final String CORRELATION_KEY = "correlationkey";
+  public static final String WRONG_CORRELATION_KEY = "wrongcorrelationkey";
+
   private ZeebeClient client;
   private ZeebeEngine engine;
   private ZeebeEngineClock clock;
@@ -35,15 +38,14 @@ class MessageAssertTest {
     void testHasBeenCorrelated() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
-      final String correlationKey = "correlationkey";
       final Map<String, Object> variables =
           Collections.singletonMap(
-              ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, correlationKey);
+              ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
       startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThat(response).hasBeenCorrelated();
@@ -53,16 +55,32 @@ class MessageAssertTest {
     void testHasExpired() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
-      final String correlationKey = "correlationkey";
       final Duration timeToLive = Duration.ofNanos(1);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey, timeToLive);
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
       clock.increaseTime(timeToLive.plusMillis(1));
 
       // then
       assertThat(response).hasExpired();
+    }
+
+    @Test
+    void testExtractingProcessInstance() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      final Map<String, Object> variables =
+          Collections.singletonMap(
+              ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
+      startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+
+      // then
+      assertThat(response).extractingProcessInstance().isCompleted();
     }
   }
 
@@ -75,11 +93,10 @@ class MessageAssertTest {
     void testHasBeenCorrelatedFailure() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
-      final String correlationKey = "correlationkey";
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> assertThat(response).hasBeenCorrelated())
@@ -91,16 +108,36 @@ class MessageAssertTest {
     void testHasExpiredFailure() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
-      final String correlationKey = "correlationkey";
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> assertThat(response).hasExpired())
           .isInstanceOf(AssertionError.class)
           .hasMessage("Message with key %d was not expired", response.getMessageKey());
+    }
+
+    @Test
+    void testExtractingProcessInstanceFailure() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      final Map<String, Object> variables =
+          Collections.singletonMap(
+              ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
+      startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, WRONG_CORRELATION_KEY);
+
+      // then
+      assertThatThrownBy(() -> assertThat(response).extractingProcessInstance())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Expected to find one correlated process instance for message key %d but found %d: %s",
+              response.getMessageKey(), 0, "[]");
     }
   }
 }
