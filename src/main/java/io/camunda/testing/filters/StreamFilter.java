@@ -14,4 +14,8 @@ public class StreamFilter {
     return new ProcessMessageSubscriptionRecordStreamFilter(
         recordStreamSource.processMessageSubscriptionRecords());
   }
+
+  public static VariableRecordStreamFilter variable(final RecordStreamSource recordStreamSource) {
+    return new VariableRecordStreamFilter(recordStreamSource.variableRecords());
+  }
 }

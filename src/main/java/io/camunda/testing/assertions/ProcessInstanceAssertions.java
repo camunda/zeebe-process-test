@@ -4,16 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
+import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
@@ -387,5 +390,75 @@ public class ProcessInstanceAssertions
               }
             });
     return openMessageSubscriptions;
+  }
+
+  /**
+   * Verifies the process instance has a variable with the specified name
+   *
+   * @param name The name of the variable
+   * @return this ${@link ProcessInstanceAssertions}
+   */
+  public ProcessInstanceAssertions hasVariable(final String name) {
+    final Map<String, String> variables = getProcessInstanceVariables();
+    return assertVariableInMapOfVariables(name, variables);
+  }
+
+  /**
+   * Assert that the given variable name is a key in the given map of variables.
+   *
+   * <p>This assertion has been extracted from the method ${@link #hasVariable(String)} so that the
+   * method ${@link #hasVariableWithValue(String, String)} could reuse it without having to traverse
+   * the record stream to collect the variables a second time.
+   *
+   * @param name The name of the variable
+   * @param variables The map of variables
+   * @return this ${@link ProcessInstanceAssertions}
+   */
+  private ProcessInstanceAssertions assertVariableInMapOfVariables(
+      final String name, final Map<String, String> variables) {
+    assertThat(variables)
+        .withFailMessage(
+            "Process with key %s does not contain variable with name `%s`. Available variables are: %s",
+            actual.getProcessInstanceKey(), name, variables.keySet())
+        .containsKey(name);
+    return this;
+  }
+
+  /**
+   * Verifies the process instance has a variable with a specific value.
+   *
+   * @param name The name of the variable
+   * @param value The value of the variable
+   * @return this ${@link ProcessInstanceAssertions}
+   */
+  public ProcessInstanceAssertions hasVariableWithValue(final String name, final String value) {
+    final ZeebeObjectMapper mapper = new ZeebeObjectMapper();
+    final String mappedValue = mapper.toJson(value);
+    final Map<String, String> variables = getProcessInstanceVariables();
+
+    assertVariableInMapOfVariables(name, variables);
+    assertThat(variables)
+        .withFailMessage(
+            "The variable '%s' does not have the expected value. The value passed in"
+                + " ('%s') is internally mapped to a JSON String that yields '%s'. However, the "
+                + "actual value (as JSON String) is '%s.",
+            name, value, mappedValue, variables.get(name))
+        .containsEntry(name, mappedValue);
+
+    return this;
+  }
+
+  /**
+   * Returns a Map of variables that belong to this process instance
+   *
+   * @return map of variables
+   */
+  private Map<String, String> getProcessInstanceVariables() {
+    return StreamFilter.variable(recordStreamSource)
+        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withRejectionType(RejectionType.NULL_VAL)
+        .stream()
+        .map(Record::getValue)
+        .collect(Collectors.toMap(VariableRecordValue::getName, VariableRecordValue::getValue));
   }
 }

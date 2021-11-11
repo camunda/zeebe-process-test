@@ -306,6 +306,34 @@ class ProcessInstanceAssertionsTest {
       // then
       assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME);
     }
+
+    @Test
+    public void testProcessInstanceHasVariable() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // then
+      assertThat(instanceEvent).hasVariable(VAR_TOTAL_LOOPS);
+    }
+
+    @Test
+    public void testProcessInstanceHasVariableWithValue() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, "1");
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // then
+      assertThat(instanceEvent).hasVariableWithValue(VAR_TOTAL_LOOPS, "1");
+    }
   }
 
   // These tests are just for assertion testing purposes. These should not be used as examples.
@@ -678,6 +706,48 @@ class ProcessInstanceAssertionsTest {
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("not to contain", MESSAGE_NAME);
+    }
+
+    @Test
+    public void testProcessInstanceHasVariableFailure() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final String expectedVariable = "variable";
+      final String actualVariable = "loopAmount";
+
+      // when
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_INSTANCE_ID);
+
+      // then
+      assertThatThrownBy(() -> assertThat(instanceEvent).hasVariable(expectedVariable))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Process with key %s does not contain variable with name `%s`. Available variables are: [%s]",
+              instanceEvent.getProcessInstanceKey(), expectedVariable, actualVariable);
+    }
+
+    @Test
+    public void testProcessInstanceHasVariableWithValueFailure() throws InterruptedException {
+      // given
+      deployProcess(PROCESS_INSTANCE_BPMN);
+      final String variable = "variable";
+      final String expectedValue = "expectedValue";
+      final String actualValue = "actualValue";
+      final Map<String, Object> variables = Collections.singletonMap(variable, actualValue);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+
+      // then
+      assertThatThrownBy(
+              () -> assertThat(instanceEvent).hasVariableWithValue(variable, expectedValue))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "The variable '%s' does not have the expected value. The value passed in"
+                  + " ('%s') is internally mapped to a JSON String that yields '\"%s\"'. However, the "
+                  + "actual value (as JSON String) is '\"%s\".",
+              variable, expectedValue, expectedValue, actualValue);
     }
   }
 
