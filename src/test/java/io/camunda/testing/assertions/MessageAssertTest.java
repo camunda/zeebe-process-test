@@ -2,6 +2,7 @@ package io.camunda.testing.assertions;
 
 import static io.camunda.testing.assertions.BpmnAssert.assertThat;
 import static io.camunda.testing.util.Utilities.deployProcess;
+import static io.camunda.testing.util.Utilities.increaseTime;
 import static io.camunda.testing.util.Utilities.sendMessage;
 import static io.camunda.testing.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -69,12 +70,12 @@ class MessageAssertTest {
     void testHasExpired() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
-      final Duration timeToLive = Duration.ofNanos(1);
+      final Duration timeToLive = Duration.ofDays(1);
 
       // when
       final PublishMessageResponse response =
           sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
-      clock.increaseTime(timeToLive.plusMillis(1));
+      increaseTime(clock, timeToLive.plusMinutes(1));
 
       // then
       assertThat(response).hasExpired();
@@ -172,12 +173,12 @@ class MessageAssertTest {
     void testHasNotExpiredFailure() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
-      final Duration timeToLive = Duration.ofNanos(1);
+      final Duration timeToLive = Duration.ofDays(1);
 
       // when
       final PublishMessageResponse response =
           sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
-      clock.increaseTime(timeToLive.plusMillis(10));
+      increaseTime(clock, timeToLive.plusMinutes(1));
 
       // then
       assertThatThrownBy(() -> assertThat(response).hasNotExpired())

@@ -8,6 +8,7 @@ import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import org.camunda.community.eze.ZeebeEngineClock;
 
 // @TODO Use this also in other tests
 public class Utilities {
@@ -96,5 +97,11 @@ public class Utilities {
             .join();
     Thread.sleep(100);
     return response;
+  }
+
+  public static void increaseTime(final ZeebeEngineClock clock, final Duration duration)
+      throws InterruptedException {
+    clock.increaseTime(duration);
+    Thread.sleep(100);
   }
 }
