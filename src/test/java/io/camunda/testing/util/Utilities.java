@@ -35,6 +35,12 @@ public class Utilities {
     public static final String CORRELATION_KEY_VARIABLE = "correlationKey";
   }
 
+  public static final class ProcessPackMessageStartEvent {
+    public static final String RESOURCE_NAME = "message-start-event.bpmn";
+    public static final String MESSAGE_NAME = "start-message";
+    public static final String CORRELATION_KEY = "";
+  }
+
   public static DeploymentEvent deployProcess(final ZeebeClient client, final String process) {
     return deployProcesses(client, process);
   }

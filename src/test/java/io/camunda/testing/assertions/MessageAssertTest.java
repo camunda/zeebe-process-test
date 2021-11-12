@@ -9,6 +9,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import io.camunda.testing.extensions.ZeebeAssertions;
 import io.camunda.testing.util.Utilities.ProcessPackMessageEvent;
+import io.camunda.testing.util.Utilities.ProcessPackMessageStartEvent;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
@@ -26,6 +27,7 @@ class MessageAssertTest {
 
   public static final String CORRELATION_KEY = "correlationkey";
   public static final String WRONG_CORRELATION_KEY = "wrongcorrelationkey";
+  public static final String WRONG_MESSAGE_NAME = "wrongmessagename";
 
   private ZeebeClient client;
   private ZeebeEngine engine;
@@ -108,7 +110,23 @@ class MessageAssertTest {
           sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
-      assertThat(response).extractingProcessInstance().isCompleted();
+      assertThat(response).extractingProcessInstance(false).isCompleted();
+    }
+
+    @Test
+    void testExtractingProcessInstance_messageStartEvent() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(
+              client,
+              ProcessPackMessageStartEvent.MESSAGE_NAME,
+              ProcessPackMessageStartEvent.CORRELATION_KEY);
+
+      // then
+      assertThat(response).extractingProcessInstance(true).isCompleted();
     }
   }
 
@@ -200,7 +218,24 @@ class MessageAssertTest {
           sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, WRONG_CORRELATION_KEY);
 
       // then
-      assertThatThrownBy(() -> assertThat(response).extractingProcessInstance())
+      assertThatThrownBy(() -> assertThat(response).extractingProcessInstance(false))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Expected to find one correlated process instance for message key %d but found %d: %s",
+              response.getMessageKey(), 0, "[]");
+    }
+
+    @Test
+    void testExtractingProcessInstanceFailure_messageStartEvent() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
+
+      // then
+      assertThatThrownBy(() -> assertThat(response).extractingProcessInstance(true))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected to find one correlated process instance for message key %d but found %d: %s",

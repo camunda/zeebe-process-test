@@ -7,6 +7,7 @@ import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.MessageIntent;
+import io.camunda.zeebe.protocol.record.intent.MessageStartEventSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
 import java.util.List;
@@ -119,15 +120,17 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
     return this;
   }
 
-  public ProcessInstanceAssert extractingProcessInstance() {
+  /**
+   * Extracts the process instance for the given message
+   *
+   * @param isMessageStartEvent is the message a start event
+   * @return Process instance assertions {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert extractingProcessInstance(final boolean isMessageStartEvent) {
     final List<Long> correlatedProcessInstances =
-        StreamFilter.processMessageSubscription(recordStreamSource)
-            .withMessageKey(actual.getMessageKey())
-            .withRejectionType(RejectionType.NULL_VAL)
-            .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
-            .stream()
-            .map(record -> record.getValue().getProcessInstanceKey())
-            .collect(Collectors.toList());
+        isMessageStartEvent
+            ? getProcessInstanceKeysForCorrelatedMessageStartEvent()
+            : getProcessInstanceKeysForCorrelatedMessage();
 
     Assertions.assertThat(correlatedProcessInstances)
         .withFailMessage(
@@ -136,5 +139,35 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
         .hasSize(1);
 
     return new ProcessInstanceAssert(correlatedProcessInstances.get(0), recordStreamSource);
+  }
+
+  /**
+   * Gets the correlated process instance keys for process message subscriptions
+   *
+   * @return List of process instance keys
+   */
+  private List<Long> getProcessInstanceKeysForCorrelatedMessage() {
+    return StreamFilter.processMessageSubscription(recordStreamSource)
+        .withMessageKey(actual.getMessageKey())
+        .withRejectionType(RejectionType.NULL_VAL)
+        .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
+        .stream()
+        .map(record -> record.getValue().getProcessInstanceKey())
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Gets the correlated process instance keys for message start event subscriptions
+   *
+   * @return List of process instance keys
+   */
+  private List<Long> getProcessInstanceKeysForCorrelatedMessageStartEvent() {
+    return StreamFilter.messageStartEventSubscription(recordStreamSource)
+        .withMessageKey(actual.getMessageKey())
+        .withRejectionType(RejectionType.NULL_VAL)
+        .withIntent(MessageStartEventSubscriptionIntent.CORRELATED)
+        .stream()
+        .map(record -> record.getValue().getProcessInstanceKey())
+        .collect(Collectors.toList());
   }
 }
