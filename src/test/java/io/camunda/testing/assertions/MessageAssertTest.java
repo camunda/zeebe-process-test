@@ -9,6 +9,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import io.camunda.testing.extensions.ZeebeAssertions;
 import io.camunda.testing.util.Utilities.ProcessPackMessageEvent;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import java.time.Duration;
 import java.util.Collections;
@@ -52,6 +53,19 @@ class MessageAssertTest {
     }
 
     @Test
+    void testHasNotBeenCorrelated() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+
+      // then
+      assertThat(response).hasNotBeenCorrelated();
+    }
+
+    @Test
     void testHasExpired() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -64,6 +78,19 @@ class MessageAssertTest {
 
       // then
       assertThat(response).hasExpired();
+    }
+
+    @Test
+    void testHasNotExpired() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+
+      // then
+      assertThat(response).hasNotExpired();
     }
 
     @Test
@@ -105,6 +132,28 @@ class MessageAssertTest {
     }
 
     @Test
+    void testHasNotBeenCorrelatedFailure() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      final Map<String, Object> variables =
+          Collections.singletonMap(
+              ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+
+      // then
+      assertThatThrownBy(() -> assertThat(response).hasNotBeenCorrelated())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Message with key %d was correlated to process instance %s",
+              response.getMessageKey(), instanceEvent.getProcessInstanceKey());
+    }
+
+    @Test
     void testHasExpiredFailure() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -117,6 +166,23 @@ class MessageAssertTest {
       assertThatThrownBy(() -> assertThat(response).hasExpired())
           .isInstanceOf(AssertionError.class)
           .hasMessage("Message with key %d was not expired", response.getMessageKey());
+    }
+
+    @Test
+    void testHasNotExpiredFailure() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      final Duration timeToLive = Duration.ofNanos(1);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
+      clock.increaseTime(timeToLive.plusMillis(10));
+
+      // then
+      assertThatThrownBy(() -> assertThat(response).hasNotExpired())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("Message with key %d was expired", response.getMessageKey());
     }
 
     @Test

@@ -4,10 +4,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
+import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.MessageIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
+import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
@@ -46,7 +49,34 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
   }
 
   /**
-   * Verifies the expectation that a message has been deleted
+   * Verifies the expectation that a message has not been correlated
+   *
+   * @return this {@link MessageAssert}˚
+   */
+  public MessageAssert hasNotBeenCorrelated() {
+    final Optional<Record<ProcessMessageSubscriptionRecordValue>> recordOptional =
+        StreamFilter.processMessageSubscription(recordStreamSource)
+            .withMessageKey(actual.getMessageKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
+            .stream()
+            .findFirst();
+
+    assertThat(recordOptional.isPresent())
+        .withFailMessage(
+            "Message with key %d was correlated to process instance %d",
+            actual.getMessageKey(),
+            recordOptional
+                .map(Record::getValue)
+                .map(ProcessMessageSubscriptionRecordValue::getProcessInstanceKey)
+                .orElse(-1L))
+        .isFalse();
+
+    return this;
+  }
+
+  /**
+   * Verifies the expectation that a message has expired
    *
    * @return this {@link MessageAssert}
    */
@@ -63,6 +93,28 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
     assertThat(isExpired)
         .withFailMessage("Message with key %d was not expired", actual.getMessageKey())
         .isTrue();
+
+    return this;
+  }
+
+  /**
+   * Verifies the expectation that a message has not expired
+   *
+   * @return this {@link MessageAssert}
+   */
+  public MessageAssert hasNotExpired() {
+    final boolean isExpired =
+        StreamFilter.message(recordStreamSource)
+            .withKey(actual.getMessageKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withIntent(MessageIntent.EXPIRED)
+            .stream()
+            .findFirst()
+            .isPresent();
+
+    assertThat(isExpired)
+        .withFailMessage("Message with key %d was expired", actual.getMessageKey())
+        .isFalse();
 
     return this;
   }
