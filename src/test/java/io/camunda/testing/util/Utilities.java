@@ -21,6 +21,7 @@ public class Utilities {
     public static final String JOB_TYPE = "test"; // job type of service task
     public static final String TOTAL_LOOPS =
         "totalLoops"; // variable name to indicate number of loops
+    public static final String GATEWAY_ELEMENT_ID = "Gateway_0fhwf5d";
   }
 
   public static final class ProcessPackMultipleTasks {

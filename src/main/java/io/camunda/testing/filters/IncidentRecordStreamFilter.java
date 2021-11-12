@@ -18,6 +18,10 @@ public class IncidentRecordStreamFilter {
     this.stream = stream;
   }
 
+  public IncidentRecordStreamFilter withIncidentKey(final long incidentKey) {
+    return new IncidentRecordStreamFilter(stream.filter(record -> record.getKey() == incidentKey));
+  }
+
   public IncidentRecordStreamFilter withRejectionType(final RejectionType rejectionType) {
     return new IncidentRecordStreamFilter(
         stream.filter(record -> record.getRejectionType() == rejectionType));
