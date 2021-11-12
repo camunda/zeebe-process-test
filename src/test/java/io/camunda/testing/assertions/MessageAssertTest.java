@@ -68,7 +68,7 @@ class MessageAssertTest {
               ProcessPackMessageStartEvent.CORRELATION_KEY);
 
       // then
-      assertThat(response).hasMessageStartEventBeenCorrelated();
+      assertThat(response).hasCreatedProcessInstance();
     }
 
     @Test
@@ -94,7 +94,7 @@ class MessageAssertTest {
           sendMessage(client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
 
       // then
-      assertThat(response).hasMessageStartEventNotBeenCorrelated();
+      assertThat(response).hasNotCreatedProcessInstance();
     }
 
     @Test
@@ -139,7 +139,7 @@ class MessageAssertTest {
           sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
-      assertThat(response).extractingProcessInstance(false).isCompleted();
+      assertThat(response).extractingProcessInstance().isCompleted();
     }
 
     @Test
@@ -155,7 +155,7 @@ class MessageAssertTest {
               ProcessPackMessageStartEvent.CORRELATION_KEY);
 
       // then
-      assertThat(response).extractingProcessInstance(true).isCompleted();
+      assertThat(response).extractingProcessInstance().isCompleted();
     }
   }
 
@@ -189,7 +189,7 @@ class MessageAssertTest {
           sendMessage(client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
 
       // then
-      assertThatThrownBy(() -> assertThat(response).hasMessageStartEventBeenCorrelated())
+      assertThatThrownBy(() -> assertThat(response).hasCreatedProcessInstance())
           .isInstanceOf(AssertionError.class)
           .hasMessage("Message with key %d was not correlated", response.getMessageKey());
     }
@@ -229,7 +229,7 @@ class MessageAssertTest {
               ProcessPackMessageStartEvent.CORRELATION_KEY);
 
       // then
-      assertThatThrownBy(() -> assertThat(response).hasMessageStartEventNotBeenCorrelated())
+      assertThatThrownBy(() -> assertThat(response).hasNotCreatedProcessInstance())
           .isInstanceOf(AssertionError.class)
           .hasMessageContaining(
               "Message with key %d was correlated to process instance", response.getMessageKey());
@@ -247,7 +247,7 @@ class MessageAssertTest {
       // then
       assertThatThrownBy(() -> assertThat(response).hasExpired())
           .isInstanceOf(AssertionError.class)
-          .hasMessage("Message with key %d was not expired", response.getMessageKey());
+          .hasMessage("Message with key %d has not expired", response.getMessageKey());
     }
 
     @Test
@@ -264,7 +264,7 @@ class MessageAssertTest {
       // then
       assertThatThrownBy(() -> assertThat(response).hasNotExpired())
           .isInstanceOf(AssertionError.class)
-          .hasMessage("Message with key %d was expired", response.getMessageKey());
+          .hasMessage("Message with key %d has expired", response.getMessageKey());
     }
 
     @Test
@@ -281,7 +281,7 @@ class MessageAssertTest {
           sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, WRONG_CORRELATION_KEY);
 
       // then
-      assertThatThrownBy(() -> assertThat(response).extractingProcessInstance(false))
+      assertThatThrownBy(() -> assertThat(response).extractingProcessInstance())
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected to find one correlated process instance for message key %d but found %d: %s",
@@ -298,7 +298,7 @@ class MessageAssertTest {
           sendMessage(client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
 
       // then
-      assertThatThrownBy(() -> assertThat(response).extractingProcessInstance(true))
+      assertThatThrownBy(() -> assertThat(response).extractingProcessInstance())
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected to find one correlated process instance for message key %d but found %d: %s",

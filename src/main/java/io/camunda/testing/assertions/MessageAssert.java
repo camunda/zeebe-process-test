@@ -51,28 +51,6 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
   }
 
   /**
-   * Verifies the expectation that a message start event has been correlated
-   *
-   * @return this {@link MessageAssert}
-   */
-  public MessageAssert hasMessageStartEventBeenCorrelated() {
-    final boolean isCorrelated =
-        StreamFilter.messageStartEventSubscription(recordStreamSource)
-            .withMessageKey(actual.getMessageKey())
-            .withRejectionType(RejectionType.NULL_VAL)
-            .withIntent(MessageStartEventSubscriptionIntent.CORRELATED)
-            .stream()
-            .findFirst()
-            .isPresent();
-
-    assertThat(isCorrelated)
-        .withFailMessage("Message with key %d was not correlated", actual.getMessageKey())
-        .isTrue();
-
-    return this;
-  }
-
-  /**
    * Verifies the expectation that a message has not been correlated
    *
    * @return this {@link MessageAssert}˚
@@ -100,11 +78,33 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
   }
 
   /**
+   * Verifies the expectation that a message start event has been correlated
+   *
+   * @return this {@link MessageAssert}
+   */
+  public MessageAssert hasCreatedProcessInstance() {
+    final boolean isCorrelated =
+        StreamFilter.messageStartEventSubscription(recordStreamSource)
+            .withMessageKey(actual.getMessageKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withIntent(MessageStartEventSubscriptionIntent.CORRELATED)
+            .stream()
+            .findFirst()
+            .isPresent();
+
+    assertThat(isCorrelated)
+        .withFailMessage("Message with key %d was not correlated", actual.getMessageKey())
+        .isTrue();
+
+    return this;
+  }
+
+  /**
    * Verifies the expectation that a message start event has not been correlated
    *
    * @return this {@link MessageAssert}˚
    */
-  public MessageAssert hasMessageStartEventNotBeenCorrelated() {
+  public MessageAssert hasNotCreatedProcessInstance() {
     final Optional<Record<MessageStartEventSubscriptionRecordValue>> recordOptional =
         StreamFilter.messageStartEventSubscription(recordStreamSource)
             .withMessageKey(actual.getMessageKey())
@@ -142,7 +142,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
             .isPresent();
 
     assertThat(isExpired)
-        .withFailMessage("Message with key %d was not expired", actual.getMessageKey())
+        .withFailMessage("Message with key %d has not expired", actual.getMessageKey())
         .isTrue();
 
     return this;
@@ -164,7 +164,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
             .isPresent();
 
     assertThat(isExpired)
-        .withFailMessage("Message with key %d was expired", actual.getMessageKey())
+        .withFailMessage("Message with key %d has expired", actual.getMessageKey())
         .isFalse();
 
     return this;
@@ -173,14 +173,11 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
   /**
    * Extracts the process instance for the given message
    *
-   * @param isMessageStartEvent is the message a start event
    * @return Process instance assertions {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssert extractingProcessInstance(final boolean isMessageStartEvent) {
-    final List<Long> correlatedProcessInstances =
-        isMessageStartEvent
-            ? getProcessInstanceKeysForCorrelatedMessageStartEvent()
-            : getProcessInstanceKeysForCorrelatedMessage();
+  public ProcessInstanceAssert extractingProcessInstance() {
+    final List<Long> correlatedProcessInstances = getProcessInstanceKeysForCorrelatedMessage();
+    correlatedProcessInstances.addAll(getProcessInstanceKeysForCorrelatedMessageStartEvent());
 
     Assertions.assertThat(correlatedProcessInstances)
         .withFailMessage(
