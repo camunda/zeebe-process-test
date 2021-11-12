@@ -9,6 +9,7 @@ import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.MessageIntent;
 import io.camunda.zeebe.protocol.record.intent.MessageStartEventSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
+import io.camunda.zeebe.protocol.record.value.MessageStartEventSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +51,28 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
   }
 
   /**
+   * Verifies the expectation that a message start event has been correlated
+   *
+   * @return this {@link MessageAssert}
+   */
+  public MessageAssert hasMessageStartEventBeenCorrelated() {
+    final boolean isCorrelated =
+        StreamFilter.messageStartEventSubscription(recordStreamSource)
+            .withMessageKey(actual.getMessageKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withIntent(MessageStartEventSubscriptionIntent.CORRELATED)
+            .stream()
+            .findFirst()
+            .isPresent();
+
+    assertThat(isCorrelated)
+        .withFailMessage("Message with key %d was not correlated", actual.getMessageKey())
+        .isTrue();
+
+    return this;
+  }
+
+  /**
    * Verifies the expectation that a message has not been correlated
    *
    * @return this {@link MessageAssert}˚
@@ -70,6 +93,33 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
             recordOptional
                 .map(Record::getValue)
                 .map(ProcessMessageSubscriptionRecordValue::getProcessInstanceKey)
+                .orElse(-1L))
+        .isFalse();
+
+    return this;
+  }
+
+  /**
+   * Verifies the expectation that a message start event has not been correlated
+   *
+   * @return this {@link MessageAssert}˚
+   */
+  public MessageAssert hasMessageStartEventNotBeenCorrelated() {
+    final Optional<Record<MessageStartEventSubscriptionRecordValue>> recordOptional =
+        StreamFilter.messageStartEventSubscription(recordStreamSource)
+            .withMessageKey(actual.getMessageKey())
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withIntent(MessageStartEventSubscriptionIntent.CORRELATED)
+            .stream()
+            .findFirst();
+
+    assertThat(recordOptional.isPresent())
+        .withFailMessage(
+            "Message with key %d was correlated to process instance %d",
+            actual.getMessageKey(),
+            recordOptional
+                .map(Record::getValue)
+                .map(MessageStartEventSubscriptionRecordValue::getProcessInstanceKey)
                 .orElse(-1L))
         .isFalse();
 

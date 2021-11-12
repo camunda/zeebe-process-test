@@ -56,6 +56,22 @@ class MessageAssertTest {
     }
 
     @Test
+    void testHasMessageStartEventBeenCorrelated() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(
+              client,
+              ProcessPackMessageStartEvent.MESSAGE_NAME,
+              ProcessPackMessageStartEvent.CORRELATION_KEY);
+
+      // then
+      assertThat(response).hasMessageStartEventBeenCorrelated();
+    }
+
+    @Test
     void testHasNotBeenCorrelated() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -66,6 +82,19 @@ class MessageAssertTest {
 
       // then
       assertThat(response).hasNotBeenCorrelated();
+    }
+
+    @Test
+    void testHasMessageStartEventNotBeenCorrelated() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
+
+      // then
+      assertThat(response).hasMessageStartEventNotBeenCorrelated();
     }
 
     @Test
@@ -151,6 +180,21 @@ class MessageAssertTest {
     }
 
     @Test
+    void testHasMessageStartEventBeenCorrelatedFailure() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
+
+      // then
+      assertThatThrownBy(() -> assertThat(response).hasMessageStartEventBeenCorrelated())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("Message with key %d was not correlated", response.getMessageKey());
+    }
+
+    @Test
     void testHasNotBeenCorrelatedFailure() throws InterruptedException {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -170,6 +214,25 @@ class MessageAssertTest {
           .hasMessage(
               "Message with key %d was correlated to process instance %s",
               response.getMessageKey(), instanceEvent.getProcessInstanceKey());
+    }
+
+    @Test
+    void testHasMessageStartEventNotBeenCorrelatedFailure() throws InterruptedException {
+      // given
+      deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(
+              client,
+              ProcessPackMessageStartEvent.MESSAGE_NAME,
+              ProcessPackMessageStartEvent.CORRELATION_KEY);
+
+      // then
+      assertThatThrownBy(() -> assertThat(response).hasMessageStartEventNotBeenCorrelated())
+          .isInstanceOf(AssertionError.class)
+          .hasMessageContaining(
+              "Message with key %d was correlated to process instance", response.getMessageKey());
     }
 
     @Test
