@@ -395,6 +395,9 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    */
   public ProcessInstanceAssert hasCorrelatedMessageByName(
       final String messageName, final int times) {
+    assertThat(messageName).describedAs("Message name").isNotEmpty();
+    assertThat(times).describedAs("Times").isGreaterThanOrEqualTo(0);
+
     final long actualTimes =
         StreamFilter.processMessageSubscription(recordStreamSource)
             .withProcessInstanceKey(actual)
@@ -422,6 +425,9 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    */
   public ProcessInstanceAssert hasCorrelatedMessageByCorrelationKey(
       final String correlationKey, final int times) {
+    assertThat(correlationKey).describedAs("Correlation key").isNotEmpty();
+    assertThat(times).describedAs("Times").isGreaterThanOrEqualTo(0);
+
     final long actualTimes =
         StreamFilter.processMessageSubscription(recordStreamSource)
             .withProcessInstanceKey(actual)
