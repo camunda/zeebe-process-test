@@ -2,7 +2,6 @@ package io.camunda.testing.assertions;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import io.camunda.testing.assertions.ProcessInstanceAssert.ProcessInstanceActual;
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -84,7 +83,6 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
             actual.getMessageKey(), correlatedProcessInstances.size(), correlatedProcessInstances)
         .hasSize(1);
 
-    return new ProcessInstanceAssert(
-        new ProcessInstanceActual(correlatedProcessInstances.get(0)), recordStreamSource);
+    return new ProcessInstanceAssert(correlatedProcessInstances.get(0), recordStreamSource);
   }
 }
