@@ -3,7 +3,6 @@ package io.camunda.testing.assertions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.testing.filters.StreamFilter;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -23,13 +22,11 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.SoftAssertions;
 import org.camunda.community.eze.RecordStreamSource;
 
-public class ProcessInstanceAssert
-    extends AbstractAssert<ProcessInstanceAssert, ProcessInstanceEvent> {
+public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert, Long> {
 
   private RecordStreamSource recordStreamSource;
 
-  public ProcessInstanceAssert(
-      final ProcessInstanceEvent actual, final RecordStreamSource recordStreamSource) {
+  public ProcessInstanceAssert(final long actual, final RecordStreamSource recordStreamSource) {
     super(actual, ProcessInstanceAssert.class);
     this.recordStreamSource = recordStreamSource;
   }
@@ -43,7 +40,7 @@ public class ProcessInstanceAssert
   public ProcessInstanceAssert isStarted() {
     final boolean isStarted =
         StreamFilter.processInstance(recordStreamSource)
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
             .withBpmnElementType(BpmnElementType.PROCESS)
@@ -51,9 +48,7 @@ public class ProcessInstanceAssert
             .findFirst()
             .isPresent();
 
-    assertThat(isStarted)
-        .withFailMessage("Process with key %s was not started", actual.getProcessInstanceKey())
-        .isTrue();
+    assertThat(isStarted).withFailMessage("Process with key %s was not started", actual).isTrue();
 
     return this;
   }
@@ -66,7 +61,7 @@ public class ProcessInstanceAssert
   public ProcessInstanceAssert isActive() {
     final boolean isActive =
         StreamFilter.processInstance(recordStreamSource)
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withBpmnElementType(BpmnElementType.PROCESS)
             .stream()
@@ -75,9 +70,7 @@ public class ProcessInstanceAssert
                     record.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED
                         || record.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED);
 
-    assertThat(isActive)
-        .withFailMessage("Process with key %s is not active", actual.getProcessInstanceKey())
-        .isTrue();
+    assertThat(isActive).withFailMessage("Process with key %s is not active", actual).isTrue();
 
     return this;
   }
@@ -89,7 +82,7 @@ public class ProcessInstanceAssert
    */
   public ProcessInstanceAssert isCompleted() {
     assertThat(isProcessInstanceCompleted())
-        .withFailMessage("Process with key %s was not completed", actual.getProcessInstanceKey())
+        .withFailMessage("Process with key %s was not completed", actual)
         .isTrue();
     return this;
   }
@@ -101,7 +94,7 @@ public class ProcessInstanceAssert
    */
   public ProcessInstanceAssert isNotCompleted() {
     assertThat(isProcessInstanceCompleted())
-        .withFailMessage("Process with key %s was completed", actual.getProcessInstanceKey())
+        .withFailMessage("Process with key %s was completed", actual)
         .isFalse();
     return this;
   }
@@ -113,7 +106,7 @@ public class ProcessInstanceAssert
    */
   private boolean isProcessInstanceCompleted() {
     return StreamFilter.processInstance(recordStreamSource)
-        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .withBpmnElementType(BpmnElementType.PROCESS)
         .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
@@ -129,7 +122,7 @@ public class ProcessInstanceAssert
    */
   public ProcessInstanceAssert isTerminated() {
     assertThat(isProcessInstanceTerminated())
-        .withFailMessage("Process with key %s was not terminated", actual.getProcessInstanceKey())
+        .withFailMessage("Process with key %s was not terminated", actual)
         .isTrue();
     return this;
   }
@@ -141,7 +134,7 @@ public class ProcessInstanceAssert
    */
   public ProcessInstanceAssert isNotTerminated() {
     assertThat(isProcessInstanceTerminated())
-        .withFailMessage("Process with key %s was terminated", actual.getProcessInstanceKey())
+        .withFailMessage("Process with key %s was terminated", actual)
         .isFalse();
     return this;
   }
@@ -153,7 +146,7 @@ public class ProcessInstanceAssert
    */
   private boolean isProcessInstanceTerminated() {
     return StreamFilter.processInstance(recordStreamSource)
-        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .withBpmnElementType(BpmnElementType.PROCESS)
         .withIntent(ProcessInstanceIntent.ELEMENT_TERMINATED)
@@ -195,7 +188,7 @@ public class ProcessInstanceAssert
   public ProcessInstanceAssert hasPassedElement(final String elementId, final int times) {
     final long count =
         StreamFilter.processInstance(recordStreamSource)
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withElementId(elementId)
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
@@ -218,7 +211,7 @@ public class ProcessInstanceAssert
   public ProcessInstanceAssert hasPassedElementInOrder(final String... elementIds) {
     final List<String> foundElementRecords =
         StreamFilter.processInstance(recordStreamSource)
-            .withProcessInstanceKey(actual.getProcessInstanceKey())
+            .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withElementIdIn(elementIds)
             .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
@@ -268,7 +261,7 @@ public class ProcessInstanceAssert
   private Set<String> getElementsInWaitState() {
     final Set<String> elementsInWaitState = new HashSet<>();
     StreamFilter.processInstance(recordStreamSource)
-        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .withoutBpmnElementType(BpmnElementType.PROCESS)
         .stream()
@@ -303,7 +296,7 @@ public class ProcessInstanceAssert
     final List<String> wrongfullyNotWaitingElementIds = new ArrayList<>();
 
     StreamFilter.processInstance(recordStreamSource)
-        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .withoutBpmnElementType(BpmnElementType.PROCESS)
         .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
@@ -327,13 +320,13 @@ public class ProcessInstanceAssert
         .assertThat(wrongfullyWaitingElementIds.isEmpty())
         .withFailMessage(
             "Process with key %s is waiting at element(s) with id(s) %s",
-            actual.getProcessInstanceKey(), String.join(", ", wrongfullyWaitingElementIds))
+            actual, String.join(", ", wrongfullyWaitingElementIds))
         .isTrue();
     softly
         .assertThat(wrongfullyNotWaitingElementIds.isEmpty())
         .withFailMessage(
             "Process with key %s is not waiting at element(s) with id(s) %s",
-            actual.getProcessInstanceKey(), String.join(", ", wrongfullyNotWaitingElementIds))
+            actual, String.join(", ", wrongfullyNotWaitingElementIds))
         .isTrue();
     softly.assertAll();
 
@@ -374,7 +367,7 @@ public class ProcessInstanceAssert
   private Set<String> getOpenMessageSubscriptions() {
     final Set<String> openMessageSubscriptions = new HashSet<>();
     StreamFilter.processMessageSubscription(recordStreamSource)
-        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .stream()
         .collect(
@@ -390,6 +383,67 @@ public class ProcessInstanceAssert
               }
             });
     return openMessageSubscriptions;
+  }
+
+  /**
+   * Verifies the expectation that a message with a given name has been correlated a given amount of
+   * times.
+   *
+   * @param messageName The name of the message
+   * @param times The expected amount of times the message is correlated
+   * @return this {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert hasCorrelatedMessageByName(
+      final String messageName, final int times) {
+    assertThat(messageName).describedAs("Message name").isNotEmpty();
+    assertThat(times).describedAs("Times").isGreaterThanOrEqualTo(0);
+
+    final long actualTimes =
+        StreamFilter.processMessageSubscription(recordStreamSource)
+            .withProcessInstanceKey(actual)
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withMessageName(messageName)
+            .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
+            .stream()
+            .count();
+
+    assertThat(actualTimes)
+        .withFailMessage(
+            "Expected message with name '%s' to be correlated %d times, but was %d times",
+            messageName, times, actualTimes)
+        .isEqualTo(times);
+    return this;
+  }
+
+  /**
+   * Verifies the expectation that a message with a given correlation key has been correlated a
+   * given amount of times.
+   *
+   * @param correlationKey The correlation key of the message
+   * @param times The expected amount of times the message is correlated
+   * @return this {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert hasCorrelatedMessageByCorrelationKey(
+      final String correlationKey, final int times) {
+    assertThat(correlationKey).describedAs("Correlation key").isNotEmpty();
+    assertThat(times).describedAs("Times").isGreaterThanOrEqualTo(0);
+
+    final long actualTimes =
+        StreamFilter.processMessageSubscription(recordStreamSource)
+            .withProcessInstanceKey(actual)
+            .withRejectionType(RejectionType.NULL_VAL)
+            .withCorrelationKey(correlationKey)
+            .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
+            .stream()
+            .count();
+
+    assertThat(actualTimes)
+        .withFailMessage(
+            "Expected message with correlation key '%s' "
+                + "to be correlated %d times, but was %d times",
+            correlationKey, times, actualTimes)
+        .isEqualTo(times);
+    return this;
   }
 
   /**
@@ -419,7 +473,7 @@ public class ProcessInstanceAssert
     assertThat(variables)
         .withFailMessage(
             "Process with key %s does not contain variable with name `%s`. Available variables are: %s",
-            actual.getProcessInstanceKey(), name, variables.keySet())
+            actual, name, variables.keySet())
         .containsKey(name);
     return this;
   }
@@ -455,7 +509,7 @@ public class ProcessInstanceAssert
    */
   private Map<String, String> getProcessInstanceVariables() {
     return StreamFilter.variable(recordStreamSource)
-        .withProcessInstanceKey(actual.getProcessInstanceKey())
+        .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .stream()
         .map(Record::getValue)
