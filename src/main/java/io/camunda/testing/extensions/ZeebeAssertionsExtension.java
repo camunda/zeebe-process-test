@@ -1,6 +1,6 @@
 package io.camunda.testing.extensions;
 
-import io.camunda.testing.assertions.BpmnAssert;
+import io.camunda.testing.utils.RecordStreamSourceStore;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
     final Object testInstance = extensionContext.getTestInstance().get();
     final RecordStreamSource recordStreamSource =
         (RecordStreamSource) recordStreamField.get(testInstance);
-    BpmnAssert.init(recordStreamSource);
+    RecordStreamSourceStore.init(recordStreamSource);
 
     final Optional<Field> zeebeClientOptional =
         Arrays.stream(extensionContext.getTestClass().get().getDeclaredFields())
@@ -42,7 +42,7 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
 
   @Override
   public void afterEach(final ExtensionContext extensionContext) {
-    BpmnAssert.reset();
+    RecordStreamSourceStore.reset();
 
     final Object fieldContent = getStore(extensionContext).get(KEY_ZEEBE_CLIENT);
     final ZeebeClient zeebeClient = (ZeebeClient) fieldContent;
