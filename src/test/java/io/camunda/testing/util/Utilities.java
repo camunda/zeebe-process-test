@@ -100,21 +100,21 @@ public class Utilities {
   }
 
   public static PublishMessageResponse sendMessage(
-      final ZeebeClient client, final String messsageName, final String correlationKey)
+      final ZeebeClient client, final String messageName, final String correlationKey)
       throws InterruptedException {
-    return sendMessage(client, messsageName, correlationKey, Duration.ofDays(99999));
+    return sendMessage(client, messageName, correlationKey, Duration.ofDays(99999));
   }
 
   public static PublishMessageResponse sendMessage(
       final ZeebeClient client,
-      final String messsageName,
+      final String messageName,
       final String correlationKey,
       final Duration timeToLive)
       throws InterruptedException {
     final PublishMessageResponse response =
         client
             .newPublishMessageCommand()
-            .messageName(messsageName)
+            .messageName(messageName)
             .correlationKey(correlationKey)
             .timeToLive(timeToLive)
             .send()
