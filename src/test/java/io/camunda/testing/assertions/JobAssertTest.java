@@ -1,20 +1,21 @@
 package io.camunda.testing.assertions;
 
 import static io.camunda.testing.assertions.BpmnAssert.assertThat;
-import static io.camunda.testing.util.Utilities.deployProcess;
-import static io.camunda.testing.util.Utilities.startProcessInstance;
+import static io.camunda.testing.util.Utilities.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.data.Offset.offset;
 
 import io.camunda.testing.extensions.ZeebeAssertions;
-import io.camunda.testing.util.Utilities.ProcessPackLoopingServiceTask;
+import io.camunda.testing.util.Utilities;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.protocol.record.value.ErrorType;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.camunda.community.eze.RecordStreamSource;
 import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
@@ -24,6 +25,8 @@ import org.junit.jupiter.api.Test;
 class JobAssertTest {
 
   public static final String WRONG_VALUE = "wrong value";
+  public static final String ERROR_CODE = "error";
+  public static final String ERROR_MSG = "error occurred";
 
   private ZeebeClient client;
   private ZeebeEngine engine;
@@ -43,7 +46,8 @@ class JobAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
@@ -83,7 +87,8 @@ class JobAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
@@ -99,11 +104,78 @@ class JobAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       assertThat(actual).hasRetries(1);
+    }
+
+    @Test
+    void testHasAnyIncidents() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
+
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      client
+          .newThrowErrorCommand(actual.getKey())
+          .errorCode(ERROR_CODE)
+          .errorMessage(ERROR_MSG)
+          .send()
+          .join();
+
+      // then
+
+      assertThat(actual).hasAnyIncidents();
+    }
+
+    @Test
+    void testHasNoIncidents() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
+
+      // then
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      assertThat(actual).hasNoIncidents();
+    }
+
+    @Test
+    void testExtractLatestIncident() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
+
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      client
+          .newThrowErrorCommand(actual.getKey())
+          .errorCode(ERROR_CODE)
+          .errorMessage(ERROR_MSG)
+          .send()
+          .join();
+
+      final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
+
+      // then
+      Assertions.assertThat(incidentAssert).isNotNull();
+      incidentAssert
+          .isUnresolved()
+          .hasErrorType(ErrorType.UNHANDLED_ERROR_EVENT)
+          .occurredDuringJob(actual);
     }
 
     @Test
@@ -115,7 +187,8 @@ class JobAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
@@ -134,21 +207,13 @@ class JobAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       assertThat(actual).extractingHeaders().isEmpty();
     }
-  }
-
-  private ActivateJobsResponse activateSingleJob() {
-    return client
-        .newActivateJobsCommand()
-        .jobType(ProcessPackLoopingServiceTask.JOB_TYPE)
-        .maxJobsToActivate(1)
-        .send()
-        .join();
   }
 
   // These tests are just for assertion testing purposes. These should not be used as examples.
@@ -165,7 +230,8 @@ class JobAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
@@ -212,7 +278,8 @@ class JobAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
@@ -233,7 +300,8 @@ class JobAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       // then
 
@@ -242,6 +310,63 @@ class JobAssertTest {
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Job does not have %d retries, as expected, but instead has %d retries.", 12345, 1);
+    }
+
+    @Test
+    void testHasAnyIncidentsFailure() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
+
+      // then
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      assertThatThrownBy(() -> assertThat(actual).hasAnyIncidents())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No incidents were raised for this job");
+    }
+
+    @Test
+    void testHasNoIncidentsFailure() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      client
+          .newThrowErrorCommand(actual.getKey())
+          .errorCode(ERROR_CODE)
+          .errorMessage(ERROR_MSG)
+          .send()
+          .join();
+
+      // then
+      assertThatThrownBy(() -> assertThat(actual).hasNoIncidents())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("Incidents were raised for this job");
+    }
+
+    @Test
+    void testExtractLatestIncidentFailure() throws InterruptedException {
+      // given
+      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+
+      // when
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
+
+      // then
+      final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
+      assertThatThrownBy(() -> assertThat(actual).extractLatestIncident())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No incidents were raised for this job");
     }
   }
 }

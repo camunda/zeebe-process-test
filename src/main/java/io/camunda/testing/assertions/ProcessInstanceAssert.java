@@ -2,21 +2,19 @@ package io.camunda.testing.assertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.camunda.testing.filters.IncidentRecordStreamFilter;
 import io.camunda.testing.filters.StreamFilter;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
+import io.camunda.zeebe.protocol.record.intent.IncidentIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
+import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.SoftAssertions;
@@ -24,7 +22,7 @@ import org.camunda.community.eze.RecordStreamSource;
 
 public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert, Long> {
 
-  private RecordStreamSource recordStreamSource;
+  private final RecordStreamSource recordStreamSource;
 
   public ProcessInstanceAssert(final long actual, final RecordStreamSource recordStreamSource) {
     super(actual, ProcessInstanceAssert.class);
@@ -447,8 +445,6 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
   }
 
   /**
-   * Verifies the process instance has a variable with the specified name
-   *
    * @param name The name of the variable
    * @return this ${@link ProcessInstanceAssert}
    */
@@ -514,5 +510,60 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
         .stream()
         .map(Record::getValue)
         .collect(Collectors.toMap(VariableRecordValue::getName, VariableRecordValue::getValue));
+  }
+
+  /**
+   * Asserts whether any incidents were raised for this process instance (regardless of whether
+   * these incidents are active or already resolved)
+   *
+   * @return this {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert hasAnyIncidents() {
+    final boolean incidentsWereRaised =
+        getIncidentCreatedRecords().stream().findFirst().isPresent();
+
+    assertThat(incidentsWereRaised)
+        .withFailMessage("No incidents were raised for this process instance")
+        .isTrue();
+    return this;
+  }
+
+  /**
+   * Asserts whether no incidents were raised for this process instance
+   *
+   * @return this {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert hasNoIncidents() {
+    final boolean incidentsWereRaised =
+        getIncidentCreatedRecords().stream().findFirst().isPresent();
+
+    assertThat(incidentsWereRaised)
+        .withFailMessage("Incidents were raised for this process instance")
+        .isFalse();
+    return this;
+  }
+
+  /**
+   * Extracts the latest incident
+   *
+   * @return {@link IncidentAssert} for the latest incident
+   */
+  public IncidentAssert extractLatestIncident() {
+    hasAnyIncidents();
+
+    final List<Record<IncidentRecordValue>> incidentCreatedRecords =
+        getIncidentCreatedRecords().stream().collect(Collectors.toList());
+
+    final Record<IncidentRecordValue> latestIncidentRecord =
+        incidentCreatedRecords.get(incidentCreatedRecords.size() - 1);
+
+    return new IncidentAssert(latestIncidentRecord.getKey(), recordStreamSource);
+  }
+
+  private IncidentRecordStreamFilter getIncidentCreatedRecords() {
+    return StreamFilter.incident(recordStreamSource)
+        .withRejectionType(RejectionType.NULL_VAL)
+        .withIntent(IncidentIntent.CREATED)
+        .withProcessInstanceKey(actual);
   }
 }

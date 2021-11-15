@@ -24,7 +24,7 @@ public abstract class BpmnAssert {
   }
 
   public static JobAssert assertThat(final ActivatedJob activatedJob) {
-    return new JobAssert(activatedJob);
+    return new JobAssert(activatedJob, getRecordStreamSource());
   }
 
   public static DeploymentAssert assertThat(final DeploymentEvent deploymentEvent) {

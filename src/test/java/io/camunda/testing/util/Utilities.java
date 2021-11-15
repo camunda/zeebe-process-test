@@ -2,12 +2,14 @@ package io.camunda.testing.util;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
+import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import org.camunda.community.eze.ZeebeEngine;
 import org.camunda.community.eze.ZeebeEngineClock;
 
 // @TODO Use this also in other tests
@@ -21,6 +23,7 @@ public class Utilities {
     public static final String JOB_TYPE = "test"; // job type of service task
     public static final String TOTAL_LOOPS =
         "totalLoops"; // variable name to indicate number of loops
+    public static final String GATEWAY_ELEMENT_ID = "Gateway_0fhwf5d";
   }
 
   public static final class ProcessPackMultipleTasks {
@@ -79,6 +82,21 @@ public class Utilities {
             .join();
     Thread.sleep(100);
     return instanceEvent;
+  }
+
+  public static ActivateJobsResponse activateSingleJob(
+      final ZeebeClient client, final String jobType) {
+    return client.newActivateJobsCommand().jobType(jobType).maxJobsToActivate(1).send().join();
+  }
+
+  // TODO find a better solution for this
+  public static void waitForIdleState(final ZeebeEngine engine) {
+    try {
+      Thread.sleep(100);
+    } catch (final InterruptedException e) {
+      e.printStackTrace();
+      throw new IllegalStateException("Sleep was interrupted");
+    }
   }
 
   public static PublishMessageResponse sendMessage(
