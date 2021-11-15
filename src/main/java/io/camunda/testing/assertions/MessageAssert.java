@@ -93,7 +93,9 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
             .isPresent();
 
     assertThat(isCorrelated)
-        .withFailMessage("Message with key %d was not correlated", actual.getMessageKey())
+        .withFailMessage(
+            "Message with key %d did not lead to the creation of a process instance",
+            actual.getMessageKey())
         .isTrue();
 
     return this;

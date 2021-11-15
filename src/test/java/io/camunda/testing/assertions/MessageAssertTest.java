@@ -191,7 +191,9 @@ class MessageAssertTest {
       // then
       assertThatThrownBy(() -> assertThat(response).hasCreatedProcessInstance())
           .isInstanceOf(AssertionError.class)
-          .hasMessage("Message with key %d was not correlated", response.getMessageKey());
+          .hasMessage(
+              "Message with key %d did not lead to the creation of a process instance",
+              response.getMessageKey());
     }
 
     @Test
