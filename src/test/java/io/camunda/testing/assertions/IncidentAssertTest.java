@@ -1,12 +1,10 @@
 package io.camunda.testing.assertions;
 
 import static io.camunda.testing.assertions.BpmnAssert.assertThat;
-import static io.camunda.testing.util.Utilities.deployProcess;
-import static io.camunda.testing.util.Utilities.startProcessInstance;
+import static io.camunda.testing.util.Utilities.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.camunda.testing.extensions.ZeebeAssertions;
-import io.camunda.testing.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -44,7 +42,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -67,7 +66,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -91,7 +91,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -119,7 +120,8 @@ class IncidentAssertTest {
           startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -149,12 +151,12 @@ class IncidentAssertTest {
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       client.newCompleteCommand(job.getKey()).send().join();
 
-      // TODO remove this
-      Thread.sleep(100);
+      waitForIdleState(engine);
 
       final IncidentAssert incidentAssert = assertThat(instanceEvent).extractLatestIncident();
 
@@ -169,7 +171,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       client
@@ -193,7 +196,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -208,8 +212,7 @@ class IncidentAssertTest {
       final long incidentKey = incidentAssert.getIncidentKey();
       client.newResolveIncidentCommand(incidentKey).send().join();
 
-      // TODO remove
-      Thread.sleep(100);
+      waitForIdleState(engine);
 
       // then
       incidentAssert.isResolved();
@@ -222,7 +225,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -239,15 +243,6 @@ class IncidentAssertTest {
     }
   }
 
-  private ActivateJobsResponse activateSingleJob() {
-    return client
-        .newActivateJobsCommand()
-        .jobType(ProcessPackLoopingServiceTask.JOB_TYPE)
-        .maxJobsToActivate(1)
-        .send()
-        .join();
-  }
-
   // These tests are just for assertion testing purposes. These should not be used as examples.
   @Nested
   class UnhappyPathTests {
@@ -260,7 +255,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -275,7 +271,7 @@ class IncidentAssertTest {
       // then
       assertThatThrownBy(() -> incidentAssert.hasErrorType(ErrorType.IO_MAPPING_ERROR))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
+          .hasMessageStartingWith(
               "Error type was not 'IO_MAPPING_ERROR' but was 'UNHANDLED_ERROR_EVENT' instead");
     }
 
@@ -286,7 +282,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -301,7 +298,7 @@ class IncidentAssertTest {
       // then
       assertThatThrownBy(() -> incidentAssert.hasErrorMessage(WRONG_VALUE))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
+          .hasMessageStartingWith(
               "Error message was not 'wrong value' but was 'Expected to throw an error event with the code 'error' with message 'error occurred', but it was not caught. No error events are available in the scope.' instead");
     }
 
@@ -313,7 +310,8 @@ class IncidentAssertTest {
           startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -328,7 +326,7 @@ class IncidentAssertTest {
       // then
       assertThatThrownBy(() -> incidentAssert.wasRaisedInProcessInstance(-1))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
+          .hasMessageStartingWith(
               "Incident was not raised in process instance -1 but was raised in %d instead",
               processInstanceEvent.getProcessInstanceKey());
     }
@@ -346,19 +344,19 @@ class IncidentAssertTest {
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       client.newCompleteCommand(job.getKey()).send().join();
 
-      // TODO remove this
-      Thread.sleep(100);
+      waitForIdleState(engine);
 
       final IncidentAssert incidentAssert = assertThat(instanceEvent).extractLatestIncident();
 
       // then
       assertThatThrownBy(() -> incidentAssert.occurredOnElement(WRONG_VALUE))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
+          .hasMessageStartingWith(
               "Error type was not raised on element '%s' but was raised on '%s' instead",
               WRONG_VALUE, ProcessPackLoopingServiceTask.GATEWAY_ELEMENT_ID);
     }
@@ -370,7 +368,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       client
@@ -385,7 +384,7 @@ class IncidentAssertTest {
       // then
       assertThatThrownBy(() -> incidentAssert.occurredDuringJob(-1))
           .isInstanceOf(AssertionError.class)
-          .hasMessage(
+          .hasMessageStartingWith(
               "Incident was not raised during job instance -1 but was raised in %d instead",
               job.getKey());
     }
@@ -397,7 +396,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -412,7 +412,7 @@ class IncidentAssertTest {
       // then
       assertThatThrownBy(() -> incidentAssert.isResolved())
           .isInstanceOf(AssertionError.class)
-          .hasMessage("Incident is not resolved");
+          .hasMessageStartingWith("Incident is not resolved");
     }
 
     @Test
@@ -422,7 +422,8 @@ class IncidentAssertTest {
       startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
-      final ActivateJobsResponse jobActivationResponse = activateSingleJob();
+      final ActivateJobsResponse jobActivationResponse =
+          activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       client
@@ -437,13 +438,12 @@ class IncidentAssertTest {
       final long incidentKey = incidentAssert.getIncidentKey();
       client.newResolveIncidentCommand(incidentKey).send().join();
 
-      // TODO remove
-      Thread.sleep(100);
+      waitForIdleState(engine);
 
       // then
       assertThatThrownBy(() -> incidentAssert.isUnresolved())
           .isInstanceOf(AssertionError.class)
-          .hasMessage("Incident is already resolved");
+          .hasMessageStartingWith("Incident is already resolved");
     }
   }
 }

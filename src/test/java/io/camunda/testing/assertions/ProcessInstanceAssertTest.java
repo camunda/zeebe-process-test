@@ -13,6 +13,7 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.JobIntent;
+import io.camunda.zeebe.protocol.record.value.ErrorType;
 import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import java.util.Collections;
 import java.util.HashMap;
@@ -424,6 +425,10 @@ class ProcessInstanceAssertTest {
       // then
 
       Assertions.assertThat(incidentAssert).isNotNull();
+      incidentAssert
+          .isUnresolved()
+          .hasErrorType(ErrorType.EXTRACT_VALUE_ERROR)
+          .wasRaisedInProcessInstance(instanceEvent);
     }
   }
 
@@ -885,6 +890,7 @@ class ProcessInstanceAssertTest {
               correlationKey, 1, 0);
     }
 
+    @Test
     public void testHasAnyIncidentsFailure() throws InterruptedException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);

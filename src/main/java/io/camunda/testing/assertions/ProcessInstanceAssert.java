@@ -512,11 +512,11 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
         .collect(Collectors.toMap(VariableRecordValue::getName, VariableRecordValue::getValue));
   }
 
-  /*
+  /**
    * Asserts whether any incidents were raised for this process instance (regardless of whether
    * these incidents are active or already resolved)
    *
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
   public ProcessInstanceAssert hasAnyIncidents() {
     final boolean incidentsWereRaised =
@@ -528,18 +528,18 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
     return this;
   }
 
-  /*
+  /**
    * Asserts whether no incidents were raised for this process instance
    *
-   * @return this {@link ProcessInstanceAssertions}
+   * @return this {@link ProcessInstanceAssert}
    */
   public ProcessInstanceAssert hasNoIncidents() {
-    final boolean noIncidentsWereRaised =
-        !getIncidentCreatedRecords().stream().findFirst().isPresent();
+    final boolean incidentsWereRaised =
+        getIncidentCreatedRecords().stream().findFirst().isPresent();
 
-    assertThat(noIncidentsWereRaised)
+    assertThat(incidentsWereRaised)
         .withFailMessage("Incidents were raised for this process instance")
-        .isTrue();
+        .isFalse();
     return this;
   }
 

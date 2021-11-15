@@ -15,6 +15,7 @@ import java.util.Optional;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.StringAssert;
 import org.camunda.community.eze.RecordStreamSource;
+import org.jetbrains.annotations.NotNull;
 
 /** Assertions for incidents. An incident is identified by its incident key. */
 public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
@@ -42,12 +43,14 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
    * @return this {@link IncidentAssert}
    */
   public IncidentAssert hasErrorType(final ErrorType expectedErrorType) {
+    assertThat(expectedErrorType).describedAs("Parameter 'expectedErrorType").isNotNull();
     final IncidentRecordValue record = getIncidentCreatedRecordValue();
     final ErrorType actualErrorType = record.getErrorType();
 
     assertThat(actualErrorType)
         .withFailMessage(
-            "Error type was not '%s' but was '%s' instead", expectedErrorType, actualErrorType)
+            "Error type was not '%s' but was '%s' instead.%s",
+            expectedErrorType, actualErrorType, composeIncidentDetails())
         .isEqualTo(expectedErrorType);
 
     return this;
@@ -65,8 +68,8 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
 
     assertThat(actualErrorMessage)
         .withFailMessage(
-            "Error message was not '%s' but was '%s' instead",
-            expectedErrorMessage, actualErrorMessage)
+            "Error message was not '%s' but was '%s' instead.%s",
+            expectedErrorMessage, actualErrorMessage, composeIncidentDetails())
         .isEqualTo(expectedErrorMessage);
 
     return this;
@@ -108,8 +111,8 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
 
     assertThat(actualProcessInstanceKey)
         .withFailMessage(
-            "Incident was not raised in process instance %d but was raised in %s instead",
-            expectedProcessInstanceKey, actualProcessInstanceKey)
+            "Incident was not raised in process instance %d but was raised in %s instead.%s",
+            expectedProcessInstanceKey, actualProcessInstanceKey, composeIncidentDetails())
         .isEqualTo(expectedProcessInstanceKey);
 
     return this;
@@ -129,8 +132,8 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
 
     assertThat(actualElementId)
         .withFailMessage(
-            "Error type was not raised on element '%s' but was raised on '%s' instead",
-            expectedElementId, actualElementId)
+            "Error type was not raised on element '%s' but was raised on '%s' instead.%s",
+            expectedElementId, actualElementId, composeIncidentDetails())
         .isEqualTo(expectedElementId);
 
     return this;
@@ -159,8 +162,8 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
 
     assertThat(actualJobKey)
         .withFailMessage(
-            "Incident was not raised during job instance %d but was raised in %s instead",
-            expectedJobKey, actualJobKey)
+            "Incident was not raised during job instance %d but was raised in %s instead.%s",
+            expectedJobKey, actualJobKey, composeIncidentDetails())
         .isEqualTo(expectedJobKey);
 
     return this;
@@ -174,7 +177,9 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
   public IncidentAssert isResolved() {
     final boolean resolved = isIncidentResolved();
 
-    assertThat(resolved).withFailMessage("Incident is not resolved").isTrue();
+    assertThat(resolved)
+        .withFailMessage("Incident is not resolved." + composeIncidentDetails())
+        .isTrue();
     return this;
   }
 
@@ -186,7 +191,9 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
   public IncidentAssert isUnresolved() {
     final boolean resolved = isIncidentResolved();
 
-    assertThat(resolved).withFailMessage("Incident is already resolved").isFalse();
+    assertThat(resolved)
+        .withFailMessage("Incident is already resolved." + composeIncidentDetails())
+        .isFalse();
     return this;
   }
 
@@ -199,16 +206,57 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
 
   private IncidentRecordValue getIncidentCreatedRecordValue() {
     final Optional<Record<IncidentRecordValue>> optIncidentCreatedRecord =
-        getIncidentRecords(IncidentIntent.CREATED).stream().findFirst();
+        findIncidentCreatedRecord();
 
     assertThat(optIncidentCreatedRecord)
-        .describedAs("Incident created record for key %d", actual)
+        .describedAs("Incident created record for key %d.%s", actual, composeIncidentDetails())
         .isPresent();
 
     return optIncidentCreatedRecord.get().getValue();
   }
 
+  @NotNull
+  private Optional<Record<IncidentRecordValue>> findIncidentCreatedRecord() {
+    return getIncidentRecords(IncidentIntent.CREATED).stream().findFirst();
+  }
+
   private boolean isIncidentResolved() {
     return getIncidentRecords(IncidentIntent.RESOLVED).stream().findFirst().isPresent();
+  }
+
+  private String composeIncidentDetails() {
+    final Optional<Record<IncidentRecordValue>> optRecord = findIncidentCreatedRecord();
+
+    if (!optRecord.isPresent()) {
+      return "\nNo incident details found for key " + actual;
+    } else {
+      final Record<IncidentRecordValue> record = optRecord.get();
+
+      final StringBuilder result = new StringBuilder();
+      result
+          .append("\nIncident[")
+          .append("\n  key: ")
+          .append(record.getKey())
+          .append("\n  errorType: ")
+          .append((record.getValue().getErrorType()))
+          .append("\n  errorMessage: \"")
+          .append(record.getValue().getErrorMessage())
+          .append("\"");
+
+      final String elementId = record.getValue().getElementId();
+
+      if (elementId != null) {
+        result.append("\n  elementId: ").append(elementId);
+      }
+
+      final long jobKey = record.getValue().getJobKey();
+
+      if (jobKey != -1) {
+        result.append("\n  jobKey: ").append(jobKey);
+      }
+
+      result.append("\n]");
+      return result.toString();
+    }
   }
 }

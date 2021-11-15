@@ -117,12 +117,10 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
    * @return this {@link JobAssert}
    */
   public JobAssert hasNoIncidents() {
-    final boolean noIncidentsWereRaised =
-        !getIncidentCreatedRecords().stream().findFirst().isPresent();
+    final boolean incidentsWereRaised =
+        getIncidentCreatedRecords().stream().findFirst().isPresent();
 
-    assertThat(noIncidentsWereRaised)
-        .withFailMessage("Incidents were raised for this job")
-        .isTrue();
+    assertThat(incidentsWereRaised).withFailMessage("Incidents were raised for this job").isFalse();
     return this;
   }
 
