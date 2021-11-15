@@ -32,4 +32,9 @@ public class StreamFilter {
     return new MessageStartEventSubscriptionStreamFilter(
         recordStreamSource.messageStartEventSubscriptionRecords());
   }
+
+  public static ProcessEventRecordStreamFilter processEventRecords(
+      final RecordStreamSource recordStreamSource) {
+    return new ProcessEventRecordStreamFilter(recordStreamSource.records());
+  }
 }
