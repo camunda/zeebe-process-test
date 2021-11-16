@@ -43,7 +43,6 @@ class ProcessInstanceAssertTest {
   public static final String VAR_TOTAL_LOOPS = "totalLoops";
   public static final String MESSAGE_NAME = "message";
 
-  private ZeebeClient client;
   private ZeebeEngine engine;
 
   // These tests are for testing assertions as well as examples for users
@@ -51,16 +50,17 @@ class ProcessInstanceAssertTest {
   class HappyPathTests {
 
     private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
 
     @Test
     public void testProcessInstanceIsStarted() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThat(instanceEvent).isStarted();
@@ -69,12 +69,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsActive() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThat(instanceEvent).isActive();
@@ -83,13 +83,13 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsCompleted() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // when
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       // then
       assertThat(instanceEvent).isCompleted();
@@ -98,12 +98,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotCompleted() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThat(instanceEvent).isNotCompleted();
@@ -112,10 +112,10 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsTerminated() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // when
       client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
@@ -128,12 +128,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotTerminated() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThat(instanceEvent).isNotTerminated();
@@ -142,13 +142,13 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasPassedElement() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // when
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       // then
       assertThat(instanceEvent).hasPassedElement(SERVICETASK);
@@ -157,12 +157,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasNotPassedElement() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThat(instanceEvent).hasNotPassedElement(SERVICETASK);
@@ -171,15 +171,15 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasPassedElementMultipleTimes() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final int totalLoops = 5;
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, totalLoops);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // when
       for (int i = 0; i < 5; i++) {
-        completeTask(SERVICETASK);
+        completeTask(client, SERVICETASK);
       }
 
       // then
@@ -189,13 +189,13 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasPassedElementsInOrder() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // when
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       // then
       assertThat(instanceEvent).hasPassedElementInOrder(STARTEVENT, SERVICETASK, ENDEVENT);
@@ -204,10 +204,11 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsWaitingAt() throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // then
       assertThat(instanceEvent).isWaitingAtElement(SERVICETASK_1);
@@ -216,10 +217,11 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessIsWaitingAtMultipleElements() throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // then
       assertThat(instanceEvent).isWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
@@ -228,11 +230,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotWaitingAt() throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask(SERVICETASK_1);
+      completeTask(client, SERVICETASK_1);
 
       // then
       assertThat(instanceEvent).isNotWaitingAtElement(SERVICETASK_1);
@@ -241,13 +244,14 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotWaitingAtMulitpleElements() throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask(SERVICETASK_1);
-      completeTask(SERVICETASK_2);
-      completeTask(SERVICETASK_3);
+      completeTask(client, SERVICETASK_1);
+      completeTask(client, SERVICETASK_2);
+      completeTask(client, SERVICETASK_3);
 
       // then
       assertThat(instanceEvent).isNotWaitingAtElement(SERVICETASK_1, SERVICETASK_2, SERVICETASK_3);
@@ -256,12 +260,13 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotWaitingAtNonExistingElement() throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
       final String nonExistingElementId = "non-existing-task";
 
       // when
-      completeTask(nonExistingElementId);
+      completeTask(client, nonExistingElementId);
 
       // then
       assertThat(instanceEvent).isNotWaitingAtElement(nonExistingElementId);
@@ -270,11 +275,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsWaitingExactlyAtElements() throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask(SERVICETASK_1);
+      completeTask(client, SERVICETASK_1);
 
       // then
       assertThat(instanceEvent).isWaitingExactlyAtElements(SERVICETASK_2, SERVICETASK_3);
@@ -283,12 +289,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsWaitingForMessage() throws InterruptedException {
       // given
-      deployProcess(MESSAGE_EVENT_BPMN);
+      deployProcess(client, MESSAGE_EVENT_BPMN);
       final Map<String, Object> variables = Collections.singletonMap("correlationKey", "key");
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+          startProcessInstance(client, MESSAGE_EVENT_PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).isWaitingForMessage(MESSAGE_NAME);
@@ -297,15 +303,15 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotWaitingForMessage() throws InterruptedException {
       // given
-      deployProcess(MESSAGE_EVENT_BPMN);
+      deployProcess(client, MESSAGE_EVENT_BPMN);
       final String correlationKey = "key";
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+          startProcessInstance(client, MESSAGE_EVENT_PROCESS_ID, variables);
 
       // when
-      sendMessage(MESSAGE_NAME, correlationKey);
+      sendMessage(client, MESSAGE_NAME, correlationKey);
 
       // then
       assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME);
@@ -314,12 +320,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasVariable() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThat(instanceEvent).hasVariable(VAR_TOTAL_LOOPS);
@@ -328,12 +334,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasVariableWithValue() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, "1");
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThat(instanceEvent).hasVariableWithValue(VAR_TOTAL_LOOPS, "1");
@@ -342,15 +348,15 @@ class ProcessInstanceAssertTest {
     @Test
     public void testHasCorrelatedMessageByName() throws InterruptedException {
       // given
-      deployProcess(MESSAGE_EVENT_BPMN);
+      deployProcess(client, MESSAGE_EVENT_BPMN);
       final String correlationKey = "key";
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+          startProcessInstance(client, MESSAGE_EVENT_PROCESS_ID, variables);
 
       // when
-      sendMessage(MESSAGE_NAME, correlationKey);
+      sendMessage(client, MESSAGE_NAME, correlationKey);
 
       // then
       assertThat(instanceEvent).hasCorrelatedMessageByName(MESSAGE_NAME, 1);
@@ -359,15 +365,15 @@ class ProcessInstanceAssertTest {
     @Test
     public void testHasCorrelatedMessageByCorrelationKey() throws InterruptedException {
       // given
-      deployProcess(MESSAGE_EVENT_BPMN);
+      deployProcess(client, MESSAGE_EVENT_BPMN);
       final String correlationKey = "key";
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+          startProcessInstance(client, MESSAGE_EVENT_PROCESS_ID, variables);
 
       // when
-      sendMessage(MESSAGE_NAME, correlationKey);
+      sendMessage(client, MESSAGE_NAME, correlationKey);
 
       // then
       assertThat(instanceEvent).hasCorrelatedMessageByCorrelationKey(correlationKey, 1);
@@ -386,7 +392,7 @@ class ProcessInstanceAssertTest {
           Utilities.startProcessInstance(
               client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       // then
       assertThat(instanceEvent).hasAnyIncidents();
@@ -418,7 +424,7 @@ class ProcessInstanceAssertTest {
           Utilities.startProcessInstance(
               client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       final IncidentAssert incidentAssert = assertThat(instanceEvent).extractLatestIncident();
 
@@ -437,11 +443,12 @@ class ProcessInstanceAssertTest {
   class UnhappyPathTests {
 
     private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
 
     @Test
     public void testProcessInstanceIsStartedFailure() {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent mockInstanceEvent = mock(ProcessInstanceEvent.class);
 
       // when
@@ -458,8 +465,8 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceIsNotStartedIfProcessInstanceKeyNoMatch()
         throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
-      startProcessInstance(PROCESS_INSTANCE_ID);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
+      startProcessInstance(client, PROCESS_INSTANCE_ID);
       final ProcessInstanceEvent mockInstanceEvent = mock(ProcessInstanceEvent.class);
 
       // when
@@ -474,12 +481,13 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsActiveFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
+          startProcessInstance(
+              client, PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // when
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isActive())
@@ -490,11 +498,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsCompletedFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
+          startProcessInstance(
+              client, PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isCompleted())
@@ -506,12 +515,13 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotCompletedFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
+          startProcessInstance(
+              client, PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // when
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotCompleted())
@@ -522,11 +532,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsTerminatedFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
+          startProcessInstance(
+              client, PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isTerminated())
@@ -538,9 +549,10 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotTerminatedFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
+          startProcessInstance(
+              client, PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // when
       client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
@@ -555,11 +567,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasPassedElementFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
+          startProcessInstance(
+              client, PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).hasPassedElement(SERVICETASK))
@@ -570,12 +583,13 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasNotPassedElementFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
+          startProcessInstance(
+              client, PROCESS_INSTANCE_ID, Collections.singletonMap(VAR_TOTAL_LOOPS, 1));
 
       // when
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).hasNotPassedElement(SERVICETASK))
@@ -586,13 +600,13 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasPassedElementsInOrderFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final Map<String, Object> variables = Collections.singletonMap(VAR_TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // when
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       // then
       assertThatThrownBy(
@@ -609,11 +623,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsWaitingAtFailure() throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask(SERVICETASK_1);
+      completeTask(client, SERVICETASK_1);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement(SERVICETASK_1))
@@ -625,13 +640,14 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceIsWaitingAtMultipleElementsFailure()
         throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // when
-      completeTask(SERVICETASK_1);
-      completeTask(SERVICETASK_2);
-      completeTask(SERVICETASK_3);
+      completeTask(client, SERVICETASK_1);
+      completeTask(client, SERVICETASK_2);
+      completeTask(client, SERVICETASK_3);
 
       // then
       assertThatThrownBy(
@@ -646,12 +662,13 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceWaitingAtNonExistingElementFailure()
         throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
       final String nonExistingTaskId = "non-existing-task";
 
       // when
-      completeTask(nonExistingTaskId);
+      completeTask(client, nonExistingTaskId);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement(nonExistingTaskId))
@@ -662,10 +679,11 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotWaitingAtFailure() throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingAtElement(SERVICETASK_1))
@@ -677,10 +695,11 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceIsNotWaitingAtMulitpleElementsFailure()
         throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // then
       assertThatThrownBy(
@@ -695,10 +714,11 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooManyElements()
         throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingExactlyAtElements(SERVICETASK_1))
@@ -716,12 +736,13 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooLittleElements()
         throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
-      completeTask(SERVICETASK_1);
-      completeTask(SERVICETASK_2);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
+      completeTask(client, SERVICETASK_1);
+      completeTask(client, SERVICETASK_2);
 
       // then
       assertThatThrownBy(
@@ -742,12 +763,13 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceIsWaitingExactlyAtElementsFailure_combination()
         throws InterruptedException {
       // given
-      deployProcess(MULTIPLE_TASKS_BPMN);
+      deployProcess(client, MULTIPLE_TASKS_BPMN);
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(MULTIPLE_TASKS_PROCESS_ID);
-      completeTask(SERVICETASK_1);
-      completeTask(SERVICETASK_2);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(client, MULTIPLE_TASKS_PROCESS_ID);
+      completeTask(client, SERVICETASK_1);
+      completeTask(client, SERVICETASK_2);
 
       // then
       assertThatThrownBy(
@@ -770,15 +792,15 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsWaitingForMessageFailure() throws InterruptedException {
       // given
-      deployProcess(MESSAGE_EVENT_BPMN);
+      deployProcess(client, MESSAGE_EVENT_BPMN);
       final String correlationKey = "key";
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+          startProcessInstance(client, MESSAGE_EVENT_PROCESS_ID, variables);
 
       // when
-      sendMessage(MESSAGE_NAME, correlationKey);
+      sendMessage(client, MESSAGE_NAME, correlationKey);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingForMessage(MESSAGE_NAME))
@@ -789,14 +811,14 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceIsNotWaitingForMessageFailure() throws InterruptedException {
       // given
-      deployProcess(MESSAGE_EVENT_BPMN);
+      deployProcess(client, MESSAGE_EVENT_BPMN);
       final String correlationKey = "key";
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+          startProcessInstance(client, MESSAGE_EVENT_PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingForMessage(MESSAGE_NAME))
@@ -807,12 +829,12 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasVariableFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final String expectedVariable = "variable";
       final String actualVariable = "loopAmount";
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(PROCESS_INSTANCE_ID);
+      final ProcessInstanceEvent instanceEvent = startProcessInstance(client, PROCESS_INSTANCE_ID);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).hasVariable(expectedVariable))
@@ -825,7 +847,7 @@ class ProcessInstanceAssertTest {
     @Test
     public void testProcessInstanceHasVariableWithValueFailure() throws InterruptedException {
       // given
-      deployProcess(PROCESS_INSTANCE_BPMN);
+      deployProcess(client, PROCESS_INSTANCE_BPMN);
       final String variable = "variable";
       final String expectedValue = "expectedValue";
       final String actualValue = "actualValue";
@@ -833,7 +855,7 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(PROCESS_INSTANCE_ID, variables);
+          startProcessInstance(client, PROCESS_INSTANCE_ID, variables);
 
       // then
       assertThatThrownBy(
@@ -849,14 +871,14 @@ class ProcessInstanceAssertTest {
     @Test
     public void testHasCorrelatedMessageByNameFailure() throws InterruptedException {
       // given
-      deployProcess(MESSAGE_EVENT_BPMN);
+      deployProcess(client, MESSAGE_EVENT_BPMN);
       final String correlationKey = "key";
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+          startProcessInstance(client, MESSAGE_EVENT_PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(
@@ -870,14 +892,14 @@ class ProcessInstanceAssertTest {
     @Test
     public void testHasCorrelatedMessageByCorrelationKeyFailure() throws InterruptedException {
       // given
-      deployProcess(MESSAGE_EVENT_BPMN);
+      deployProcess(client, MESSAGE_EVENT_BPMN);
       final String correlationKey = "key";
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(MESSAGE_EVENT_PROCESS_ID, variables);
+          startProcessInstance(client, MESSAGE_EVENT_PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(
@@ -917,7 +939,7 @@ class ProcessInstanceAssertTest {
           Utilities.startProcessInstance(
               client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
-      completeTask(SERVICETASK);
+      completeTask(client, SERVICETASK);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).hasNoIncidents())
@@ -941,17 +963,18 @@ class ProcessInstanceAssertTest {
     }
   }
 
-  private void deployProcess(final String process) {
+  private void deployProcess(final ZeebeClient client, final String process) {
     client.newDeployCommand().addResourceFromClasspath(process).send().join();
   }
 
-  private ProcessInstanceEvent startProcessInstance(final String processId)
-      throws InterruptedException {
-    return startProcessInstance(processId, new HashMap<>());
+  private ProcessInstanceEvent startProcessInstance(
+      final ZeebeClient client, final String processId) throws InterruptedException {
+    return startProcessInstance(client, processId, new HashMap<>());
   }
 
   private ProcessInstanceEvent startProcessInstance(
-      final String processId, final Map<String, Object> variables) throws InterruptedException {
+      final ZeebeClient client, final String processId, final Map<String, Object> variables)
+      throws InterruptedException {
     final ProcessInstanceEvent instanceEvent =
         client
             .newCreateInstanceCommand()
@@ -965,7 +988,8 @@ class ProcessInstanceAssertTest {
   }
 
   // TODO we need a proper way to complete jobs instead of this hack
-  private void completeTask(final String elementId) throws InterruptedException {
+  private void completeTask(final ZeebeClient client, final String elementId)
+      throws InterruptedException {
     Thread.sleep(100);
     Record<JobRecordValue> lastRecord = null;
     for (final Record<JobRecordValue> record : engine.jobRecords().withElementId(elementId)) {
@@ -979,11 +1003,12 @@ class ProcessInstanceAssertTest {
     Thread.sleep(100);
   }
 
-  private void sendMessage(final String messsageName, final String correlationKey)
+  private void sendMessage(
+      final ZeebeClient client, final String messageName, final String correlationKey)
       throws InterruptedException {
     client
         .newPublishMessageCommand()
-        .messageName(messsageName)
+        .messageName(messageName)
         .correlationKey(correlationKey)
         .send()
         .join();

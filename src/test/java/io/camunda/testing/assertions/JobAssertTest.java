@@ -28,13 +28,12 @@ class JobAssertTest {
   public static final String ERROR_CODE = "error";
   public static final String ERROR_MSG = "error occurred";
 
-  private ZeebeClient client;
   private ZeebeEngine engine;
 
   // These tests are for testing assertions as well as examples for users
   @Nested
   class HappyPathTests {
-
+    private ZeebeClient client;
     private RecordStreamSource recordStreamSource;
 
     @Test
@@ -220,6 +219,7 @@ class JobAssertTest {
   @Nested
   class UnhappyPathTests {
     private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
 
     @Test
     void testHasElementIdFailure() throws InterruptedException {

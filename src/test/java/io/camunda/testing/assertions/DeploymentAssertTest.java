@@ -23,7 +23,6 @@ class DeploymentAssertTest {
 
   public static final String WRONG_VALUE = "wrong value";
 
-  private ZeebeClient client;
   private ZeebeEngine engine;
 
   // These tests are for testing assertions as well as examples for users
@@ -31,6 +30,7 @@ class DeploymentAssertTest {
   class HappyPathTests {
 
     private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
 
     @Test
     public void testContainsProcessesById() {
@@ -98,6 +98,7 @@ class DeploymentAssertTest {
   class UnhappyPathTests {
 
     private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
 
     @Test
     public void testContainsProcessesByIdFailure() {

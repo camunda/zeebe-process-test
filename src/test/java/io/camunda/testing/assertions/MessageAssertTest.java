@@ -1,15 +1,11 @@
 package io.camunda.testing.assertions;
 
 import static io.camunda.testing.assertions.BpmnAssert.assertThat;
-import static io.camunda.testing.util.Utilities.deployProcess;
-import static io.camunda.testing.util.Utilities.increaseTime;
-import static io.camunda.testing.util.Utilities.sendMessage;
-import static io.camunda.testing.util.Utilities.startProcessInstance;
+import static io.camunda.testing.util.Utilities.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import io.camunda.testing.extensions.ZeebeAssertions;
-import io.camunda.testing.util.Utilities.ProcessPackMessageEvent;
-import io.camunda.testing.util.Utilities.ProcessPackMessageStartEvent;
+import io.camunda.testing.util.Utilities.*;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
@@ -29,7 +25,6 @@ class MessageAssertTest {
   public static final String WRONG_CORRELATION_KEY = "wrongcorrelationkey";
   public static final String WRONG_MESSAGE_NAME = "wrongmessagename";
 
-  private ZeebeClient client;
   private ZeebeEngine engine;
   private ZeebeEngineClock clock;
 
@@ -37,6 +32,7 @@ class MessageAssertTest {
   class HappyPathTests {
 
     private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
 
     @Test
     void testHasBeenCorrelated() throws InterruptedException {
@@ -163,6 +159,7 @@ class MessageAssertTest {
   class UnhappyPathTests {
 
     private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
 
     @Test
     void testHasBeenCorrelatedFailure() throws InterruptedException {
