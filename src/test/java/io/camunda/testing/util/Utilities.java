@@ -44,6 +44,11 @@ public class Utilities {
     public static final String CORRELATION_KEY = "";
   }
 
+  public static final class ProcessPackTimerStartEvent {
+    public static final String RESOURCE_NAME = "timer-start-event-daily.bpmn";
+    public static final String TIMER_ID = "timer";
+  }
+
   public static DeploymentEvent deployProcess(final ZeebeClient client, final String process) {
     return deployProcesses(client, process);
   }

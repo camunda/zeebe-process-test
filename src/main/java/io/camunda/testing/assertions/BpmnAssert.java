@@ -1,26 +1,24 @@
 package io.camunda.testing.assertions;
 
+import static io.camunda.testing.utils.RecordStreamSourceStore.getRecordStreamSource;
+
+import io.camunda.testing.utils.model.InspectedProcessInstance;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
-import org.camunda.community.eze.RecordStreamSource;
 
 public abstract class BpmnAssert {
-
-  static ThreadLocal<RecordStreamSource> recordStreamSource = new ThreadLocal<>();
-
-  public static void init(final RecordStreamSource recordStreamSource) {
-    BpmnAssert.recordStreamSource.set(recordStreamSource);
-  }
-
-  public static void reset() {
-    recordStreamSource.remove();
-  }
 
   public static ProcessInstanceAssert assertThat(final ProcessInstanceEvent instanceEvent) {
     return new ProcessInstanceAssert(
         instanceEvent.getProcessInstanceKey(), getRecordStreamSource());
+  }
+
+  public static ProcessInstanceAssert assertThat(
+      final InspectedProcessInstance inspectedProcessInstance) {
+    return new ProcessInstanceAssert(
+        inspectedProcessInstance.getProcessInstanceKey(), getRecordStreamSource());
   }
 
   public static JobAssert assertThat(final ActivatedJob activatedJob) {
@@ -33,14 +31,5 @@ public abstract class BpmnAssert {
 
   public static MessageAssert assertThat(final PublishMessageResponse publishMessageResponse) {
     return new MessageAssert(publishMessageResponse, getRecordStreamSource());
-  }
-
-  private static RecordStreamSource getRecordStreamSource() {
-    if (recordStreamSource.get() == null) {
-      throw new AssertionError(
-          "No RecordStreamSource is set. Please use @ZeebeAssertions extension and "
-              + "declare a RecordStreamSource field");
-    }
-    return recordStreamSource.get();
   }
 }
