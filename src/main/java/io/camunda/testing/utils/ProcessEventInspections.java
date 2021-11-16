@@ -16,9 +16,10 @@ public class ProcessEventInspections {
   }
 
   /**
-   * Filters the process instances to only include instances that were triggered by a given timer id
+   * Filters the process instances to only include instances that were triggered by a given timer
+   * event id
    *
-   * @param timerId The id of the timer
+   * @param timerId The element ID of the timer event
    * @return this {@link ProcessEventInspections}
    */
   public ProcessEventInspections triggeredByTimer(final String timerId) {
