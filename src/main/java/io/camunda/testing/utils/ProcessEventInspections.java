@@ -1,13 +1,11 @@
 package io.camunda.testing.utils;
 
-import static io.camunda.testing.utils.RecordStreamManager.getRecordStreamSource;
-
-import io.camunda.testing.assertions.ProcessInstanceAssert;
 import io.camunda.testing.filters.ProcessEventRecordStreamFilter;
+import io.camunda.testing.utils.model.InspectedProcessInstance;
 import io.camunda.zeebe.protocol.record.intent.ProcessEventIntent;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import org.assertj.core.api.Assertions;
 
 public class ProcessEventInspections {
 
@@ -17,39 +15,83 @@ public class ProcessEventInspections {
     this.filter = filter;
   }
 
+  /**
+   * Filters the process instances to only include instances that were triggered by a given timer id
+   *
+   * @param timerId The id of the timer
+   * @return this {@link ProcessEventInspections}
+   */
   public ProcessEventInspections triggeredByTimer(final String timerId) {
     return new ProcessEventInspections(
         filter.withIntent(ProcessEventIntent.TRIGGERED).withTargetElementId(timerId));
   }
 
+  /**
+   * Filters the process instances to only include instance with a given process definition key
+   *
+   * @param processDefinitionKey The process definition key
+   * @return this {@link ProcessEventInspections}
+   */
   public ProcessEventInspections withProcessDefinitionKey(final long processDefinitionKey) {
     return new ProcessEventInspections(filter.withProcessDefinitionKey(processDefinitionKey));
   }
 
-  public ProcessInstanceAssert assertThatFirstProcessInstance() {
-    return assertThatProcessInstance(0);
+  /**
+   * Finds the first process instance that matches the applied filters
+   *
+   * @return {@link Optional} of {@link InspectedProcessInstance}
+   */
+  public Optional<InspectedProcessInstance> findFirstProcessInstance() {
+    return findProcessInstance(0);
   }
 
-  public ProcessInstanceAssert assertThatLastProcessInstance() {
+  /**
+   * Finds the last process instance that matches the applied filters
+   *
+   * @return {@link Optional} of {@link InspectedProcessInstance}
+   */
+  public Optional<InspectedProcessInstance> findLastProcessInstance() {
     final List<Long> processInstanceKeys = getProcessInstanceKeys();
-    return assertThatProcessInstance(processInstanceKeys, processInstanceKeys.size() - 1);
+    return findProcessInstance(processInstanceKeys, processInstanceKeys.size() - 1);
   }
 
-  public ProcessInstanceAssert assertThatProcessInstance(final int times) {
+  /**
+   * Finds the process instance that matches the applied filters at a given index
+   *
+   * <p>Example: If 3 process instances have been started, findProcessInstance(1) would return the
+   * second started instance.
+   *
+   * @param index The index of the process instance start at 0
+   * @return {@link Optional} of {@link InspectedProcessInstance}
+   */
+  public Optional<InspectedProcessInstance> findProcessInstance(final int index) {
     final List<Long> processInstanceKeys = getProcessInstanceKeys();
-    return assertThatProcessInstance(processInstanceKeys, times);
+    return findProcessInstance(processInstanceKeys, index);
   }
 
-  private ProcessInstanceAssert assertThatProcessInstance(final List<Long> keys, final int index) {
-    long processInstanceKey = -1;
+  /**
+   * Gets the given index from a list of process instance keys uses it to create an {@link
+   * InspectedProcessInstance}
+   *
+   * @param keys The list of process instance key
+   * @param index The desired index
+   * @return {@link Optional} of {@link InspectedProcessInstance}
+   */
+  private Optional<InspectedProcessInstance> findProcessInstance(
+      final List<Long> keys, final int index) {
     try {
-      processInstanceKey = keys.get(index);
+      final long processInstanceKey = keys.get(index);
+      return Optional.of(new InspectedProcessInstance(processInstanceKey));
     } catch (IndexOutOfBoundsException ex) {
-      Assertions.fail("No process instances have been found");
+      return Optional.empty();
     }
-    return new ProcessInstanceAssert(processInstanceKey, getRecordStreamSource());
   }
 
+  /**
+   * Maps the filtered stream to a list of process instance keys
+   *
+   * @return List of process instance keys
+   */
   private List<Long> getProcessInstanceKeys() {
     return filter.stream()
         .map(record -> record.getValue().getProcessInstanceKey())

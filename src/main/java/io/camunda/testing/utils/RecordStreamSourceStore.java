@@ -2,12 +2,12 @@ package io.camunda.testing.utils;
 
 import org.camunda.community.eze.RecordStreamSource;
 
-public abstract class RecordStreamManager {
+public abstract class RecordStreamSourceStore {
 
   static ThreadLocal<RecordStreamSource> recordStreamSource = new ThreadLocal<>();
 
   public static void init(final RecordStreamSource recordStreamSource) {
-    RecordStreamManager.recordStreamSource.set(recordStreamSource);
+    RecordStreamSourceStore.recordStreamSource.set(recordStreamSource);
   }
 
   public static void reset() {
