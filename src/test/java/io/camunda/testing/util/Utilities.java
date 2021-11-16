@@ -6,13 +6,15 @@ import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
+import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.intent.JobIntent;
+import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import org.camunda.community.eze.ZeebeEngine;
 import org.camunda.community.eze.ZeebeEngineClock;
 
-// @TODO Use this also in other tests
 public class Utilities {
 
   public static final class ProcessPackLoopingServiceTask {
@@ -24,11 +26,16 @@ public class Utilities {
     public static final String TOTAL_LOOPS =
         "totalLoops"; // variable name to indicate number of loops
     public static final String GATEWAY_ELEMENT_ID = "Gateway_0fhwf5d";
+    public static final String START_EVENT_ID = "startevent";
+    public static final String END_EVENT_ID = "endevent";
   }
 
   public static final class ProcessPackMultipleTasks {
     public static final String RESOURCE_NAME = "multiple-tasks.bpmn";
     public static final String PROCESS_ID = "multiple-tasks";
+    public static final String ELEMENT_ID_1 = "servicetask1";
+    public static final String ELEMENT_ID_2 = "servicetask2";
+    public static final String ELEMENT_ID_3 = "servicetask3";
   }
 
   public static final class ProcessPackMessageEvent {
@@ -132,5 +139,18 @@ public class Utilities {
       throws InterruptedException {
     clock.increaseTime(duration);
     Thread.sleep(100);
+  }
+
+  public static void completeTask(final ZeebeEngine engine, final ZeebeClient client, final String elementId) {
+    Record<JobRecordValue> lastRecord = null;
+    for (final Record<JobRecordValue> record : engine.jobRecords().withElementId(elementId)) {
+      if (record.getIntent().equals(JobIntent.CREATED)) {
+        lastRecord = record;
+      }
+    }
+    if (lastRecord != null) {
+      client.newCompleteCommand(lastRecord.getKey()).send().join();
+    }
+    waitForIdleState(engine);
   }
 }

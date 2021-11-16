@@ -1,8 +1,6 @@
 package io.camunda.testing.assertions;
 
 import static io.camunda.testing.assertions.BpmnAssert.assertThat;
-import static io.camunda.testing.assertions.ProcessInstanceAssertTest.PROCESS_INSTANCE_BPMN;
-import static io.camunda.testing.assertions.ProcessInstanceAssertTest.PROCESS_INSTANCE_ID;
 import static io.camunda.testing.util.Utilities.deployProcess;
 import static io.camunda.testing.util.Utilities.deployProcesses;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -103,25 +101,25 @@ class DeploymentAssertTest {
     @Test
     public void testContainsProcessesByIdFailure() {
       // when
-      final DeploymentEvent deploymentEvent = deployProcess(client, PROCESS_INSTANCE_BPMN);
+      final DeploymentEvent deploymentEvent = deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // then
       assertThatThrownBy(
               () -> assertThat(deploymentEvent).containsProcessesByBpmnProcessId(WRONG_VALUE))
           .isInstanceOf(AssertionError.class)
-          .hasMessageContainingAll(WRONG_VALUE, PROCESS_INSTANCE_ID);
+          .hasMessageContainingAll(WRONG_VALUE, ProcessPackLoopingServiceTask.PROCESS_ID);
     }
 
     @Test
     public void testContainsProcessesByResourceNameFailure() {
       // when
-      final DeploymentEvent deploymentEvent = deployProcess(client, PROCESS_INSTANCE_BPMN);
+      final DeploymentEvent deploymentEvent = deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // then
       assertThatThrownBy(
               () -> assertThat(deploymentEvent).containsProcessesByResourceName(WRONG_VALUE))
           .isInstanceOf(AssertionError.class)
-          .hasMessageContainingAll(WRONG_VALUE, PROCESS_INSTANCE_BPMN);
+          .hasMessageContainingAll(WRONG_VALUE, ProcessPackLoopingServiceTask.PROCESS_ID);
     }
 
     @Test
