@@ -39,4 +39,5 @@ Testing:
 * [ ] The behavior is tested manually
 
 Documentation:
+* [ ] Javadoc has been written
 * [ ] The documentation is updated
