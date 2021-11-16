@@ -101,7 +101,8 @@ class DeploymentAssertTest {
     @Test
     public void testContainsProcessesByIdFailure() {
       // when
-      final DeploymentEvent deploymentEvent = deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      final DeploymentEvent deploymentEvent =
+          deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // then
       assertThatThrownBy(
@@ -113,7 +114,8 @@ class DeploymentAssertTest {
     @Test
     public void testContainsProcessesByResourceNameFailure() {
       // when
-      final DeploymentEvent deploymentEvent = deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      final DeploymentEvent deploymentEvent =
+          deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // then
       assertThatThrownBy(

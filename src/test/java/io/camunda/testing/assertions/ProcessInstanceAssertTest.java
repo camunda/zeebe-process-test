@@ -39,43 +39,43 @@ class ProcessInstanceAssertTest {
     private ZeebeClient client;
 
     @Test
-    public void testProcessInstanceIsStarted() throws InterruptedException {
+    public void testProcessInstanceIsStarted() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).isStarted();
     }
 
     @Test
-    public void testProcessInstanceIsActive() throws InterruptedException {
+    public void testProcessInstanceIsActive() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).isActive();
     }
 
     @Test
-    public void testProcessInstanceIsCompleted() throws InterruptedException {
+    public void testProcessInstanceIsCompleted() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
@@ -85,28 +85,28 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotCompleted() throws InterruptedException {
+    public void testProcessInstanceIsNotCompleted() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).isNotCompleted();
     }
 
     @Test
-    public void testProcessInstanceIsTerminated() throws InterruptedException {
+    public void testProcessInstanceIsTerminated() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
@@ -117,28 +117,28 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotTerminated() throws InterruptedException {
+    public void testProcessInstanceIsNotTerminated() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).isNotTerminated();
     }
 
     @Test
-    public void testProcessInstanceHasPassedElement() throws InterruptedException {
+    public void testProcessInstanceHasPassedElement() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
@@ -148,29 +148,29 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasNotPassedElement() throws InterruptedException {
+    public void testProcessInstanceHasNotPassedElement() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).hasNotPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID);
     }
 
     @Test
-    public void testProcessInstanceHasPassedElementMultipleTimes() throws InterruptedException {
+    public void testProcessInstanceHasPassedElementMultipleTimes() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final int totalLoops = 5;
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, totalLoops);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, totalLoops);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       for (int i = 0; i < 5; i++) {
@@ -178,61 +178,66 @@ class ProcessInstanceAssertTest {
       }
 
       // then
-      assertThat(instanceEvent).hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID,
-          totalLoops);
+      assertThat(instanceEvent)
+          .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID, totalLoops);
     }
 
     @Test
-    public void testProcessInstanceHasPassedElementsInOrder() throws InterruptedException {
+    public void testProcessInstanceHasPassedElementsInOrder() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
       // then
-      assertThat(instanceEvent).hasPassedElementInOrder(
-          ProcessPackLoopingServiceTask.START_EVENT_ID, ProcessPackLoopingServiceTask.ELEMENT_ID,
-          ProcessPackLoopingServiceTask.END_EVENT_ID);
+      assertThat(instanceEvent)
+          .hasPassedElementInOrder(
+              ProcessPackLoopingServiceTask.START_EVENT_ID,
+              ProcessPackLoopingServiceTask.ELEMENT_ID,
+              ProcessPackLoopingServiceTask.END_EVENT_ID);
     }
 
     @Test
-    public void testProcessInstanceIsWaitingAt() throws InterruptedException {
+    public void testProcessInstanceIsWaitingAt() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // then
       assertThat(instanceEvent).isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
 
     @Test
-    public void testProcessIsWaitingAtMultipleElements() throws InterruptedException {
+    public void testProcessIsWaitingAtMultipleElements() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // then
-      assertThat(instanceEvent).isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1,
-          ProcessPackMultipleTasks.ELEMENT_ID_2, ProcessPackMultipleTasks.ELEMENT_ID_3);
+      assertThat(instanceEvent)
+          .isWaitingAtElement(
+              ProcessPackMultipleTasks.ELEMENT_ID_1,
+              ProcessPackMultipleTasks.ELEMENT_ID_2,
+              ProcessPackMultipleTasks.ELEMENT_ID_3);
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAt() throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingAt() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // when
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_1);
@@ -242,11 +247,11 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtMulitpleElements() throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingAtMulitpleElements() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // when
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_1);
@@ -254,16 +259,19 @@ class ProcessInstanceAssertTest {
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_3);
 
       // then
-      assertThat(instanceEvent).isNotWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1,
-          ProcessPackMultipleTasks.ELEMENT_ID_2, ProcessPackMultipleTasks.ELEMENT_ID_3);
+      assertThat(instanceEvent)
+          .isNotWaitingAtElement(
+              ProcessPackMultipleTasks.ELEMENT_ID_1,
+              ProcessPackMultipleTasks.ELEMENT_ID_2,
+              ProcessPackMultipleTasks.ELEMENT_ID_3);
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtNonExistingElement() throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingAtNonExistingElement() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
       final String nonExistingElementId = "non-existing-task";
 
       // when
@@ -274,22 +282,23 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElements() throws InterruptedException {
+    public void testProcessInstanceIsWaitingExactlyAtElements() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // when
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_1);
 
       // then
-      assertThat(instanceEvent).isWaitingExactlyAtElements(ProcessPackMultipleTasks.ELEMENT_ID_2,
-          ProcessPackMultipleTasks.ELEMENT_ID_3);
+      assertThat(instanceEvent)
+          .isWaitingExactlyAtElements(
+              ProcessPackMultipleTasks.ELEMENT_ID_2, ProcessPackMultipleTasks.ELEMENT_ID_3);
     }
 
     @Test
-    public void testProcessInstanceIsWaitingForMessage() throws InterruptedException {
+    public void testProcessInstanceIsWaitingForMessage() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -297,55 +306,55 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).isWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingForMessage() throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingForMessage() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
       final Map<String, Object> variables =
-          Collections.singletonMap(ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE,
-              correlationKey);
+          Collections.singletonMap(
+              ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
-      sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
+      sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
 
       // then
       assertThat(instanceEvent).isNotWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
-    public void testProcessInstanceHasVariable() throws InterruptedException {
+    public void testProcessInstanceHasVariable() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent).hasVariable(ProcessPackLoopingServiceTask.TOTAL_LOOPS);
     }
 
     @Test
-    public void testProcessInstanceHasVariableWithValue() throws InterruptedException {
+    public void testProcessInstanceHasVariableWithValue() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, "1");
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "1");
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       assertThat(instanceEvent)
@@ -353,52 +362,52 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasCorrelatedMessageByName() throws InterruptedException {
+    public void testHasCorrelatedMessageByName() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
-      sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
+      sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
 
       // then
       assertThat(instanceEvent).hasCorrelatedMessageByName(ProcessPackMessageEvent.MESSAGE_NAME, 1);
     }
 
     @Test
-    public void testHasCorrelatedMessageByCorrelationKey() throws InterruptedException {
+    public void testHasCorrelatedMessageByCorrelationKey() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
       final Map<String, Object> variables =
-          Collections.singletonMap(ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE,
-              correlationKey);
+          Collections.singletonMap(
+              ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
-      sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
+      sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
 
       // then
       assertThat(instanceEvent).hasCorrelatedMessageByCorrelationKey(correlationKey, 1);
     }
 
     @Test
-    public void testHasAnyIncidents() throws InterruptedException {
+    public void testHasAnyIncidents() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       final Map<String, Object> variables =
-          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS,
-              "invalid value"); // will cause incident
+          Collections.singletonMap(
+              ProcessPackLoopingServiceTask.TOTAL_LOOPS, "invalid value"); // will cause incident
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because ProcessPackLoopingServiceTask.TOTAL_LOOPS is a string, but needs to be an int */
       completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
@@ -407,30 +416,30 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasNoIncidents() throws InterruptedException {
+    public void testHasNoIncidents() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // then
       assertThat(instanceEvent).hasNoIncidents();
     }
 
     @Test
-    public void testExtractLatestIncident() throws InterruptedException {
+    public void testExtractLatestIncident() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       final Map<String, Object> variables =
-          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS,
-              "invalid value"); // will cause incident
+          Collections.singletonMap(
+              ProcessPackLoopingServiceTask.TOTAL_LOOPS, "invalid value"); // will cause incident
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because ProcessPackLoopingServiceTask.TOTAL_LOOPS is a string, but needs to be an int */
       completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
@@ -470,11 +479,10 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotStartedIfProcessInstanceKeyNoMatch()
-        throws InterruptedException {
+    public void testProcessInstanceIsNotStartedIfProcessInstanceKeyNoMatch() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
       final ProcessInstanceEvent mockInstanceEvent = mock(ProcessInstanceEvent.class);
 
       // when
@@ -487,12 +495,14 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsActiveFailure() throws InterruptedException {
+    public void testProcessInstanceIsActiveFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(
-              client, ProcessPackLoopingServiceTask.PROCESS_ID,
+              engine,
+              client,
+              ProcessPackLoopingServiceTask.PROCESS_ID,
               Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1));
 
       // when
@@ -505,13 +515,16 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsCompletedFailure() throws InterruptedException {
+    public void testProcessInstanceIsCompletedFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID,
+          startProcessInstance(
+              engine,
+              client,
+              ProcessPackLoopingServiceTask.PROCESS_ID,
               Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1));
 
       // then
@@ -522,11 +535,14 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotCompletedFailure() throws InterruptedException {
+    public void testProcessInstanceIsNotCompletedFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID,
+          startProcessInstance(
+              engine,
+              client,
+              ProcessPackLoopingServiceTask.PROCESS_ID,
               Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1));
 
       // when
@@ -539,13 +555,16 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsTerminatedFailure() throws InterruptedException {
+    public void testProcessInstanceIsTerminatedFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID,
+          startProcessInstance(
+              engine,
+              client,
+              ProcessPackLoopingServiceTask.PROCESS_ID,
               Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1));
 
       // then
@@ -556,11 +575,14 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotTerminatedFailure() throws InterruptedException {
+    public void testProcessInstanceIsNotTerminatedFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID,
+          startProcessInstance(
+              engine,
+              client,
+              ProcessPackLoopingServiceTask.PROCESS_ID,
               Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1));
 
       // when
@@ -574,62 +596,74 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedElementFailure() throws InterruptedException {
+    public void testProcessInstanceHasPassedElementFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID,
+          startProcessInstance(
+              engine,
+              client,
+              ProcessPackLoopingServiceTask.PROCESS_ID,
               Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1));
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).hasPassedElement(
-          ProcessPackLoopingServiceTask.ELEMENT_ID))
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID))
           .isInstanceOf(AssertionError.class)
-          .hasMessage("Expected element with id %s to be passed 1 times",
+          .hasMessage(
+              "Expected element with id %s to be passed 1 times",
               ProcessPackLoopingServiceTask.ELEMENT_ID);
     }
 
     @Test
-    public void testProcessInstanceHasNotPassedElementFailure() throws InterruptedException {
+    public void testProcessInstanceHasNotPassedElementFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID,
+          startProcessInstance(
+              engine,
+              client,
+              ProcessPackLoopingServiceTask.PROCESS_ID,
               Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1));
-
-      // when
-      completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
-
-      // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).hasNotPassedElement(
-          ProcessPackLoopingServiceTask.ELEMENT_ID))
-          .isInstanceOf(AssertionError.class)
-          .hasMessage("Expected element with id %s to be passed 0 times",
-              ProcessPackLoopingServiceTask.ELEMENT_ID);
-    }
-
-    @Test
-    public void testProcessInstanceHasPassedElementsInOrderFailure() throws InterruptedException {
-      // given
-      deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables = Collections.singletonMap(
-          ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
       // then
       assertThatThrownBy(
-          () ->
-              assertThat(instanceEvent)
-                  .hasPassedElementInOrder(
-                      ProcessPackLoopingServiceTask.END_EVENT_ID,
-                      ProcessPackLoopingServiceTask.ELEMENT_ID,
-                      ProcessPackLoopingServiceTask.START_EVENT_ID))
+              () ->
+                  assertThat(instanceEvent)
+                      .hasNotPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Expected element with id %s to be passed 0 times",
+              ProcessPackLoopingServiceTask.ELEMENT_ID);
+    }
+
+    @Test
+    public void testProcessInstanceHasPassedElementsInOrderFailure() {
+      // given
+      deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      final Map<String, Object> variables =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+
+      // when
+      completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
+
+      // then
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .hasPassedElementInOrder(
+                          ProcessPackLoopingServiceTask.END_EVENT_ID,
+                          ProcessPackLoopingServiceTask.ELEMENT_ID,
+                          ProcessPackLoopingServiceTask.START_EVENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "[Ordered elements] \n"
@@ -638,29 +672,30 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingAtFailure() throws InterruptedException {
+    public void testProcessInstanceIsWaitingAtFailure() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // when
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_1);
 
       // then
       assertThatThrownBy(
-          () -> assertThat(instanceEvent).isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1))
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("to contain", ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
 
     @Test
-    public void testProcessInstanceIsWaitingAtMultipleElementsFailure()
-        throws InterruptedException {
+    public void testProcessInstanceIsWaitingAtMultipleElementsFailure() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // when
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_1);
@@ -669,24 +704,26 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-          () ->
-              assertThat(instanceEvent)
-                  .isWaitingAtElement(
-                      ProcessPackMultipleTasks.ELEMENT_ID_1,
-                      ProcessPackMultipleTasks.ELEMENT_ID_2,
-                      ProcessPackMultipleTasks.ELEMENT_ID_3))
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingAtElement(
+                          ProcessPackMultipleTasks.ELEMENT_ID_1,
+                          ProcessPackMultipleTasks.ELEMENT_ID_2,
+                          ProcessPackMultipleTasks.ELEMENT_ID_3))
           .isInstanceOf(AssertionError.class)
-          .hasMessageContainingAll("to contain:", ProcessPackMultipleTasks.ELEMENT_ID_1,
-              ProcessPackMultipleTasks.ELEMENT_ID_2, ProcessPackMultipleTasks.ELEMENT_ID_3);
+          .hasMessageContainingAll(
+              "to contain:",
+              ProcessPackMultipleTasks.ELEMENT_ID_1,
+              ProcessPackMultipleTasks.ELEMENT_ID_2,
+              ProcessPackMultipleTasks.ELEMENT_ID_3);
     }
 
     @Test
-    public void testProcessInstanceWaitingAtNonExistingElementFailure()
-        throws InterruptedException {
+    public void testProcessInstanceWaitingAtNonExistingElementFailure() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
       final String nonExistingTaskId = "non-existing-task";
 
       // when
@@ -699,57 +736,62 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtFailure() throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingAtFailure() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent)
-          .isNotWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1))
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .isNotWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("not to contain", ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtMulitpleElementsFailure()
-        throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingAtMulitpleElementsFailure() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // then
       assertThatThrownBy(
-          () ->
-              assertThat(instanceEvent)
-                  .isNotWaitingAtElement(
-                      ProcessPackMultipleTasks.ELEMENT_ID_1,
-                      ProcessPackMultipleTasks.ELEMENT_ID_2,
-                      ProcessPackMultipleTasks.ELEMENT_ID_3))
+              () ->
+                  assertThat(instanceEvent)
+                      .isNotWaitingAtElement(
+                          ProcessPackMultipleTasks.ELEMENT_ID_1,
+                          ProcessPackMultipleTasks.ELEMENT_ID_2,
+                          ProcessPackMultipleTasks.ELEMENT_ID_3))
           .isInstanceOf(AssertionError.class)
-          .hasMessageContainingAll("not to contain", ProcessPackMultipleTasks.ELEMENT_ID_1,
-              ProcessPackMultipleTasks.ELEMENT_ID_2, ProcessPackMultipleTasks.ELEMENT_ID_3);
+          .hasMessageContainingAll(
+              "not to contain",
+              ProcessPackMultipleTasks.ELEMENT_ID_1,
+              ProcessPackMultipleTasks.ELEMENT_ID_2,
+              ProcessPackMultipleTasks.ELEMENT_ID_3);
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooManyElements()
-        throws InterruptedException {
+    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooManyElements() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingExactlyAtElements(
-          ProcessPackMultipleTasks.ELEMENT_ID_1))
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingExactlyAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               String.format(
@@ -761,25 +803,24 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooLittleElements()
-        throws InterruptedException {
+    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooLittleElements() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_1);
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_2);
 
       // then
       assertThatThrownBy(
-          () ->
-              assertThat(instanceEvent)
-                  .isWaitingExactlyAtElements(
-                      ProcessPackMultipleTasks.ELEMENT_ID_1,
-                      ProcessPackMultipleTasks.ELEMENT_ID_2,
-                      ProcessPackMultipleTasks.ELEMENT_ID_3))
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingExactlyAtElements(
+                          ProcessPackMultipleTasks.ELEMENT_ID_1,
+                          ProcessPackMultipleTasks.ELEMENT_ID_2,
+                          ProcessPackMultipleTasks.ELEMENT_ID_3))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               String.format(
@@ -791,24 +832,23 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_combination()
-        throws InterruptedException {
+    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_combination() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMultipleTasks.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_1);
       completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_2);
 
       // then
       assertThatThrownBy(
-          () ->
-              assertThat(instanceEvent)
-                  .isWaitingExactlyAtElements(
-                      ProcessPackMultipleTasks.ELEMENT_ID_1,
-                      ProcessPackMultipleTasks.ELEMENT_ID_2))
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingExactlyAtElements(
+                          ProcessPackMultipleTasks.ELEMENT_ID_1,
+                          ProcessPackMultipleTasks.ELEMENT_ID_2))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               String.format(
@@ -823,27 +863,29 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingForMessageFailure() throws InterruptedException {
+    public void testProcessInstanceIsWaitingForMessageFailure() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
-      sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
+      sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
 
       // then
       assertThatThrownBy(
-          () -> assertThat(instanceEvent).isWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME))
+              () ->
+                  assertThat(instanceEvent)
+                      .isWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("to contain:", ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingForMessageFailure() throws InterruptedException {
+    public void testProcessInstanceIsNotWaitingForMessageFailure() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -852,25 +894,27 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // then
-      assertThatThrownBy(() -> assertThat(instanceEvent).isNotWaitingForMessage(
-          ProcessPackMessageEvent.MESSAGE_NAME))
+      assertThatThrownBy(
+              () ->
+                  assertThat(instanceEvent)
+                      .isNotWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("not to contain", ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
-    public void testProcessInstanceHasVariableFailure() throws InterruptedException {
+    public void testProcessInstanceHasVariableFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final String expectedVariable = "variable";
       final String actualVariable = "loopAmount";
 
       // when
-      final ProcessInstanceEvent instanceEvent = startProcessInstance(client,
-          ProcessPackLoopingServiceTask.PROCESS_ID);
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).hasVariable(expectedVariable))
@@ -881,7 +925,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasVariableWithValueFailure() throws InterruptedException {
+    public void testProcessInstanceHasVariableWithValueFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final String variable = "variable";
@@ -891,11 +935,11 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(
-          () -> assertThat(instanceEvent).hasVariableWithValue(variable, expectedValue))
+              () -> assertThat(instanceEvent).hasVariableWithValue(variable, expectedValue))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "The variable '%s' does not have the expected value. The value passed in"
@@ -905,7 +949,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasCorrelatedMessageByNameFailure() throws InterruptedException {
+    public void testHasCorrelatedMessageByNameFailure() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -914,12 +958,13 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(
-          () -> assertThat(instanceEvent).hasCorrelatedMessageByName(
-              ProcessPackMessageEvent.MESSAGE_NAME, 1))
+              () ->
+                  assertThat(instanceEvent)
+                      .hasCorrelatedMessageByName(ProcessPackMessageEvent.MESSAGE_NAME, 1))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected message with name '%s' to be correlated %d times, but was %d times",
@@ -927,7 +972,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasCorrelatedMessageByCorrelationKeyFailure() throws InterruptedException {
+    public void testHasCorrelatedMessageByCorrelationKeyFailure() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -936,11 +981,12 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(
-          () -> assertThat(instanceEvent).hasCorrelatedMessageByCorrelationKey(correlationKey, 1))
+              () ->
+                  assertThat(instanceEvent).hasCorrelatedMessageByCorrelationKey(correlationKey, 1))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected message with correlation key '%s' to be correlated %d "
@@ -949,13 +995,13 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasAnyIncidentsFailure() throws InterruptedException {
+    public void testHasAnyIncidentsFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).hasAnyIncidents())
@@ -964,16 +1010,16 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasNoIncidentsFailure() throws InterruptedException {
+    public void testHasNoIncidentsFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
-          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS,
-              "invalid value"); // will cause incident
+          Collections.singletonMap(
+              ProcessPackLoopingServiceTask.TOTAL_LOOPS, "invalid value"); // will cause incident
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because ProcessPackLoopingServiceTask.TOTAL_LOOPS is a string, but needs to be an int */
       completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
@@ -984,13 +1030,13 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testExtractLatestIncidentFailure() throws InterruptedException {
+    public void testExtractLatestIncidentFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).extractLatestIncident())

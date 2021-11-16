@@ -37,12 +37,12 @@ class JobAssertTest {
     private RecordStreamSource recordStreamSource;
 
     @Test
-    void testHasElementId() throws InterruptedException {
+    void testHasElementId() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -54,12 +54,12 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasDeadline() throws InterruptedException {
+    void testHasDeadline() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final long expectedDeadline = System.currentTimeMillis() + 100;
@@ -78,12 +78,12 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasBpmnProcessId() throws InterruptedException {
+    void testHasBpmnProcessId() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -95,12 +95,12 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasRetries() throws InterruptedException {
+    void testHasRetries() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -112,10 +112,10 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasAnyIncidents() throws InterruptedException {
+    void testHasAnyIncidents() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -135,10 +135,10 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasNoIncidents() throws InterruptedException {
+    void testHasNoIncidents() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -150,10 +150,10 @@ class JobAssertTest {
     }
 
     @Test
-    void testExtractLatestIncident() throws InterruptedException {
+    void testExtractLatestIncident() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -178,12 +178,12 @@ class JobAssertTest {
     }
 
     @Test
-    void testExtractingVariables() throws InterruptedException {
+    void testExtractingVariables() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -198,12 +198,12 @@ class JobAssertTest {
     }
 
     @Test
-    void testExtractingHeaders() throws InterruptedException {
+    void testExtractingHeaders() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -222,12 +222,12 @@ class JobAssertTest {
     private ZeebeClient client;
 
     @Test
-    void testHasElementIdFailure() throws InterruptedException {
+    void testHasElementIdFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -244,12 +244,12 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasDeadlineFailure() throws InterruptedException {
+    void testHasDeadlineFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final long expectedDeadline = System.currentTimeMillis() + 100;
@@ -270,12 +270,12 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasBpmnProcessIdFailure() throws InterruptedException {
+    void testHasBpmnProcessIdFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -292,12 +292,12 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasRetriesFailure() throws InterruptedException {
+    void testHasRetriesFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -313,10 +313,10 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasAnyIncidentsFailure() throws InterruptedException {
+    void testHasAnyIncidentsFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -330,10 +330,10 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasNoIncidentsFailure() throws InterruptedException {
+    void testHasNoIncidentsFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -353,10 +353,10 @@ class JobAssertTest {
     }
 
     @Test
-    void testExtractLatestIncidentFailure() throws InterruptedException {
+    void testExtractLatestIncidentFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      Utilities.startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
