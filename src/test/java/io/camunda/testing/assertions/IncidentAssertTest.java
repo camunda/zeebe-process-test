@@ -26,7 +26,6 @@ class IncidentAssertTest {
   public static final String ERROR_CODE = "error";
   public static final String ERROR_MESSAGE = "error occurred";
 
-  private ZeebeClient client;
   private ZeebeEngine engine;
 
   // These tests are for testing assertions as well as examples for users
@@ -34,6 +33,7 @@ class IncidentAssertTest {
   class HappyPathTests {
 
     private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
 
     @Test
     void testHasErrorType() throws InterruptedException {
@@ -247,6 +247,7 @@ class IncidentAssertTest {
   @Nested
   class UnhappyPathTests {
     private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
 
     @Test
     void testHasErrorTypeFailure() throws InterruptedException {
