@@ -22,7 +22,11 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
         Arrays.stream(extensionContext.getTestClass().get().getDeclaredFields())
             .filter(field -> field.getType() == RecordStreamSource.class)
             .findFirst();
-    final Field recordStreamField = recordStreamOptional.get();
+    final Field recordStreamField = recordStreamOptional.orElseThrow(
+        () ->
+            new IllegalStateException(
+                "No RecordStreamSource has been found. Please make sure a "
+                    + "RecordStreamSource field has been declared in the test class."));
     ReflectionUtils.makeAccessible(recordStreamField);
     final Object testInstance = extensionContext.getTestInstance().get();
     final RecordStreamSource recordStreamSource =
@@ -33,7 +37,11 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
         Arrays.stream(extensionContext.getTestClass().get().getDeclaredFields())
             .filter(field -> ZeebeClient.class.isAssignableFrom(field.getType()))
             .findFirst();
-    final Field zeebeClientField = zeebeClientOptional.get();
+    final Field zeebeClientField = zeebeClientOptional.orElseThrow(
+        () ->
+            new IllegalStateException(
+                "No ZeebeClient has been found. Please make sure a ZeebeClient "
+                    + "field has been declared in the test class."));
     ReflectionUtils.makeAccessible(zeebeClientField);
     final ZeebeClient zeebeClient = (ZeebeClient) zeebeClientField.get(testInstance);
 
