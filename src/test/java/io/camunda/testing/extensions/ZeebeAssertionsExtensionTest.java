@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import java.util.Optional;
 import org.camunda.community.eze.RecordStreamSource;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,8 +22,8 @@ class ZeebeAssertionsExtensionTest {
       // given
       final ZeebeAssertionsExtension extension = new ZeebeAssertionsExtension();
       final ExtensionContext extensionContext = mock(ExtensionContext.class);
-      Mockito.when(extensionContext.getTestClass()).thenReturn(Optional.of(this.getClass()));
-      Mockito.when(extensionContext.getTestInstance()).thenReturn(Optional.of(this));
+      Mockito.<Class<?>>when(extensionContext.getRequiredTestClass()).thenReturn(this.getClass());
+      Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(this);
 
       // when & then
       assertThatThrownBy(() -> extension.beforeEach(extensionContext))
@@ -45,8 +44,8 @@ class ZeebeAssertionsExtensionTest {
       // given
       final ZeebeAssertionsExtension extension = new ZeebeAssertionsExtension();
       final ExtensionContext extensionContext = mock(ExtensionContext.class);
-      Mockito.when(extensionContext.getTestClass()).thenReturn(Optional.of(this.getClass()));
-      Mockito.when(extensionContext.getTestInstance()).thenReturn(Optional.of(this));
+      Mockito.<Class<?>>when(extensionContext.getRequiredTestClass()).thenReturn(this.getClass());
+      Mockito.when(extensionContext.getRequiredTestInstance()).thenReturn(this);
 
       // when & then
       assertThatThrownBy(() -> extension.beforeEach(extensionContext))

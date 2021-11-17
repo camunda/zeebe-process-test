@@ -11,41 +11,15 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.util.ReflectionUtils;
 
-// TODO rewrite this mess
 public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCallback {
 
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
 
   @Override
   public void beforeEach(final ExtensionContext extensionContext) throws Exception {
-    final Optional<Field> recordStreamOptional =
-        Arrays.stream(extensionContext.getTestClass().get().getDeclaredFields())
-            .filter(field -> field.getType() == RecordStreamSource.class)
-            .findFirst();
-    final Field recordStreamField = recordStreamOptional.orElseThrow(
-        () ->
-            new IllegalStateException(
-                "No RecordStreamSource has been found. Please make sure a "
-                    + "RecordStreamSource field has been declared in the test class."));
-    ReflectionUtils.makeAccessible(recordStreamField);
-    final Object testInstance = extensionContext.getTestInstance().get();
-    final RecordStreamSource recordStreamSource =
-        (RecordStreamSource) recordStreamField.get(testInstance);
-    RecordStreamSourceStore.init(recordStreamSource);
-
-    final Optional<Field> zeebeClientOptional =
-        Arrays.stream(extensionContext.getTestClass().get().getDeclaredFields())
-            .filter(field -> ZeebeClient.class.isAssignableFrom(field.getType()))
-            .findFirst();
-    final Field zeebeClientField = zeebeClientOptional.orElseThrow(
-        () ->
-            new IllegalStateException(
-                "No ZeebeClient has been found. Please make sure a ZeebeClient "
-                    + "field has been declared in the test class."));
-    ReflectionUtils.makeAccessible(zeebeClientField);
-    final ZeebeClient zeebeClient = (ZeebeClient) zeebeClientField.get(testInstance);
-
-    getStore(extensionContext).put(KEY_ZEEBE_CLIENT, zeebeClient);
+    final Object testInstance = extensionContext.getRequiredTestInstance();
+    storeRecordStreamSource(extensionContext, testInstance);
+    storeZeebeClient(extensionContext, testInstance);
   }
 
   @Override
@@ -55,6 +29,48 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
     final Object fieldContent = getStore(extensionContext).get(KEY_ZEEBE_CLIENT);
     final ZeebeClient zeebeClient = (ZeebeClient) fieldContent;
     zeebeClient.close();
+  }
+
+  private void storeRecordStreamSource(
+      final ExtensionContext extensionContext, final Object testInstance)
+      throws IllegalAccessException {
+    final Field recordStreamField = getRecordStreamField(extensionContext);
+    ReflectionUtils.makeAccessible(recordStreamField);
+    final RecordStreamSource recordStreamSource =
+        (RecordStreamSource) recordStreamField.get(testInstance);
+    RecordStreamSourceStore.init(recordStreamSource);
+  }
+
+  private Field getRecordStreamField(final ExtensionContext extensionContext) {
+    final Optional<Field> recordStreamOptional =
+        Arrays.stream(extensionContext.getRequiredTestClass().getDeclaredFields())
+            .filter(field -> field.getType() == RecordStreamSource.class)
+            .findFirst();
+    return recordStreamOptional.orElseThrow(
+        () ->
+            new IllegalStateException(
+                "No RecordStreamSource has been found. Please make sure a "
+                    + "RecordStreamSource field has been declared in the test class."));
+  }
+
+  private void storeZeebeClient(final ExtensionContext extensionContext, final Object testInstance)
+      throws IllegalAccessException {
+    final Field zeebeClientField = getZeebeClientField(extensionContext);
+    ReflectionUtils.makeAccessible(zeebeClientField);
+    final ZeebeClient zeebeClient = (ZeebeClient) zeebeClientField.get(testInstance);
+    getStore(extensionContext).put(KEY_ZEEBE_CLIENT, zeebeClient);
+  }
+
+  private Field getZeebeClientField(final ExtensionContext extensionContext) {
+    final Optional<Field> zeebeClientOptional =
+        Arrays.stream(extensionContext.getRequiredTestClass().getDeclaredFields())
+            .filter(field -> ZeebeClient.class.isAssignableFrom(field.getType()))
+            .findFirst();
+    return zeebeClientOptional.orElseThrow(
+        () ->
+            new IllegalStateException(
+                "No ZeebeClient has been found. Please make sure a ZeebeClient "
+                    + "field has been declared in the test class."));
   }
 
   private ExtensionContext.Store getStore(final ExtensionContext context) {
