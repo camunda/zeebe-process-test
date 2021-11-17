@@ -17,9 +17,8 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
 
   @Override
   public void beforeEach(final ExtensionContext extensionContext) throws Exception {
-    final Object testInstance = extensionContext.getRequiredTestInstance();
-    storeRecordStreamSource(extensionContext, testInstance);
-    storeZeebeClient(extensionContext, testInstance);
+    storeRecordStreamSource(extensionContext);
+    storeZeebeClient(extensionContext);
   }
 
   @Override
@@ -31,13 +30,12 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
     zeebeClient.close();
   }
 
-  private void storeRecordStreamSource(
-      final ExtensionContext extensionContext, final Object testInstance)
+  private void storeRecordStreamSource(final ExtensionContext extensionContext)
       throws IllegalAccessException {
     final Field recordStreamField = getRecordStreamField(extensionContext);
     ReflectionUtils.makeAccessible(recordStreamField);
     final RecordStreamSource recordStreamSource =
-        (RecordStreamSource) recordStreamField.get(testInstance);
+        (RecordStreamSource) recordStreamField.get(extensionContext.getRequiredTestInstance());
     RecordStreamSourceStore.init(recordStreamSource);
   }
 
@@ -50,14 +48,16 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
         () ->
             new IllegalStateException(
                 "Expected a field of type RecordStreamSource to be declared in the test class, "
-                    + "but none has been found"));
+                    + "but none has been found. Please make sure a field of type RecordStreamSource"
+                    + " has been declared in the test class."));
   }
 
-  private void storeZeebeClient(final ExtensionContext extensionContext, final Object testInstance)
+  private void storeZeebeClient(final ExtensionContext extensionContext)
       throws IllegalAccessException {
     final Field zeebeClientField = getZeebeClientField(extensionContext);
     ReflectionUtils.makeAccessible(zeebeClientField);
-    final ZeebeClient zeebeClient = (ZeebeClient) zeebeClientField.get(testInstance);
+    final ZeebeClient zeebeClient =
+        (ZeebeClient) zeebeClientField.get(extensionContext.getRequiredTestInstance());
     getStore(extensionContext).put(KEY_ZEEBE_CLIENT, zeebeClient);
   }
 
@@ -70,7 +70,8 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
         () ->
             new IllegalStateException(
                 "Expected a field of type ZeebeClient to be declared in the test class, "
-                    + "but none has been found"));
+                    + "but none has been found. Please make sure a field of type ZeebeClient "
+                    + "has been declared in the test class."));
   }
 
   private ExtensionContext.Store getStore(final ExtensionContext context) {
