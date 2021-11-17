@@ -29,8 +29,8 @@ class ZeebeAssertionsExtensionTest {
       assertThatThrownBy(() -> extension.beforeEach(extensionContext))
           .isInstanceOf(IllegalStateException.class)
           .hasMessage(
-              "No RecordStreamSource has been found. Please make sure a RecordStreamSource "
-                  + "field has been declared in the test class.");
+              "Expected a field of type RecordStreamSource to be declared in the test class, "
+                  + "but none has been found");
     }
   }
 
@@ -51,8 +51,8 @@ class ZeebeAssertionsExtensionTest {
       assertThatThrownBy(() -> extension.beforeEach(extensionContext))
           .isInstanceOf(IllegalStateException.class)
           .hasMessage(
-              "No ZeebeClient has been found. Please make sure a ZeebeClient field has been"
-                  + " declared in the test class.");
+              "Expected a field of type ZeebeClient to be declared in the test class, "
+                  + "but none has been found");
     }
   }
 }

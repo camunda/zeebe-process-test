@@ -49,8 +49,8 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
     return recordStreamOptional.orElseThrow(
         () ->
             new IllegalStateException(
-                "No RecordStreamSource has been found. Please make sure a "
-                    + "RecordStreamSource field has been declared in the test class."));
+                "Expected a field of type RecordStreamSource to be declared in the test class, "
+                    + "but none has been found"));
   }
 
   private void storeZeebeClient(final ExtensionContext extensionContext, final Object testInstance)
@@ -69,8 +69,8 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
     return zeebeClientOptional.orElseThrow(
         () ->
             new IllegalStateException(
-                "No ZeebeClient has been found. Please make sure a ZeebeClient "
-                    + "field has been declared in the test class."));
+                "Expected a field of type ZeebeClient to be declared in the test class, "
+                    + "but none has been found"));
   }
 
   private ExtensionContext.Store getStore(final ExtensionContext context) {
