@@ -14,8 +14,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Cache
         uses: actions/cache@v2
         with:
@@ -23,6 +26,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+
       - name: Set up Java environment
         uses: actions/setup-java@v2.3.1
         with:
@@ -30,9 +34,11 @@ jobs:
           java-version: 11
           gpg-private-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
           gpg-passphrase: MAVEN_CENTRAL_GPG_PASSPHRASE
+
       - name: Build
         id: build
         run: mvn -B -U -Dsurefire.rerunFailingTestsCount=5 clean install
+
       - name: Archive Test Results on Failure
         uses: actions/upload-artifact@v2
         if: failure()
@@ -40,27 +46,43 @@ jobs:
           name: test-results
           path: target/surefire-reports/
           retention-days: 7
+
       - name: Publish Unit Test Results
         id: publish
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: failure()
         with:
           files: target/surefire-reports/*.xml
-      - if: github.event.release || github.event_name == 'workflow_dispatch'
-        name: Deploy SNAPSHOT / Release
+
+      - name: Import Secrets
+        if: github.event.release || github.event_name == 'workflow_dispatch'
+        id: secrets
+        uses: hashicorp/vault-action@v2.1.1
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/common/github.com/actions/camunda-cloud/camunda-cloud-testing ARTIFACTS_USR;
+            secret/data/common/github.com/actions/camunda-cloud/camunda-cloud-testing ARTIFACTS_PSW;
+
+      - name: Deploy SNAPSHOT / Release
+        if: github.event.release || github.event_name == 'workflow_dispatch'
+        id: release
         uses: camunda-community-hub/community-action-maven-release@v1
         with:
           release-version: ${{ github.event.release.tag_name }}
           release-profile: community-action-maven-release
-          nexus-usr: ${{ secrets.NEXUS_USR }}
-          nexus-psw: ${{ secrets.NEXUS_PSW }}
-          maven-usr: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-          maven-psw: ${{ secrets.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
-          maven-gpg-passphrase: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+          nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
+          nexus-psw: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
+          maven-usr: dummy
+          maven-psw: dummy
+          maven-gpg-passphrase: dummy
           github-token: ${{ secrets.GITHUB_TOKEN }}
-        id: release
-      - if: github.event.release
-        name: Attach artifacts to GitHub Release (Release only)
+
+      - name: Attach artifacts to GitHub Release (Release only)
+        if: github.event.release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
