@@ -55,6 +55,13 @@ public class Utilities {
     public static final String TIMER_ID = "timer";
   }
 
+  public static final class ProcessPackCallActivity {
+    public static final String RESOURCE_NAME = "call-activity.bpmn";
+    public static final String PROCESS_ID = "call-activity";
+    public static final String CALLED_RESOURCE_NAME = "start-end.bpmn";
+    public static final String CALLED_PROCESS_ID = "start-end";
+  }
+
   public static DeploymentEvent deployProcess(final ZeebeClient client, final String process) {
     return deployProcesses(client, process);
   }
