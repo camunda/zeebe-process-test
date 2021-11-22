@@ -9,4 +9,8 @@ public class InspectionUtility {
   public static ProcessEventInspections findProcessEvents() {
     return new ProcessEventInspections(StreamFilter.processEventRecords(getRecordStreamSource()));
   }
+
+  public static ProcessInstanceInspections findProcessInstances() {
+    return new ProcessInstanceInspections(StreamFilter.processInstance(getRecordStreamSource()));
+  }
 }
