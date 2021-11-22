@@ -24,7 +24,7 @@
     <dependency.jackson.version>2.13.0</dependency.jackson.version>
     <dependency.jna.version>5.10.0</dependency.jna.version>
     <dependency.junit.version>5.8.1</dependency.junit.version>
-    <dependency.mockito.version>4.0.0</dependency.mockito.version>
+    <dependency.mockito.version>4.1.0</dependency.mockito.version>
     <dependency.netty.version>4.1.70.Final</dependency.netty.version>
     <dependency.protobuf.version>3.19.1</dependency.protobuf.version>
     <dependency.scala.version>2.13.7</dependency.scala.version>
