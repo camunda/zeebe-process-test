@@ -36,10 +36,10 @@ class IncidentAssertTest {
     private ZeebeClient client;
 
     @Test
-    void testHasErrorType() throws InterruptedException {
+    void testHasErrorType() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -60,10 +60,10 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testHasErrorMessage() throws InterruptedException {
+    void testHasErrorMessage() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -85,10 +85,10 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testExtractErrorMessage() throws InterruptedException {
+    void testExtractErrorMessage() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -113,11 +113,11 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testWasRaisedInProcessInstance() throws InterruptedException {
+    void testWasRaisedInProcessInstance() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent processInstanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -139,7 +139,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testOccurredOnElement() throws InterruptedException {
+    void testOccurredOnElement() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -149,7 +149,7 @@ class IncidentAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
       final ActivateJobsResponse jobActivationResponse =
           activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
@@ -165,10 +165,10 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testOccurredDuringJob() throws InterruptedException {
+    void testOccurredDuringJob() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -190,10 +190,10 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testIsResolved() throws InterruptedException {
+    void testIsResolved() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -219,10 +219,10 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testIsUnresolved() throws InterruptedException {
+    void testIsUnresolved() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -250,10 +250,10 @@ class IncidentAssertTest {
     private ZeebeClient client;
 
     @Test
-    void testHasErrorTypeFailure() throws InterruptedException {
+    void testHasErrorTypeFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -277,10 +277,10 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testHasErrorMessageFailure() throws InterruptedException {
+    void testHasErrorMessageFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -304,11 +304,11 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testWasRaisedInProcessInstanceFailure() throws InterruptedException {
+    void testWasRaisedInProcessInstanceFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent processInstanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -333,7 +333,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testOccurredOnElementFailure() throws InterruptedException {
+    void testOccurredOnElementFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -343,7 +343,7 @@ class IncidentAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
       final ActivateJobsResponse jobActivationResponse =
           activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
@@ -363,10 +363,10 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testOccurredDuringJobFailure() throws InterruptedException {
+    void testOccurredDuringJobFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -391,10 +391,10 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testIsResolvedFailure() throws InterruptedException {
+    void testIsResolvedFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -417,10 +417,10 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testIsUnresolvedFailure() throws InterruptedException {
+    void testIsUnresolvedFailure() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
       final ActivateJobsResponse jobActivationResponse =

@@ -13,7 +13,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import org.camunda.community.eze.ZeebeEngine;
-import org.camunda.community.eze.ZeebeEngineClock;
 
 public class Utilities {
 
@@ -77,13 +76,15 @@ public class Utilities {
   }
 
   public static ProcessInstanceEvent startProcessInstance(
-      final ZeebeClient client, final String processId) throws InterruptedException {
-    return startProcessInstance(client, processId, new HashMap<>());
+      final ZeebeEngine engine, final ZeebeClient client, final String processId) {
+    return startProcessInstance(engine, client, processId, new HashMap<>());
   }
 
   public static ProcessInstanceEvent startProcessInstance(
-      final ZeebeClient client, final String processId, final Map<String, Object> variables)
-      throws InterruptedException {
+      final ZeebeEngine engine,
+      final ZeebeClient client,
+      final String processId,
+      final Map<String, Object> variables) {
     final ProcessInstanceEvent instanceEvent =
         client
             .newCreateInstanceCommand()
@@ -92,7 +93,7 @@ public class Utilities {
             .variables(variables)
             .send()
             .join();
-    Thread.sleep(100);
+    waitForIdleState(engine);
     return instanceEvent;
   }
 
@@ -112,17 +113,19 @@ public class Utilities {
   }
 
   public static PublishMessageResponse sendMessage(
-      final ZeebeClient client, final String messageName, final String correlationKey)
-      throws InterruptedException {
-    return sendMessage(client, messageName, correlationKey, Duration.ofDays(99999));
+      final ZeebeEngine engine,
+      final ZeebeClient client,
+      final String messageName,
+      final String correlationKey) {
+    return sendMessage(engine, client, messageName, correlationKey, Duration.ofDays(99999));
   }
 
   public static PublishMessageResponse sendMessage(
+      final ZeebeEngine engine,
       final ZeebeClient client,
       final String messageName,
       final String correlationKey,
-      final Duration timeToLive)
-      throws InterruptedException {
+      final Duration timeToLive) {
     final PublishMessageResponse response =
         client
             .newPublishMessageCommand()
@@ -131,17 +134,17 @@ public class Utilities {
             .timeToLive(timeToLive)
             .send()
             .join();
-    Thread.sleep(100);
+    waitForIdleState(engine);
     return response;
   }
 
-  public static void increaseTime(final ZeebeEngineClock clock, final Duration duration)
-      throws InterruptedException {
-    clock.increaseTime(duration);
-    Thread.sleep(100);
+  public static void increaseTime(final ZeebeEngine engine, final Duration duration) {
+    engine.clock().increaseTime(duration);
+    waitForIdleState(engine);
   }
 
-  public static void completeTask(final ZeebeEngine engine, final ZeebeClient client, final String elementId) {
+  public static void completeTask(
+      final ZeebeEngine engine, final ZeebeClient client, final String elementId) {
     Record<JobRecordValue> lastRecord = null;
     for (final Record<JobRecordValue> record : engine.jobRecords().withElementId(elementId)) {
       if (record.getIntent().equals(JobIntent.CREATED)) {

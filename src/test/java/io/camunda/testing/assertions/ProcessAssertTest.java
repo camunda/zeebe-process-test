@@ -74,13 +74,13 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasAnyInstances() throws InterruptedException {
+    public void testHasAnyInstances() {
       // given
       final DeploymentEvent deploymentEvent =
           deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       final ProcessAssert processAssert =
           assertThat(deploymentEvent)
@@ -106,14 +106,14 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasInstances() throws InterruptedException {
+    public void testHasInstances() {
       // given
       final DeploymentEvent deploymentEvent =
           deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       final ProcessAssert processAssert =
           assertThat(deploymentEvent)
@@ -204,13 +204,13 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasNoInstances() throws InterruptedException {
+    public void testHasNoInstances() {
       // given
       final DeploymentEvent deploymentEvent =
           deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       final ProcessAssert processAssert =
           assertThat(deploymentEvent)
@@ -223,15 +223,15 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasInstances() throws InterruptedException {
+    public void testHasInstances() {
       // given
       final DeploymentEvent deploymentEvent =
           deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
-      startProcessInstance(client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
+      startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       final ProcessAssert processAssert =
           assertThat(deploymentEvent)

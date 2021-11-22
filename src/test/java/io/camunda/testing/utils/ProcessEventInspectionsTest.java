@@ -1,13 +1,13 @@
 package io.camunda.testing.utils;
 
 import static io.camunda.testing.assertions.BpmnAssert.assertThat;
-import static io.camunda.testing.utils.InspectionUtility.findProcessEvents;
 import static io.camunda.testing.util.Utilities.deployProcess;
 import static io.camunda.testing.util.Utilities.increaseTime;
+import static io.camunda.testing.utils.InspectionUtility.findProcessEvents;
 
 import io.camunda.testing.extensions.ZeebeAssertions;
-import io.camunda.testing.utils.model.InspectedProcessInstance;
 import io.camunda.testing.util.Utilities.ProcessPackTimerStartEvent;
+import io.camunda.testing.utils.model.InspectedProcessInstance;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import java.time.Duration;
@@ -29,13 +29,13 @@ class ProcessEventInspectionsTest {
   private RecordStreamSource recordStreamSource;
 
   @Test
-  public void testFindFirstProcessInstance() throws InterruptedException {
+  public void testFindFirstProcessInstance() {
     // given
     final DeploymentEvent deploymentEvent =
         deployProcess(client, ProcessPackTimerStartEvent.RESOURCE_NAME);
 
     // when
-    increaseTime(clock, Duration.ofDays(1));
+    increaseTime(engine, Duration.ofDays(1));
     final Optional<InspectedProcessInstance> firstProcessInstance =
         findProcessEvents()
             .triggeredByTimer(ProcessPackTimerStartEvent.TIMER_ID)
@@ -49,13 +49,13 @@ class ProcessEventInspectionsTest {
   }
 
   @Test
-  public void testFindLastProcessInstance() throws InterruptedException {
+  public void testFindLastProcessInstance() {
     // given
     final DeploymentEvent deploymentEvent =
         deployProcess(client, ProcessPackTimerStartEvent.RESOURCE_NAME);
 
     // when
-    increaseTime(clock, Duration.ofDays(1));
+    increaseTime(engine, Duration.ofDays(1));
     final Optional<InspectedProcessInstance> lastProcessInstance =
         findProcessEvents()
             .triggeredByTimer(ProcessPackTimerStartEvent.TIMER_ID)
@@ -69,12 +69,12 @@ class ProcessEventInspectionsTest {
   }
 
   @Test
-  public void testFindFirstProcessInstance_wrongTimer() throws InterruptedException {
+  public void testFindFirstProcessInstance_wrongTimer() {
     // given
     deployProcess(client, ProcessPackTimerStartEvent.RESOURCE_NAME);
 
     // when
-    increaseTime(clock, Duration.ofDays(1));
+    increaseTime(engine, Duration.ofDays(1));
     final Optional<InspectedProcessInstance> processInstance =
         findProcessEvents().triggeredByTimer(WRONG_TIMER_ID).findFirstProcessInstance();
 
@@ -83,12 +83,12 @@ class ProcessEventInspectionsTest {
   }
 
   @Test
-  public void testFindProcessInstance_highIndex() throws InterruptedException {
+  public void testFindProcessInstance_highIndex() {
     // given
     deployProcess(client, ProcessPackTimerStartEvent.RESOURCE_NAME);
 
     // when
-    increaseTime(clock, Duration.ofDays(1));
+    increaseTime(engine, Duration.ofDays(1));
     final Optional<InspectedProcessInstance> processInstance =
         findProcessEvents().findProcessInstance(10);
 

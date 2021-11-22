@@ -5,7 +5,6 @@ import static io.camunda.testing.util.Utilities.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import io.camunda.testing.extensions.ZeebeAssertions;
-import io.camunda.testing.util.Utilities.*;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
@@ -35,30 +34,31 @@ class MessageAssertTest {
     private ZeebeClient client;
 
     @Test
-    void testHasBeenCorrelated() throws InterruptedException {
+    void testHasBeenCorrelated() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
-      startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThat(response).hasBeenCorrelated();
     }
 
     @Test
-    void testHasMessageStartEventBeenCorrelated() throws InterruptedException {
+    void testHasMessageStartEventBeenCorrelated() {
       // given
       deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
           sendMessage(
+              engine,
               client,
               ProcessPackMessageStartEvent.MESSAGE_NAME,
               ProcessPackMessageStartEvent.CORRELATION_KEY);
@@ -68,84 +68,87 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasNotBeenCorrelated() throws InterruptedException {
+    void testHasNotBeenCorrelated() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThat(response).hasNotBeenCorrelated();
     }
 
     @Test
-    void testHasMessageStartEventNotBeenCorrelated() throws InterruptedException {
-      // given
-      deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
-
-      // when
-      final PublishMessageResponse response =
-          sendMessage(client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
-
-      // then
-      assertThat(response).hasNotCreatedProcessInstance();
-    }
-
-    @Test
-    void testHasExpired() throws InterruptedException {
-      // given
-      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
-      final Duration timeToLive = Duration.ofDays(1);
-
-      // when
-      final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
-      increaseTime(clock, timeToLive.plusMinutes(1));
-
-      // then
-      assertThat(response).hasExpired();
-    }
-
-    @Test
-    void testHasNotExpired() throws InterruptedException {
-      // given
-      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
-
-      // when
-      final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
-
-      // then
-      assertThat(response).hasNotExpired();
-    }
-
-    @Test
-    void testExtractingProcessInstance() throws InterruptedException {
-      // given
-      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
-      final Map<String, Object> variables =
-          Collections.singletonMap(
-              ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
-      startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
-
-      // when
-      final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
-
-      // then
-      assertThat(response).extractingProcessInstance().isCompleted();
-    }
-
-    @Test
-    void testExtractingProcessInstance_messageStartEvent() throws InterruptedException {
+    void testHasMessageStartEventNotBeenCorrelated() {
       // given
       deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
           sendMessage(
+              engine, client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
+
+      // then
+      assertThat(response).hasNotCreatedProcessInstance();
+    }
+
+    @Test
+    void testHasExpired() {
+      // given
+      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      final Duration timeToLive = Duration.ofDays(1);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
+      increaseTime(engine, timeToLive.plusMinutes(1));
+
+      // then
+      assertThat(response).hasExpired();
+    }
+
+    @Test
+    void testHasNotExpired() {
+      // given
+      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+
+      // then
+      assertThat(response).hasNotExpired();
+    }
+
+    @Test
+    void testExtractingProcessInstance() {
+      // given
+      deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      final Map<String, Object> variables =
+          Collections.singletonMap(
+              ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
+      startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+
+      // then
+      assertThat(response).extractingProcessInstance().isCompleted();
+    }
+
+    @Test
+    void testExtractingProcessInstance_messageStartEvent() {
+      // given
+      deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+
+      // when
+      final PublishMessageResponse response =
+          sendMessage(
+              engine,
               client,
               ProcessPackMessageStartEvent.MESSAGE_NAME,
               ProcessPackMessageStartEvent.CORRELATION_KEY);
@@ -162,13 +165,13 @@ class MessageAssertTest {
     private ZeebeClient client;
 
     @Test
-    void testHasBeenCorrelatedFailure() throws InterruptedException {
+    void testHasBeenCorrelatedFailure() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> assertThat(response).hasBeenCorrelated())
@@ -177,13 +180,14 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasMessageStartEventBeenCorrelatedFailure() throws InterruptedException {
+    void testHasMessageStartEventBeenCorrelatedFailure() {
       // given
       deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
+          sendMessage(
+              engine, client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> assertThat(response).hasCreatedProcessInstance())
@@ -194,18 +198,18 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasNotBeenCorrelatedFailure() throws InterruptedException {
+    void testHasNotBeenCorrelatedFailure() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> assertThat(response).hasNotBeenCorrelated())
@@ -216,13 +220,14 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasMessageStartEventNotBeenCorrelatedFailure() throws InterruptedException {
+    void testHasMessageStartEventNotBeenCorrelatedFailure() {
       // given
       deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
           sendMessage(
+              engine,
               client,
               ProcessPackMessageStartEvent.MESSAGE_NAME,
               ProcessPackMessageStartEvent.CORRELATION_KEY);
@@ -235,13 +240,13 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasExpiredFailure() throws InterruptedException {
+    void testHasExpiredFailure() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> assertThat(response).hasExpired())
@@ -250,15 +255,16 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasNotExpiredFailure() throws InterruptedException {
+    void testHasNotExpiredFailure() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Duration timeToLive = Duration.ofDays(1);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
-      increaseTime(clock, timeToLive.plusMinutes(1));
+          sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
+      increaseTime(engine, timeToLive.plusMinutes(1));
 
       // then
       assertThatThrownBy(() -> assertThat(response).hasNotExpired())
@@ -267,17 +273,17 @@ class MessageAssertTest {
     }
 
     @Test
-    void testExtractingProcessInstanceFailure() throws InterruptedException {
+    void testExtractingProcessInstanceFailure() {
       // given
       deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
-      startProcessInstance(client, ProcessPackMessageEvent.PROCESS_ID, variables);
+      startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, ProcessPackMessageEvent.MESSAGE_NAME, WRONG_CORRELATION_KEY);
+          sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, WRONG_CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> assertThat(response).extractingProcessInstance())
@@ -288,13 +294,14 @@ class MessageAssertTest {
     }
 
     @Test
-    void testExtractingProcessInstanceFailure_messageStartEvent() throws InterruptedException {
+    void testExtractingProcessInstanceFailure_messageStartEvent() {
       // given
       deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
-          sendMessage(client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
+          sendMessage(
+              engine, client, WRONG_MESSAGE_NAME, ProcessPackMessageStartEvent.CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> assertThat(response).extractingProcessInstance())
