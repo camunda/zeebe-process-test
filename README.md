@@ -10,6 +10,7 @@ Add the following dependency to your project
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-bpmn-assert</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <scope>test</scope>
 </dependency>
 ```
 
