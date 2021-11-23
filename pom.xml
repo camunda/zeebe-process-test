@@ -2,12 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.camunda.community</groupId>
+    <artifactId>community-hub-release-parent</artifactId>
+    <version>1.2.2</version>
+  </parent>
+
   <groupId>io.camunda</groupId>
-  <artifactId>camunda-cloud-testing</artifactId>
+  <artifactId>zeebe-bpmn-assert</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Camunda Cloud Testing</name>
+  <name>Zeebe BPMN Assert</name>
 
   <scm>
     <connection>scm:git:git@github.com:camunda-cloud/camunda-cloud-testing.git</connection>
@@ -33,6 +39,11 @@
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
 
+    <nexus.release.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io</nexus.release.repository>
+    <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
+    <nexus.snapshot.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots</nexus.snapshot.repository>
+    <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
+
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
     <plugin.version.googlejavaformat>1.12.0</plugin.version.googlejavaformat>
     <plugin.version.jacoco>0.8.7</plugin.version.jacoco>
@@ -40,6 +51,8 @@
     <plugin.version.maven-enforcer>3.0.0</plugin.version.maven-enforcer>
     <plugin.version.spotless>2.17.4</plugin.version.spotless>
     <plugin.version.surefire>3.0.0-M5</plugin.version.surefire>
+
+    <version.java>11</version.java>
   </properties>
 
   <dependencyManagement>
