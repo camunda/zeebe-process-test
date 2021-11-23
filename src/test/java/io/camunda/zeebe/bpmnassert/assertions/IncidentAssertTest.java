@@ -150,7 +150,8 @@ class IncidentAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
       final ActivateJobsResponse jobActivationResponse =
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
@@ -344,7 +345,8 @@ class IncidentAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because VAR_TOTAL_LOOPS is a string, but needs to be an int */
       final ActivateJobsResponse jobActivationResponse =
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);

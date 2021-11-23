@@ -1,13 +1,13 @@
 package io.camunda.zeebe.bpmnassert.inspections;
 
 import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
+import static io.camunda.zeebe.bpmnassert.inspections.InspectionUtility.findProcessInstances;
 import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcesses;
 import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
-import static io.camunda.zeebe.bpmnassert.inspections.InspectionUtility.findProcessInstances;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
-import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackCallActivity;
 import io.camunda.zeebe.bpmnassert.inspections.model.InspectedProcessInstance;
+import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackCallActivity;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import java.util.Optional;

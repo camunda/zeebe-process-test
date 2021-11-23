@@ -4,9 +4,9 @@ import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.util.Utilities;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMultipleTasks;
-import io.camunda.zeebe.bpmnassert.util.Utilities;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import org.assertj.core.api.Assertions;
