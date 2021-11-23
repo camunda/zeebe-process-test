@@ -36,7 +36,7 @@ public class ProcessInstanceInspectionsTest {
     // when
     final Optional<InspectedProcessInstance> firstProcessInstance =
         findProcessInstances()
-            .startedByProcessInstance(instanceEvent.getProcessInstanceKey())
+            .withParentProcessInstanceKey(instanceEvent.getProcessInstanceKey())
             .withBpmnProcessId(ProcessPackCallActivity.CALLED_PROCESS_ID)
             .findFirstProcessInstance();
 
@@ -61,7 +61,7 @@ public class ProcessInstanceInspectionsTest {
     // when
     final Optional<InspectedProcessInstance> firstProcessInstance =
         findProcessInstances()
-            .startedByProcessInstance(instanceEvent.getProcessInstanceKey())
+            .withParentProcessInstanceKey(instanceEvent.getProcessInstanceKey())
             .withBpmnProcessId("wrongId")
             .findFirstProcessInstance();
 

@@ -21,7 +21,7 @@ public class ProcessInstanceInspections {
    * @param key The key of the parent process instance
    * @return this {@link ProcessInstanceInspections}
    */
-  public ProcessInstanceInspections startedByProcessInstance(final long key) {
+  public ProcessInstanceInspections withParentProcessInstanceKey(final long key) {
     return new ProcessInstanceInspections(filter.withParentProcessInstanceKey(key));
   }
 
