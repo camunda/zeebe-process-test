@@ -58,6 +58,7 @@ public class Utilities {
   public static final class ProcessPackCallActivity {
     public static final String RESOURCE_NAME = "call-activity.bpmn";
     public static final String PROCESS_ID = "call-activity";
+    public static final String CALL_ACTIVITY_ID = "callactivity";
     public static final String CALLED_RESOURCE_NAME = "start-end.bpmn";
     public static final String CALLED_PROCESS_ID = "start-end";
   }
