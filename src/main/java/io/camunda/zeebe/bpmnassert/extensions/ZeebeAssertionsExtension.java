@@ -1,6 +1,6 @@
 package io.camunda.zeebe.bpmnassert.extensions;
 
-import io.camunda.zeebe.bpmnassert.inspections.RecordStreamSourceStore;
+import io.camunda.zeebe.bpmnassert.RecordStreamSourceStore;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.lang.reflect.Field;
 import java.util.Arrays;

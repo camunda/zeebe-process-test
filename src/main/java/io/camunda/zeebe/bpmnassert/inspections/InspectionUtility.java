@@ -1,5 +1,6 @@
 package io.camunda.zeebe.bpmnassert.inspections;
 
+import io.camunda.zeebe.bpmnassert.RecordStreamSourceStore;
 import io.camunda.zeebe.bpmnassert.filters.StreamFilter;
 
 public class InspectionUtility {

@@ -1,7 +1,7 @@
 package io.camunda.zeebe.bpmnassert.assertions;
 
 import io.camunda.zeebe.bpmnassert.inspections.model.InspectedProcessInstance;
-import io.camunda.zeebe.bpmnassert.inspections.RecordStreamSourceStore;
+import io.camunda.zeebe.bpmnassert.RecordStreamSourceStore;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
