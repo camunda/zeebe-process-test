@@ -61,6 +61,18 @@ public class ProcessInstanceRecordStreamFilter {
         stream.filter(record -> record.getRejectionType() == rejectionType));
   }
 
+  public ProcessInstanceRecordStreamFilter withParentProcessInstanceKey(
+      final long parentProcessInstanceKey) {
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(
+            record -> record.getValue().getParentProcessInstanceKey() == parentProcessInstanceKey));
+  }
+
+  public ProcessInstanceRecordStreamFilter withBpmnProcessId(final String bpmnProcessId) {
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getValue().getBpmnProcessId().equals(bpmnProcessId)));
+  }
+
   public Stream<Record<ProcessInstanceRecordValue>> stream() {
     return stream;
   }
