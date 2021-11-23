@@ -25,7 +25,7 @@
   <properties>
     <dependency.assertj.version>3.21.0</dependency.assertj.version>
     <dependency.errorprone.version>2.10.0</dependency.errorprone.version>
-    <dependency.eze.version>0.5.0</dependency.eze.version>
+    <dependency.eze.version>0.6.0</dependency.eze.version>
     <dependency.guava.version>31.0.1-jre</dependency.guava.version>
     <dependency.jackson.version>2.13.0</dependency.jackson.version>
     <dependency.jna.version>5.10.0</dependency.jna.version>
