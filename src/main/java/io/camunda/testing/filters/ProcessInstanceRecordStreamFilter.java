@@ -65,8 +65,7 @@ public class ProcessInstanceRecordStreamFilter {
       final long parentProcessInstanceKey) {
     return new ProcessInstanceRecordStreamFilter(
         stream.filter(
-            record -> record.getValue().getParentProcessInstanceKey() == parentProcessInstanceKey)
-    );
+            record -> record.getValue().getParentProcessInstanceKey() == parentProcessInstanceKey));
   }
 
   public ProcessInstanceRecordStreamFilter withBpmnProcessId(final String bpmnProcessId) {

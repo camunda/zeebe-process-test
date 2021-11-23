@@ -1,7 +1,6 @@
 package io.camunda.testing.utils;
 
 import static io.camunda.testing.assertions.BpmnAssert.assertThat;
-import static io.camunda.testing.util.Utilities.deployProcess;
 import static io.camunda.testing.util.Utilities.deployProcesses;
 import static io.camunda.testing.util.Utilities.startProcessInstance;
 import static io.camunda.testing.utils.InspectionUtility.findProcessInstances;
@@ -27,16 +26,19 @@ public class ProcessInstanceInspectionsTest {
   @Test
   public void testStartedByProcessInstanceWithProcessId() {
     // given
-    deployProcesses(client, ProcessPackCallActivity.RESOURCE_NAME,
+    deployProcesses(
+        client,
+        ProcessPackCallActivity.RESOURCE_NAME,
         ProcessPackCallActivity.CALLED_RESOURCE_NAME);
     final ProcessInstanceEvent instanceEvent =
         startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
 
     // when
     final Optional<InspectedProcessInstance> firstProcessInstance =
-        findProcessInstances().startedByProcessInstance(instanceEvent.getProcessInstanceKey())
-        .withBpmnProcessId(ProcessPackCallActivity.CALLED_PROCESS_ID)
-        .findFirstProcessInstance();
+        findProcessInstances()
+            .startedByProcessInstance(instanceEvent.getProcessInstanceKey())
+            .withBpmnProcessId(ProcessPackCallActivity.CALLED_PROCESS_ID)
+            .findFirstProcessInstance();
 
     // then
     Assertions.assertThat(firstProcessInstance).isNotEmpty();
@@ -49,14 +51,17 @@ public class ProcessInstanceInspectionsTest {
   @Test
   public void testStartedByProcessInstanceWithProcessId_wrongId() {
     // given
-    deployProcesses(client, ProcessPackCallActivity.RESOURCE_NAME,
+    deployProcesses(
+        client,
+        ProcessPackCallActivity.RESOURCE_NAME,
         ProcessPackCallActivity.CALLED_RESOURCE_NAME);
     final ProcessInstanceEvent instanceEvent =
         startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
 
     // when
     final Optional<InspectedProcessInstance> firstProcessInstance =
-        findProcessInstances().startedByProcessInstance(instanceEvent.getProcessInstanceKey())
+        findProcessInstances()
+            .startedByProcessInstance(instanceEvent.getProcessInstanceKey())
             .withBpmnProcessId("wrongId")
             .findFirstProcessInstance();
 

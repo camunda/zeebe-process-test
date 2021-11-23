@@ -14,7 +14,6 @@ public class ProcessInstanceInspections {
     this.filter = filter;
   }
 
-
   /**
    * Filters the process instances to only include instances that were started by the given parent
    * process instance key
