@@ -70,6 +70,15 @@ Optional<InspectedProcessInstance> firstProcessInstance = InspectionUtility.find
 ProcessInstanceAssert assertions = BpmnAssert.assertThat(firstProcessInstance.get());
 ```
 
+Started by a call activity:
+```java
+Optional<InspectedProcessInstance> firstProcessInstance = InspectionUtility.findProcessInstances()
+  .withParentProcessInstanceKey(<key>)
+  .withBpmnProcessId("<called process id>")
+  .findFirstProcessInstance();
+ProcessInstanceAssert assertions = BpmnAssert.assertThat(firstProcessInstance.get());
+```
+
 #### Job Assertions
 ```java
 ActivateJobsResponse response = client.newActivateJobsCommand()
