@@ -1,38 +1,40 @@
-package io.camunda.zeebe.bpmnassert.utils;
+package io.camunda.zeebe.bpmnassert.inspections;
 
-import io.camunda.zeebe.bpmnassert.filters.ProcessInstanceRecordStreamFilter;
-import io.camunda.zeebe.bpmnassert.utils.model.InspectedProcessInstance;
+import io.camunda.zeebe.bpmnassert.filters.ProcessEventRecordStreamFilter;
+import io.camunda.zeebe.bpmnassert.inspections.model.InspectedProcessInstance;
+import io.camunda.zeebe.protocol.record.intent.ProcessEventIntent;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ProcessInstanceInspections {
+public class ProcessEventInspections {
 
-  private final ProcessInstanceRecordStreamFilter filter;
+  private final ProcessEventRecordStreamFilter filter;
 
-  public ProcessInstanceInspections(final ProcessInstanceRecordStreamFilter filter) {
+  public ProcessEventInspections(final ProcessEventRecordStreamFilter filter) {
     this.filter = filter;
   }
 
   /**
-   * Filters the process instances to only include instances that were started by the given parent
-   * process instance key
+   * Filters the process instances to only include instances that were triggered by a given timer
+   * event id
    *
-   * @param key The key of the parent process instance
-   * @return this {@link ProcessInstanceInspections}
+   * @param timerId The element ID of the timer event
+   * @return this {@link ProcessEventInspections}
    */
-  public ProcessInstanceInspections withParentProcessInstanceKey(final long key) {
-    return new ProcessInstanceInspections(filter.withParentProcessInstanceKey(key));
+  public ProcessEventInspections triggeredByTimer(final String timerId) {
+    return new ProcessEventInspections(
+        filter.withIntent(ProcessEventIntent.TRIGGERED).withTargetElementId(timerId));
   }
 
   /**
-   * Filters the process instances to only include instances that have the given BPMN process id
+   * Filters the process instances to only include instance with a given process definition key
    *
-   * @param bpmnProcessId The BPMN process id of the desired process instance
-   * @return this {@link ProcessInstanceInspections}
+   * @param processDefinitionKey The process definition key
+   * @return this {@link ProcessEventInspections}
    */
-  public ProcessInstanceInspections withBpmnProcessId(final String bpmnProcessId) {
-    return new ProcessInstanceInspections(filter.withBpmnProcessId(bpmnProcessId));
+  public ProcessEventInspections withProcessDefinitionKey(final long processDefinitionKey) {
+    return new ProcessEventInspections(filter.withProcessDefinitionKey(processDefinitionKey));
   }
 
   /**

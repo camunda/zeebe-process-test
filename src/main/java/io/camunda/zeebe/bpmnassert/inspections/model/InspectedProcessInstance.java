@@ -1,4 +1,4 @@
-package io.camunda.zeebe.bpmnassert.utils.model;
+package io.camunda.zeebe.bpmnassert.inspections.model;
 
 public class InspectedProcessInstance {
 

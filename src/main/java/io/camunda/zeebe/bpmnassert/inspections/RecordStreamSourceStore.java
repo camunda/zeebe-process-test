@@ -1,4 +1,4 @@
-package io.camunda.zeebe.bpmnassert.utils;
+package io.camunda.zeebe.bpmnassert.inspections;
 
 import org.camunda.community.eze.RecordStreamSource;
 
