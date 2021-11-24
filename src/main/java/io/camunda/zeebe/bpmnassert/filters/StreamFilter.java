@@ -37,4 +37,12 @@ public class StreamFilter {
       final RecordStreamSource recordStreamSource) {
     return new ProcessEventRecordStreamFilter(recordStreamSource.records());
   }
+
+  public static JobRecordStreamFilter jobRecords(final RecordStreamSource recordStreamSource) {
+    return new JobRecordStreamFilter(recordStreamSource.jobRecords());
+  }
+
+  public static TimerRecordStreamFilter timerRecords(final RecordStreamSource recordStreamSource) {
+    return new TimerRecordStreamFilter(recordStreamSource.timerRecords());
+  }
 }

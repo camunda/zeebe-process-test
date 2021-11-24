@@ -1,6 +1,7 @@
 package io.camunda.zeebe.bpmnassert.filters;
 
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
@@ -71,6 +72,11 @@ public class ProcessInstanceRecordStreamFilter {
   public ProcessInstanceRecordStreamFilter withBpmnProcessId(final String bpmnProcessId) {
     return new ProcessInstanceRecordStreamFilter(
         stream.filter(record -> record.getValue().getBpmnProcessId().equals(bpmnProcessId)));
+  }
+
+  public ProcessInstanceRecordStreamFilter withRecordType(final RecordType recordType) {
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getRecordType() == recordType));
   }
 
   public Stream<Record<ProcessInstanceRecordValue>> stream() {

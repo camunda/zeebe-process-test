@@ -24,6 +24,7 @@
 
   <properties>
     <dependency.assertj.version>3.21.0</dependency.assertj.version>
+    <dependency.awaitility.version>4.1.1</dependency.awaitility.version>
     <dependency.errorprone.version>2.10.0</dependency.errorprone.version>
     <dependency.eze.version>0.6.0</dependency.eze.version>
     <dependency.guava.version>31.0.1-jre</dependency.guava.version>
@@ -151,6 +152,13 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>${dependency.awaitility.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
