@@ -457,7 +457,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * Assert that the given variable name is a key in the given map of variables.
    *
    * <p>This assertion has been extracted from the method ${@link #hasVariable(String)} so that the
-   * method ${@link #hasVariableWithValue(String, String)} could reuse it without having to traverse
+   * method ${@link #hasVariableWithValue(String, Object)} could reuse it without having to traverse
    * the record stream to collect the variables a second time.
    *
    * @param name The name of the variable
@@ -481,7 +481,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @param value The value of the variable
    * @return this ${@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssert hasVariableWithValue(final String name, final String value) {
+  public ProcessInstanceAssert hasVariableWithValue(final String name, final Object value) {
     final ZeebeObjectMapper mapper = new ZeebeObjectMapper();
     final String mappedValue = mapper.toJson(value);
     final Map<String, String> variables = getProcessInstanceVariables();
@@ -499,7 +499,8 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
   }
 
   /**
-   * Returns a Map of variables that belong to this process instance
+   * Returns a Map of variables that belong to this process instance. The values in that map are
+   * JSON Strings
    *
    * @return map of variables
    */

@@ -1,26 +1,22 @@
 package io.camunda.zeebe.bpmnassert.assertions;
 
 import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.completeTask;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcess;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.sendMessage;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.waitForIdleState;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
-import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
-import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMessageEvent;
-import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMultipleTasks;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 import org.camunda.community.eze.RecordStreamSource;
 import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
@@ -28,8 +24,15 @@ import org.junit.jupiter.api.Test;
 
 @ZeebeAssertions
 class ProcessInstanceAssertTest {
-
+  private static final Map<String, Object> TYPED_TEST_VARIABLES = new HashMap<>();
   private ZeebeEngine engine;
+
+  static {
+    TYPED_TEST_VARIABLES.put("stringProperty", "stringValue");
+    TYPED_TEST_VARIABLES.put("numberProperty", 123);
+    TYPED_TEST_VARIABLES.put("booleanProperty", true);
+    TYPED_TEST_VARIABLES.put("complexProperty", List.of("Element 1", "Element 2"));
+  }
 
   // These tests are for testing assertions as well as examples for users
   @Nested
@@ -247,7 +250,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtMulitpleElements() {
+    public void testProcessInstanceIsNotWaitingAtMultipleElements() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -349,16 +352,19 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceHasVariableWithValue() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-      final Map<String, Object> variables =
-          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "1");
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, TYPED_TEST_VARIABLES);
 
       // then
-      assertThat(instanceEvent)
-          .hasVariableWithValue(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "1");
+      final SoftAssertions softly = new SoftAssertions();
+
+      TYPED_TEST_VARIABLES.forEach(
+          (key, value) -> assertThat(instanceEvent).hasVariableWithValue(key, value));
+
+      softly.assertAll();
     }
 
     @Test
