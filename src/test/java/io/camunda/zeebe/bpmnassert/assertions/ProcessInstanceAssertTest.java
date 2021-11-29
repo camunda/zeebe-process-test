@@ -1046,7 +1046,7 @@ class ProcessInstanceAssertTest {
     private ZeebeClient client;
 
     @Test // regression test for #78
-    public void testShouldCaptureLatestVariableOfValue() {
+    public void testShouldCaptureLatestValueOfVariable() {
       // given
       deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables1 =
