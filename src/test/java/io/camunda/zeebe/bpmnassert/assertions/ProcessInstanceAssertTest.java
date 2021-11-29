@@ -1,20 +1,13 @@
 package io.camunda.zeebe.bpmnassert.assertions;
 
 import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.completeTask;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcess;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.sendMessage;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.waitForIdleState;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
-import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
-import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMessageEvent;
-import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMultipleTasks;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
@@ -1042,6 +1035,50 @@ class ProcessInstanceAssertTest {
       assertThatThrownBy(() -> assertThat(instanceEvent).extractLatestIncident())
           .isInstanceOf(AssertionError.class)
           .hasMessage("No incidents were raised for this process instance");
+    }
+  }
+
+  // These tests validate bug fixes for bugs that have occurred in the past
+  @Nested
+  class RegressionTests {
+
+    private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
+
+    @Test // regression test for #78
+    public void testShouldCaptureLatestVariableOfValue() {
+      // given
+      deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      final Map<String, Object> variables1 =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "1");
+
+      final Map<String, Object> variables2 =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "2");
+
+      final Map<String, Object> variables3 =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "3");
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables1);
+
+      client
+          .newSetVariablesCommand(instanceEvent.getProcessInstanceKey())
+          .variables(variables2)
+          .send()
+          .join();
+      client
+          .newSetVariablesCommand(instanceEvent.getProcessInstanceKey())
+          .variables(variables3)
+          .send()
+          .join();
+
+      waitForIdleState(engine);
+
+      // then
+      assertThat(instanceEvent)
+          .hasVariableWithValue(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "3");
     }
   }
 }

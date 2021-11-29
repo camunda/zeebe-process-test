@@ -508,8 +508,13 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
         .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .stream()
+        .sequential() // stream must be sequential for merge function to work
         .map(Record::getValue)
-        .collect(Collectors.toMap(VariableRecordValue::getName, VariableRecordValue::getValue));
+        .collect(
+            Collectors.toMap(
+                VariableRecordValue::getName,
+                VariableRecordValue::getValue,
+                (value1, value2) -> value2));
   }
 
   /**
