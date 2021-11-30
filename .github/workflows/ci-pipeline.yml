@@ -57,7 +57,7 @@ jobs:
       - name: Import Secrets
         if: github.event.release || github.event_name == 'workflow_dispatch'
         id: secrets
-        uses: hashicorp/vault-action@v2.1.1
+        uses: hashicorp/vault-action@v2.4.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
           method: approle
