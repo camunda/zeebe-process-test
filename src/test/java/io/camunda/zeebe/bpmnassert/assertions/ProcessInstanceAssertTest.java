@@ -1050,4 +1050,48 @@ class ProcessInstanceAssertTest {
           .hasMessage("No incidents were raised for this process instance");
     }
   }
+
+  // These tests validate bug fixes for bugs that have occurred in the past
+  @Nested
+  class RegressionTests {
+
+    private RecordStreamSource recordStreamSource;
+    private ZeebeClient client;
+
+    @Test // regression test for #78
+    public void testShouldCaptureLatestValueOfVariable() {
+      // given
+      deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      final Map<String, Object> variables1 =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "1");
+
+      final Map<String, Object> variables2 =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "2");
+
+      final Map<String, Object> variables3 =
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "3");
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables1);
+
+      client
+          .newSetVariablesCommand(instanceEvent.getProcessInstanceKey())
+          .variables(variables2)
+          .send()
+          .join();
+      client
+          .newSetVariablesCommand(instanceEvent.getProcessInstanceKey())
+          .variables(variables3)
+          .send()
+          .join();
+
+      waitForIdleState(engine);
+
+      // then
+      assertThat(instanceEvent)
+          .hasVariableWithValue(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "3");
+    }
+  }
 }
