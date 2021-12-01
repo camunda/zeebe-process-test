@@ -16,8 +16,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestWatcher;
 import org.junit.platform.commons.util.ReflectionUtils;
 
-public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCallback,
-    TestWatcher {
+public class ZeebeAssertionsExtension
+    implements BeforeEachCallback, AfterEachCallback, TestWatcher {
 
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
   private static final String KEY_ZEEBE_ENGINE = "ZEEBE_ENGINE";

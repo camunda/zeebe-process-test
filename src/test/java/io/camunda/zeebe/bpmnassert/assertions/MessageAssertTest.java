@@ -28,7 +28,6 @@ class MessageAssertTest {
   public static final String WRONG_CORRELATION_KEY = "wrongcorrelationkey";
   public static final String WRONG_MESSAGE_NAME = "wrongmessagename";
 
-
   @Nested
   class HappyPathTests {
 

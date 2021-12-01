@@ -27,7 +27,6 @@ class IncidentAssertTest {
   public static final String ERROR_CODE = "error";
   public static final String ERROR_MESSAGE = "error occurred";
 
-
   // These tests are for testing assertions as well as examples for users
   @Nested
   class HappyPathTests {

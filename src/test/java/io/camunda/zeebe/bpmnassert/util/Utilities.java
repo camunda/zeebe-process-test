@@ -156,11 +156,12 @@ public class Utilities {
 
   public static void completeTask(
       final InMemoryEngine engine, final ZeebeClient client, final String elementId) {
-    final List<Record<JobRecordValue>> records = StreamFilter.jobRecords(engine.getRecordStream())
-        .withElementId(elementId)
-        .withIntent(JobIntent.CREATED)
-        .stream()
-        .collect(Collectors.toList());
+    final List<Record<JobRecordValue>> records =
+        StreamFilter.jobRecords(engine.getRecordStream())
+            .withElementId(elementId)
+            .withIntent(JobIntent.CREATED)
+            .stream()
+            .collect(Collectors.toList());
 
     if (!records.isEmpty()) {
       final Record<JobRecordValue> lastRecord;

@@ -39,7 +39,6 @@
     <dependency.osgi.version>4.3.1</dependency.osgi.version>
     <dependency.protobuf.version>3.19.1</dependency.protobuf.version>
     <dependency.scala.version>2.13.7</dependency.scala.version>
-    <dependency.log4j.version>2.14.1</dependency.log4j.version>
     <dependency.slf4j.version>1.7.32</dependency.slf4j.version>
     <dependency.snakeyaml.version>1.29</dependency.snakeyaml.version>
     <dependency.spring.version>5.3.10</dependency.spring.version>
@@ -211,7 +210,6 @@
       <artifactId>log4j-slf4j-impl</artifactId>
       <version>${dependency.log4j.version}</version>
     </dependency>
-
 
     <!-- Test scope-->
     <dependency>

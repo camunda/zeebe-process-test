@@ -10,7 +10,6 @@ import io.camunda.zeebe.util.sched.clock.ControlledActorClock;
 import io.grpc.Server;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.NotImplementedException;
 
 public class InMemoryEngineImpl implements InMemoryEngine {
@@ -97,16 +96,16 @@ public class InMemoryEngineImpl implements InMemoryEngine {
   @Override
   public void runOnIdleState(final Runnable callback) {
     throw new NotImplementedException("This feature is coming soon");
-//    idleStateMonitor.addCallback(callback);
+    //    idleStateMonitor.addCallback(callback);
   }
 
   @Override
   public void waitForIdleState() {
     throw new NotImplementedException("This feature is coming soon");
-//    final CompletableFuture<Void> idleState = new CompletableFuture<>();
-//
-//    runOnIdleState(() -> idleState.complete(null));
-//
-//    idleState.join();
+    //    final CompletableFuture<Void> idleState = new CompletableFuture<>();
+    //
+    //    runOnIdleState(() -> idleState.complete(null));
+    //
+    //    idleState.join();
   }
 }
