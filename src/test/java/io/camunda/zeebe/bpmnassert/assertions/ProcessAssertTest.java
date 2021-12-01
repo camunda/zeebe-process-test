@@ -23,7 +23,6 @@ class ProcessAssertTest {
   @Nested
   class HappyPathTests {
 
-    private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
     private InMemoryEngine engine;
 
@@ -127,7 +126,6 @@ class ProcessAssertTest {
   @Nested
   class UnhappyPathTests {
 
-    private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
     private InMemoryEngine engine;
 

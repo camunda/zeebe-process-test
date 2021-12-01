@@ -31,7 +31,6 @@ class MessageAssertTest {
   @Nested
   class HappyPathTests {
 
-    private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
     private InMemoryEngine engine;
 
@@ -163,7 +162,6 @@ class MessageAssertTest {
   @Nested
   class UnhappyPathTests {
 
-    private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
     private InMemoryEngine engine;
 
