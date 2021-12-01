@@ -11,7 +11,6 @@ import static org.assertj.core.data.Offset.offset;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
-import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
@@ -34,8 +33,8 @@ class JobAssertTest {
   // These tests are for testing assertions as well as examples for users
   @Nested
   class HappyPathTests {
+
     private ZeebeClient client;
-    private RecordStreamSource recordStreamSource;
     private InMemoryEngine engine;
 
     @Test
@@ -220,7 +219,7 @@ class JobAssertTest {
   // These tests are just for assertion testing purposes. These should not be used as examples.
   @Nested
   class UnhappyPathTests {
-    private RecordStreamSource recordStreamSource;
+
     private ZeebeClient client;
     private InMemoryEngine engine;
 

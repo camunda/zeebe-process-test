@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
-import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -31,7 +30,6 @@ class IncidentAssertTest {
   @Nested
   class HappyPathTests {
 
-    private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
     private InMemoryEngine engine;
 
@@ -247,7 +245,7 @@ class IncidentAssertTest {
   // These tests are just for assertion testing purposes. These should not be used as examples.
   @Nested
   class UnhappyPathTests {
-    private RecordStreamSource recordStreamSource;
+
     private ZeebeClient client;
     private InMemoryEngine engine;
 
@@ -414,7 +412,7 @@ class IncidentAssertTest {
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
       // then
-      assertThatThrownBy(() -> incidentAssert.isResolved())
+      assertThatThrownBy(incidentAssert::isResolved)
           .isInstanceOf(AssertionError.class)
           .hasMessageStartingWith("Incident is not resolved");
     }
@@ -445,7 +443,7 @@ class IncidentAssertTest {
       Utilities.waitForIdleState(engine);
 
       // then
-      assertThatThrownBy(() -> incidentAssert.isUnresolved())
+      assertThatThrownBy(incidentAssert::isUnresolved)
           .isInstanceOf(AssertionError.class)
           .hasMessageStartingWith("Incident is already resolved");
     }

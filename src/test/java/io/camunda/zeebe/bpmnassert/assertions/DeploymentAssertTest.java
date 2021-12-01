@@ -23,7 +23,6 @@ class DeploymentAssertTest {
   @Nested
   class HappyPathTests {
 
-    private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
 
     @Test
@@ -91,7 +90,6 @@ class DeploymentAssertTest {
   @Nested
   class UnhappyPathTests {
 
-    private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
 
     @Test

@@ -24,7 +24,6 @@ class ProcessEventInspectionsTest {
 
   private ZeebeClient client;
   private InMemoryEngine engine;
-  private RecordStreamSource recordStreamSource;
 
   @Test
   public void testFindFirstProcessInstance() {

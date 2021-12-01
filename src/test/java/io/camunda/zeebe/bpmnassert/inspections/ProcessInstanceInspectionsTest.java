@@ -21,7 +21,6 @@ public class ProcessInstanceInspectionsTest {
 
   private ZeebeClient client;
   private InMemoryEngine engine;
-  private RecordStreamSource recordStreamSource;
 
   @Test
   public void testStartedByProcessInstanceWithProcessId() {
