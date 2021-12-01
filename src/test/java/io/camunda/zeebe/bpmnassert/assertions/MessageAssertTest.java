@@ -9,7 +9,7 @@ import static io.camunda.zeebe.bpmnassert.util.Utilities.sendMessage;
 import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@ZeebeAssertions
+@ZeebeProcessTest
 class MessageAssertTest {
 
   public static final String CORRELATION_KEY = "correlationkey";

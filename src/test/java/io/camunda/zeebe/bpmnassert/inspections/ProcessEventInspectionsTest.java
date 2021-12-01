@@ -5,7 +5,7 @@ import static io.camunda.zeebe.bpmnassert.inspections.InspectionUtility.findProc
 import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcess;
 import static io.camunda.zeebe.bpmnassert.util.Utilities.increaseTime;
 
-import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.inspections.model.InspectedProcessInstance;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-@ZeebeAssertions
+@ZeebeProcessTest
 class ProcessEventInspectionsTest {
 
   private static final String WRONG_TIMER_ID = "wrongtimer";

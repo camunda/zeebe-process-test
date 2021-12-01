@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -29,7 +29,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@ZeebeAssertions
+@ZeebeProcessTest
 class ProcessInstanceAssertTest {
   private static final Map<String, Object> TYPED_TEST_VARIABLES = new HashMap<>();
 
@@ -280,12 +280,11 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceIsNotWaitingAtNonExistingElement() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
+
+      // when
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
       final String nonExistingElementId = "non-existing-task";
-
-      // when
-      completeTask(engine, client, nonExistingElementId);
 
       // then
       assertThat(instanceEvent).isNotWaitingAtElement(nonExistingElementId);
@@ -736,12 +735,11 @@ class ProcessInstanceAssertTest {
     public void testProcessInstanceWaitingAtNonExistingElementFailure() {
       // given
       deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
+
+      // when
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
       final String nonExistingTaskId = "non-existing-task";
-
-      // when
-      completeTask(engine, client, nonExistingTaskId);
 
       // then
       assertThatThrownBy(() -> assertThat(instanceEvent).isWaitingAtElement(nonExistingTaskId))

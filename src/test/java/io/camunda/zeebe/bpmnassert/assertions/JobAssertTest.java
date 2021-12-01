@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.data.Offset.offset;
 
-import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities;
@@ -24,7 +24,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@ZeebeAssertions
+@ZeebeProcessTest
 class JobAssertTest {
 
   public static final String WRONG_VALUE = "wrong value";

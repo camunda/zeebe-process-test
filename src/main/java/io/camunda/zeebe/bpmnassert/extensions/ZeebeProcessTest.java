@@ -10,5 +10,5 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@ExtendWith(ZeebeAssertionsExtension.class)
-public @interface ZeebeAssertions {}
+@ExtendWith(ZeebeProcessTestExtension.class)
+public @interface ZeebeProcessTest {}

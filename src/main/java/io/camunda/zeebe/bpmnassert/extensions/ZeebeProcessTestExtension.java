@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestWatcher;
 import org.junit.platform.commons.util.ReflectionUtils;
 
-public class ZeebeAssertionsExtension
+public class ZeebeProcessTestExtension
     implements BeforeEachCallback, AfterEachCallback, TestWatcher {
 
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
@@ -90,8 +90,7 @@ public class ZeebeAssertionsExtension
       ReflectionUtils.makeAccessible(field);
       field.set(extensionContext.getRequiredTestInstance(), object);
     } catch (IllegalAccessException e) {
-      // TODO proper error handling
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 

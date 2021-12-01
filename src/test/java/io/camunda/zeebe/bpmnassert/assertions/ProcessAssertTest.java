@@ -5,7 +5,7 @@ import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcess;
 import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
@@ -14,7 +14,7 @@ import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@ZeebeAssertions
+@ZeebeProcessTest
 class ProcessAssertTest {
 
   public static final String WRONG_VALUE = "wrong value";

@@ -155,10 +155,10 @@ public class Utilities {
   }
 
   public static void completeTask(
-      final InMemoryEngine engine, final ZeebeClient client, final String elementId) {
+      final InMemoryEngine engine, final ZeebeClient client, final String taskId) {
     final List<Record<JobRecordValue>> records =
         StreamFilter.jobRecords(engine.getRecordStream())
-            .withElementId(elementId)
+            .withElementId(taskId)
             .withIntent(JobIntent.CREATED)
             .stream()
             .collect(Collectors.toList());
@@ -167,6 +167,9 @@ public class Utilities {
       final Record<JobRecordValue> lastRecord;
       lastRecord = records.get(records.size() - 1);
       client.newCompleteCommand(lastRecord.getKey()).send().join();
+    } else {
+      throw new IllegalStateException(
+          String.format("Tried to complete task `%s`, but it was not found", taskId));
     }
 
     waitForIdleState(engine);

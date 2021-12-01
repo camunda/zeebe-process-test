@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mockito.Mockito;
 
-class ZeebeAssertionsExtensionTest {
+class ZeebeProcessTestExtensionTest {
 
   @Nested
   class MultipleInjectedFields {
@@ -20,7 +20,7 @@ class ZeebeAssertionsExtensionTest {
     @Test
     public void testMultipleInjectedFieldsThrowError() {
       // given
-      final ZeebeAssertionsExtension extension = new ZeebeAssertionsExtension();
+      final ZeebeProcessTestExtension extension = new ZeebeProcessTestExtension();
       final ExtensionContext extensionContext = mock(ExtensionContext.class);
 
       // when

@@ -5,7 +5,7 @@ import static io.camunda.zeebe.bpmnassert.inspections.InspectionUtility.findProc
 import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcesses;
 import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
 
-import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.inspections.model.InspectedProcessInstance;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-@ZeebeAssertions
+@ZeebeProcessTest
 public class ProcessInstanceInspectionsTest {
 
   private ZeebeClient client;

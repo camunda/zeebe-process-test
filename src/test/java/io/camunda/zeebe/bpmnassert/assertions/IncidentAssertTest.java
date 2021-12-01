@@ -3,7 +3,7 @@ package io.camunda.zeebe.bpmnassert.assertions;
 import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities;
@@ -20,7 +20,7 @@ import org.assertj.core.api.StringAssert;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@ZeebeAssertions
+@ZeebeProcessTest
 class IncidentAssertTest {
 
   public static final String WRONG_VALUE = "wrong value";
