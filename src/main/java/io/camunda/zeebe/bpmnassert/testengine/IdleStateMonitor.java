@@ -7,13 +7,19 @@ import io.camunda.zeebe.logstreams.log.LoggedEvent;
 import io.camunda.zeebe.logstreams.storage.LogStorage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcessorListener {
 
+  private static final Timer TIMER = new Timer();
   private final List<Runnable> callbacks = new ArrayList<>();
   private final LogStreamReader reader;
-  private long lastEventPosition = -1L;
-  private long lastProcessedPosition = -1;
+  private volatile long lastEventPosition = -1L;
+  private volatile long lastProcessedPosition = -1L;
+
+  private volatile TimerTask task =
+      createTask(); // must never be null for the synchronization to work
 
   IdleStateMonitor(final InMemoryLogStorage logStorage, final LogStreamReader logStreamReader) {
     logStorage.addCommitListener(this);
@@ -30,9 +36,18 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
 
   private void checkIdleState() {
     if (isInIdleState()) {
-      synchronized (callbacks) {
-        callbacks.forEach(Runnable::run);
-        callbacks.clear();
+      synchronized (task) {
+        task = createTask();
+        try {
+          TIMER.schedule(task, 10);
+        } catch (IllegalStateException e) {
+          // thrown - among others - if task was cancelled before it could be scheduled
+          // do nothing in this case
+        }
+      }
+    } else {
+      synchronized (task) {
+        task.cancel();
       }
     }
   }
@@ -43,8 +58,10 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
   }
 
   private void forwardToLastEvent() {
-    while (reader.hasNext()) {
-      lastEventPosition = reader.next().getPosition();
+    synchronized (reader) {
+      while (reader.hasNext()) {
+        lastEventPosition = reader.next().getPosition();
+      }
     }
   }
 
@@ -55,19 +72,33 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
 
   @Override
   public void onProcessed(final TypedRecord<?> processedCommand) {
-    lastProcessedPosition = processedCommand.getPosition();
+    lastProcessedPosition = Math.max(lastProcessedPosition, processedCommand.getPosition());
     checkIdleState();
   }
 
   @Override
   public void onSkipped(final LoggedEvent skippedRecord) {
-    lastProcessedPosition = skippedRecord.getPosition();
+    lastProcessedPosition = Math.max(lastProcessedPosition, skippedRecord.getPosition());
     checkIdleState();
   }
 
   @Override
   public void onReplayed(final long lastReplayedEventPosition, final long lastReadRecordPosition) {
-    lastProcessedPosition = lastReplayedEventPosition;
+    lastProcessedPosition = Math.max(lastProcessedPosition, lastReplayedEventPosition);
     checkIdleState();
+  }
+
+  private TimerTask createTask() {
+    return new TimerTask() {
+      @Override
+      public void run() {
+        if (isInIdleState()) {
+          synchronized (callbacks) {
+            callbacks.forEach(Runnable::run);
+            callbacks.clear();
+          }
+        }
+      }
+    };
   }
 }

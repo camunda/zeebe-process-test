@@ -8,7 +8,6 @@ import static io.camunda.zeebe.bpmnassert.util.Utilities.increaseTime;
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.inspections.model.InspectedProcessInstance;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
-import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackTimerStartEvent;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;

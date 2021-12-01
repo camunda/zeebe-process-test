@@ -129,7 +129,7 @@ public class EngineFactory {
         .streamProcessorFactory(
             context ->
                 EngineProcessors.createEngineProcessors(
-                    context,
+                    context.listener(idleStateMonitor),
                     partitionCount,
                     subscriptionCommandSenderFactory.createSender(),
                     new SinglePartitionDeploymentDistributor(),
