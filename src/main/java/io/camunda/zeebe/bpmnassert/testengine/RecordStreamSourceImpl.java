@@ -131,7 +131,7 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
       new CompactRecordLogger(recordsList).log();
     } else {
       System.out.println("===== records (count: ${count()}) =====");
-      recordsList.forEach(Record::toJson);
+      recordsList.forEach(record -> System.out.println(record.toJson()));
       System.out.println("---------------------------");
     }
   }

@@ -11,7 +11,6 @@ import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
-import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

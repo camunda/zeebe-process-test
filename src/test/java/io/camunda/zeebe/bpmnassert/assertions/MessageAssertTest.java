@@ -1,7 +1,12 @@
 package io.camunda.zeebe.bpmnassert.assertions;
 
 import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.*;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMessageEvent;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMessageStartEvent;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcess;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.increaseTime;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.sendMessage;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;

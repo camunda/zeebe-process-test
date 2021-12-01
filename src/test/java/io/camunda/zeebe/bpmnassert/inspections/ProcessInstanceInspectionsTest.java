@@ -14,7 +14,6 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Test;
 
 @ZeebeAssertions

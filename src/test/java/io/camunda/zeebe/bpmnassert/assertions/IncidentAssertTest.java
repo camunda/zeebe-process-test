@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.StringAssert;
-import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

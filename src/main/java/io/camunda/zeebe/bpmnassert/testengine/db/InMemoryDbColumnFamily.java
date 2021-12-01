@@ -103,7 +103,7 @@ final class InMemoryDbColumnFamily<
   @Override
   public void whileEqualPrefix(
       final DbKey keyPrefix, final BiConsumer<KeyType, ValueType> visitor) {
-    whileEqualPrefix(context, keyInstance, valueInstance, visitor);
+    whileEqualPrefix(context, keyPrefix, keyInstance, valueInstance, new Visitor<>(visitor));
   }
 
   @Override
