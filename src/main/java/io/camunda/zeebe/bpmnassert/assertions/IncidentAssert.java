@@ -15,7 +15,6 @@ import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
 import java.util.Optional;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.StringAssert;
-import org.jetbrains.annotations.NotNull;
 
 /** Assertions for incidents. An incident is identified by its incident key. */
 public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
@@ -215,7 +214,6 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
     return optIncidentCreatedRecord.get().getValue();
   }
 
-  @NotNull
   private Optional<Record<IncidentRecordValue>> findIncidentCreatedRecord() {
     return getIncidentRecords(IncidentIntent.CREATED).stream().findFirst();
   }

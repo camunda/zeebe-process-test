@@ -27,15 +27,23 @@
     <dependency.awaitility.version>4.1.1</dependency.awaitility.version>
     <dependency.errorprone.version>2.10.0</dependency.errorprone.version>
     <dependency.eze.version>0.6.0</dependency.eze.version>
+    <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>31.0.1-jre</dependency.guava.version>
     <dependency.jackson.version>2.13.0</dependency.jackson.version>
     <dependency.jna.version>5.10.0</dependency.jna.version>
     <dependency.junit.version>5.8.2</dependency.junit.version>
+    <dependency.junit4.version>4.13.2</dependency.junit4.version>
+    <dependency.log4j.version>2.14.1</dependency.log4j.version>
     <dependency.mockito.version>4.1.0</dependency.mockito.version>
     <dependency.netty.version>4.1.70.Final</dependency.netty.version>
+    <dependency.osgi.version>4.3.1</dependency.osgi.version>
     <dependency.protobuf.version>3.19.1</dependency.protobuf.version>
     <dependency.scala.version>2.13.7</dependency.scala.version>
+    <dependency.log4j.version>2.14.1</dependency.log4j.version>
     <dependency.slf4j.version>1.7.32</dependency.slf4j.version>
+    <dependency.snakeyaml.version>1.29</dependency.snakeyaml.version>
+    <dependency.spring.version>5.3.10</dependency.spring.version>
+    <dependency.zeebe.version>1.2.4</dependency.zeebe.version>
 
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
@@ -72,6 +80,14 @@
         <version>${dependency.assertj.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-bom</artifactId>
+        <version>${dependency.zeebe.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <!-- Only for dependency convergence issues -->
       <dependency>
         <groupId>com.google.protobuf</groupId>
@@ -87,11 +103,6 @@
         <groupId>net.java.dev.jna</groupId>
         <artifactId>jna</artifactId>
         <version>${dependency.jna.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${dependency.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.errorprone</groupId>
@@ -120,7 +131,34 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.13.2</version>
+        <version>${dependency.junit4.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>${dependency.findbugs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>${dependency.osgi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${dependency.spring.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${dependency.slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>${dependency.snakeyaml.version}</version>
       </dependency>
 
       <!-- Test scope-->
@@ -137,15 +175,44 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>org.camunda.community</groupId>
-      <artifactId>eze-junit-extension</artifactId>
-      <version>${dependency.eze.version}</version>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-workflow-engine</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-util</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-logstreams</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-test-util</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-client-java</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${dependency.log4j.version}</version>
+    </dependency>
+
+
     <!-- Test scope-->
     <dependency>
       <groupId>org.mockito</groupId>
