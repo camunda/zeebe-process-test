@@ -68,12 +68,12 @@ jobs:
             secret/data/common/github.com/actions/camunda-cloud/camunda-cloud-testing ARTIFACTS_PSW;
 
       - name: Deploy SNAPSHOT / Release
-        if: github.event.release || github.event_name == 'workflow_dispatch'
         id: release
-        uses: camunda-community-hub/community-action-maven-release@v1
+        uses: camunda-community-hub/community-action-maven-release@v1.0.9
         with:
           release-version: ${{ github.event.release.tag_name }}
           release-profile: community-action-maven-release
+          maven-url: s01.oss.sonatype.org          
           nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
           nexus-psw: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
           maven-usr: dummy
