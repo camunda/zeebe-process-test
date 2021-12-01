@@ -13,9 +13,11 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestWatcher;
 import org.junit.platform.commons.util.ReflectionUtils;
 
-public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCallback {
+public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCallback,
+    TestWatcher {
 
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
   private static final String KEY_ZEEBE_ENGINE = "ZEEBE_ENGINE";
@@ -45,6 +47,15 @@ public class ZeebeAssertionsExtension implements BeforeEachCallback, AfterEachCa
     final Object engineContent = getStore(extensionContext).get(KEY_ZEEBE_ENGINE);
     final InMemoryEngine engine = (InMemoryEngine) engineContent;
     engine.stop();
+  }
+
+  @Override
+  public void testFailed(final ExtensionContext extensionContext, final Throwable cause) {
+    final Object engineContent = getStore(extensionContext).get(KEY_ZEEBE_ENGINE);
+    final InMemoryEngine engine = (InMemoryEngine) engineContent;
+
+    System.out.println("===== Test failed! Printing records from the stream:");
+    engine.getRecordStream().print(true);
   }
 
   private void injectFields(final ExtensionContext extensionContext, final Object... objects) {

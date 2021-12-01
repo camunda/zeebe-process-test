@@ -26,6 +26,11 @@ public class JobRecordStreamFilter {
     return new JobRecordStreamFilter(stream.filter(record -> record.getIntent() == intent));
   }
 
+  public JobRecordStreamFilter withElementId(final String elementId) {
+    return new JobRecordStreamFilter(
+        stream.filter(record -> record.getValue().getElementId().equals(elementId)));
+  }
+
   public Stream<Record<JobRecordValue>> stream() {
     return stream;
   }

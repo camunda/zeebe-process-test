@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.bpmnassert.filters.IncidentRecordStreamFilter;
 import io.camunda.zeebe.bpmnassert.filters.StreamFilter;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -18,7 +19,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.SoftAssertions;
-import org.camunda.community.eze.RecordStreamSource;
 
 public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert, Long> {
 

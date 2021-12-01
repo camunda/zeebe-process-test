@@ -1,13 +1,22 @@
 package io.camunda.zeebe.bpmnassert.assertions;
 
 import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.*;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMessageEvent;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMultipleTasks;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.completeTask;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcess;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.sendMessage;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.waitForIdleState;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
@@ -17,15 +26,12 @@ import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
-import org.camunda.community.eze.RecordStreamSource;
-import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @ZeebeAssertions
 class ProcessInstanceAssertTest {
   private static final Map<String, Object> TYPED_TEST_VARIABLES = new HashMap<>();
-  private ZeebeEngine engine;
 
   static {
     TYPED_TEST_VARIABLES.put("stringProperty", "stringValue");
@@ -40,6 +46,7 @@ class ProcessInstanceAssertTest {
 
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test
     public void testProcessInstanceIsStarted() {
@@ -467,6 +474,7 @@ class ProcessInstanceAssertTest {
 
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test
     public void testProcessInstanceIsStartedFailure() {
@@ -1057,6 +1065,7 @@ class ProcessInstanceAssertTest {
 
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test // regression test for #78
     public void testShouldCaptureLatestValueOfVariable() {

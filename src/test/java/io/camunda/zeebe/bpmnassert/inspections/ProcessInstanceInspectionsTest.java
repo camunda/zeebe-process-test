@@ -7,12 +7,13 @@ import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
 import io.camunda.zeebe.bpmnassert.inspections.model.InspectedProcessInstance;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackCallActivity;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.camunda.community.eze.RecordStreamSource;
 import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ import org.junit.jupiter.api.Test;
 public class ProcessInstanceInspectionsTest {
 
   private ZeebeClient client;
-  private ZeebeEngine engine;
+  private InMemoryEngine engine;
   private RecordStreamSource recordStreamSource;
 
   @Test

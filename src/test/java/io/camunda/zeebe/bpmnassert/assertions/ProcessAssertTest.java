@@ -6,10 +6,11 @@ import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
-import org.camunda.community.eze.RecordStreamSource;
 import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,14 +20,13 @@ class ProcessAssertTest {
 
   public static final String WRONG_VALUE = "wrong value";
 
-  private ZeebeEngine engine;
-
   // These tests are for testing assertions as well as examples for users
   @Nested
   class HappyPathTests {
 
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test
     public void testHasBPMNProcessId() {
@@ -130,6 +130,7 @@ class ProcessAssertTest {
 
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test
     public void testHasBPMNProcessIdFailure() {

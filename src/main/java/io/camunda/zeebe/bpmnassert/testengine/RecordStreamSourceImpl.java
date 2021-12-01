@@ -33,7 +33,7 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
 
   private final LogStreamReader logStreamReader;
   private final int partitionId;
-  private final List<Record<?>> records = new ArrayList<>();
+  private List<Record<?>> records = new ArrayList<>();
   private long lastPosition = -1L;
 
   public RecordStreamSourceImpl(final LogStreamReader logStreamReader, final int partitionId) {

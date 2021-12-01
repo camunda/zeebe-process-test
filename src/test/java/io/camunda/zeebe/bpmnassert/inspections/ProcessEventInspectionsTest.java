@@ -7,15 +7,14 @@ import static io.camunda.zeebe.bpmnassert.util.Utilities.increaseTime;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
 import io.camunda.zeebe.bpmnassert.inspections.model.InspectedProcessInstance;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackTimerStartEvent;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import java.time.Duration;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
-import org.camunda.community.eze.RecordStreamSource;
-import org.camunda.community.eze.ZeebeEngine;
-import org.camunda.community.eze.ZeebeEngineClock;
 import org.junit.jupiter.api.Test;
 
 @ZeebeAssertions
@@ -24,8 +23,7 @@ class ProcessEventInspectionsTest {
   private static final String WRONG_TIMER_ID = "wrongtimer";
 
   private ZeebeClient client;
-  private ZeebeEngine engine;
-  private ZeebeEngineClock clock;
+  private InMemoryEngine engine;
   private RecordStreamSource recordStreamSource;
 
   @Test

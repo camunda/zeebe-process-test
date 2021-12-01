@@ -1,6 +1,6 @@
 package io.camunda.zeebe.bpmnassert;
 
-import org.camunda.community.eze.RecordStreamSource;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 
 public abstract class RecordStreamSourceStore {
 

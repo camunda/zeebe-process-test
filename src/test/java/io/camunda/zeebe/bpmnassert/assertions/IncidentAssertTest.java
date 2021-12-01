@@ -4,6 +4,8 @@ import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -15,7 +17,6 @@ import java.util.Collections;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.StringAssert;
-import org.camunda.community.eze.RecordStreamSource;
 import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,6 @@ class IncidentAssertTest {
   public static final String ERROR_CODE = "error";
   public static final String ERROR_MESSAGE = "error occurred";
 
-  private ZeebeEngine engine;
 
   // These tests are for testing assertions as well as examples for users
   @Nested
@@ -35,6 +35,7 @@ class IncidentAssertTest {
 
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test
     void testHasErrorType() {
@@ -250,6 +251,7 @@ class IncidentAssertTest {
   class UnhappyPathTests {
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test
     void testHasErrorTypeFailure() {
