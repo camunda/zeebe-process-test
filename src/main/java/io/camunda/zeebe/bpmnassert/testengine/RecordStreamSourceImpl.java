@@ -33,7 +33,7 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
 
   private final LogStreamReader logStreamReader;
   private final int partitionId;
-  private final List<Record<?>> records = new ArrayList<>();
+  private List<Record<?>> records = new ArrayList<>();
   private long lastPosition = -1L;
 
   public RecordStreamSourceImpl(final LogStreamReader logStreamReader, final int partitionId) {
@@ -131,7 +131,7 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
       new CompactRecordLogger(recordsList).log();
     } else {
       System.out.println("===== records (count: ${count()}) =====");
-      recordsList.forEach(Record::toJson);
+      recordsList.forEach(record -> System.out.println(record.toJson()));
       System.out.println("---------------------------");
     }
   }

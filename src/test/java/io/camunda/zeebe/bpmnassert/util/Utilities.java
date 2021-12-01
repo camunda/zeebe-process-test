@@ -1,5 +1,7 @@
 package io.camunda.zeebe.bpmnassert.util;
 
+import io.camunda.zeebe.bpmnassert.filters.StreamFilter;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
@@ -11,8 +13,9 @@ import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import org.camunda.community.eze.ZeebeEngine;
+import java.util.stream.Collectors;
 
 public class Utilities {
 
@@ -84,12 +87,12 @@ public class Utilities {
   }
 
   public static ProcessInstanceEvent startProcessInstance(
-      final ZeebeEngine engine, final ZeebeClient client, final String processId) {
+      final InMemoryEngine engine, final ZeebeClient client, final String processId) {
     return startProcessInstance(engine, client, processId, new HashMap<>());
   }
 
   public static ProcessInstanceEvent startProcessInstance(
-      final ZeebeEngine engine,
+      final InMemoryEngine engine,
       final ZeebeClient client,
       final String processId,
       final Map<String, Object> variables) {
@@ -111,7 +114,7 @@ public class Utilities {
   }
 
   // TODO find a better solution for this
-  public static void waitForIdleState(final ZeebeEngine engine) {
+  public static void waitForIdleState(final InMemoryEngine engine) {
     try {
       Thread.sleep(100);
     } catch (final InterruptedException e) {
@@ -121,7 +124,7 @@ public class Utilities {
   }
 
   public static PublishMessageResponse sendMessage(
-      final ZeebeEngine engine,
+      final InMemoryEngine engine,
       final ZeebeClient client,
       final String messageName,
       final String correlationKey) {
@@ -129,7 +132,7 @@ public class Utilities {
   }
 
   public static PublishMessageResponse sendMessage(
-      final ZeebeEngine engine,
+      final InMemoryEngine engine,
       final ZeebeClient client,
       final String messageName,
       final String correlationKey,
@@ -146,22 +149,29 @@ public class Utilities {
     return response;
   }
 
-  public static void increaseTime(final ZeebeEngine engine, final Duration duration) {
-    engine.clock().increaseTime(duration);
+  public static void increaseTime(final InMemoryEngine engine, final Duration duration) {
+    engine.increaseTime(duration);
     waitForIdleState(engine);
   }
 
   public static void completeTask(
-      final ZeebeEngine engine, final ZeebeClient client, final String elementId) {
-    Record<JobRecordValue> lastRecord = null;
-    for (final Record<JobRecordValue> record : engine.jobRecords().withElementId(elementId)) {
-      if (record.getIntent().equals(JobIntent.CREATED)) {
-        lastRecord = record;
-      }
-    }
-    if (lastRecord != null) {
+      final InMemoryEngine engine, final ZeebeClient client, final String taskId) {
+    final List<Record<JobRecordValue>> records =
+        StreamFilter.jobRecords(engine.getRecordStream())
+            .withElementId(taskId)
+            .withIntent(JobIntent.CREATED)
+            .stream()
+            .collect(Collectors.toList());
+
+    if (!records.isEmpty()) {
+      final Record<JobRecordValue> lastRecord;
+      lastRecord = records.get(records.size() - 1);
       client.newCompleteCommand(lastRecord.getKey()).send().join();
+    } else {
+      throw new IllegalStateException(
+          String.format("Tried to complete task `%s`, but it was not found", taskId));
     }
+
     waitForIdleState(engine);
   }
 }

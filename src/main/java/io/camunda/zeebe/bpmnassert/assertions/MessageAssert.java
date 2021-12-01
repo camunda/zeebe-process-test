@@ -3,6 +3,7 @@ package io.camunda.zeebe.bpmnassert.assertions;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import io.camunda.zeebe.bpmnassert.filters.StreamFilter;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -16,7 +17,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
-import org.camunda.community.eze.RecordStreamSource;
 
 public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageResponse> {
 

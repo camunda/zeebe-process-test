@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.bpmnassert.filters.IncidentRecordStreamFilter;
 import io.camunda.zeebe.bpmnassert.filters.StreamFilter;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.data.Offset;
-import org.camunda.community.eze.RecordStreamSource;
 
 /** Assertions for {@code ActivatedJob} instances */
 public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {

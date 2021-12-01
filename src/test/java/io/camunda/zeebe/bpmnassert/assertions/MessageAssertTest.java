@@ -1,37 +1,39 @@
 package io.camunda.zeebe.bpmnassert.assertions;
 
 import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.*;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMessageEvent;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackMessageStartEvent;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcess;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.increaseTime;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.sendMessage;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
-import org.camunda.community.eze.RecordStreamSource;
-import org.camunda.community.eze.ZeebeEngine;
-import org.camunda.community.eze.ZeebeEngineClock;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@ZeebeAssertions
+@ZeebeProcessTest
 class MessageAssertTest {
 
   public static final String CORRELATION_KEY = "correlationkey";
   public static final String WRONG_CORRELATION_KEY = "wrongcorrelationkey";
   public static final String WRONG_MESSAGE_NAME = "wrongmessagename";
 
-  private ZeebeEngine engine;
-  private ZeebeEngineClock clock;
-
   @Nested
   class HappyPathTests {
 
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test
     void testHasBeenCorrelated() {
@@ -163,6 +165,7 @@ class MessageAssertTest {
 
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test
     void testHasBeenCorrelatedFailure() {

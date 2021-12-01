@@ -3,7 +3,6 @@ package io.camunda.zeebe.bpmnassert.testengine.db;
 import io.camunda.zeebe.db.DbValue;
 import java.util.Arrays;
 import org.agrona.ExpandableArrayBuffer;
-import org.jetbrains.annotations.NotNull;
 
 /** Wrapper around a {@code byte[]} to make it {@code Comparable} */
 final class Bytes implements Comparable<Bytes> {
@@ -34,7 +33,7 @@ final class Bytes implements Comparable<Bytes> {
   }
 
   @Override
-  public int compareTo(@NotNull final Bytes other) {
+  public int compareTo(final Bytes other) {
 
     final int EQUAL = 0;
     final int SMALLER = -1;

@@ -24,11 +24,10 @@ The following details are due to the project being in early stages of developmen
 * Works only in JUnit 5 (we might stick to that, but are happy to receive feedback)
 * Zeebe is an asynchronous engine, so use `Thread.sleep(100)` to wait for Zeebe to process the last request (in the
   future we want to offer a method to wait for Zeebe to become idle)
-* You need to inject the following fields in your tests to make the extension work:
+* The extension can inject the following fields into your test:
 
 ```java
-
-@ZeebeAssertions
+@ZeebeProcessTest
 class DeploymentAssertTest {
 
   private ZeebeClient client;

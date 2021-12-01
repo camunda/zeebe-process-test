@@ -3,11 +3,11 @@ package io.camunda.zeebe.bpmnassert.assertions;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.Process;
 import java.util.List;
 import org.assertj.core.api.AbstractAssert;
-import org.camunda.community.eze.RecordStreamSource;
 
 /** Assertions for {@code DeploymentEvent} instances */
 public class DeploymentAssert extends AbstractAssert<DeploymentAssert, DeploymentEvent> {

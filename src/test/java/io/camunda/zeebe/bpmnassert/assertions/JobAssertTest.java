@@ -1,12 +1,17 @@
 package io.camunda.zeebe.bpmnassert.assertions;
 
 import static io.camunda.zeebe.bpmnassert.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.bpmnassert.util.Utilities.*;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.activateSingleJob;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.deployProcess;
+import static io.camunda.zeebe.bpmnassert.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.data.Offset.offset;
 
-import io.camunda.zeebe.bpmnassert.extensions.ZeebeAssertions;
+import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
+import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
+import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
@@ -16,25 +21,22 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.camunda.community.eze.RecordStreamSource;
-import org.camunda.community.eze.ZeebeEngine;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@ZeebeAssertions
+@ZeebeProcessTest
 class JobAssertTest {
 
   public static final String WRONG_VALUE = "wrong value";
   public static final String ERROR_CODE = "error";
   public static final String ERROR_MSG = "error occurred";
 
-  private ZeebeEngine engine;
-
   // These tests are for testing assertions as well as examples for users
   @Nested
   class HappyPathTests {
     private ZeebeClient client;
     private RecordStreamSource recordStreamSource;
+    private InMemoryEngine engine;
 
     @Test
     void testHasElementId() {
@@ -220,6 +222,7 @@ class JobAssertTest {
   class UnhappyPathTests {
     private RecordStreamSource recordStreamSource;
     private ZeebeClient client;
+    private InMemoryEngine engine;
 
     @Test
     void testHasElementIdFailure() {

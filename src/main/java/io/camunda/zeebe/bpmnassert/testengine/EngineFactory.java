@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class EngineFactory {
 
-  public InMemoryEngine create() {
+  public static InMemoryEngine create() {
     final int partitionId = 1;
     final int partitionCount = 1;
     final int port = SocketUtil.getNextAddress().getPort();
@@ -70,18 +70,18 @@ public class EngineFactory {
         idleStateMonitor);
   }
 
-  private ControlledActorClock createActorClock() {
+  private static ControlledActorClock createActorClock() {
     return new ControlledActorClock();
   }
 
-  private ActorScheduler createAndStartActorScheduler(final ActorClock clock) {
+  private static ActorScheduler createAndStartActorScheduler(final ActorClock clock) {
     final ActorScheduler scheduler =
         ActorScheduler.newActorScheduler().setActorClock(clock).build();
     scheduler.start();
     return scheduler;
   }
 
-  private LogStream createLogStream(
+  private static LogStream createLogStream(
       final LogStorage logStorage, final ActorSchedulingService scheduler, final int partitionId) {
     final LogStreamBuilder builder =
         LogStream.builder()
@@ -108,12 +108,12 @@ public class EngineFactory {
     return theFuture.join();
   }
 
-  private ZeebeDb<ZbColumnFamilies> createDatabase() {
+  private static ZeebeDb<ZbColumnFamilies> createDatabase() {
     final InMemoryDbFactory<ZbColumnFamilies> factory = new InMemoryDbFactory<>();
     return factory.createDb();
   }
 
-  private StreamProcessor createStreamProcessor(
+  private static StreamProcessor createStreamProcessor(
       final LogStream logStream,
       final ZeebeDb<ZbColumnFamilies> database,
       final ActorSchedulingService scheduler,
@@ -129,7 +129,7 @@ public class EngineFactory {
         .streamProcessorFactory(
             context ->
                 EngineProcessors.createEngineProcessors(
-                    context.listener(idleStateMonitor),
+                    context,
                     partitionCount,
                     subscriptionCommandSenderFactory.createSender(),
                     new SinglePartitionDeploymentDistributor(),
