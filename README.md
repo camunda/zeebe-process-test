@@ -1,11 +1,19 @@
 # Camunda Cloud Testing project
 
-This project is in very early stages of development.
+**This project is in very early stages of development.**
+
+This project allows you to unit test your Camunda Cloud BPMN processes. It will spin up an in-memory
+engine and provide you with a set of assertions you can use to verify your process behaves as expected.
+
+## Prerequisites
+* Java 11 or higher (in the future Java 8 will be supported as well)
+* JUnit 5
 
 ## Getting Started
 
+### Dependency
 Add the following dependency to your project
-```
+```xml
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-bpmn-assert</artifactId>
@@ -16,30 +24,33 @@ Add the following dependency to your project
 
 **Note**: This snapshot version is bound to change in the future. Only use this when you want to play around with the project.
 
-## Hints
+### Annotation
+Annotate your test class with the `@ZeebeProcessTest` annotation. This annotation will do a couple of things:
 
-The following details are due to the project being in early stages of development:
+1. It will create and start the in memory engine. This will be a new engine for each test case.
+2. It will create a client which can be used to interact with the engine.
+3. It will (optionally) inject 3 fields in your test class:
+   1. `ZeebeEngine` - This is the engine that will run your process. It will provide some basic functionality
+       to help you write your tests, such as waiting for an idle state and increasing the time.
+   2. `ZeebeClient` - This is the client that allows you to communicate with the engine.
+       It allows you to send commands to the engine.
+   3. `RecordStreamSource` - This gives you access to all the records that are processed by the engine.
+      It is what the assertions use to verify expectations. This grants you the freedom to create your own assertions.
+4. It will take care of cleaning up the engine and client when the testcase is finished.
 
-* Works only in Java 11 or higher (in the future we aim to support Java 8 as well)
-* Works only in JUnit 5 (we might stick to that, but are happy to receive feedback)
-* Zeebe is an asynchronous engine, so use `Thread.sleep(100)` to wait for Zeebe to process the last request (in the
-  future we want to offer a method to wait for Zeebe to become idle)
-* The extension can inject the following fields into your test:
-
+Example:
 ```java
 @ZeebeProcessTest
 class DeploymentAssertTest {
-
-  private ZeebeClient client;
   private ZeebeEngine engine;
+  private ZeebeClient client;
   private RecordStreamSource recordStreamSource;
+}
 ```
 
-## Usage
+### Assertions
 
-For example tests the best place to look right now is the tests in `io.camunda.testing.assertions`
-
-There are multiple entrypoints for starting assertions.
+There are multiple entrypoints for starting assertions:
 
 #### Deployment Assertions
 ```java
@@ -99,3 +110,31 @@ PublishMessageResponse response = client
   .join();
 MessageAssert assertions = BpmnAssert.assertThat(response);
 ```
+
+### Waiting for idle state
+
+> **Warning!** Waiting for idle state is a new feature. When the engine is detected to be idle it
+> will wait 10ms before checking again. If it is still idle at that stage it is considered to be in
+> an idle state.
+>
+> **We do not know if the 10ms delay is sufficient. Using it could result in flaky tests!**
+>
+> Any feedback about the wait for idle state is highly appreciated! Please let us know if the delay should be higher, or configurable.
+
+The engine allows you to wait until it is idle before continuing with your test.
+The engine provides 2 methods for this:
+
+1. `engine.waitForIdleState()` - This method will cause your test to stop executing until the engine has reached the idle state.
+2. `engine.runOnIdleState(Runnable)` - This method will run your runnable once it has reached an idle state. Your test will continue executing without waiting.
+
+We have defined an idle state as a state in which the process engine makes no progress and is waiting for new commands or events to trigger.
+Once the engine has detected it has become idle it will wait for a delay (10ms) and check if it is still idle.
+If this is the case it is considered to be in idle state and continue your test / execute the runnables.
+
+## Examples
+For example tests the best place to look right now is the tests in `io.camunda.zeebe.bpmnassert.assertions`
+
+## Credits
+
+Special thanks to the creators of the [Embedded Zeebe Engine](https://github.com/camunda-community-hub/eze).
+This project was heavily inspired by their solution.
