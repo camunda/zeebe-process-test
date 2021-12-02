@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.camunda.zeebe.bpmnassert.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.bpmnassert.testengine.InMemoryEngine;
-import io.camunda.zeebe.bpmnassert.testengine.RecordStreamSource;
 import io.camunda.zeebe.bpmnassert.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;

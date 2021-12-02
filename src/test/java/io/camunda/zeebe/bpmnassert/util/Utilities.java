@@ -113,14 +113,8 @@ public class Utilities {
     return client.newActivateJobsCommand().jobType(jobType).maxJobsToActivate(1).send().join();
   }
 
-  // TODO find a better solution for this
   public static void waitForIdleState(final InMemoryEngine engine) {
-    try {
-      Thread.sleep(100);
-    } catch (final InterruptedException e) {
-      e.printStackTrace();
-      throw new IllegalStateException("Sleep was interrupted");
-    }
+    engine.waitForIdleState();
   }
 
   public static PublishMessageResponse sendMessage(
@@ -151,6 +145,12 @@ public class Utilities {
 
   public static void increaseTime(final InMemoryEngine engine, final Duration duration) {
     engine.increaseTime(duration);
+    try {
+      // we need to wait some physical time so that InMemoryEngine has a chance to fire the timers
+      Thread.sleep(50);
+    } catch (InterruptedException e) {
+      // do nothing
+    }
     waitForIdleState(engine);
   }
 
