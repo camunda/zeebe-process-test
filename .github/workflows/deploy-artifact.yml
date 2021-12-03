@@ -26,6 +26,7 @@ jobs:
         id: release
         uses: camunda-community-hub/community-action-maven-release@v1
         with:
+          run-tests: true
           release-version: ${{ github.event.release.tag_name }}
           release-profile: community-action-maven-release
           nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
