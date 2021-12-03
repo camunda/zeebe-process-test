@@ -14,9 +14,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-
-  - name: Checkout
-      uses: actions/checkout@v2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Cache
         uses: actions/cache@v2
@@ -32,7 +32,6 @@ jobs:
           distribution: temurin
           java-version: 11
 
-    steps:
       - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@v2.4.0
