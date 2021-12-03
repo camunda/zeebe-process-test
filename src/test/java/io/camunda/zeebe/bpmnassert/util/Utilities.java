@@ -174,4 +174,14 @@ public class Utilities {
 
     waitForIdleState(engine);
   }
+
+  public static void throwErrorCommand(
+      final InMemoryEngine engine,
+      final ZeebeClient client,
+      final long key,
+      final String errorCode,
+      final String errorMessage) {
+    client.newThrowErrorCommand(key).errorCode(errorCode).errorMessage(errorMessage).send().join();
+    waitForIdleState(engine);
+  }
 }
