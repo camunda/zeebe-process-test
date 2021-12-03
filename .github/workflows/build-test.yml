@@ -1,0 +1,43 @@
+name: Build and test
+on:
+  pull_request: { }
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up Java environment
+        uses: actions/setup-java@v2.4.0
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Build
+        id: build
+        run: mvn -B -U -Dsurefire.rerunFailingTestsCount=5 clean install
+
+      - name: Archive Test Results on Failure
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: test-results
+          path: target/surefire-reports/
+          retention-days: 7
+
+      - name: Publish Unit Test Results
+        id: publish
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: failure()
+        with:
+          files: target/surefire-reports/*.xml

@@ -1,61 +1,22 @@
-# If this workflow is triggered by a push to $default_branch, it
-#        deploys a SNAPSHOT
+# If this workflow is triggered by a push to main, it deploys a SNAPSHOT
+# If this workflow is triggered manually, it deploys a SNAPSHOT
 # If this workflow is triggered by publishing a Release, it
 #        deploys a RELEASE with the selected version
 #        updates the project version by incrementing the patch version
-#        commits the version update change to the repository's default branch ($default_branch).
-name: Build, test and deploy artifacts with Maven
+#        commits the version update change to the repository's default branch (main).
+name: Deploy artifacts with Maven
 on:
-  pull_request: { }
-  push: { }
-  workflow_dispatch: { }
+  push:
+    branches: [main]
   release:
-    types: [ published ]
+    types: [published]
+  workflow_dispatch: { }
 jobs:
   build:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Set up Java environment
-        uses: actions/setup-java@v2.4.0
-        with:
-          distribution: temurin
-          java-version: 11
-          gpg-private-key: ${{ secrets.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
-          gpg-passphrase: MAVEN_CENTRAL_GPG_PASSPHRASE
-
-      - name: Build
-        id: build
-        run: mvn -B -U -Dsurefire.rerunFailingTestsCount=5 clean install
-
-      - name: Archive Test Results on Failure
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: test-results
-          path: target/surefire-reports/
-          retention-days: 7
-
-      - name: Publish Unit Test Results
-        id: publish
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: failure()
-        with:
-          files: target/surefire-reports/*.xml
-
       - name: Import Secrets
-        if: github.event.release || github.event_name == 'workflow_dispatch'
         id: secrets
         uses: hashicorp/vault-action@v2.4.0
         with:
@@ -68,10 +29,10 @@ jobs:
             secret/data/common/github.com/actions/camunda-cloud/camunda-cloud-testing ARTIFACTS_PSW;
 
       - name: Deploy SNAPSHOT / Release
-        if: github.event.release || github.event_name == 'workflow_dispatch'
         id: release
         uses: camunda-community-hub/community-action-maven-release@v1
         with:
+          run-tests: true
           release-version: ${{ github.event.release.tag_name }}
           release-profile: community-action-maven-release
           nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
