@@ -1,17 +1,16 @@
 name: Deploy artifacts with Maven
 on:
-  pull_request: { }
-  push: { }
-  workflow_dispatch: { }
+  push:
+    branches: [main]
   release:
-    types: [ published ]
+    types: [published]
+  workflow_dispatch: { }
 jobs:
   build:
     runs-on: ubuntu-20.04
 
     steps:
       - name: Import Secrets
-        if: github.event.release || github.event_name == 'workflow_dispatch'
         id: secrets
         uses: hashicorp/vault-action@v2.4.0
         with:
@@ -24,7 +23,6 @@ jobs:
             secret/data/common/github.com/actions/camunda-cloud/camunda-cloud-testing ARTIFACTS_PSW;
 
       - name: Deploy SNAPSHOT / Release
-        if: github.event.release || github.event_name == 'workflow_dispatch'
         id: release
         uses: camunda-community-hub/community-action-maven-release@v1
         with:
