@@ -134,6 +134,9 @@ If this is the case it is considered to be in idle state and continue your test 
 ## Examples
 For example tests the best place to look right now is the tests in `io.camunda.zeebe.bpmnassert.assertions`
 
+## Contributing
+Please refer to the [Contributions Guide](/CONTRIBUTING.md).
+
 ## Credits
 
 Special thanks to the creators of the [Embedded Zeebe Engine](https://github.com/camunda-community-hub/eze).
