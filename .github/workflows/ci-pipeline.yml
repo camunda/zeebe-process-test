@@ -1,10 +1,9 @@
-# If this workflow is triggered by a push to $default_branch, it
-#        deploys a SNAPSHOT
+# If this workflow is triggered by a push to main, it deploys a SNAPSHOT
 # If this workflow is triggered by publishing a Release, it
 #        deploys a RELEASE with the selected version
 #        updates the project version by incrementing the patch version
-#        commits the version update change to the repository's default branch ($default_branch).
-name: Build, test and deploy artifacts with Maven
+#        commits the version update change to the repository's default branch (main).
+name: Build and test
 on:
   pull_request: { }
   push: { }
@@ -53,41 +52,3 @@ jobs:
         if: failure()
         with:
           files: target/surefire-reports/*.xml
-
-      - name: Import Secrets
-        if: github.event.release || github.event_name == 'workflow_dispatch'
-        id: secrets
-        uses: hashicorp/vault-action@v2.4.0
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          secrets: |
-            secret/data/common/github.com/actions/camunda-cloud/camunda-cloud-testing ARTIFACTS_USR;
-            secret/data/common/github.com/actions/camunda-cloud/camunda-cloud-testing ARTIFACTS_PSW;
-
-      - name: Deploy SNAPSHOT / Release
-        if: github.event.release || github.event_name == 'workflow_dispatch'
-        id: release
-        uses: camunda-community-hub/community-action-maven-release@v1
-        with:
-          release-version: ${{ github.event.release.tag_name }}
-          release-profile: community-action-maven-release
-          nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
-          nexus-psw: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
-          maven-usr: dummy
-          maven-psw: dummy
-          maven-gpg-passphrase: dummy
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Attach artifacts to GitHub Release (Release only)
-        if: github.event.release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ steps.release.outputs.artifacts_archive_path }}
-          asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
-          asset_content_type: application/zip
