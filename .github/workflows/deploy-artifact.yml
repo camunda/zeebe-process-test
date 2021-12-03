@@ -1,3 +1,9 @@
+# If this workflow is triggered by a push to main, it deploys a SNAPSHOT
+# If this workflow is triggered manually, it deploys a SNAPSHOT
+# If this workflow is triggered by publishing a Release, it
+#        deploys a RELEASE with the selected version
+#        updates the project version by incrementing the patch version
+#        commits the version update change to the repository's default branch (main).
 name: Deploy artifacts with Maven
 on:
   push:
