@@ -6,10 +6,6 @@
 name: Build and test
 on:
   pull_request: { }
-  push: { }
-  workflow_dispatch: { }
-  release:
-    types: [ published ]
 jobs:
   build:
     runs-on: ubuntu-20.04
