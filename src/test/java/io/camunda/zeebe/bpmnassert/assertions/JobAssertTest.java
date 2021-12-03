@@ -123,12 +123,7 @@ class JobAssertTest {
           activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MSG)
-          .send()
-          .join();
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MSG);
 
       // then
 
@@ -161,12 +156,7 @@ class JobAssertTest {
           activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MSG)
-          .send()
-          .join();
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MSG);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -341,12 +331,7 @@ class JobAssertTest {
       final ActivateJobsResponse jobActivationResponse =
           activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MSG)
-          .send()
-          .join();
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MSG);
 
       // then
       assertThatThrownBy(() -> assertThat(actual).hasNoIncidents())

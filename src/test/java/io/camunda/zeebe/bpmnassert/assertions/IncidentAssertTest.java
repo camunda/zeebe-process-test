@@ -44,12 +44,7 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -68,12 +63,7 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -93,12 +83,8 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -122,12 +108,8 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -155,7 +137,7 @@ class IncidentAssertTest {
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       client.newCompleteCommand(job.getKey()).send().join();
 
-      Utilities.waitForIdleState(engine);
+      engine.waitForIdleState();
 
       final IncidentAssert incidentAssert = assertThat(instanceEvent).extractLatestIncident();
 
@@ -174,12 +156,7 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(job.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+      Utilities.throwErrorCommand(engine, client, job.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(job).extractLatestIncident();
 
@@ -199,12 +176,8 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -228,12 +201,8 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -260,12 +229,8 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -287,12 +252,8 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -315,12 +276,8 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -351,7 +308,7 @@ class IncidentAssertTest {
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       client.newCompleteCommand(job.getKey()).send().join();
 
-      Utilities.waitForIdleState(engine);
+      engine.waitForIdleState();
 
       final IncidentAssert incidentAssert = assertThat(instanceEvent).extractLatestIncident();
 
@@ -374,12 +331,7 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(job.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+      Utilities.throwErrorCommand(engine, client, job.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(job).extractLatestIncident();
 
@@ -402,12 +354,8 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
@@ -428,19 +376,15 @@ class IncidentAssertTest {
           Utilities.activateSingleJob(client, ProcessPackLoopingServiceTask.JOB_TYPE);
 
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      client
-          .newThrowErrorCommand(actual.getKey())
-          .errorCode(ERROR_CODE)
-          .errorMessage(ERROR_MESSAGE)
-          .send()
-          .join();
+
+      Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
       final IncidentAssert incidentAssert = assertThat(actual).extractLatestIncident();
 
       final long incidentKey = incidentAssert.getIncidentKey();
       client.newResolveIncidentCommand(incidentKey).send().join();
 
-      Utilities.waitForIdleState(engine);
+      engine.waitForIdleState();
 
       // then
       assertThatThrownBy(incidentAssert::isUnresolved)
