@@ -1,4 +1,4 @@
-# Camunda Cloud Testing project
+# Zeebe Process Test
 
 **This project is in very early stages of development.**
 
@@ -16,7 +16,7 @@ Add the following dependency to your project
 ```xml
 <dependency>
   <groupId>io.camunda</groupId>
-  <artifactId>zeebe-bpmn-assert</artifactId>
+  <artifactId>zeebe-process-test</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <scope>test</scope>
 </dependency>
@@ -132,7 +132,7 @@ Once the engine has detected it has become idle it will wait for a delay (10ms) 
 If this is the case it is considered to be in idle state and continue your test / execute the runnables.
 
 ## Examples
-For example tests the best place to look right now is the tests in `io.camunda.zeebe.bpmnassert.assertions`
+For example tests the best place to look right now is the tests in `io.camunda.zeebe.process.test`
 
 ## Contributing
 Please refer to the [Contributions Guide](/CONTRIBUTING.md).
