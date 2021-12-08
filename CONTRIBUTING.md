@@ -141,4 +141,4 @@ This project adheres to the [Camunda Code of Conduct](https://camunda.com/events
 By participating, you are expected to uphold this code. Please [report](https://camunda.com/events/code-conduct/reporting-violations/)
 unacceptable behavior as soon as possible.
 
-[issues]: https://github.com/camunda-cloud/camunda-cloud-testing/issues
+[issues]: https://github.com/camunda-cloud/zeebe-process-test/issues

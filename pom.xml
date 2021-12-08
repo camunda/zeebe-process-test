@@ -13,13 +13,13 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Zeebe BPMN Assert</name>
+  <name>Zeebe Process Test</name>
 
   <scm>
-    <connection>scm:git:git@github.com:camunda-cloud/camunda-cloud-testing.git</connection>
-    <developerConnection>scm:git:git@github.com:camunda-cloud/camunda-cloud-testing.git</developerConnection>
+    <connection>scm:git:git@github.com:camunda-cloud/zeebe-process-test.git</connection>
+    <developerConnection>scm:git:git@github.com:camunda-cloud/zeebe-process-test.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://github.com/camunda-cloud/camunda-cloud-testing</url>
+    <url>https://github.com/camunda-cloud/zeebe-process-test</url>
   </scm>
 
   <properties>
