@@ -9,7 +9,7 @@
   </parent>
 
   <groupId>io.camunda</groupId>
-  <artifactId>zeebe-bpmn-assert</artifactId>
+  <artifactId>zeebe-process-test</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
