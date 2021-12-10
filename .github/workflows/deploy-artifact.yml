@@ -41,8 +41,8 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
           secrets: |
-            secret/data/common/github.com/actions/camunda-cloud/camunda-cloud-testing ARTIFACTS_USR;
-            secret/data/common/github.com/actions/camunda-cloud/camunda-cloud-testing ARTIFACTS_PSW;
+            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_USR;
+            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_PSW;
 
       - name: Deploy SNAPSHOT / Release
         id: release
