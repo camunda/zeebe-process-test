@@ -49,7 +49,7 @@ jobs:
 
       - name: Deploy SNAPSHOT / Release
         id: release
-        uses: camunda-community-hub/community-action-maven-release@v1
+        uses: camunda-community-hub/community-action-maven-release@v1.0.12
         with:
           run-tests: true
           release-version: ${{ github.event.release.tag_name }}
@@ -59,6 +59,7 @@ jobs:
           maven-usr: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_USR }}
           maven-psw: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
           maven-gpg-passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+          maven-url: s01.oss.sonatype.org
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Attach artifacts to GitHub Release (Release only)
