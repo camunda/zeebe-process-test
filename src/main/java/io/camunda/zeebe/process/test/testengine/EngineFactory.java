@@ -1,6 +1,5 @@
 package io.camunda.zeebe.process.test.testengine;
 
-import io.camunda.zeebe.process.test.testengine.db.InMemoryDbFactory;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.engine.processing.EngineProcessors;
 import io.camunda.zeebe.engine.processing.streamprocessor.StreamProcessor;
@@ -8,6 +7,7 @@ import io.camunda.zeebe.engine.state.ZbColumnFamilies;
 import io.camunda.zeebe.engine.state.appliers.EventAppliers;
 import io.camunda.zeebe.logstreams.log.*;
 import io.camunda.zeebe.logstreams.storage.LogStorage;
+import io.camunda.zeebe.process.test.testengine.db.InMemoryDbFactory;
 import io.camunda.zeebe.test.util.socket.SocketUtil;
 import io.camunda.zeebe.util.sched.Actor;
 import io.camunda.zeebe.util.sched.ActorScheduler;

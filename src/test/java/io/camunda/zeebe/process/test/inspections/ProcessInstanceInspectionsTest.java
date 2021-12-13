@@ -1,16 +1,13 @@
 package io.camunda.zeebe.process.test.inspections;
 
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.process.test.util.Utilities.startProcessInstance;
-
-import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
-import io.camunda.zeebe.process.test.util.Utilities.ProcessPackCallActivity;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
+import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
+import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.process.test.util.Utilities;
+import io.camunda.zeebe.process.test.util.Utilities.ProcessPackCallActivity;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

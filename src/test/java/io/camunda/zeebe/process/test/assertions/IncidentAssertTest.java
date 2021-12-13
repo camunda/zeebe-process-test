@@ -1,16 +1,15 @@
 package io.camunda.zeebe.process.test.assertions;
 
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
-import io.camunda.zeebe.process.test.util.Utilities;
-import io.camunda.zeebe.process.test.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
+import io.camunda.zeebe.process.test.util.Utilities;
+import io.camunda.zeebe.process.test.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
 import java.util.Collections;
 import java.util.Map;
@@ -139,7 +138,8 @@ class IncidentAssertTest {
 
       engine.waitForIdleState();
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
 
       // then
       incidentAssert.occurredOnElement(ProcessPackLoopingServiceTask.GATEWAY_ELEMENT_ID);
@@ -310,7 +310,8 @@ class IncidentAssertTest {
 
       engine.waitForIdleState();
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
 
       // then
       assertThatThrownBy(() -> incidentAssert.occurredOnElement(WRONG_VALUE))

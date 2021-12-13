@@ -1,17 +1,13 @@
 package io.camunda.zeebe.process.test.assertions;
 
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.process.test.util.Utilities.sendMessage;
-import static io.camunda.zeebe.process.test.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.process.test.util.Utilities;
 import io.camunda.zeebe.process.test.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.process.test.util.Utilities.ProcessPackMessageEvent;
@@ -53,7 +49,8 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       BpmnAssert.assertThat(instanceEvent).isStarted();
@@ -68,7 +65,8 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       BpmnAssert.assertThat(instanceEvent).isActive();
@@ -81,7 +79,8 @@ class ProcessInstanceAssertTest {
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
@@ -99,7 +98,8 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       BpmnAssert.assertThat(instanceEvent).isNotCompleted();
@@ -112,7 +112,8 @@ class ProcessInstanceAssertTest {
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
@@ -131,7 +132,8 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       BpmnAssert.assertThat(instanceEvent).isNotTerminated();
@@ -144,13 +146,15 @@ class ProcessInstanceAssertTest {
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
       // then
-      BpmnAssert.assertThat(instanceEvent).hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID);
+      BpmnAssert.assertThat(instanceEvent)
+          .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID);
     }
 
     @Test
@@ -162,10 +166,12 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
-      BpmnAssert.assertThat(instanceEvent).hasNotPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID);
+      BpmnAssert.assertThat(instanceEvent)
+          .hasNotPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID);
     }
 
     @Test
@@ -176,7 +182,8 @@ class ProcessInstanceAssertTest {
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, totalLoops);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       for (int i = 0; i < 5; i++) {
@@ -195,7 +202,8 @@ class ProcessInstanceAssertTest {
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
@@ -218,7 +226,8 @@ class ProcessInstanceAssertTest {
           Utilities.startProcessInstance(engine, client, ProcessPackMultipleTasks.PROCESS_ID);
 
       // then
-      BpmnAssert.assertThat(instanceEvent).isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1);
+      BpmnAssert.assertThat(instanceEvent)
+          .isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
 
     @Test
@@ -249,7 +258,8 @@ class ProcessInstanceAssertTest {
       Utilities.completeTask(engine, client, ProcessPackMultipleTasks.ELEMENT_ID_1);
 
       // then
-      BpmnAssert.assertThat(instanceEvent).isNotWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1);
+      BpmnAssert.assertThat(instanceEvent)
+          .isNotWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
 
     @Test
@@ -311,10 +321,12 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // then
-      BpmnAssert.assertThat(instanceEvent).isWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
+      BpmnAssert.assertThat(instanceEvent)
+          .isWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
@@ -326,13 +338,15 @@ class ProcessInstanceAssertTest {
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
       Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
 
       // then
-      BpmnAssert.assertThat(instanceEvent).isNotWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
+      BpmnAssert.assertThat(instanceEvent)
+          .isNotWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
@@ -344,7 +358,8 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       BpmnAssert.assertThat(instanceEvent).hasVariable(ProcessPackLoopingServiceTask.TOTAL_LOOPS);
@@ -377,13 +392,15 @@ class ProcessInstanceAssertTest {
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
       Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
 
       // then
-      BpmnAssert.assertThat(instanceEvent).hasCorrelatedMessageByName(ProcessPackMessageEvent.MESSAGE_NAME, 1);
+      BpmnAssert.assertThat(instanceEvent)
+          .hasCorrelatedMessageByName(ProcessPackMessageEvent.MESSAGE_NAME, 1);
     }
 
     @Test
@@ -395,7 +412,8 @@ class ProcessInstanceAssertTest {
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
       Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
@@ -415,7 +433,8 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because ProcessPackLoopingServiceTask.TOTAL_LOOPS is a string, but needs to be an int */
       Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
@@ -447,11 +466,13 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because ProcessPackLoopingServiceTask.TOTAL_LOOPS is a string, but needs to be an int */
       Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
 
       // then
 
@@ -659,7 +680,8 @@ class ProcessInstanceAssertTest {
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
@@ -737,7 +759,8 @@ class ProcessInstanceAssertTest {
       final String nonExistingTaskId = "non-existing-task";
 
       // then
-      assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).isWaitingAtElement(nonExistingTaskId))
+      assertThatThrownBy(
+              () -> BpmnAssert.assertThat(instanceEvent).isWaitingAtElement(nonExistingTaskId))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("to contain", nonExistingTaskId);
     }
@@ -877,7 +900,8 @@ class ProcessInstanceAssertTest {
       final Map<String, Object> variables =
           Collections.singletonMap("correlationKey", correlationKey);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
       Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, correlationKey);
@@ -901,7 +925,8 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(
@@ -942,11 +967,14 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(
-              () -> BpmnAssert.assertThat(instanceEvent).hasVariableWithValue(variable, expectedValue))
+              () ->
+                  BpmnAssert.assertThat(instanceEvent)
+                      .hasVariableWithValue(variable, expectedValue))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "The variable '%s' does not have the expected value. The value passed in"
@@ -965,7 +993,8 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(
@@ -988,12 +1017,14 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // then
       assertThatThrownBy(
               () ->
-                  BpmnAssert.assertThat(instanceEvent).hasCorrelatedMessageByCorrelationKey(correlationKey, 1))
+                  BpmnAssert.assertThat(instanceEvent)
+                      .hasCorrelatedMessageByCorrelationKey(correlationKey, 1))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected message with correlation key '%s' to be correlated %d "
@@ -1026,7 +1057,8 @@ class ProcessInstanceAssertTest {
 
       // when
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
       /* will raise an incident in the gateway because ProcessPackLoopingServiceTask.TOTAL_LOOPS is a string, but needs to be an int */
       Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 

@@ -1,15 +1,12 @@
 package io.camunda.zeebe.process.test.assertions;
 
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.process.test.util.Utilities.sendMessage;
-import static io.camunda.zeebe.process.test.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
+import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.process.test.util.Utilities;
 import io.camunda.zeebe.process.test.util.Utilities.ProcessPackMessageEvent;
 import io.camunda.zeebe.process.test.util.Utilities.ProcessPackMessageStartEvent;
@@ -43,7 +40,8 @@ class MessageAssertTest {
 
       // when
       final PublishMessageResponse response =
-          Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          Utilities.sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       BpmnAssert.assertThat(response).hasBeenCorrelated();
@@ -73,7 +71,8 @@ class MessageAssertTest {
 
       // when
       final PublishMessageResponse response =
-          Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          Utilities.sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       BpmnAssert.assertThat(response).hasNotBeenCorrelated();
@@ -116,7 +115,8 @@ class MessageAssertTest {
 
       // when
       final PublishMessageResponse response =
-          Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          Utilities.sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       BpmnAssert.assertThat(response).hasNotExpired();
@@ -133,7 +133,8 @@ class MessageAssertTest {
 
       // when
       final PublishMessageResponse response =
-          Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          Utilities.sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       BpmnAssert.assertThat(response).extractingProcessInstance().isCompleted();
@@ -170,7 +171,8 @@ class MessageAssertTest {
 
       // when
       final PublishMessageResponse response =
-          Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          Utilities.sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> BpmnAssert.assertThat(response).hasBeenCorrelated())
@@ -204,11 +206,13 @@ class MessageAssertTest {
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
       final ProcessInstanceEvent instanceEvent =
-          Utilities.startProcessInstance(engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMessageEvent.PROCESS_ID, variables);
 
       // when
       final PublishMessageResponse response =
-          Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          Utilities.sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> BpmnAssert.assertThat(response).hasNotBeenCorrelated())
@@ -245,7 +249,8 @@ class MessageAssertTest {
 
       // when
       final PublishMessageResponse response =
-          Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+          Utilities.sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> BpmnAssert.assertThat(response).hasExpired())
@@ -282,7 +287,8 @@ class MessageAssertTest {
 
       // when
       final PublishMessageResponse response =
-          Utilities.sendMessage(engine, client, ProcessPackMessageEvent.MESSAGE_NAME, WRONG_CORRELATION_KEY);
+          Utilities.sendMessage(
+              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, WRONG_CORRELATION_KEY);
 
       // then
       assertThatThrownBy(() -> BpmnAssert.assertThat(response).extractingProcessInstance())

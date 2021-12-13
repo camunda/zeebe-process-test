@@ -2,9 +2,9 @@ package io.camunda.zeebe.process.test.assertions;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.process.test.testengine.RecordStreamSource;
-import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.MessageIntent;

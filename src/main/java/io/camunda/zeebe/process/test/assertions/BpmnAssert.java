@@ -1,11 +1,11 @@
 package io.camunda.zeebe.process.test.assertions;
 
-import io.camunda.zeebe.process.test.RecordStreamSourceStore;
-import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
+import io.camunda.zeebe.process.test.RecordStreamSourceStore;
+import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 
 public abstract class BpmnAssert {
 

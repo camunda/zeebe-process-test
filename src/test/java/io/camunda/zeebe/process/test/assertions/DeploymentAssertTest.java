@@ -1,14 +1,13 @@
 package io.camunda.zeebe.process.test.assertions;
 
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.util.Utilities;
 import io.camunda.zeebe.process.test.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.process.test.util.Utilities.ProcessPackMultipleTasks;
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -99,7 +98,9 @@ class DeploymentAssertTest {
 
       // then
       assertThatThrownBy(
-              () -> BpmnAssert.assertThat(deploymentEvent).containsProcessesByBpmnProcessId(WRONG_VALUE))
+              () ->
+                  BpmnAssert.assertThat(deploymentEvent)
+                      .containsProcessesByBpmnProcessId(WRONG_VALUE))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(WRONG_VALUE, ProcessPackLoopingServiceTask.PROCESS_ID);
     }
@@ -112,7 +113,9 @@ class DeploymentAssertTest {
 
       // then
       assertThatThrownBy(
-              () -> BpmnAssert.assertThat(deploymentEvent).containsProcessesByResourceName(WRONG_VALUE))
+              () ->
+                  BpmnAssert.assertThat(deploymentEvent)
+                      .containsProcessesByResourceName(WRONG_VALUE))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(WRONG_VALUE, ProcessPackLoopingServiceTask.PROCESS_ID);
     }
@@ -125,7 +128,9 @@ class DeploymentAssertTest {
 
       // then
       assertThatThrownBy(
-              () -> BpmnAssert.assertThat(deploymentEvent).extractingProcessByBpmnProcessId(WRONG_VALUE))
+              () ->
+                  BpmnAssert.assertThat(deploymentEvent)
+                      .extractingProcessByBpmnProcessId(WRONG_VALUE))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected to find one process for BPMN process id 'wrong value' but found 0: []");
@@ -139,7 +144,9 @@ class DeploymentAssertTest {
 
       // then
       assertThatThrownBy(
-              () -> BpmnAssert.assertThat(deploymentEvent).extractingProcessByResourceName(WRONG_VALUE))
+              () ->
+                  BpmnAssert.assertThat(deploymentEvent)
+                      .extractingProcessByResourceName(WRONG_VALUE))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected to find one process for resource name 'wrong value' but found 0: []");

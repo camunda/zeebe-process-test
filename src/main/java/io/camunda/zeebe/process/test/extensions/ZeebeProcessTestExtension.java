@@ -1,10 +1,10 @@
 package io.camunda.zeebe.process.test.extensions;
 
+import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.RecordStreamSourceStore;
 import io.camunda.zeebe.process.test.testengine.EngineFactory;
 import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.process.test.testengine.RecordStreamSource;
-import io.camunda.zeebe.client.ZeebeClient;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;

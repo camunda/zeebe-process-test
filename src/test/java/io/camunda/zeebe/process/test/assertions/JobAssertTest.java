@@ -1,17 +1,15 @@
 package io.camunda.zeebe.process.test.assertions;
 
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.process.test.util.Utilities.startProcessInstance;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.data.Offset.offset;
 
-import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
-import io.camunda.zeebe.process.test.util.Utilities;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
+import io.camunda.zeebe.process.test.util.Utilities;
 import io.camunda.zeebe.process.test.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
 import java.time.Duration;
@@ -41,7 +39,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -58,7 +57,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final long expectedDeadline = System.currentTimeMillis() + 100;
@@ -82,7 +82,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -99,7 +100,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -172,7 +174,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -192,7 +195,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -217,7 +221,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -239,7 +244,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final long expectedDeadline = System.currentTimeMillis() + 100;
@@ -265,7 +271,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =
@@ -287,7 +294,8 @@ class JobAssertTest {
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
-      Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+      Utilities.startProcessInstance(
+          engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
       final ActivateJobsResponse jobActivationResponse =

@@ -1,15 +1,13 @@
 package io.camunda.zeebe.process.test.inspections;
 
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-
-import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
-import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
-import io.camunda.zeebe.process.test.util.Utilities.ProcessPackTimerStartEvent;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
+import io.camunda.zeebe.process.test.extensions.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
+import io.camunda.zeebe.process.test.testengine.InMemoryEngine;
 import io.camunda.zeebe.process.test.util.Utilities;
+import io.camunda.zeebe.process.test.util.Utilities.ProcessPackTimerStartEvent;
 import java.time.Duration;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;
@@ -71,7 +69,9 @@ class ProcessEventInspectionsTest {
     // when
     Utilities.increaseTime(engine, Duration.ofDays(1));
     final Optional<InspectedProcessInstance> processInstance =
-        InspectionUtility.findProcessEvents().triggeredByTimer(WRONG_TIMER_ID).findFirstProcessInstance();
+        InspectionUtility.findProcessEvents()
+            .triggeredByTimer(WRONG_TIMER_ID)
+            .findFirstProcessInstance();
 
     // then
     Assertions.assertThat(processInstance).isEmpty();
