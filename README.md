@@ -139,5 +139,6 @@ Please refer to the [Contributions Guide](/CONTRIBUTING.md).
 
 ## Credits
 
-Special thanks to the creators of the [Embedded Zeebe Engine](https://github.com/camunda-community-hub/eze).
-This project was heavily inspired by their solution.
+Special thanks to the creators of the [Embedded Zeebe Engine](https://github.com/camunda-community-hub/eze)
+and [Camunda BPMN Assert](https://github.com/camunda/camunda-bpm-assert).
+This project was heavily inspired by these solutions.
