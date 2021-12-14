@@ -1,3 +1,4 @@
+[![Maven Central](https://img.shields.io/maven-central/v/io.camunda/zeebe-process-test)](https://search.maven.org/search?q=g:io.camunda%20a:zeebe-process-test)
 # Zeebe Process Test
 
 **This project is in very early stages of development.**
@@ -17,7 +18,7 @@ Add the following dependency to your project
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-process-test</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>X.Y.Z</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -139,5 +140,6 @@ Please refer to the [Contributions Guide](/CONTRIBUTING.md).
 
 ## Credits
 
-Special thanks to the creators of the [Embedded Zeebe Engine](https://github.com/camunda-community-hub/eze).
-This project was heavily inspired by their solution.
+Special thanks to the creators of the [Embedded Zeebe Engine](https://github.com/camunda-community-hub/eze)
+and [Camunda BPMN Assert](https://github.com/camunda/camunda-bpm-assert).
+This project was heavily inspired by these solutions.
