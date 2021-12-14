@@ -133,7 +133,7 @@ Once the engine has detected it has become idle it will wait for a delay (10ms) 
 If this is the case it is considered to be in idle state and continue your test / execute the runnables.
 
 ## Examples
-For example tests the best place to look right now is the tests in `io.camunda.zeebe.process.test`
+For example tests the best place to look right now is the tests in `io.camunda.zeebe.process.test.assertions`
 
 ## Contributing
 Please refer to the [Contributions Guide](/CONTRIBUTING.md).
