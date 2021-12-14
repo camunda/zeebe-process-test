@@ -17,7 +17,7 @@ Add the following dependency to your project
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-process-test</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>X.Y.Z</version>
   <scope>test</scope>
 </dependency>
 ```
