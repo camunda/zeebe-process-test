@@ -31,7 +31,7 @@ Annotate your test class with the `@ZeebeProcessTest` annotation. This annotatio
 1. It will create and start the in memory engine. This will be a new engine for each test case.
 2. It will create a client which can be used to interact with the engine.
 3. It will (optionally) inject 3 fields in your test class:
-   1. `ZeebeEngine` - This is the engine that will run your process. It will provide some basic functionality
+   1. `InMemoryEngine` - This is the engine that will run your process. It will provide some basic functionality
        to help you write your tests, such as waiting for an idle state and increasing the time.
    2. `ZeebeClient` - This is the client that allows you to communicate with the engine.
        It allows you to send commands to the engine.
@@ -43,7 +43,7 @@ Example:
 ```java
 @ZeebeProcessTest
 class DeploymentAssertTest {
-  private ZeebeEngine engine;
+  private InMemoryEngine engine;
   private ZeebeClient client;
   private RecordStreamSource recordStreamSource;
 }
