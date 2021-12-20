@@ -33,8 +33,8 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
 
   private final LogStreamReader logStreamReader;
   private final int partitionId;
-  private List<Record<?>> records = new ArrayList<>();
-  private long lastPosition = -1L;
+  private final List<Record<?>> records = new ArrayList<>();
+  private volatile long lastPosition = -1L;
 
   public RecordStreamSourceImpl(final LogStreamReader logStreamReader, final int partitionId) {
     this.logStreamReader = logStreamReader;
@@ -137,17 +137,19 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
   }
 
   private void updateWithNewRecords() {
-    if (lastPosition < 0) {
-      logStreamReader.seekToFirstEvent();
-    } else {
-      logStreamReader.seekToNextEvent(lastPosition);
-    }
+    synchronized (logStreamReader) {
+      if (lastPosition < 0) {
+        logStreamReader.seekToFirstEvent();
+      } else {
+        logStreamReader.seekToNextEvent(lastPosition);
+      }
 
-    while (logStreamReader.hasNext()) {
-      final LoggedEvent event = logStreamReader.next();
-      final CopiedRecord<UnifiedRecordValue> record = mapToRecord(event);
-      records.add(record);
-      lastPosition = event.getPosition();
+      while (logStreamReader.hasNext()) {
+        final LoggedEvent event = logStreamReader.next();
+        final CopiedRecord<UnifiedRecordValue> record = mapToRecord(event);
+        records.add(record);
+        lastPosition = event.getPosition();
+      }
     }
   }
 

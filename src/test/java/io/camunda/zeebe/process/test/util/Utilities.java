@@ -62,8 +62,13 @@ public class Utilities {
     public static final String RESOURCE_NAME = "call-activity.bpmn";
     public static final String PROCESS_ID = "call-activity";
     public static final String CALL_ACTIVITY_ID = "callactivity";
-    public static final String CALLED_RESOURCE_NAME = "start-end.bpmn";
-    public static final String CALLED_PROCESS_ID = "start-end";
+    public static final String CALLED_RESOURCE_NAME = ProcessPackStartEndEvent.RESOURCE_NAME;
+    public static final String CALLED_PROCESS_ID = ProcessPackStartEndEvent.PROCESS_ID;
+  }
+
+  public static final class ProcessPackStartEndEvent {
+    public static final String RESOURCE_NAME = "start-end.bpmn";
+    public static final String PROCESS_ID = "start-end";
   }
 
   public static DeploymentEvent deployProcess(final ZeebeClient client, final String process) {
