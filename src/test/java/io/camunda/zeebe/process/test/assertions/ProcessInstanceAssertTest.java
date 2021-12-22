@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 @ZeebeProcessTest
 class ProcessInstanceAssertTest {
+  private static final String LINE_SEPARATOR = System.lineSeparator();
   private static final Map<String, Object> TYPED_TEST_VARIABLES = new HashMap<>();
 
   static {
@@ -696,8 +697,10 @@ class ProcessInstanceAssertTest {
                           ProcessPackLoopingServiceTask.START_EVENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
-              "[Ordered elements] \n"
-                  + "expected: [\"endevent\", \"servicetask\", \"startevent\"]\n"
+              "[Ordered elements] "
+                  + LINE_SEPARATOR
+                  + "expected: [\"endevent\", \"servicetask\", \"startevent\"]"
+                  + LINE_SEPARATOR
                   + " but was: [\"startevent\", \"servicetask\", \"endevent\"]");
     }
 
