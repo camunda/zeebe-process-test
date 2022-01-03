@@ -23,7 +23,7 @@
   </scm>
 
   <properties>
-    <dependency.assertj.version>3.21.0</dependency.assertj.version>
+    <dependency.assertj.version>3.22.0</dependency.assertj.version>
     <dependency.awaitility.version>4.1.1</dependency.awaitility.version>
     <dependency.errorprone.version>2.10.0</dependency.errorprone.version>
     <dependency.eze.version>0.6.0</dependency.eze.version>
