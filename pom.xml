@@ -42,7 +42,7 @@
     <dependency.slf4j.version>1.7.32</dependency.slf4j.version>
     <dependency.snakeyaml.version>1.30</dependency.snakeyaml.version>
     <dependency.spring.version>5.3.14</dependency.spring.version>
-    <dependency.zeebe.version>1.3.0-alpha3</dependency.zeebe.version>
+    <dependency.zeebe.version>1.3.0</dependency.zeebe.version>
 
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
