@@ -27,7 +27,14 @@ public class ZeebeProcessTestExtension
     final InMemoryEngine engine = EngineFactory.create();
     final ZeebeClient client = engine.createClient();
     final RecordStreamSource recordStream = engine.getRecordStream();
-    injectFields(extensionContext, engine, client, recordStream);
+
+    try {
+      injectFields(extensionContext, engine, client, recordStream);
+    } catch (final Exception ex) {
+      client.close();
+      engine.stop();
+      throw ex;
+    }
 
     RecordStreamSourceStore.init(recordStream);
     getStore(extensionContext).put(KEY_ZEEBE_CLIENT, client);

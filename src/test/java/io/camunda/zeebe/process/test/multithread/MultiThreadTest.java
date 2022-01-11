@@ -19,6 +19,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @ZeebeProcessTest
@@ -27,11 +29,20 @@ public class MultiThreadTest {
   private InMemoryEngine engine;
   private ZeebeClient client;
   private RecordStreamSource recordStreamSource;
+  private ExecutorService executorService;
+
+  @BeforeEach
+  public void beforeEach() {
+    executorService = Executors.newFixedThreadPool(5);
+  }
+
+  @AfterEach
+  public void afterEach() {
+    executorService.shutdown();
+  }
 
   @Test
   public void testMultiThreadingThrowsNoExceptions() throws InterruptedException {
-    final ExecutorService executorService = Executors.newFixedThreadPool(5);
-
     final List<Future<Boolean>> futures =
         executorService.invokeAll(
             List.of(
