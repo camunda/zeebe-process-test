@@ -91,7 +91,7 @@ jobs:
 
       - name: Publish Unit Test Results
         id: publish
-        uses: EnricoMi/publish-unit-test-result-action@v1.25
+        uses: EnricoMi/publish-unit-test-result-action@v1.26
         if: failure()
         with:
           files: target/surefire-reports/*.xml
