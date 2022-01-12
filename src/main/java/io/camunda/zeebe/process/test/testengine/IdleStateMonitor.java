@@ -52,29 +52,27 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
   }
 
   private void checkIdleState() {
-    if (isInIdleState()) {
-      scheduleNotification();
-    } else {
-      cancelNotification();
-    }
-  }
-
-  private void scheduleNotification() {
     synchronized (idleStateNotifier) {
-      idleStateNotifier = createIdleStateNotifier();
-      try {
-        TIMER.schedule(idleStateNotifier, GRACE_PERIOD);
-      } catch (IllegalStateException e) {
-        // thrown - among others - if task was cancelled before it could be scheduled
-        // do nothing in this case
+      if (isInIdleState()) {
+        scheduleNotification();
+      } else {
+        cancelNotification();
       }
     }
   }
 
-  private void cancelNotification() {
-    synchronized (idleStateNotifier) {
-      idleStateNotifier.cancel();
+  private void scheduleNotification() {
+    idleStateNotifier = createIdleStateNotifier();
+    try {
+      TIMER.schedule(idleStateNotifier, GRACE_PERIOD);
+    } catch (IllegalStateException e) {
+      // thrown - among others - if task was cancelled before it could be scheduled
+      // do nothing in this case
     }
+  }
+
+  private void cancelNotification() {
+    idleStateNotifier.cancel();
   }
 
   private boolean isInIdleState() {
