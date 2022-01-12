@@ -80,3 +80,18 @@ jobs:
           asset_path: ${{ steps.release.outputs.artifacts_archive_path }}
           asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
           asset_content_type: application/zip
+
+      - name: Archive Test Results on Failure
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: test-results
+          path: target/surefire-reports/
+          retention-days: 7
+
+      - name: Publish Unit Test Results
+        id: publish
+        uses: EnricoMi/publish-unit-test-result-action@v1.25
+        if: failure()
+        with:
+          files: target/surefire-reports/*.xml
