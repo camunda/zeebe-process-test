@@ -152,7 +152,7 @@ public class Utilities {
     engine.increaseTime(duration);
     try {
       // we need to wait some physical time so that InMemoryEngine has a chance to fire the timers
-      Thread.sleep(50);
+      Thread.sleep(100);
     } catch (InterruptedException e) {
       // do nothing
     }
