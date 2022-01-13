@@ -18,6 +18,7 @@ import org.assertj.core.api.StringAssert;
 
 /** Assertions for incidents. An incident is identified by its incident key. */
 public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
+  private final String LINE_SEPARATOR = System.lineSeparator();
 
   private final RecordStreamSource recordStreamSource;
 
@@ -226,34 +227,34 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
     final Optional<Record<IncidentRecordValue>> optRecord = findIncidentCreatedRecord();
 
     if (!optRecord.isPresent()) {
-      return "\nNo incident details found for key " + actual;
+      return LINE_SEPARATOR + "No incident details found for key " + actual;
     } else {
       final Record<IncidentRecordValue> record = optRecord.get();
 
       final StringBuilder result = new StringBuilder();
       result
-          .append("\nIncident[")
-          .append("\n  key: ")
+          .append(LINE_SEPARATOR + "Incident[")
+          .append(LINE_SEPARATOR + "  key: ")
           .append(record.getKey())
-          .append("\n  errorType: ")
+          .append(LINE_SEPARATOR + "  errorType: ")
           .append((record.getValue().getErrorType()))
-          .append("\n  errorMessage: \"")
+          .append(LINE_SEPARATOR + "  errorMessage: \"")
           .append(record.getValue().getErrorMessage())
           .append("\"");
 
       final String elementId = record.getValue().getElementId();
 
       if (elementId != null) {
-        result.append("\n  elementId: ").append(elementId);
+        result.append(LINE_SEPARATOR + "  elementId: ").append(elementId);
       }
 
       final long jobKey = record.getValue().getJobKey();
 
       if (jobKey != -1) {
-        result.append("\n  jobKey: ").append(jobKey);
+        result.append(LINE_SEPARATOR + "  jobKey: ").append(jobKey);
       }
 
-      result.append("\n]");
+      result.append(LINE_SEPARATOR + "]");
       return result.toString();
     }
   }
