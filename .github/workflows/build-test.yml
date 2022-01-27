@@ -41,20 +41,15 @@ jobs:
           path: target/surefire-reports/
           retention-days: 7
 
-  publish-test-results:
-      name: Publish Unit Test Results
-      runs-on: ubuntu-latest
-      needs: build-and-test
-      if: always()
-
-      steps:
-        - name: Download Artifacts
-          uses: actions/download-artifact@v2
-          with:
-            path: artifacts
-
-        - name: Publish Unit Test Results
-          uses: EnricoMi/publish-unit-test-result-action@v1.26
-          with:
-            files: artifacts/**/*.xml
-
+# We need to upload the event file as an artifact in order to support publishing the results of
+# forked repositories (https://github.com/EnricoMi/publish-unit-test-result-action#support-fork-repositories-and-dependabot-branches)
+  event_file:
+    name: "Event File"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: Event File
+          path: ${{ github.event_path }}
+          retention-days: 1
