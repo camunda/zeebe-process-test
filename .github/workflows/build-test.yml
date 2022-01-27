@@ -33,7 +33,7 @@ jobs:
         id: build
         run: mvn -B -U "-Dsurefire.rerunFailingTestsCount=5" clean install
 
-      - name: Archive Test Results on Failure
+      - name: Archive Test Results
         uses: actions/upload-artifact@v2
         if: always()
         with:
