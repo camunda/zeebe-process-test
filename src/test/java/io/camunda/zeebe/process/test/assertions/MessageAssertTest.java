@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 @ZeebeProcessTest
@@ -29,7 +30,7 @@ class MessageAssertTest {
     private ZeebeClient client;
     private InMemoryEngine engine;
 
-    @Test
+    @RepeatedTest(10)
     void testHasBeenCorrelated() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -47,7 +48,7 @@ class MessageAssertTest {
       BpmnAssert.assertThat(response).hasBeenCorrelated();
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasMessageStartEventBeenCorrelated() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
@@ -64,7 +65,7 @@ class MessageAssertTest {
       BpmnAssert.assertThat(response).hasCreatedProcessInstance();
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasNotBeenCorrelated() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -78,7 +79,7 @@ class MessageAssertTest {
       BpmnAssert.assertThat(response).hasNotBeenCorrelated();
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasMessageStartEventNotBeenCorrelated() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
@@ -92,7 +93,7 @@ class MessageAssertTest {
       BpmnAssert.assertThat(response).hasNotCreatedProcessInstance();
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasExpired() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -108,7 +109,7 @@ class MessageAssertTest {
       BpmnAssert.assertThat(response).hasExpired();
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasNotExpired() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -122,7 +123,7 @@ class MessageAssertTest {
       BpmnAssert.assertThat(response).hasNotExpired();
     }
 
-    @Test
+    @RepeatedTest(10)
     void testExtractingProcessInstance() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -140,7 +141,7 @@ class MessageAssertTest {
       BpmnAssert.assertThat(response).extractingProcessInstance().isCompleted();
     }
 
-    @Test
+    @RepeatedTest(10)
     void testExtractingProcessInstance_messageStartEvent() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
@@ -164,7 +165,7 @@ class MessageAssertTest {
     private ZeebeClient client;
     private InMemoryEngine engine;
 
-    @Test
+    @RepeatedTest(10)
     void testHasBeenCorrelatedFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -180,7 +181,7 @@ class MessageAssertTest {
           .hasMessage("Message with key %d was not correlated", response.getMessageKey());
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasMessageStartEventBeenCorrelatedFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
@@ -198,7 +199,7 @@ class MessageAssertTest {
               response.getMessageKey());
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasNotBeenCorrelatedFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -222,7 +223,7 @@ class MessageAssertTest {
               response.getMessageKey(), instanceEvent.getProcessInstanceKey());
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasMessageStartEventNotBeenCorrelatedFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
@@ -242,7 +243,7 @@ class MessageAssertTest {
               "Message with key %d was correlated to process instance", response.getMessageKey());
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasExpiredFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -258,7 +259,7 @@ class MessageAssertTest {
           .hasMessage("Message with key %d has not expired", response.getMessageKey());
     }
 
-    @Test
+    @RepeatedTest(10)
     void testHasNotExpiredFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -276,7 +277,7 @@ class MessageAssertTest {
           .hasMessage("Message with key %d has expired", response.getMessageKey());
     }
 
-    @Test
+    @RepeatedTest(10)
     void testExtractingProcessInstanceFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
@@ -298,7 +299,7 @@ class MessageAssertTest {
               response.getMessageKey(), 0, "[]");
     }
 
-    @Test
+    @RepeatedTest(10)
     void testExtractingProcessInstanceFailure_messageStartEvent() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
