@@ -80,6 +80,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
     return ZeebeClient.newClientBuilder()
         .gatewayAddress(getGatewayAddress())
         .usePlaintext()
+        .defaultRequestTimeout(Duration.ofSeconds(30))
         .build();
   }
 
