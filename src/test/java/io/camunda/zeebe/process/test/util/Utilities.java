@@ -127,7 +127,7 @@ public class Utilities {
       final ZeebeClient client,
       final String messageName,
       final String correlationKey) {
-    return sendMessage(engine, client, messageName, correlationKey, Duration.ofDays(99999));
+    return sendMessage(engine, client, messageName, correlationKey, Duration.ofMinutes(1));
   }
 
   public static PublishMessageResponse sendMessage(
