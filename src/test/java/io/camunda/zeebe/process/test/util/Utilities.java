@@ -1,7 +1,6 @@
 package io.camunda.zeebe.process.test.util;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.command.ClientStatusException;
 import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
@@ -137,26 +136,14 @@ public class Utilities {
       final String messageName,
       final String correlationKey,
       final Duration timeToLive) {
-    PublishMessageResponse response;
-    try {
-      response =
-          client
-              .newPublishMessageCommand()
-              .messageName(messageName)
-              .correlationKey(correlationKey)
-              .timeToLive(Duration.ofMinutes(1))
-              .send()
-              .join();
-    } catch (ClientStatusException ex) {
-      response =
-          client
-              .newPublishMessageCommand()
-              .messageName(messageName)
-              .correlationKey(correlationKey)
-              .timeToLive(Duration.ofMinutes(1))
-              .send()
-              .join();
-    }
+    final PublishMessageResponse response =
+        client
+            .newPublishMessageCommand()
+            .messageName(messageName)
+            .correlationKey(correlationKey)
+            .timeToLive(timeToLive)
+            .send()
+            .join();
     waitForIdleState(engine);
     return response;
   }
