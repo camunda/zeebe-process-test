@@ -94,16 +94,20 @@ public class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implemen
 
   private void writeCommandWithKey(
       final Long key, final RecordMetadata metadata, final BufferWriter bufferWriter) {
-    writer.reset();
+    synchronized (writer) {
+      writer.reset();
 
-    writer.key(key).metadataWriter(metadata).valueWriter(bufferWriter).tryWrite();
+      writer.key(key).metadataWriter(metadata).valueWriter(bufferWriter).tryWrite();
+    }
   }
 
   private void writeCommandWithoutKey(
       final RecordMetadata metadata, final BufferWriter bufferWriter) {
-    writer.reset();
+    synchronized (writer) {
+      writer.reset();
 
-    writer.keyNull().metadataWriter(metadata).valueWriter(bufferWriter).tryWrite();
+      writer.keyNull().metadataWriter(metadata).valueWriter(bufferWriter).tryWrite();
+    }
   }
 
   @Override
