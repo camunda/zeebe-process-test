@@ -30,13 +30,14 @@ public class EngineFactory {
 
     final InMemoryLogStorage logStorage = new InMemoryLogStorage();
     final LogStream logStream = createLogStream(logStorage, scheduler, partitionId);
-    final LogStreamRecordWriter streamWriter = logStream.newLogStreamRecordWriter().join();
 
     final SubscriptionCommandSenderFactory subscriptionCommandSenderFactory =
-        new SubscriptionCommandSenderFactory(streamWriter, partitionId);
+        new SubscriptionCommandSenderFactory(
+            logStream.newLogStreamRecordWriter().join(), partitionId);
 
     final GrpcToLogStreamGateway gateway =
-        new GrpcToLogStreamGateway(streamWriter, partitionId, partitionCount, port);
+        new GrpcToLogStreamGateway(
+            logStream.newLogStreamRecordWriter().join(), partitionId, partitionCount, port);
     final Server grpcServer = ServerBuilder.forPort(port).addService(gateway).build();
     final GrpcResponseWriter grpcResponseWriter = new GrpcResponseWriter(gateway);
 
