@@ -29,6 +29,9 @@ describes:
 
 ## Starting on an issue
 
+Please make sure you are using JDK 11 or higher. Lower versions will not build, as the checkstyle we
+use does not support them.
+
 To work on an issue, follow the following steps:
 
 1. Check that a [GitHub issue][issues] exists for the task you want to work on. If this is not the
