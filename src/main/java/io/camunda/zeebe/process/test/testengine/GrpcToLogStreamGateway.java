@@ -94,20 +94,16 @@ public class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implemen
 
   private void writeCommandWithKey(
       final Long key, final RecordMetadata metadata, final BufferWriter bufferWriter) {
-    synchronized (writer) {
-      writer.reset();
+    writer.reset();
 
-      writer.key(key).metadataWriter(metadata).valueWriter(bufferWriter).tryWrite();
-    }
+    writer.key(key).metadataWriter(metadata).valueWriter(bufferWriter).tryWrite();
   }
 
   private void writeCommandWithoutKey(
       final RecordMetadata metadata, final BufferWriter bufferWriter) {
-    synchronized (writer) {
-      writer.reset();
+    writer.reset();
 
-      writer.keyNull().metadataWriter(metadata).valueWriter(bufferWriter).tryWrite();
-    }
+    writer.keyNull().metadataWriter(metadata).valueWriter(bufferWriter).tryWrite();
   }
 
   @Override
@@ -284,21 +280,24 @@ public class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implemen
   public void activateJobs(
       final ActivateJobsRequest request,
       final StreamObserver<ActivateJobsResponse> responseObserver) {
-    final Long requestId = registerNewRequest(responseObserver);
+    executor.submit(
+        () -> {
+          final Long requestId = registerNewRequest(responseObserver);
 
-    prepareRecordMetadata()
-        .requestId(requestId)
-        .valueType(ValueType.JOB_BATCH)
-        .intent(JobBatchIntent.ACTIVATE);
+          prepareRecordMetadata()
+              .requestId(requestId)
+              .valueType(ValueType.JOB_BATCH)
+              .intent(JobBatchIntent.ACTIVATE);
 
-    final JobBatchRecord jobBatchRecord = new JobBatchRecord();
+          final JobBatchRecord jobBatchRecord = new JobBatchRecord();
 
-    jobBatchRecord.setType(request.getType());
-    jobBatchRecord.setWorker(request.getWorker());
-    jobBatchRecord.setTimeout(request.getTimeout());
-    jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
+          jobBatchRecord.setType(request.getType());
+          jobBatchRecord.setWorker(request.getWorker());
+          jobBatchRecord.setTimeout(request.getTimeout());
+          jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
 
-    writeCommandWithoutKey(recordMetadata, jobBatchRecord);
+          writeCommandWithoutKey(recordMetadata, jobBatchRecord);
+        });
   }
 
   @Override
