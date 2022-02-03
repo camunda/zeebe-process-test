@@ -9,11 +9,19 @@
   </parent>
 
   <groupId>io.camunda</groupId>
-  <artifactId>zeebe-process-test</artifactId>
+  <artifactId>zeebe-process-test-root</artifactId>
   <version>1.3.4-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
 
-  <name>Zeebe Process Test</name>
+  <name>Zeebe Process Test Root</name>
+
+  <modules>
+    <module>api</module>
+    <module>assertions</module>
+    <module>engine</module>
+    <module>extension</module>
+    <module>qa</module>
+  </modules>
 
   <scm>
     <connection>scm:git:git@github.com:camunda-cloud/zeebe-process-test.git</connection>
@@ -44,9 +52,6 @@
     <dependency.spring.version>5.3.15</dependency.spring.version>
     <dependency.zeebe.version>1.3.3</dependency.zeebe.version>
 
-    <maven.compiler.source>8</maven.compiler.source>
-    <maven.compiler.target>8</maven.compiler.target>
-
     <nexus.release.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io</nexus.release.repository>
     <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
     <nexus.snapshot.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots</nexus.snapshot.repository>
@@ -65,6 +70,30 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-api</artifactId>
+        <version>1.3.4-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-assertions</artifactId>
+        <version>1.3.4-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-engine</artifactId>
+        <version>1.3.4-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-extension</artifactId>
+        <version>1.3.4-SNAPSHOT</version>
+      </dependency>
+
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
@@ -159,72 +188,27 @@
         <artifactId>snakeyaml</artifactId>
         <version>${dependency.snakeyaml.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${dependency.log4j.version}</version>
+      </dependency>
 
       <!-- Test scope-->
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>${dependency.mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>${dependency.awaitility.version}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-workflow-engine</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-util</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-logstreams</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-test-util</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-client-java</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${dependency.log4j.version}</version>
-    </dependency>
-
-    <!-- Test scope-->
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.awaitility</groupId>
-      <artifactId>awaitility</artifactId>
-      <version>${dependency.awaitility.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-  </dependencies>
 
   <build>
     <plugins>

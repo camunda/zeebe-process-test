@@ -39,7 +39,7 @@ jobs:
         if: always()
         with:
           name: Unit Test Results ${{ matrix.os }}
-          path: target/surefire-reports/
+          path: "*/target/surefire-reports/"
           retention-days: 7
 
 # We need to upload the event file as an artifact in order to support publishing the results of

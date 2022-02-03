@@ -17,7 +17,7 @@ Add the following dependency to your project
 ```xml
 <dependency>
   <groupId>io.camunda</groupId>
-  <artifactId>zeebe-process-test</artifactId>
+  <artifactId>zeebe-process-test-extension</artifactId>
   <version>X.Y.Z</version>
   <scope>test</scope>
 </dependency>
@@ -133,7 +133,22 @@ Once the engine has detected it has become idle it will wait for a delay (10ms) 
 If this is the case it is considered to be in idle state and continue your test / execute the runnables.
 
 ## Examples
-For example tests the best place to look right now is the tests in `io.camunda.zeebe.process.test.assertions`
+For example tests the best place to look right now is the tests in the QA module.
+
+## Project Structure
+The project consists of 5 different modules:
+1. Api
+    - This module contains public interfaces. It should always be Java 8 compatible.
+2. Assertions
+    - This module contains all the assertions. It should always be Java 8 compatible.
+3. Engine
+    - This module contains the in memory engine. It is not bound to a specific Java version.
+      Therefore, it is not recommended to depend on this module.
+4. Extension
+    - This module contains the annotation for your unit tests. As of now it depends on the engine
+      and thus is not bound to a specific Java version. In the future this should be Java 8 compatible.
+5. QA
+   - This module contains our QA tests. There is no reason to depend on this module. It is not bound to a specific Java version.
 
 ## Contributing
 Please refer to the [Contributions Guide](/CONTRIBUTING.md).
