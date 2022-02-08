@@ -3,6 +3,7 @@ package io.camunda.zeebe.process.test.assertions;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
@@ -32,6 +33,11 @@ public abstract class BpmnAssert {
   public static ProcessInstanceAssert assertThat(final ProcessInstanceEvent instanceEvent) {
     return new ProcessInstanceAssert(
         instanceEvent.getProcessInstanceKey(), getRecordStreamSource());
+  }
+
+  public static ProcessInstanceAssert assertThat(final ProcessInstanceResult instanceResult) {
+    return new ProcessInstanceAssert(instanceResult.getProcessInstanceKey(),
+        getRecordStreamSource());
   }
 
   public static ProcessInstanceAssert assertThat(
