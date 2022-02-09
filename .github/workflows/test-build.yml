@@ -1,8 +1,9 @@
-name: Build and test
+name: Test and Build
 on:
   pull_request: { }
+  workflow_call: { }
 jobs:
-  build-and-test:
+  test:
     name: Run tests on ${{ matrix.os }}
     timeout-minutes: 15
     runs-on: ${{ matrix.os }}
@@ -30,9 +31,9 @@ jobs:
           distribution: temurin
           java-version: 11
 
-      - name: Build
+      - name: Test
         id: build
-        run: mvn -B -U "-Dsurefire.rerunFailingTestsCount=5" clean install
+        run: mvn -B -U "-Dsurefire.rerunFailingTestsCount=5" test
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v2
@@ -41,6 +42,34 @@ jobs:
           name: Unit Test Results ${{ matrix.os }}
           path: "*/target/surefire-reports/"
           retention-days: 7
+
+  build:
+    name: Build
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up Java environment
+        uses: actions/setup-java@v2.5.0
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Build
+        id: build
+        run: mvn -B -U "-DskipTests" clean install
 
 # We need to upload the event file as an artifact in order to support publishing the results of
 # forked repositories (https://github.com/EnricoMi/publish-unit-test-result-action#support-fork-repositories-and-dependabot-branches)

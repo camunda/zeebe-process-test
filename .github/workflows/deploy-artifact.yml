@@ -12,8 +12,12 @@ on:
     types: [published]
   workflow_dispatch: { }
 jobs:
+#  test:
+#    uses: ./.github/workflows/test-build.yml
+
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+#    needs: [test]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -59,7 +63,6 @@ jobs:
         id: release
         uses: camunda-community-hub/community-action-maven-release@v1.0.12
         with:
-          run-tests: true
           release-version: ${{ github.event.release.tag_name }}
           release-profile: community-action-maven-release
           nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
@@ -81,17 +84,49 @@ jobs:
           asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
           asset_content_type: application/zip
 
-      - name: Archive Test Results on Failure
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: test-results
-          path: target/surefire-reports/
-          retention-days: 7
+  docker:
+    runs-on: ubuntu-latest
+    needs: [test]
 
-      - name: Publish Unit Test Results
-        id: publish
-        uses: EnricoMi/publish-unit-test-result-action@v1.28
-        if: failure()
+    env:
+      IMAGE_NAME: "zeebe-process-test-engine"
+      TAG: "latest"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache
+        uses: actions/cache@v2
         with:
-          files: target/surefire-reports/*.xml
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up Java environment
+        uses: actions/setup-java@v2.5.0
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Build jar
+        run: |
+          cd engine
+          mvn clean package -DskipTests
+
+      - name: Build Docker image
+        run: |
+          if ! echo $TAG | grep SNAPSHOT; then
+            echo ${{ github.event.release.tag_name }} >> $TAG
+          fi
+          cd engine
+          docker build . -t $IMAGE_NAME:$TAG
+
+      - name: Push Docker image
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo $IMAGE_NAME
+          echo $TAG
+          docker tag $IMAGE_NAME ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:$TAG"
+          docker push ghcr.io/$IMAGE:$TAG
