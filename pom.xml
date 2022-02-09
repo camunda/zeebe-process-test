@@ -116,6 +116,12 @@
         <scope>import</scope>
       </dependency>
 
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${dependency.slf4j.version}</version>
+      </dependency>
+
       <!-- Only for dependency convergence issues -->
       <dependency>
         <groupId>com.google.protobuf</groupId>
