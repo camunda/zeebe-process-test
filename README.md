@@ -73,6 +73,16 @@ ProcessInstanceEvent event = client.newCreateInstanceCommand()
 ProcessInstanceAssert assertions = BpmnAssert.assertThat(event);
 ```
 
+```java
+ProcessInstanceResult event = client.newCreateInstanceCommand()
+  .bpmnProcessId("<processId>")
+  .latestVersion()
+  .withResult()
+  .send()
+  .join();
+  ProcessInstanceAssert assertions = BpmnAssert.assertThat(event);
+```
+
 Started by a timer:
 ```java
 Optional<InspectedProcessInstance> firstProcessInstance = InspectionUtility.findProcessEvents()
