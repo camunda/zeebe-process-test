@@ -491,7 +491,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
         .withFailMessage(
             "The variable '%s' does not have the expected value. The value passed in"
                 + " ('%s') is internally mapped to a JSON String that yields '%s'. However, the "
-                + "actual value (as JSON String) is '%s.",
+                + "actual value (as JSON String) is '%s'.",
             name, value, mappedValue, variables.get(name))
         .containsEntry(name, mappedValue);
 
