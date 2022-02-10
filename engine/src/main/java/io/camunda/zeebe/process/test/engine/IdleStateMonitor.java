@@ -29,7 +29,7 @@ import java.util.TimerTask;
 final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcessorListener {
 
   private static final Timer TIMER = new Timer();
-  public static final int GRACE_PERIOD = 10;
+  public static final int GRACE_PERIOD = 30;
   private final List<Runnable> callbacks = new ArrayList<>();
   private final LogStreamReader reader;
   private volatile long lastEventPosition = -1L;
