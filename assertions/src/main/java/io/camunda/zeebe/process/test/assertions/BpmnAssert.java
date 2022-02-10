@@ -36,8 +36,8 @@ public abstract class BpmnAssert {
   }
 
   public static ProcessInstanceAssert assertThat(final ProcessInstanceResult instanceResult) {
-    return new ProcessInstanceAssert(instanceResult.getProcessInstanceKey(),
-        getRecordStreamSource());
+    return new ProcessInstanceAssert(
+        instanceResult.getProcessInstanceKey(), getRecordStreamSource());
   }
 
   public static ProcessInstanceAssert assertThat(
