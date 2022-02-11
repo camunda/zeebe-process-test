@@ -128,7 +128,7 @@ MessageAssert assertions = BpmnAssert.assertThat(response);
 > will wait 10ms before checking again. If it is still idle at that stage it is considered to be in
 > an idle state.
 >
-> **We do not know if the 10ms delay is sufficient. Using it could result in flaky tests!**
+> **We do not know if the 30ms delay is sufficient. Using it could result in flaky tests!**
 >
 > Any feedback about the wait for idle state is highly appreciated! Please let us know if the delay should be higher, or configurable.
 
@@ -139,7 +139,7 @@ The engine provides 2 methods for this:
 2. `engine.runOnIdleState(Runnable)` - This method will run your runnable once it has reached an idle state. Your test will continue executing without waiting.
 
 We have defined an idle state as a state in which the process engine makes no progress and is waiting for new commands or events to trigger.
-Once the engine has detected it has become idle it will wait for a delay (10ms) and check if it is still idle.
+Once the engine has detected it has become idle it will wait for a delay (30ms) and check if it is still idle.
 If this is the case it is considered to be in idle state and continue your test / execute the runnables.
 
 ## Examples
