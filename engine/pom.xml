@@ -46,6 +46,11 @@
       <artifactId>zeebe-client-java</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+    </dependency>
+
     <!-- Test Scope -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
