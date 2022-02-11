@@ -130,7 +130,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          if ! echo $TAG | grep SNAPSHOT; then
+          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
             TAG="${{ github.event.release.tag_name }}"
           fi
           cd engine
