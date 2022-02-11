@@ -36,7 +36,7 @@ class BpmnAssertTest {
     // when
     ProcessInstanceAssert assertions = BpmnAssert.assertThat(event);
 
-    //then
+    // then
     assertThat(assertions).isInstanceOf(ProcessInstanceAssert.class);
   }
 
@@ -49,7 +49,7 @@ class BpmnAssertTest {
     // when
     ProcessInstanceAssert assertions = BpmnAssert.assertThat(result);
 
-    //then
+    // then
     assertThat(assertions).isInstanceOf(ProcessInstanceAssert.class);
   }
 
@@ -62,7 +62,7 @@ class BpmnAssertTest {
     // when
     ProcessInstanceAssert assertions = BpmnAssert.assertThat(inspected);
 
-    //then
+    // then
     assertThat(assertions).isInstanceOf(ProcessInstanceAssert.class);
   }
 
@@ -75,7 +75,7 @@ class BpmnAssertTest {
     // when
     JobAssert assertions = BpmnAssert.assertThat(job);
 
-    //then
+    // then
     assertThat(assertions).isInstanceOf(JobAssert.class);
   }
 
@@ -88,7 +88,7 @@ class BpmnAssertTest {
     // when
     DeploymentAssert assertions = BpmnAssert.assertThat(event);
 
-    //then
+    // then
     assertThat(assertions).isInstanceOf(DeploymentAssert.class);
   }
 
@@ -101,7 +101,7 @@ class BpmnAssertTest {
     // when
     MessageAssert assertions = BpmnAssert.assertThat(event);
 
-    //then
+    // then
     assertThat(assertions).isInstanceOf(MessageAssert.class);
   }
 }
