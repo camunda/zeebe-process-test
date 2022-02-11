@@ -5,11 +5,12 @@ import io.camunda.zeebe.engine.processing.EngineProcessors;
 import io.camunda.zeebe.engine.processing.streamprocessor.StreamProcessor;
 import io.camunda.zeebe.engine.state.ZbColumnFamilies;
 import io.camunda.zeebe.engine.state.appliers.EventAppliers;
-import io.camunda.zeebe.logstreams.log.*;
+import io.camunda.zeebe.logstreams.log.LogStream;
+import io.camunda.zeebe.logstreams.log.LogStreamBuilder;
+import io.camunda.zeebe.logstreams.log.LogStreamReader;
 import io.camunda.zeebe.logstreams.storage.LogStorage;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.engine.db.InMemoryDbFactory;
-import io.camunda.zeebe.test.util.socket.SocketUtil;
 import io.camunda.zeebe.util.sched.Actor;
 import io.camunda.zeebe.util.sched.ActorScheduler;
 import io.camunda.zeebe.util.sched.ActorSchedulingService;
@@ -24,7 +25,7 @@ public class EngineFactory {
   public static InMemoryEngine create() {
     final int partitionId = 1;
     final int partitionCount = 1;
-    final int port = SocketUtil.getNextAddress().getPort();
+    final int port = 26500;
 
     final ControlledActorClock clock = createActorClock();
     final ActorScheduler scheduler = createAndStartActorScheduler(clock);
