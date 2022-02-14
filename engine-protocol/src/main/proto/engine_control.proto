@@ -1,0 +1,64 @@
+syntax = 'proto3';
+package engine_protocol;
+
+option java_multiple_files = false;
+option java_package = "io.camunda.zeebe.process.test.engine.protocol";
+
+message StartEngineRequest {}
+
+message StartEngineResponse {}
+
+message StopEngineRequest {}
+
+message StopEngineResponse {}
+
+message ResetEngineRequest {}
+
+message ResetEngineResponse {}
+
+message IncreaseTimeRequest {
+  // the amount of milliseconds the engine should increase in time
+  int32 milliseconds = 1;
+}
+
+message IncreaseTimeResponse {}
+
+message WaitForIdleStateRequest {
+  // timeout (in ms). The request will be closed if an idle state has not been
+  // achieved withing the timeout.
+  int64 timeout = 1;
+}
+
+message WaitForIdleStateResponse {}
+
+message GetRecordsRequest {}
+
+message RecordResponse {
+  string recordJson = 1;
+}
+
+service EngineControl {
+
+  rpc StartEngine (StartEngineRequest) returns (StartEngineResponse);
+
+  rpc StopEngine (StopEngineRequest) returns (StopEngineResponse);
+
+  rpc ResetEngine (ResetEngineRequest) returns (ResetEngineResponse);
+
+  /*
+    Increases the engine time by a specific duration. Increasing the time could
+    be useful for when triggering timers with a date somewhere in the future.
+   */
+  rpc IncreaseTime (IncreaseTimeRequest) returns (IncreaseTimeResponse);
+
+  /*
+    Waits for the engine to have reached an idle state. Idle state is a state in
+     which the process engine makes no progress and is waiting for new commands
+     or events to trigger.
+   */
+  rpc WaitForIdleState (WaitForIdleStateRequest) returns (WaitForIdleStateResponse);
+
+
+  rpc GetRecords (GetRecordsRequest) returns (stream RecordResponse);
+
+}
