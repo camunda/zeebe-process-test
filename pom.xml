@@ -19,6 +19,7 @@
     <module>api</module>
     <module>assertions</module>
     <module>engine</module>
+    <module>engine-agent</module>
     <module>extension</module>
     <module>qa</module>
   </modules>

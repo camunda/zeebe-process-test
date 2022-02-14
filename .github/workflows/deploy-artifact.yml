@@ -125,7 +125,7 @@ jobs:
 
       - name: Build jar
         run: |
-          cd engine
+          cd engine-agent
           mvn clean package -DskipTests
 
       - name: Build Docker image
@@ -133,7 +133,7 @@ jobs:
           if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
             TAG="${{ github.event.release.tag_name }}"
           fi
-          cd engine
+          cd engine-agent
           docker build . -t $IMAGE_NAME:$TAG
 
       - name: Push Docker image
