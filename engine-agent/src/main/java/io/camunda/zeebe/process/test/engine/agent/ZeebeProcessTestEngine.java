@@ -1,6 +1,7 @@
-package io.camunda.zeebe.process.test.engine;
+package io.camunda.zeebe.process.test.engine.agent;
 
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.engine.EngineFactory;
 
 public class ZeebeProcessTestEngine {
 
