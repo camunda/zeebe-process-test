@@ -16,13 +16,15 @@ import io.camunda.zeebe.util.sched.ActorScheduler;
 import io.camunda.zeebe.util.sched.ActorSchedulingService;
 import io.camunda.zeebe.util.sched.clock.ActorClock;
 import io.camunda.zeebe.util.sched.clock.ControlledActorClock;
+import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class EngineFactory {
 
-  public static InMemoryEngine create() {
+  public static InMemoryEngine create(final BindableService... services) {
     final int partitionId = 1;
     final int partitionCount = 1;
     final int port = 26500;
@@ -40,7 +42,10 @@ public class EngineFactory {
     final GrpcToLogStreamGateway gateway =
         new GrpcToLogStreamGateway(
             logStream.newLogStreamRecordWriter().join(), partitionId, partitionCount, port);
-    final Server grpcServer = ServerBuilder.forPort(port).addService(gateway).build();
+    final ServerBuilder<?> grpcServerBuilder = ServerBuilder.forPort(port).addService(gateway);
+    Arrays.stream(services).forEach(grpcServerBuilder::addService);
+    final Server grpcServer = grpcServerBuilder.build();
+
     final GrpcResponseWriter grpcResponseWriter = new GrpcResponseWriter(gateway);
 
     final ZeebeDb<ZbColumnFamilies> zeebeDb = createDatabase();
