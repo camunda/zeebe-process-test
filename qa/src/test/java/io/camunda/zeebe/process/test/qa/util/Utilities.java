@@ -7,6 +7,7 @@ import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.JobIntent;
@@ -162,7 +163,7 @@ public class Utilities {
   public static void completeTask(
       final InMemoryEngine engine, final ZeebeClient client, final String taskId) {
     final List<Record<JobRecordValue>> records =
-        StreamFilter.jobRecords(engine.getRecordStream())
+        StreamFilter.jobRecords(RecordStream.of(engine.getRecordStreamSource()))
             .withElementId(taskId)
             .withIntent(JobIntent.CREATED)
             .stream()

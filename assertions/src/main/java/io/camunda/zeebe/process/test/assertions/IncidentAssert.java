@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.filters.IncidentRecordStreamFilter;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -20,11 +20,11 @@ import org.assertj.core.api.StringAssert;
 public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
   private final String LINE_SEPARATOR = System.lineSeparator();
 
-  private final RecordStreamSource recordStreamSource;
+  private final RecordStream recordStream;
 
-  public IncidentAssert(final long incidentKey, final RecordStreamSource recordStreamSource) {
+  public IncidentAssert(final long incidentKey, final RecordStream recordStream) {
     super(incidentKey, IncidentAssert.class);
-    this.recordStreamSource = recordStreamSource;
+    this.recordStream = recordStream;
   }
 
   /**
@@ -198,7 +198,7 @@ public class IncidentAssert extends AbstractAssert<IncidentAssert, Long> {
   }
 
   private IncidentRecordStreamFilter getIncidentRecords(final IncidentIntent intent) {
-    return StreamFilter.incident(recordStreamSource)
+    return StreamFilter.incident(recordStream)
         .withRejectionType(RejectionType.NULL_VAL)
         .withIncidentKey(actual)
         .withIntent(intent);

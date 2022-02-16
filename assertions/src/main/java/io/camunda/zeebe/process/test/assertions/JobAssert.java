@@ -3,8 +3,8 @@ package io.camunda.zeebe.process.test.assertions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.filters.IncidentRecordStreamFilter;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -18,11 +18,11 @@ import org.assertj.core.data.Offset;
 /** Assertions for {@code ActivatedJob} instances */
 public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
 
-  private final RecordStreamSource recordStreamSource;
+  private final RecordStream recordStream;
 
-  public JobAssert(final ActivatedJob actual, final RecordStreamSource recordStreamSource) {
+  public JobAssert(final ActivatedJob actual, final RecordStream recordStream) {
     super(actual, JobAssert.class);
-    this.recordStreamSource = recordStreamSource;
+    this.recordStream = recordStream;
   }
 
   /**
@@ -138,11 +138,11 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
     final Record<IncidentRecordValue> latestIncidentRecord =
         incidentCreatedRecords.get(incidentCreatedRecords.size() - 1);
 
-    return new IncidentAssert(latestIncidentRecord.getKey(), recordStreamSource);
+    return new IncidentAssert(latestIncidentRecord.getKey(), recordStream);
   }
 
   private IncidentRecordStreamFilter getIncidentCreatedRecords() {
-    return StreamFilter.incident(recordStreamSource)
+    return StreamFilter.incident(recordStream)
         .withRejectionType(RejectionType.NULL_VAL)
         .withJobKey(actual.getKey());
   }

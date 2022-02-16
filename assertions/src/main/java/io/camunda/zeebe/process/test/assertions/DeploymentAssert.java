@@ -5,19 +5,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.Process;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import java.util.List;
 import org.assertj.core.api.AbstractAssert;
 
 /** Assertions for {@code DeploymentEvent} instances */
 public class DeploymentAssert extends AbstractAssert<DeploymentAssert, DeploymentEvent> {
 
-  private final RecordStreamSource recordStreamSource;
+  private final RecordStream recordStream;
 
-  public DeploymentAssert(
-      final DeploymentEvent actual, final RecordStreamSource recordStreamSource) {
+  public DeploymentAssert(final DeploymentEvent actual, final RecordStream recordStream) {
     super(actual, DeploymentAssert.class);
-    this.recordStreamSource = recordStreamSource;
+    this.recordStream = recordStream;
   }
 
   /**
@@ -79,7 +78,7 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
             bpmnProcessId, matchingProcesses.size(), matchingProcesses)
         .hasSize(1);
 
-    return new ProcessAssert(matchingProcesses.get(0), recordStreamSource);
+    return new ProcessAssert(matchingProcesses.get(0), recordStream);
   }
 
   /**
@@ -102,6 +101,6 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
             resourceName, matchingProcesses.size(), matchingProcesses)
         .hasSize(1);
 
-    return new ProcessAssert(matchingProcesses.get(0), recordStreamSource);
+    return new ProcessAssert(matchingProcesses.get(0), recordStream);
   }
 }

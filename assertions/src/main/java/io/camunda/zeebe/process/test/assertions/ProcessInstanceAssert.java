@@ -3,8 +3,8 @@ package io.camunda.zeebe.process.test.assertions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.filters.IncidentRecordStreamFilter;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -22,11 +22,11 @@ import org.assertj.core.api.SoftAssertions;
 
 public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert, Long> {
 
-  private final RecordStreamSource recordStreamSource;
+  private final RecordStream recordStream;
 
-  public ProcessInstanceAssert(final long actual, final RecordStreamSource recordStreamSource) {
+  public ProcessInstanceAssert(final long actual, final RecordStream recordStream) {
     super(actual, ProcessInstanceAssert.class);
-    this.recordStreamSource = recordStreamSource;
+    this.recordStream = recordStream;
   }
 
   /**
@@ -37,7 +37,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    */
   public ProcessInstanceAssert isStarted() {
     final boolean isStarted =
-        StreamFilter.processInstance(recordStreamSource)
+        StreamFilter.processInstance(recordStream)
             .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withIntent(ProcessInstanceIntent.ELEMENT_ACTIVATED)
@@ -58,7 +58,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    */
   public ProcessInstanceAssert isActive() {
     final boolean isActive =
-        StreamFilter.processInstance(recordStreamSource)
+        StreamFilter.processInstance(recordStream)
             .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withBpmnElementType(BpmnElementType.PROCESS)
@@ -103,7 +103,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @return boolean indicating whether the process instance has been completed
    */
   private boolean isProcessInstanceCompleted() {
-    return StreamFilter.processInstance(recordStreamSource)
+    return StreamFilter.processInstance(recordStream)
         .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .withBpmnElementType(BpmnElementType.PROCESS)
@@ -143,7 +143,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @return boolean indicating whether the process instance has been terminated
    */
   private boolean isProcessInstanceTerminated() {
-    return StreamFilter.processInstance(recordStreamSource)
+    return StreamFilter.processInstance(recordStream)
         .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .withBpmnElementType(BpmnElementType.PROCESS)
@@ -185,7 +185,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    */
   public ProcessInstanceAssert hasPassedElement(final String elementId, final int times) {
     final long count =
-        StreamFilter.processInstance(recordStreamSource)
+        StreamFilter.processInstance(recordStream)
             .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withElementId(elementId)
@@ -208,7 +208,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    */
   public ProcessInstanceAssert hasPassedElementInOrder(final String... elementIds) {
     final List<String> foundElementRecords =
-        StreamFilter.processInstance(recordStreamSource)
+        StreamFilter.processInstance(recordStream)
             .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withElementIdIn(elementIds)
@@ -258,7 +258,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    */
   private Set<String> getElementsInWaitState() {
     final Set<String> elementsInWaitState = new HashSet<>();
-    StreamFilter.processInstance(recordStreamSource)
+    StreamFilter.processInstance(recordStream)
         .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .withoutBpmnElementType(BpmnElementType.PROCESS)
@@ -293,7 +293,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
     final List<String> wrongfullyWaitingElementIds = new ArrayList<>();
     final List<String> wrongfullyNotWaitingElementIds = new ArrayList<>();
 
-    StreamFilter.processInstance(recordStreamSource)
+    StreamFilter.processInstance(recordStream)
         .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .withoutBpmnElementType(BpmnElementType.PROCESS)
@@ -364,7 +364,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    */
   private Set<String> getOpenMessageSubscriptions() {
     final Set<String> openMessageSubscriptions = new HashSet<>();
-    StreamFilter.processMessageSubscription(recordStreamSource)
+    StreamFilter.processMessageSubscription(recordStream)
         .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .stream()
@@ -397,7 +397,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
     assertThat(times).describedAs("Times").isGreaterThanOrEqualTo(0);
 
     final long actualTimes =
-        StreamFilter.processMessageSubscription(recordStreamSource)
+        StreamFilter.processMessageSubscription(recordStream)
             .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withMessageName(messageName)
@@ -427,7 +427,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
     assertThat(times).describedAs("Times").isGreaterThanOrEqualTo(0);
 
     final long actualTimes =
-        StreamFilter.processMessageSubscription(recordStreamSource)
+        StreamFilter.processMessageSubscription(recordStream)
             .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withCorrelationKey(correlationKey)
@@ -505,7 +505,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @return map of variables
    */
   private Map<String, String> getProcessInstanceVariables() {
-    return StreamFilter.variable(recordStreamSource)
+    return StreamFilter.variable(recordStream)
         .withProcessInstanceKey(actual)
         .withRejectionType(RejectionType.NULL_VAL)
         .stream()
@@ -563,11 +563,11 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
     final Record<IncidentRecordValue> latestIncidentRecord =
         incidentCreatedRecords.get(incidentCreatedRecords.size() - 1);
 
-    return new IncidentAssert(latestIncidentRecord.getKey(), recordStreamSource);
+    return new IncidentAssert(latestIncidentRecord.getKey(), recordStream);
   }
 
   private IncidentRecordStreamFilter getIncidentCreatedRecords() {
-    return StreamFilter.incident(recordStreamSource)
+    return StreamFilter.incident(recordStream)
         .withRejectionType(RejectionType.NULL_VAL)
         .withIntent(IncidentIntent.CREATED)
         .withProcessInstanceKey(actual);

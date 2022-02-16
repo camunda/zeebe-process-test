@@ -7,9 +7,9 @@ import static io.camunda.zeebe.process.test.qa.util.Utilities.startProcessInstan
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackStartEndEvent;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,7 @@ public class MultiThreadTest {
 
   private InMemoryEngine engine;
   private ZeebeClient client;
-  private RecordStreamSource recordStreamSource;
+  private RecordStream recordStream;
   private ExecutorService executorService;
 
   @BeforeEach
@@ -66,7 +66,7 @@ public class MultiThreadTest {
 
     @Override
     public Boolean call() {
-      BpmnAssert.initRecordStream(recordStreamSource);
+      BpmnAssert.initRecordStream(recordStream);
 
       deployProcess(client, ProcessPackStartEndEvent.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
