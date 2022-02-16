@@ -79,7 +79,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
   }
 
   @Override
-  public RecordStreamSource getRecordStream() {
+  public RecordStreamSource getRecordStreamSource() {
     return recordStream;
   }
 
