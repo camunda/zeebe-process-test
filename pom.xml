@@ -22,6 +22,7 @@
     <module>engine-agent</module>
     <module>engine-protocol</module>
     <module>extension</module>
+    <module>extension-testcontainer</module>
     <module>filters</module>
     <module>qa</module>
   </modules>
@@ -154,6 +155,18 @@
         <groupId>javax.annotation</groupId>
         <artifactId>javax.annotation-api</artifactId>
         <version>${dependency.javax.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers</artifactId>
+        <version>${dependency.testcontainers.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${dependency.testcontainers.version}</version>
       </dependency>
 
       <!-- Only for dependency convergence issues -->
