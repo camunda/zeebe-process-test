@@ -1,7 +1,5 @@
 package io.camunda.zeebe.process.test.engine.agent;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.engine.EngineFactory;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlGrpc.EngineControlImplBase;
@@ -18,7 +16,6 @@ import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.Sto
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateResponse;
 import io.camunda.zeebe.protocol.record.Record;
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -91,22 +88,15 @@ public final class EngineControlImpl extends EngineControlImplBase {
   @Override
   public void getRecords(
       final GetRecordsRequest request, final StreamObserver<RecordResponse> responseObserver) {
-    final ObjectMapper mapper = new ObjectMapper();
     final Iterable<Record<?>> records = engine.getRecordStreamSource().records();
+
     for (final Record<?> record : records) {
-      try {
-        final String recordJson = mapper.writeValueAsString(record);
-        final RecordResponse response =
-            RecordResponse.newBuilder().setRecordJson(recordJson).build();
-        responseObserver.onNext(response);
-      } catch (JsonProcessingException e) {
-        final String errorMessage = String.format("Failed mapping record %d at position %d to JSON",
-            record.getKey(), record.getPosition());
-        LOG.error(errorMessage, e);
-        responseObserver.onError(Status.INTERNAL.asException());
-        return;
-      }
+      final RecordResponse response = RecordResponse.newBuilder()
+          .setRecordJson(record.toJson())
+          .build();
+      responseObserver.onNext(response);
     }
+
     responseObserver.onCompleted();
   }
 }
