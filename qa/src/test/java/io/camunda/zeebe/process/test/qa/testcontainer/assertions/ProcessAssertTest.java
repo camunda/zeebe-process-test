@@ -1,4 +1,4 @@
-package io.camunda.zeebe.process.test.qa.assertions;
+package io.camunda.zeebe.process.test.qa.testcontainer.assertions;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -7,7 +7,7 @@ import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.ProcessAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
 import org.junit.jupiter.api.Nested;

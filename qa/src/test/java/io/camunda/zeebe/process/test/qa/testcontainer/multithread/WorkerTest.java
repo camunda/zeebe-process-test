@@ -1,10 +1,10 @@
-package io.camunda.zeebe.process.test.qa.multithread;
+package io.camunda.zeebe.process.test.qa.testcontainer.multithread;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
 import java.util.Collections;

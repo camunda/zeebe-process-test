@@ -1,4 +1,4 @@
-package io.camunda.zeebe.process.test.qa.assertions;
+package io.camunda.zeebe.process.test.qa.testcontainer.assertions;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
@@ -10,7 +10,7 @@ import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.IncidentAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
@@ -75,7 +75,7 @@ class JobAssertTest {
 
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      BpmnAssert.assertThat(actual).hasDeadline(expectedDeadline, offset(20L));
+      BpmnAssert.assertThat(actual).hasDeadline(expectedDeadline, offset(50L));
     }
 
     @Test

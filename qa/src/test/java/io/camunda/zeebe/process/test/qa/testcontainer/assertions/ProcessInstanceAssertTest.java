@@ -1,4 +1,4 @@
-package io.camunda.zeebe.process.test.qa.assertions;
+package io.camunda.zeebe.process.test.qa.testcontainer.assertions;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -9,7 +9,7 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.IncidentAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackMessageEvent;
@@ -647,7 +647,7 @@ class ProcessInstanceAssertTest {
                       .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
-              "Expected element with id %s to be passed 1 times",
+              "Expected element with id %s to be passed 1 times, but was 0",
               ProcessPackLoopingServiceTask.ELEMENT_ID);
     }
 
@@ -672,7 +672,7 @@ class ProcessInstanceAssertTest {
                       .hasNotPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
-              "Expected element with id %s to be passed 0 times",
+              "Expected element with id %s to be passed 0 times, but was 1",
               ProcessPackLoopingServiceTask.ELEMENT_ID);
     }
 
