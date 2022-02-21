@@ -20,6 +20,11 @@
       <groupId>io.camunda</groupId>
       <artifactId>zeebe-process-test-engine</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-process-test-engine-protocol</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
