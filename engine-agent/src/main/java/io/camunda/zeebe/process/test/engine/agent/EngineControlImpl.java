@@ -15,20 +15,22 @@ import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.Sto
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StopEngineResponse;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateResponse;
-import io.camunda.zeebe.protocol.record.Record;
 import io.grpc.stub.StreamObserver;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.List;
 
 public final class EngineControlImpl extends EngineControlImplBase {
 
   private static final Logger LOG = LoggerFactory.getLogger(EngineControlImpl.class);
 
   private InMemoryEngine engine;
+  private RecordStreamSourceWrapper recordStreamSource;
 
   public EngineControlImpl(final InMemoryEngine engine) {
     this.engine = engine;
+    this.recordStreamSource = new RecordStreamSourceWrapper(engine.getRecordStreamSource());
   }
 
   @Override
@@ -58,6 +60,7 @@ public final class EngineControlImpl extends EngineControlImplBase {
       final StreamObserver<ResetEngineResponse> responseObserver) {
     engine.stop();
     engine = EngineFactory.create();
+    recordStreamSource = new RecordStreamSourceWrapper(engine.getRecordStreamSource());
     engine.start();
 
     final ResetEngineResponse response = ResetEngineResponse.newBuilder().build();
@@ -88,14 +91,11 @@ public final class EngineControlImpl extends EngineControlImplBase {
   @Override
   public void getRecords(
       final GetRecordsRequest request, final StreamObserver<RecordResponse> responseObserver) {
-    final Iterable<Record<?>> records = engine.getRecordStreamSource().records();
+    final List<String> mappedRecords = recordStreamSource.getMappedRecords();
 
-    for (final Record<?> record : records) {
-      final RecordResponse response = RecordResponse.newBuilder()
-          .setRecordJson(record.toJson())
-          .build();
-      responseObserver.onNext(response);
-    }
+    mappedRecords.forEach(
+        record ->
+            responseObserver.onNext(RecordResponse.newBuilder().setRecordJson(record).build()));
 
     responseObserver.onCompleted();
   }
