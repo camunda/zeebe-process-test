@@ -34,15 +34,30 @@ message WaitForIdleStateResponse {}
 message GetRecordsRequest {}
 
 message RecordResponse {
+  // A JSON representation of a Record.
   string recordJson = 1;
 }
 
 service EngineControl {
 
+  /*
+    Starts the in-memory engine.
+   */
   rpc StartEngine (StartEngineRequest) returns (StartEngineResponse);
 
+  /*
+    Stops the in-memory engine.
+   */
   rpc StopEngine (StopEngineRequest) returns (StopEngineResponse);
 
+  /*
+    Resets the in-memory engine. This is done by recreating the engine entirely.
+    The engine should be reset before executing the next test. This prevents
+    the tests from influencing each other.
+    Using this while running tests concurrently will still cause issues. This is
+    because the first test will be using the engine, whilst the second test will
+    reset it. Therefore, the data from the first test will get lost.
+   */
   rpc ResetEngine (ResetEngineRequest) returns (ResetEngineResponse);
 
   /*
@@ -58,7 +73,13 @@ service EngineControl {
    */
   rpc WaitForIdleState (WaitForIdleStateRequest) returns (WaitForIdleStateResponse);
 
+  /*
+    Get all records from the in-memory engine. These records will be returned
+    in a JSON format. Client-side these should be mapped to Records.
 
+    For an easy way to serialize this JSON back to a Record please refer to:
+    https://github.com/camunda-cloud/zeebe/tree/main/protocol-jackson
+   */
   rpc GetRecords (GetRecordsRequest) returns (stream RecordResponse);
 
 }
