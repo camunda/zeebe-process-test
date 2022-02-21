@@ -16,7 +16,8 @@ public class AgentProperties {
   private static final Properties PROPERTIES = new Properties();
 
   static {
-    try (final InputStream inputStream = AgentProperties.class.getResourceAsStream(PROPERTIES_FILE)) {
+    try (final InputStream inputStream =
+        AgentProperties.class.getResourceAsStream(PROPERTIES_FILE)) {
       PROPERTIES.load(inputStream);
     } catch (NullPointerException e) {
       LOG.error(
@@ -30,6 +31,7 @@ public class AgentProperties {
       throw new RuntimeException(e);
     }
   }
+
   public static int getControllerPort() {
     return Integer.parseInt(getProperty(CONTROLLER_PORT));
   }
