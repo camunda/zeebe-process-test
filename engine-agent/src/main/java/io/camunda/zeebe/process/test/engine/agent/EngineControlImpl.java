@@ -21,8 +21,12 @@ import io.camunda.zeebe.protocol.record.Record;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class EngineControlImpl extends EngineControlImplBase {
+public final class EngineControlImpl extends EngineControlImplBase {
+
+  private static final Logger LOG = LoggerFactory.getLogger(EngineControlImpl.class);
 
   private InMemoryEngine engine;
 
@@ -96,7 +100,9 @@ public class EngineControlImpl extends EngineControlImplBase {
             RecordResponse.newBuilder().setRecordJson(recordJson).build();
         responseObserver.onNext(response);
       } catch (JsonProcessingException e) {
-        e.printStackTrace();
+        final String errorMessage = String.format("Failed mapping record %d at position %d to JSON",
+            record.getKey(), record.getPosition());
+        LOG.error(errorMessage, e);
         responseObserver.onError(Status.INTERNAL.asException());
         return;
       }

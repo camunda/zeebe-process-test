@@ -13,8 +13,12 @@ import io.grpc.Server;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InMemoryEngineImpl implements InMemoryEngine {
+
+  private static final Logger LOG = LoggerFactory.getLogger(InMemoryEngineImpl.class);
 
   private final Server grpcServer;
   private final StreamProcessor streamProcessor;
@@ -53,6 +57,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
       grpcServer.start();
       streamProcessor.openAsync(false).join();
     } catch (final IOException e) {
+      LOG.error("Failed starting in memory engine", e);
       throw new RuntimeException(e);
     }
   }
@@ -68,6 +73,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
       logStream.close();
       scheduler.stop();
     } catch (final Exception e) {
+      LOG.error("Failed stopping in memory engine", e);
       throw new RuntimeException(e);
     }
   }
