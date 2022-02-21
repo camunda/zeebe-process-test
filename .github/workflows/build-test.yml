@@ -33,7 +33,7 @@ jobs:
 
       - name: Build
         id: build
-        run: mvn -B -U "-Dsurefire.rerunFailingTestsCount=5" clean install
+        run: mvn -B -U -P regular "-Dsurefire.rerunFailingTestsCount=5" clean install
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v2
@@ -43,7 +43,63 @@ jobs:
           path: "*/target/surefire-reports/"
           retention-days: 7
 
-# We need to upload the event file as an artifact in order to support publishing the results of
+  build-and-test-testcontainers:
+    name: Run tests on ubuntu-latest using testcontainers
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: "qa-tests"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up Java environment
+        uses: actions/setup-java@v2.5.0
+        with:
+          distribution: temurin
+          java-version: 11 # Change to java 8 when tests are properly separated (https://github.com/camunda-cloud/zeebe-process-test/issues/195)
+
+      - name: Package
+        run: mvn -B -U clean package -DskipTests
+
+      - name: Build engine docker container
+        run: |
+          cd engine-agent
+          docker build . -t ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Update image tag in config
+        run: |
+          cd extension-testcontainer/src/main/resources
+          sed -i '/container.image.name=/ s/=.*/=${{ env.IMAGE_NAME }}/' config.properties
+          sed -i '/container.image.tag=/ s/=.*/=${{ github.sha }}/' config.properties
+          cat config.properties
+        env:
+          IMAGE_NAME_KEY: container.image.name
+          IMAGE_TAG_KEY: container.image.tag
+
+      - name: Build
+        id: build
+        run: mvn -B -U -P testcontainer "-Dsurefire.rerunFailingTestsCount=5" install
+
+      - name: Archive Test Results
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Unit Test Results Testcontainers
+          path: "*/target/surefire-reports/"
+          retention-days: 7
+
+
+  # We need to upload the event file as an artifact in order to support publishing the results of
 # forked repositories (https://github.com/EnricoMi/publish-unit-test-result-action#support-fork-repositories-and-dependabot-branches)
   event_file:
     name: "Event File"
@@ -55,3 +111,4 @@ jobs:
           name: Event File
           path: ${{ github.event_path }}
           retention-days: 1
+
