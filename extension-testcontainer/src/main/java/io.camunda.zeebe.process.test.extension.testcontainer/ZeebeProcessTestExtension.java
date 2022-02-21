@@ -29,8 +29,8 @@ public class ZeebeProcessTestExtension
     final ContainerizedEngine engine =
         new ContainerizedEngine(
             container.getHost(),
-            container.getMappedPort(EngineContainer.CONTAINER_PORT),
-            container.getMappedPort(EngineContainer.GATEWAY_PORT));
+            container.getMappedPort(ContainerProperties.getContainerPort()),
+            container.getMappedPort(ContainerProperties.getGatewayPort()));
 
     getStore(extensionContext).put(KEY_ZEEBE_ENGINE, engine);
   }

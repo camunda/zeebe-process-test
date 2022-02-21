@@ -51,7 +51,7 @@ class EngineClientTest {
 
   @BeforeEach
   public void setupGrpcServer() {
-    zeebeEngine = new EngineFactory().create();
+    zeebeEngine = EngineFactory.create();
     zeebeEngine.start();
     zeebeClient = zeebeEngine.createClient();
   }

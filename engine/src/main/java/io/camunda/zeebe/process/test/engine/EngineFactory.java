@@ -25,9 +25,12 @@ import java.util.concurrent.CompletableFuture;
 public class EngineFactory {
 
   public static InMemoryEngine create() {
+    return create(26500);
+  }
+
+  public static InMemoryEngine create(final int port) {
     final int partitionId = 1;
     final int partitionCount = 1;
-    final int port = 26500;
 
     final ControlledActorClock clock = createActorClock();
     final ActorScheduler scheduler = createAndStartActorScheduler(clock);

@@ -9,9 +9,9 @@ import java.io.IOException;
 public class ZeebeProcessTestEngine {
 
   public static void main(String[] args) throws IOException {
-    final InMemoryEngine engine = EngineFactory.create();
+    final InMemoryEngine engine = EngineFactory.create(AgentProperties.getGatewayPort());
     final EngineControlImpl engineService = new EngineControlImpl(engine);
-    final Server server = ServerBuilder.forPort(26501).addService(engineService).build();
+    final Server server = ServerBuilder.forPort(AgentProperties.getControllerPort()).addService(engineService).build();
 
     engine.start();
     server.start();

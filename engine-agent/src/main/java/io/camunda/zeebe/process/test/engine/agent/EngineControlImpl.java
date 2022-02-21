@@ -59,7 +59,7 @@ public final class EngineControlImpl extends EngineControlImplBase {
       final ResetEngineRequest request,
       final StreamObserver<ResetEngineResponse> responseObserver) {
     engine.stop();
-    engine = EngineFactory.create();
+    engine = EngineFactory.create(AgentProperties.getGatewayPort());
     recordStreamSource = new RecordStreamSourceWrapper(engine.getRecordStreamSource());
     engine.start();
 
