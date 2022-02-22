@@ -92,7 +92,7 @@ public final class EngineControlImpl extends EngineControlImplBase {
   public void getRecords(
       final GetRecordsRequest request, final StreamObserver<RecordResponse> responseObserver) {
     final ObjectMapper mapper = new ObjectMapper();
-    final Iterable<Record<?>> records = engine.getRecordStream().records();
+    final Iterable<Record<?>> records = engine.getRecordStreamSource().records();
     for (final Record<?> record : records) {
       try {
         final String recordJson = mapper.writeValueAsString(record);

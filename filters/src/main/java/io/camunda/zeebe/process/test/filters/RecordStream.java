@@ -30,7 +30,7 @@ public class RecordStream {
 
   private RecordStreamSource recordStreamSource;
 
-  public RecordStream(final RecordStreamSource recordStreamSource) {
+  private RecordStream(final RecordStreamSource recordStreamSource) {
     this.recordStreamSource = recordStreamSource;
   }
 
