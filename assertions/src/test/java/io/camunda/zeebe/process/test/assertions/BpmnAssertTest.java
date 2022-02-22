@@ -8,7 +8,7 @@ import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,7 @@ class BpmnAssertTest {
 
   @BeforeEach
   void beforeEach() {
-    BpmnAssert.initRecordStream(mock(RecordStreamSource.class));
+    BpmnAssert.initRecordStream(mock(RecordStream.class));
   }
 
   @AfterEach

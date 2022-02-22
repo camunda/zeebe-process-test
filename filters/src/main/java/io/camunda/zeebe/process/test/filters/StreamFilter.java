@@ -1,48 +1,45 @@
 package io.camunda.zeebe.process.test.filters;
 
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
-
 public class StreamFilter {
 
-  public static ProcessInstanceRecordStreamFilter processInstance(
-      final RecordStreamSource recordStreamSource) {
-    return new ProcessInstanceRecordStreamFilter(recordStreamSource.processInstanceRecords());
+  public static ProcessInstanceRecordStreamFilter processInstance(final RecordStream recordStream) {
+    return new ProcessInstanceRecordStreamFilter(recordStream.processInstanceRecords());
   }
 
   public static ProcessMessageSubscriptionRecordStreamFilter processMessageSubscription(
-      final RecordStreamSource recordStreamSource) {
+      final RecordStream recordStream) {
     return new ProcessMessageSubscriptionRecordStreamFilter(
-        recordStreamSource.processMessageSubscriptionRecords());
+        recordStream.processMessageSubscriptionRecords());
   }
 
-  public static VariableRecordStreamFilter variable(final RecordStreamSource recordStreamSource) {
-    return new VariableRecordStreamFilter(recordStreamSource.variableRecords());
+  public static VariableRecordStreamFilter variable(final RecordStream recordStream) {
+    return new VariableRecordStreamFilter(recordStream.variableRecords());
   }
 
-  public static MessageRecordStreamFilter message(final RecordStreamSource recordStreamSource) {
-    return new MessageRecordStreamFilter(recordStreamSource.messageRecords());
+  public static MessageRecordStreamFilter message(final RecordStream recordStream) {
+    return new MessageRecordStreamFilter(recordStream.messageRecords());
   }
 
-  public static IncidentRecordStreamFilter incident(final RecordStreamSource recordStreamSource) {
-    return new IncidentRecordStreamFilter(recordStreamSource.incidentRecords());
+  public static IncidentRecordStreamFilter incident(final RecordStream recordStream) {
+    return new IncidentRecordStreamFilter(recordStream.incidentRecords());
   }
 
   public static MessageStartEventSubscriptionStreamFilter messageStartEventSubscription(
-      final RecordStreamSource recordStreamSource) {
+      final RecordStream recordStream) {
     return new MessageStartEventSubscriptionStreamFilter(
-        recordStreamSource.messageStartEventSubscriptionRecords());
+        recordStream.messageStartEventSubscriptionRecords());
   }
 
   public static ProcessEventRecordStreamFilter processEventRecords(
-      final RecordStreamSource recordStreamSource) {
-    return new ProcessEventRecordStreamFilter(recordStreamSource.records());
+      final RecordStream recordStream) {
+    return new ProcessEventRecordStreamFilter(recordStream.records());
   }
 
-  public static JobRecordStreamFilter jobRecords(final RecordStreamSource recordStreamSource) {
-    return new JobRecordStreamFilter(recordStreamSource.jobRecords());
+  public static JobRecordStreamFilter jobRecords(final RecordStream recordStream) {
+    return new JobRecordStreamFilter(recordStream.jobRecords());
   }
 
-  public static TimerRecordStreamFilter timerRecords(final RecordStreamSource recordStreamSource) {
-    return new TimerRecordStreamFilter(recordStreamSource.timerRecords());
+  public static TimerRecordStreamFilter timerRecords(final RecordStream recordStream) {
+    return new TimerRecordStreamFilter(recordStream.timerRecords());
   }
 }

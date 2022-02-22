@@ -20,6 +20,7 @@ import io.camunda.zeebe.client.api.response.SetVariablesResponse;
 import io.camunda.zeebe.client.api.response.Topology;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.intent.JobIntent;
@@ -286,7 +287,9 @@ class EngineClientTest {
             () -> {
               final Optional<Record<ProcessInstanceRecordValue>> first =
                   StreamSupport.stream(
-                          zeebeEngine.getRecordStream().processInstanceRecords().spliterator(),
+                          RecordStream.of(zeebeEngine.getRecordStreamSource())
+                              .processInstanceRecords()
+                              .spliterator(),
                           false)
                       .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED)
                       .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
@@ -510,7 +513,10 @@ class EngineClientTest {
                       () -> {
                         final Optional<Record<JobRecordValue>> failedJob =
                             StreamSupport.stream(
-                                    zeebeEngine.getRecordStream().jobRecords().spliterator(), false)
+                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
+                                        .jobRecords()
+                                        .spliterator(),
+                                    false)
                                 .filter(r -> r.getKey() == job.getKey())
                                 .filter(r -> r.getIntent() == JobIntent.FAILED)
                                 .findFirst();
@@ -576,8 +582,7 @@ class EngineClientTest {
                       () -> {
                         final Optional<Record<ProcessInstanceRecordValue>> boundaryEvent =
                             StreamSupport.stream(
-                                    zeebeEngine
-                                        .getRecordStream()
+                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
                                         .processInstanceRecords()
                                         .spliterator(),
                                     false)
@@ -643,7 +648,10 @@ class EngineClientTest {
                       () -> {
                         final Optional<Record<JobRecordValue>> retriesUpdated =
                             StreamSupport.stream(
-                                    zeebeEngine.getRecordStream().jobRecords().spliterator(), false)
+                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
+                                        .jobRecords()
+                                        .spliterator(),
+                                    false)
                                 .filter(r -> r.getKey() == job.getKey())
                                 .filter(r -> r.getIntent() == JobIntent.RETRIES_UPDATED)
                                 .findFirst();
@@ -679,7 +687,9 @@ class EngineClientTest {
             () -> {
               final List<Record<ProcessInstanceRecordValue>> processRecords =
                   StreamSupport.stream(
-                          zeebeEngine.getRecordStream().processInstanceRecords().spliterator(),
+                          RecordStream.of(zeebeEngine.getRecordStreamSource())
+                              .processInstanceRecords()
+                              .spliterator(),
                           false)
                       .filter(r -> r.getRecordType() == RecordType.EVENT)
                       .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
@@ -729,13 +739,12 @@ class EngineClientTest {
         .join();
 
     // then
+    final RecordStream recordStream = RecordStream.of(zeebeEngine.getRecordStreamSource());
     Awaitility.await()
         .untilAsserted(
             () -> {
               final Optional<Record<ProcessInstanceRecordValue>> processRecords =
-                  StreamSupport.stream(
-                          zeebeEngine.getRecordStream().processInstanceRecords().spliterator(),
-                          false)
+                  StreamSupport.stream(recordStream.processInstanceRecords().spliterator(), false)
                       .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
                       .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
                       .findFirst();
@@ -743,7 +752,7 @@ class EngineClientTest {
               assertThat(processRecords).isNotEmpty();
             });
 
-    zeebeEngine.getRecordStream().print(true);
+    recordStream.print(true);
   }
 
   @Test
@@ -769,7 +778,10 @@ class EngineClientTest {
             () -> {
               final Optional<Record<TimerRecordValue>> timerCreated =
                   StreamSupport.stream(
-                          zeebeEngine.getRecordStream().timerRecords().spliterator(), false)
+                          RecordStream.of(zeebeEngine.getRecordStreamSource())
+                              .timerRecords()
+                              .spliterator(),
+                          false)
                       .filter(r -> r.getIntent() == TimerIntent.CREATED)
                       .findFirst();
 
@@ -784,7 +796,9 @@ class EngineClientTest {
             () -> {
               final Optional<Record<ProcessInstanceRecordValue>> processCompleted =
                   StreamSupport.stream(
-                          zeebeEngine.getRecordStream().processInstanceRecords().spliterator(),
+                          RecordStream.of(zeebeEngine.getRecordStreamSource())
+                              .processInstanceRecords()
+                              .spliterator(),
                           false)
                       .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
                       .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)

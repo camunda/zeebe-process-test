@@ -5,29 +5,29 @@ import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 
 public abstract class BpmnAssert {
 
-  static ThreadLocal<RecordStreamSource> recordStreamSource = new ThreadLocal<>();
+  static ThreadLocal<RecordStream> recordStream = new ThreadLocal<>();
 
-  public static void initRecordStream(final RecordStreamSource recordStreamSource) {
-    BpmnAssert.recordStreamSource.set(recordStreamSource);
+  public static void initRecordStream(final RecordStream recordStream) {
+    BpmnAssert.recordStream.set(recordStream);
   }
 
   public static void resetRecordStream() {
-    recordStreamSource.remove();
+    recordStream.remove();
   }
 
-  public static RecordStreamSource getRecordStreamSource() {
-    if (recordStreamSource.get() == null) {
+  public static RecordStream getRecordStreamSource() {
+    if (recordStream.get() == null) {
       throw new AssertionError(
           "No RecordStreamSource is set. Please make sure you are using the "
               + "@ZeebeProcessTest annotation. Alternatively, set one manually using "
               + "BpmnAssert.initRecordStream.");
     }
-    return recordStreamSource.get();
+    return recordStream.get();
   }
 
   public static ProcessInstanceAssert assertThat(final ProcessInstanceEvent instanceEvent) {

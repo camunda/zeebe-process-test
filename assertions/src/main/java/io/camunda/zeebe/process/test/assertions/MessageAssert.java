@@ -3,7 +3,7 @@ package io.camunda.zeebe.process.test.assertions;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -20,12 +20,11 @@ import org.assertj.core.api.Assertions;
 
 public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageResponse> {
 
-  private RecordStreamSource recordStreamSource;
+  private RecordStream recordStream;
 
-  protected MessageAssert(
-      final PublishMessageResponse actual, final RecordStreamSource recordStreamSource) {
+  protected MessageAssert(final PublishMessageResponse actual, final RecordStream recordStream) {
     super(actual, MessageAssert.class);
-    this.recordStreamSource = recordStreamSource;
+    this.recordStream = recordStream;
   }
 
   /**
@@ -35,7 +34,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
    */
   public MessageAssert hasBeenCorrelated() {
     final boolean isCorrelated =
-        StreamFilter.processMessageSubscription(recordStreamSource)
+        StreamFilter.processMessageSubscription(recordStream)
             .withMessageKey(actual.getMessageKey())
             .withRejectionType(RejectionType.NULL_VAL)
             .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
@@ -57,7 +56,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
    */
   public MessageAssert hasNotBeenCorrelated() {
     final Optional<Record<ProcessMessageSubscriptionRecordValue>> recordOptional =
-        StreamFilter.processMessageSubscription(recordStreamSource)
+        StreamFilter.processMessageSubscription(recordStream)
             .withMessageKey(actual.getMessageKey())
             .withRejectionType(RejectionType.NULL_VAL)
             .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
@@ -84,7 +83,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
    */
   public MessageAssert hasCreatedProcessInstance() {
     final boolean isCorrelated =
-        StreamFilter.messageStartEventSubscription(recordStreamSource)
+        StreamFilter.messageStartEventSubscription(recordStream)
             .withMessageKey(actual.getMessageKey())
             .withRejectionType(RejectionType.NULL_VAL)
             .withIntent(MessageStartEventSubscriptionIntent.CORRELATED)
@@ -108,7 +107,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
    */
   public MessageAssert hasNotCreatedProcessInstance() {
     final Optional<Record<MessageStartEventSubscriptionRecordValue>> recordOptional =
-        StreamFilter.messageStartEventSubscription(recordStreamSource)
+        StreamFilter.messageStartEventSubscription(recordStream)
             .withMessageKey(actual.getMessageKey())
             .withRejectionType(RejectionType.NULL_VAL)
             .withIntent(MessageStartEventSubscriptionIntent.CORRELATED)
@@ -135,7 +134,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
    */
   public MessageAssert hasExpired() {
     final boolean isExpired =
-        StreamFilter.message(recordStreamSource)
+        StreamFilter.message(recordStream)
             .withKey(actual.getMessageKey())
             .withRejectionType(RejectionType.NULL_VAL)
             .withIntent(MessageIntent.EXPIRED)
@@ -157,7 +156,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
    */
   public MessageAssert hasNotExpired() {
     final boolean isExpired =
-        StreamFilter.message(recordStreamSource)
+        StreamFilter.message(recordStream)
             .withKey(actual.getMessageKey())
             .withRejectionType(RejectionType.NULL_VAL)
             .withIntent(MessageIntent.EXPIRED)
@@ -187,7 +186,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
             actual.getMessageKey(), correlatedProcessInstances.size(), correlatedProcessInstances)
         .hasSize(1);
 
-    return new ProcessInstanceAssert(correlatedProcessInstances.get(0), recordStreamSource);
+    return new ProcessInstanceAssert(correlatedProcessInstances.get(0), recordStream);
   }
 
   /**
@@ -196,7 +195,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
    * @return List of process instance keys
    */
   private List<Long> getProcessInstanceKeysForCorrelatedMessage() {
-    return StreamFilter.processMessageSubscription(recordStreamSource)
+    return StreamFilter.processMessageSubscription(recordStream)
         .withMessageKey(actual.getMessageKey())
         .withRejectionType(RejectionType.NULL_VAL)
         .withIntent(ProcessMessageSubscriptionIntent.CORRELATED)
@@ -211,7 +210,7 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
    * @return List of process instance keys
    */
   private List<Long> getProcessInstanceKeysForCorrelatedMessageStartEvent() {
-    return StreamFilter.messageStartEventSubscription(recordStreamSource)
+    return StreamFilter.messageStartEventSubscription(recordStream)
         .withMessageKey(actual.getMessageKey())
         .withRejectionType(RejectionType.NULL_VAL)
         .withIntent(MessageStartEventSubscriptionIntent.CORRELATED)

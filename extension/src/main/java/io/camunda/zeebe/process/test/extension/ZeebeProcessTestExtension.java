@@ -2,9 +2,9 @@ package io.camunda.zeebe.process.test.extension;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.engine.EngineFactory;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +26,7 @@ public class ZeebeProcessTestExtension
   public void beforeEach(final ExtensionContext extensionContext) {
     final InMemoryEngine engine = EngineFactory.create();
     final ZeebeClient client = engine.createClient();
-    final RecordStreamSource recordStream = engine.getRecordStream();
+    final RecordStream recordStream = RecordStream.of(engine.getRecordStreamSource());
 
     try {
       injectFields(extensionContext, engine, client, recordStream);
@@ -62,7 +62,7 @@ public class ZeebeProcessTestExtension
     final InMemoryEngine engine = (InMemoryEngine) engineContent;
 
     System.out.println("===== Test failed! Printing records from the stream:");
-    engine.getRecordStream().print(true);
+    RecordStream.of(engine.getRecordStreamSource()).print(true);
   }
 
   private void injectFields(final ExtensionContext extensionContext, final Object... objects) {

@@ -3,7 +3,7 @@ package io.camunda.zeebe.process.test.assertions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.api.response.Process;
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
@@ -31,11 +31,11 @@ import org.assertj.core.api.AbstractAssert;
  */
 public class ProcessAssert extends AbstractAssert<ProcessAssert, Process> {
 
-  private final RecordStreamSource recordStreamSource;
+  private final RecordStream recordStream;
 
-  public ProcessAssert(final Process actual, final RecordStreamSource recordStreamSource) {
+  public ProcessAssert(final Process actual, final RecordStream recordStream) {
     super(actual, ProcessAssert.class);
-    this.recordStreamSource = recordStreamSource;
+    this.recordStream = recordStream;
   }
 
   /**
@@ -141,7 +141,7 @@ public class ProcessAssert extends AbstractAssert<ProcessAssert, Process> {
   }
 
   private Stream<Record<ProcessInstanceRecordValue>> getRecords() {
-    return StreamFilter.processInstance(recordStreamSource)
+    return StreamFilter.processInstance(recordStream)
         .withRejectionType(RejectionType.NULL_VAL)
         .withElementId(actual.getBpmnProcessId())
         .withBpmnElementType(BpmnElementType.PROCESS)

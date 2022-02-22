@@ -3,7 +3,7 @@ package io.camunda.zeebe.process.test.extension;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
-import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -14,8 +14,8 @@ class ZeebeProcessTestExtensionTest {
   @Nested
   class MultipleInjectedFields {
 
-    private RecordStreamSource recordStreamSourceOne;
-    private RecordStreamSource recordStreamSourceTwo;
+    private RecordStream recordStreamOne;
+    private RecordStream recordStreamTwo;
 
     @Test
     public void testMultipleInjectedFieldsThrowError() {
@@ -31,8 +31,8 @@ class ZeebeProcessTestExtensionTest {
       assertThatThrownBy(() -> extension.beforeEach(extensionContext))
           .isInstanceOf(IllegalStateException.class)
           .hasMessage(
-              "Expected at most one field of type RecordStreamSourceImpl, but found 2. "
-                  + "Please make sure at most one field of type RecordStreamSourceImpl has been "
+              "Expected at most one field of type RecordStream, but found 2. "
+                  + "Please make sure at most one field of type RecordStream has been "
                   + "declared in the test class.");
     }
   }

@@ -13,7 +13,7 @@ public interface InMemoryEngine {
   void stop();
 
   /** @return the {@link RecordStreamSource} of this engine */
-  RecordStreamSource getRecordStream();
+  RecordStreamSource getRecordStreamSource();
 
   /** @return a newly created {@link ZeebeClient} */
   ZeebeClient createClient();
