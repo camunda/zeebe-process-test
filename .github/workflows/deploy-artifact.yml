@@ -15,75 +15,6 @@ jobs:
   test:
     uses: ./.github/workflows/build-test.yml
 
-  deploy-to-maven:
-    runs-on: ubuntu-latest
-    needs: [test]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2.4.0
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          secrets: |
-            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_USR;
-            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_PSW;
-            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_DEPLOYMENT_USR;
-            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_DEPLOYMENT_PSW;
-            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE;
-            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC;
-
-      - name: Set up Java environment
-        uses: actions/setup-java@v2.5.0
-        with:
-          distribution: temurin
-          java-version: 11
-
-      - name: Import GPG key
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v4
-        with:
-          gpg_private_key: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
-          passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
-
-      - name: Build and deploy to Maven
-        id: release
-        uses: camunda-community-hub/community-action-maven-release@v1.0.12
-        with:
-          release-version: ${{ github.event.release.tag_name }}
-          release-profile: community-action-maven-release
-          nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
-          nexus-psw: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
-          maven-usr: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_USR }}
-          maven-psw: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
-          maven-gpg-passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
-          maven-url: s01.oss.sonatype.org
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Attach artifacts to GitHub Release (Release only)
-        if: github.event.release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ steps.release.outputs.artifacts_archive_path }}
-          asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
-          asset_content_type: application/zip
-
   deploy-to-docker:
     runs-on: ubuntu-latest
     needs: [test]
@@ -156,7 +87,75 @@ jobs:
           sed -i '/container.image.name=/ s/=.*/=$IMAGE_ID/' config.properties
           sed -i '/container.image.tag=/ s/=.*/=$TAG/' config.properties
           if [[ `git status --porcelain --untracked-files=no` ]]; then
-            git commit -am "Update image and tag ($IMAGE_ID:$TAG)"
+            git commit -am "(release): update image and tag ($IMAGE_ID:$TAG)"
             git push
           fi
 
+  deploy-to-maven:
+    runs-on: ubuntu-latest
+    needs: [deploy-to-docker]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_USR;
+            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_PSW;
+            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_DEPLOYMENT_USR;
+            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_DEPLOYMENT_PSW;
+            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE;
+            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC;
+
+      - name: Set up Java environment
+        uses: actions/setup-java@v2.5.0
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
+          passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+
+      - name: Build and deploy to Maven
+        id: release
+        uses: camunda-community-hub/community-action-maven-release@v1.0.12
+        with:
+          release-version: ${{ github.event.release.tag_name }}
+          release-profile: community-action-maven-release
+          nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
+          nexus-psw: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
+          maven-usr: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_USR }}
+          maven-psw: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
+          maven-gpg-passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+          maven-url: s01.oss.sonatype.org
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Attach artifacts to GitHub Release (Release only)
+        if: github.event.release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ steps.release.outputs.artifacts_archive_path }}
+          asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
+          asset_content_type: application/zip
