@@ -42,7 +42,7 @@ public class IncidentLogger {
       stringBuilder
           .append(System.lineSeparator())
           .append(System.lineSeparator())
-          .append("Incidents occurred:")
+          .append("Unresolved incident(s) exist at the end of this test")
           .append(System.lineSeparator());
       createIncidents.forEach(
           record -> {
@@ -50,7 +50,10 @@ public class IncidentLogger {
               stringBuilder.append(summarizeIncident(record)).append(System.lineSeparator());
             }
           });
-      stringBuilder.append(System.lineSeparator());
+      stringBuilder.append(System.lineSeparator())
+          .append("If you did not expect any incidents to occur, then we recommend investigating"
+              + "these. These incidents may indicate what went wrong in your test case")
+          .append(System.lineSeparator());
     }
   }
 

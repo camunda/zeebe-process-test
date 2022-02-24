@@ -63,7 +63,7 @@ public class ZeebeProcessTestExtension
   public void testFailed(final ExtensionContext extensionContext, final Throwable cause) {
     final Object engineContent = getStore(extensionContext.getParent().get()).get(KEY_ZEEBE_ENGINE);
     final ContainerizedEngine engine = (ContainerizedEngine) engineContent;
-    LOG.error("===== Test failed! Printing records from the stream:");
+    LOG.error("===== Test failed!");
     RecordStream.of(engine.getRecordStreamSource()).print(true);
   }
 

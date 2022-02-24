@@ -67,12 +67,12 @@ public class RecordStreamLogger {
   }
 
   public void log() {
-    final StringBuilder stringBuilder = new StringBuilder();
+    final StringBuilder stringBuilder = new StringBuilder().append(System.lineSeparator());
     logRecords(stringBuilder);
   }
 
   private void logRecords(final StringBuilder stringBuilder) {
-    stringBuilder.append("Records:");
+    stringBuilder.append("The following records have been recorded during this test:");
     recordStream
         .records()
         .forEach(

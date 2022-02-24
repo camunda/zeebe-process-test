@@ -64,7 +64,7 @@ public class ZeebeProcessTestExtension
     final Object engineContent = getStore(extensionContext).get(KEY_ZEEBE_ENGINE);
     final InMemoryEngine engine = (InMemoryEngine) engineContent;
 
-    LOG.error("===== Test failed! Printing records from the stream:");
+    LOG.error("===== Test failed!");
     RecordStream.of(engine.getRecordStreamSource()).print(true);
   }
 
