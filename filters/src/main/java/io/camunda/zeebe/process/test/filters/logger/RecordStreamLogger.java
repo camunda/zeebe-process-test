@@ -138,9 +138,9 @@ public class RecordStreamLogger {
 
   private String logGenericRecord(final Record<?> record) {
     return System.lineSeparator()
-        + String.format("| %-15s", record.getRecordType())
-        + String.format("%-30s", record.getValueType())
-        + String.format("%-25s| ", record.getIntent());
+        + String.format("| %-20s", record.getRecordType())
+        + String.format("%-35s", record.getValueType())
+        + String.format("%-30s| ", record.getIntent());
   }
 
   private String logJobRecord(final Record<?> record) {
