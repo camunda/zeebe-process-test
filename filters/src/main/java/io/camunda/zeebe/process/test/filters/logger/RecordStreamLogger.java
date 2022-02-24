@@ -2,11 +2,9 @@ package io.camunda.zeebe.process.test.filters.logger;
 
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.filters.RecordStream;
-import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
-import io.camunda.zeebe.protocol.record.intent.IncidentIntent;
 import io.camunda.zeebe.protocol.record.value.DeploymentRecordValue;
 import io.camunda.zeebe.protocol.record.value.ErrorRecordValue;
 import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
@@ -26,12 +24,9 @@ import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import io.camunda.zeebe.protocol.record.value.deployment.ProcessMetadataValue;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,51 +68,7 @@ public class RecordStreamLogger {
 
   public void log() {
     final StringBuilder stringBuilder = new StringBuilder();
-    logIncidents(stringBuilder);
     logRecords(stringBuilder);
-  }
-
-  private void logIncidents(final StringBuilder stringBuilder) {
-    final List<Record<IncidentRecordValue>> createIncidents =
-        StreamFilter.incident(recordStream).withIntent(IncidentIntent.CREATED).stream()
-            .collect(Collectors.toList());
-    final Set<Long> resolvedIncidents =
-        StreamFilter.incident(recordStream).withIntent(IncidentIntent.RESOLVED).stream()
-            .map(Record::getKey)
-            .collect(Collectors.toSet());
-
-    if (createIncidents.size() > resolvedIncidents.size()) {
-      stringBuilder
-          .append(System.lineSeparator())
-          .append(System.lineSeparator())
-          .append("Incidents occurred:")
-          .append(System.lineSeparator());
-      createIncidents.forEach(
-          record -> {
-            if (!resolvedIncidents.contains(record.getKey())) {
-              stringBuilder.append(summarizeIncident(record)).append(System.lineSeparator());
-            }
-          });
-      stringBuilder.append(System.lineSeparator());
-    }
-  }
-
-  private String summarizeIncident(final Record<IncidentRecordValue> incident) {
-    final IncidentRecordValue value = incident.getValue();
-    final StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder
-        .append(
-            String.format(
-                "On element %s in process %s", value.getElementId(), value.getBpmnProcessId()))
-        .append(System.lineSeparator())
-        .append("\t")
-        .append("- Error type: ")
-        .append(value.getErrorType())
-        .append(System.lineSeparator())
-        .append("\t")
-        .append("- Error message: ")
-        .append(value.getErrorMessage());
-    return stringBuilder.toString();
   }
 
   private void logRecords(final StringBuilder stringBuilder) {

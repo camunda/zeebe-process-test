@@ -1,6 +1,7 @@
 package io.camunda.zeebe.process.test.filters;
 
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.filters.logger.IncidentLogger;
 import io.camunda.zeebe.process.test.filters.logger.RecordStreamLogger;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordValue;
@@ -105,6 +106,7 @@ public class RecordStream {
 
   public void print(final boolean compact) {
     if (compact) {
+      new IncidentLogger(recordStreamSource).log();
       new RecordStreamLogger(recordStreamSource).log();
     } else {
       LOG.info("===== records (count: ${count()}) =====");
