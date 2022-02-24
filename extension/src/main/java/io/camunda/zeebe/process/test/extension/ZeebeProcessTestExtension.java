@@ -15,10 +15,13 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestWatcher;
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ZeebeProcessTestExtension
     implements BeforeEachCallback, AfterEachCallback, TestWatcher {
 
+  private static final Logger LOG = LoggerFactory.getLogger(ZeebeProcessTestExtension.class);
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
   private static final String KEY_ZEEBE_ENGINE = "ZEEBE_ENGINE";
 
@@ -61,7 +64,7 @@ public class ZeebeProcessTestExtension
     final Object engineContent = getStore(extensionContext).get(KEY_ZEEBE_ENGINE);
     final InMemoryEngine engine = (InMemoryEngine) engineContent;
 
-    System.out.println("===== Test failed! Printing records from the stream:");
+    LOG.error("===== Test failed! Printing records from the stream:");
     RecordStream.of(engine.getRecordStreamSource()).print(true);
   }
 
