@@ -1,10 +1,10 @@
-package io.camunda.zeebe.process.test.qa.inspections;
+package io.camunda.zeebe.process.test.qa.testcontainer.inspections;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.inspections.InspectionUtility;
 import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 import io.camunda.zeebe.process.test.qa.util.Utilities;

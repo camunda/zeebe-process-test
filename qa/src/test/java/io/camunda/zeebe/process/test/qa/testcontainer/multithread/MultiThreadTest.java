@@ -1,4 +1,4 @@
-package io.camunda.zeebe.process.test.qa.multithread;
+package io.camunda.zeebe.process.test.qa.testcontainer.multithread;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.process.test.qa.util.Utilities.deployProcess;
@@ -8,7 +8,7 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackStartEndEvent;
 import java.util.Arrays;

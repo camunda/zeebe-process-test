@@ -194,7 +194,9 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
             .count();
 
     assertThat(count)
-        .withFailMessage("Expected element with id %s to be passed %s times", elementId, times)
+        .withFailMessage(
+            "Expected element with id %s to be passed %s times, but was %s",
+            elementId, times, count)
         .isEqualTo(times);
 
     return this;

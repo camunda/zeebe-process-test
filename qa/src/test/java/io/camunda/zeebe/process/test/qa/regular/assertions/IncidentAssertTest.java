@@ -1,4 +1,4 @@
-package io.camunda.zeebe.process.test.qa.assertions;
+package io.camunda.zeebe.process.test.qa.regular.assertions;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

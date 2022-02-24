@@ -1,4 +1,4 @@
-package io.camunda.zeebe.process.test.extension;
+package io.camunda.zeebe.process.test.extension.testcontainer;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -8,13 +8,14 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * This annotation can be used to test BPMN processes. It will run an in memory Zeebe engine. To use
- * this annotation Java 17 or higher is required.
+ * This annotation can be used to test BPMN processes. It will make use of testcontainers to run an
+ * in memory engine. To use this annotation Java 8 or higher is required. Docker also needs to be
+ * running.
  *
  * Annotating test classes with this annotation will do a couple of things:
  *
  * <ul>
- *   <li>It will create and start an in memory engine. This will be a new engine for each testcase.
+ *   <li>It start a docker container running and in memory engine.
  *   <li>It will create a client which can be used to interact with the engine.
  *   <li>It will (optionally) inject 3 fields in your test class:
  *       <ul>
@@ -30,10 +31,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *   <li>It will take care of cleaning up the engine and client when the testcase is finished.
  * </ul>
  *
- * @since Java 17
+ * @since Java 8
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @ExtendWith(ZeebeProcessTestExtension.class)
-public @interface ZeebeProcessTest {}
+public @interface ZeebeProcessTest {
+
+}

@@ -1,4 +1,4 @@
-package io.camunda.zeebe.process.test.qa.inspections;
+package io.camunda.zeebe.process.test.qa.regular.inspections;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;

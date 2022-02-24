@@ -15,9 +15,85 @@ jobs:
   test:
     uses: ./.github/workflows/build-test.yml
 
-  deploy-to-maven:
+  deploy-to-docker:
     runs-on: ubuntu-latest
     needs: [test]
+
+    env:
+      OWNER: "camunda"
+      IMAGE_NAME: "zeebe-process-test-engine"
+      TAG: "latest"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test REGISTRY_HUB_DOCKER_COM_USR;
+            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test REGISTRY_HUB_DOCKER_COM_PSW;
+
+      - name: Set up Java environment
+        uses: actions/setup-java@v2.5.0
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Build jar
+        run: |
+          cd engine-agent
+          mvn clean package -DskipTests
+
+      - name: Build Docker image
+        run: |
+          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+          cd engine-agent
+          docker build . -t $IMAGE_NAME:$TAG
+
+      - name: Push Docker image
+        run: |
+          echo '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_PSW }}' | docker login -u '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_USR }}' --password-stdin
+          echo $IMAGE_NAME
+          echo $TAG
+          IMAGE_ID=$OWNER/$IMAGE_NAME
+          echo $IMAGE_ID
+          docker tag $IMAGE_NAME $IMAGE_ID:$TAG
+          docker push $IMAGE_ID:$TAG
+
+      - name: Update image and tag in Git
+        run : |
+          git config --global user.name "Release Bot"
+          git config --global user.email actions@github.com
+          git pull
+          cd extension-testcontainer/src/main/resources
+          IMAGE_ID=$OWNER/$IMAGE_NAME
+          sed -i '/container.image.name=/ s/=.*/=$IMAGE_ID/' config.properties
+          sed -i '/container.image.tag=/ s/=.*/=$TAG/' config.properties
+          if [[ `git status --porcelain --untracked-files=no` ]]; then
+            git commit -am "(release): update image and tag ($IMAGE_ID:$TAG)"
+            git push
+          fi
+
+  deploy-to-maven:
+    runs-on: ubuntu-latest
+    needs: [deploy-to-docker]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -83,65 +159,3 @@ jobs:
           asset_path: ${{ steps.release.outputs.artifacts_archive_path }}
           asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
           asset_content_type: application/zip
-
-  deploy-to-docker:
-    runs-on: ubuntu-latest
-    needs: [test]
-
-    env:
-      OWNER: "camunda"
-      IMAGE_NAME: "zeebe-process-test-engine"
-      TAG: "latest"
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2.4.0
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          secrets: |
-            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test REGISTRY_HUB_DOCKER_COM_USR;
-            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test REGISTRY_HUB_DOCKER_COM_PSW;
-
-      - name: Set up Java environment
-        uses: actions/setup-java@v2.5.0
-        with:
-          distribution: temurin
-          java-version: 11
-
-      - name: Build jar
-        run: |
-          cd engine-agent
-          mvn clean package -DskipTests
-
-      - name: Build Docker image
-        run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
-            TAG="${{ github.event.release.tag_name }}"
-          fi
-          cd engine-agent
-          docker build . -t $IMAGE_NAME:$TAG
-
-      - name: Push Docker image
-        run: |
-          echo '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_PSW }}' | docker login -u '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_USR }}' --password-stdin
-          echo $IMAGE_NAME
-          echo $TAG
-          IMAGE_ID=$OWNER/$IMAGE_NAME
-          echo $IMAGE_ID
-          docker tag $IMAGE_NAME $IMAGE_ID:$TAG
-          docker push $IMAGE_ID:$TAG
