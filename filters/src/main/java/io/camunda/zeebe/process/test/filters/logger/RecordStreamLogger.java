@@ -63,6 +63,11 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_RESULT, this::logProcessInstanceResultRecord);
     valueTypeLoggers.put(ValueType.PROCESS, this::logProcessRecord);
     valueTypeLoggers.put(ValueType.PROCESS_EVENT, this::logProcessEventRecord);
+
+    // These records don't have any interesting extra information for the user to log
+    valueTypeLoggers.put(ValueType.DEPLOYMENT_DISTRIBUTION, record -> "");
+    valueTypeLoggers.put(ValueType.SBE_UNKNOWN, record -> "");
+    valueTypeLoggers.put(ValueType.NULL_VAL, record -> "");
   }
 
   public void log() {
@@ -287,5 +292,9 @@ public class RecordStreamLogger {
     final StringJoiner joiner = new StringJoiner(", ", "[", "]");
     variables.forEach((key, value) -> joiner.add(key + " -> " + value.toString()));
     return String.format("(Variables: %s)", joiner);
+  }
+
+  protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {
+    return valueTypeLoggers;
   }
 }
