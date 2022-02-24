@@ -16,10 +16,8 @@ import io.camunda.zeebe.util.sched.ActorScheduler;
 import io.camunda.zeebe.util.sched.ActorSchedulingService;
 import io.camunda.zeebe.util.sched.clock.ActorClock;
 import io.camunda.zeebe.util.sched.clock.ControlledActorClock;
-import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class EngineFactory {

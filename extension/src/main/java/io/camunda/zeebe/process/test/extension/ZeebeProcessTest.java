@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * This annotation can be used to test BPMN processes. It will run an in memory Zeebe engine. To use
  * this annotation Java 17 or higher is required.
  *
- * Annotating test classes with this annotation will do a couple of things:
+ * <p>Annotating test classes with this annotation will do a couple of things:
  *
  * <ul>
  *   <li>It will create and start an in memory engine. This will be a new engine for each testcase.
@@ -23,8 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *             and increasing the time.
  *         <li>ZeebeClient - This is the client that allows you to communicate with the engine. It
  *             allows you to send commands to the engine.
- *         <li>RecordStream - This gives you access to all the records that are processed by
- *             the engine. It is what the assertions use to verify expectations. This grants you the
+ *         <li>RecordStream - This gives you access to all the records that are processed by the
+ *             engine. It is what the assertions use to verify expectations. This grants you the
  *             freedom to create your own assertions.
  *       </ul>
  *   <li>It will take care of cleaning up the engine and client when the testcase is finished.
