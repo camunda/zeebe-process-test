@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -77,18 +78,26 @@ public class RecordStreamLogger {
   }
 
   private void logIncidents(final StringBuilder stringBuilder) {
-    final List<Record<IncidentRecordValue>> incidents =
+    final List<Record<IncidentRecordValue>> createIncidents =
         StreamFilter.incident(recordStream).withIntent(IncidentIntent.CREATED).stream()
             .collect(Collectors.toList());
+    final Set<Long> resolvedIncidents =
+        StreamFilter.incident(recordStream).withIntent(IncidentIntent.RESOLVED).stream()
+            .map(Record::getKey)
+            .collect(Collectors.toSet());
 
-    if (!incidents.isEmpty()) {
+    if (createIncidents.size() > resolvedIncidents.size()) {
       stringBuilder
           .append(System.lineSeparator())
           .append(System.lineSeparator())
           .append("Incidents occurred:")
           .append(System.lineSeparator());
-      incidents.forEach(
-          record -> stringBuilder.append(summarizeIncident(record)).append(System.lineSeparator()));
+      createIncidents.forEach(
+          record -> {
+            if (!resolvedIncidents.contains(record.getKey())) {
+              stringBuilder.append(summarizeIncident(record)).append(System.lineSeparator());
+            }
+          });
       stringBuilder.append(System.lineSeparator());
     }
   }
@@ -169,8 +178,10 @@ public class RecordStreamLogger {
   private String logIncidentRecord(final Record<?> record) {
     final IncidentRecordValue value = (IncidentRecordValue) record.getValue();
     final StringJoiner joiner = new StringJoiner(", ", "", "");
-    joiner.add(String.format("(Element id: %s)", value.getElementId()));
-    joiner.add(String.format("(Process id: %s)", value.getBpmnProcessId()));
+    if (record.getRecordType().equals(RecordType.EVENT)) {
+      joiner.add(String.format("(Element id: %s)", value.getElementId()));
+      joiner.add(String.format("(Process id: %s)", value.getBpmnProcessId()));
+    }
     return joiner.toString();
   }
 
