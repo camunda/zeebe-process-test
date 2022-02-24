@@ -44,7 +44,7 @@ class ProcessInstanceAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    public void testProcessInstanceIsStarted() {
+    void testProcessInstanceIsStarted() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -60,7 +60,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsActive() {
+    void testProcessInstanceIsActive() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -76,7 +76,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsCompleted() {
+    void testProcessInstanceIsCompleted() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -93,7 +93,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotCompleted() {
+    void testProcessInstanceIsNotCompleted() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -109,7 +109,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsTerminated() {
+    void testProcessInstanceIsTerminated() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -127,7 +127,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotTerminated() {
+    void testProcessInstanceIsNotTerminated() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -143,7 +143,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedElement() {
+    void testProcessInstanceHasPassedElement() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -161,7 +161,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasNotPassedElement() {
+    void testProcessInstanceHasNotPassedElement() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -178,7 +178,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedElementMultipleTimes() {
+    void testProcessInstanceHasPassedElementMultipleTimes() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final int totalLoops = 5;
@@ -199,7 +199,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedElementsInOrder() {
+    void testProcessInstanceHasPassedElementsInOrder() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -220,7 +220,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingAt() {
+    void testProcessInstanceIsWaitingAt() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -234,7 +234,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessIsWaitingAtMultipleElements() {
+    void testProcessIsWaitingAtMultipleElements() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -251,7 +251,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAt() {
+    void testProcessInstanceIsNotWaitingAt() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -266,7 +266,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtMultipleElements() {
+    void testProcessInstanceIsNotWaitingAtMultipleElements() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -286,7 +286,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtNonExistingElement() {
+    void testProcessInstanceIsNotWaitingAtNonExistingElement() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -300,7 +300,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElements() {
+    void testProcessInstanceIsWaitingExactlyAtElements() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -316,7 +316,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingForMessage() {
+    void testProcessInstanceIsWaitingForMessage() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -333,7 +333,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingForMessage() {
+    void testProcessInstanceIsNotWaitingForMessage() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -353,7 +353,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasVariable() {
+    void testProcessInstanceHasVariable() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -369,7 +369,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasVariableWithValue() {
+    void testProcessInstanceHasVariableWithValue() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -388,7 +388,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasCorrelatedMessageByName() {
+    void testHasCorrelatedMessageByName() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -407,7 +407,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasCorrelatedMessageByCorrelationKey() {
+    void testHasCorrelatedMessageByCorrelationKey() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -426,7 +426,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasAnyIncidents() {
+    void testHasAnyIncidents() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -446,7 +446,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasNoIncidents() {
+    void testHasNoIncidents() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -459,7 +459,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testExtractLatestIncident() {
+    void testExtractLatestIncident() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -495,7 +495,7 @@ class ProcessInstanceAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    public void testProcessInstanceIsStartedFailure() {
+    void testProcessInstanceIsStartedFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent mockInstanceEvent = mock(ProcessInstanceEvent.class);
@@ -511,7 +511,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotStartedIfProcessInstanceKeyNoMatch() {
+    void testProcessInstanceIsNotStartedIfProcessInstanceKeyNoMatch() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -527,7 +527,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsActiveFailure() {
+    void testProcessInstanceIsActiveFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -547,7 +547,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsCompletedFailure() {
+    void testProcessInstanceIsCompletedFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -567,7 +567,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotCompletedFailure() {
+    void testProcessInstanceIsNotCompletedFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -587,7 +587,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsTerminatedFailure() {
+    void testProcessInstanceIsTerminatedFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -607,7 +607,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotTerminatedFailure() {
+    void testProcessInstanceIsNotTerminatedFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -628,7 +628,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedElementFailure() {
+    void testProcessInstanceHasPassedElementFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -652,7 +652,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasNotPassedElementFailure() {
+    void testProcessInstanceHasNotPassedElementFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -677,7 +677,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasPassedElementsInOrderFailure() {
+    void testProcessInstanceHasPassedElementsInOrderFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -707,7 +707,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingAtFailure() {
+    void testProcessInstanceIsWaitingAtFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -726,7 +726,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingAtMultipleElementsFailure() {
+    void testProcessInstanceIsWaitingAtMultipleElementsFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -754,7 +754,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceWaitingAtNonExistingElementFailure() {
+    void testProcessInstanceWaitingAtNonExistingElementFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -771,7 +771,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtFailure() {
+    void testProcessInstanceIsNotWaitingAtFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -789,7 +789,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingAtMulitpleElementsFailure() {
+    void testProcessInstanceIsNotWaitingAtMulitpleElementsFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -814,7 +814,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooManyElements() {
+    void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooManyElements() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -838,7 +838,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooLittleElements() {
+    void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooLittleElements() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -867,7 +867,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingExactlyAtElementsFailure_combination() {
+    void testProcessInstanceIsWaitingExactlyAtElementsFailure_combination() {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -898,7 +898,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsWaitingForMessageFailure() {
+    void testProcessInstanceIsWaitingForMessageFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -921,7 +921,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceIsNotWaitingForMessageFailure() {
+    void testProcessInstanceIsNotWaitingForMessageFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -943,7 +943,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasVariableFailure() {
+    void testProcessInstanceHasVariableFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final String expectedVariable = "variable";
@@ -962,7 +962,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testProcessInstanceHasVariableWithValueFailure() {
+    void testProcessInstanceHasVariableWithValueFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final String variable = "variable";
@@ -989,7 +989,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasCorrelatedMessageByNameFailure() {
+    void testHasCorrelatedMessageByNameFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -1013,7 +1013,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasCorrelatedMessageByCorrelationKeyFailure() {
+    void testHasCorrelatedMessageByCorrelationKeyFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -1038,7 +1038,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasAnyIncidentsFailure() {
+    void testHasAnyIncidentsFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -1053,7 +1053,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testHasNoIncidentsFailure() {
+    void testHasNoIncidentsFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -1074,7 +1074,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    public void testExtractLatestIncidentFailure() {
+    void testExtractLatestIncidentFailure() {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 

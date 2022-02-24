@@ -26,7 +26,7 @@ class DeploymentAssertTest {
     private ZeebeClient client;
 
     @Test
-    public void testContainsProcessesById() {
+    void testContainsProcessesById() {
       // when
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcesses(
@@ -41,7 +41,7 @@ class DeploymentAssertTest {
     }
 
     @Test
-    public void testContainsProcessesByResourceName() {
+    void testContainsProcessesByResourceName() {
       // when
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcesses(
@@ -56,7 +56,7 @@ class DeploymentAssertTest {
     }
 
     @Test
-    public void testExtractingProcessByBpmnProcessId() {
+    void testExtractingProcessByBpmnProcessId() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -71,7 +71,7 @@ class DeploymentAssertTest {
     }
 
     @Test
-    public void testExtractingProcessByResourceName() {
+    void testExtractingProcessByResourceName() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -93,7 +93,7 @@ class DeploymentAssertTest {
     private ZeebeClient client;
 
     @Test
-    public void testContainsProcessesByIdFailure() {
+    void testContainsProcessesByIdFailure() {
       // when
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -108,7 +108,7 @@ class DeploymentAssertTest {
     }
 
     @Test
-    public void testContainsProcessesByResourceNameFailure() {
+    void testContainsProcessesByResourceNameFailure() {
       // when
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -123,7 +123,7 @@ class DeploymentAssertTest {
     }
 
     @Test
-    public void testExtractingProcessByBpmnProcessIdFailure() {
+    void testExtractingProcessByBpmnProcessIdFailure() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -139,7 +139,7 @@ class DeploymentAssertTest {
     }
 
     @Test
-    public void testExtractingProcessByResourceName() {
+    void testExtractingProcessByResourceName() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);

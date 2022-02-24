@@ -27,7 +27,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   private DbLong value;
 
   @BeforeEach
-  public void setup() throws Exception {
+  void setup() throws Exception {
     zeebeDb = dbFactory.createDb();
 
     key = new DbLong();
@@ -38,7 +38,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldPutValue() {
+  void shouldPutValue() {
     // given
     key.wrapLong(1213);
     value.wrapLong(255);
@@ -58,7 +58,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldReturnNullIfNotExist() {
+  void shouldReturnNullIfNotExist() {
     // given
     key.wrapLong(1213);
 
@@ -70,7 +70,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldPutMultipleValues() {
+  void shouldPutMultipleValues() {
     // given
     putKeyValuePair(1213, 255);
 
@@ -93,7 +93,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldPutAndGetMultipleValues() {
+  void shouldPutAndGetMultipleValues() {
     // given
     putKeyValuePair(1213, 255);
 
@@ -118,7 +118,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldCheckForExistence() {
+  void shouldCheckForExistence() {
     // given
     putKeyValuePair(1213, 255);
 
@@ -130,7 +130,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldNotExist() {
+  void shouldNotExist() {
     // given
     key.wrapLong(1213);
 
@@ -142,7 +142,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldDelete() {
+  void shouldDelete() {
     // given
     putKeyValuePair(1213, 255);
 
@@ -158,7 +158,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldNotDeleteDifferentKey() {
+  void shouldNotDeleteDifferentKey() {
     // given
     putKeyValuePair(1213, 255);
 
@@ -177,7 +177,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldUseForeachValue() {
+  void shouldUseForeachValue() {
     // given
     putKeyValuePair(4567, 123);
     putKeyValuePair(6734, 921);
@@ -194,7 +194,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldUseForeachPair() {
+  void shouldUseForeachPair() {
     // given
     putKeyValuePair(4567, 123);
     putKeyValuePair(6734, 921);
@@ -217,7 +217,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldDeleteOnForeachPair() {
+  void shouldDeleteOnForeachPair() {
     // given
     putKeyValuePair(4567, 123);
     putKeyValuePair(6734, 921);
@@ -256,7 +256,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldUseWhileTrue() {
+  void shouldUseWhileTrue() {
     // given
     putKeyValuePair(4567, 123);
     putKeyValuePair(6734, 921);
@@ -281,7 +281,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldDeleteWhileTrue() {
+  void shouldDeleteWhileTrue() {
     // given
     putKeyValuePair(4567, 123);
     putKeyValuePair(6734, 921);
@@ -310,7 +310,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  public void shouldCheckIfEmpty() {
+  void shouldCheckIfEmpty() {
     assertThat(columnFamily.isEmpty()).isTrue();
 
     putKeyValuePair(1, 10);

@@ -28,7 +28,7 @@ public final class DbStringColumnFamilyTest {
   private DbString value;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     zeebeDb = dbFactory.createDb();
 
     key = new DbString();
@@ -39,7 +39,7 @@ public final class DbStringColumnFamilyTest {
   }
 
   @Test
-  public void shouldPutValue() {
+  void shouldPutValue() {
     // given
     key.wrapString("foo");
     value.wrapString("baring");
@@ -59,7 +59,7 @@ public final class DbStringColumnFamilyTest {
   }
 
   @Test
-  public void shouldUseForeachValue() {
+  void shouldUseForeachValue() {
     // given
     putKeyValuePair("foo", "baring");
     putKeyValuePair("this is the one", "as you know");
@@ -76,7 +76,7 @@ public final class DbStringColumnFamilyTest {
   }
 
   @Test
-  public void shouldUseForeachPair() {
+  void shouldUseForeachPair() {
     // given
     putKeyValuePair("foo", "baring");
     putKeyValuePair("this is the one", "as you know");
@@ -99,7 +99,7 @@ public final class DbStringColumnFamilyTest {
   }
 
   @Test
-  public void shouldUseWhileTrue() {
+  void shouldUseWhileTrue() {
     // given
     putKeyValuePair("foo", "baring");
     putKeyValuePair("this is the one", "as you know");
@@ -124,7 +124,7 @@ public final class DbStringColumnFamilyTest {
   }
 
   @Test
-  public void shouldUseWhileEqualPrefix() {
+  void shouldUseWhileEqualPrefix() {
     // given
     putKeyValuePair("foo", "baring");
     putKeyValuePair("this is the one", "as you know");
@@ -154,7 +154,7 @@ public final class DbStringColumnFamilyTest {
   }
 
   @Test
-  public void shouldUseWhileEqualPrefixLikeGet() {
+  void shouldUseWhileEqualPrefixLikeGet() {
     // given
     putKeyValuePair("foo", "baring");
     putKeyValuePair("this is the one", "as you know");
@@ -181,7 +181,7 @@ public final class DbStringColumnFamilyTest {
   }
 
   @Test
-  public void shouldAllowSingleNestedWhileEqualPrefix() {
+  void shouldAllowSingleNestedWhileEqualPrefix() {
     // given
     putKeyValuePair("and", "be good");
     key.wrapString("and");
@@ -197,7 +197,7 @@ public final class DbStringColumnFamilyTest {
   }
 
   @Test
-  public void shouldThrowExceptionOnMultipleNestedWhileEqualPrefix() {
+  void shouldThrowExceptionOnMultipleNestedWhileEqualPrefix() {
     // given
     putKeyValuePair("and", "be good");
     key.wrapString("and");

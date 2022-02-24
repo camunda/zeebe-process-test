@@ -20,7 +20,7 @@ public class ProcessInstanceInspectionsTest {
   private InMemoryEngine engine;
 
   @Test
-  public void testStartedByProcessInstanceWithProcessId() {
+  void testStartedByProcessInstanceWithProcessId() {
     // given
     Utilities.deployProcesses(
         client,
@@ -45,7 +45,7 @@ public class ProcessInstanceInspectionsTest {
   }
 
   @Test
-  public void testStartedByProcessInstanceWithProcessId_wrongId() {
+  void testStartedByProcessInstanceWithProcessId_wrongId() {
     // given
     Utilities.deployProcesses(
         client,

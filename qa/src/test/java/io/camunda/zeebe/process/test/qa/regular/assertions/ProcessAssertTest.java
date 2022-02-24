@@ -26,7 +26,7 @@ class ProcessAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    public void testHasBPMNProcessId() {
+    void testHasBPMNProcessId() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -41,7 +41,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasVersion() {
+    void testHasVersion() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -56,7 +56,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasResourceName() {
+    void testHasResourceName() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -71,7 +71,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasAnyInstances() {
+    void testHasAnyInstances() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -88,7 +88,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasNoInstances() {
+    void testHasNoInstances() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -103,7 +103,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasInstances() {
+    void testHasInstances() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -129,7 +129,7 @@ class ProcessAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    public void testHasBPMNProcessIdFailure() {
+    void testHasBPMNProcessIdFailure() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -148,7 +148,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasVersionFailure() {
+    void testHasVersionFailure() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -165,7 +165,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasResourceNameFailure() {
+    void testHasResourceNameFailure() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -184,7 +184,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasAnyInstancesFailure() {
+    void testHasAnyInstancesFailure() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -201,7 +201,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasNoInstances() {
+    void testHasNoInstances() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -220,7 +220,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    public void testHasInstances() {
+    void testHasInstances() {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);

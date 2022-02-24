@@ -18,7 +18,7 @@ class ZeebeProcessTestExtensionTest {
     private RecordStream recordStreamTwo;
 
     @Test
-    public void testMultipleInjectedFieldsThrowError() {
+    void testMultipleInjectedFieldsThrowError() {
       // given
       final ZeebeProcessTestExtension extension = new ZeebeProcessTestExtension();
       final ExtensionContext extensionContext = mock(ExtensionContext.class);

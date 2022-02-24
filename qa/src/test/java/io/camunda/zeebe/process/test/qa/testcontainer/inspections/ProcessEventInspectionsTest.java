@@ -23,7 +23,7 @@ class ProcessEventInspectionsTest {
   private InMemoryEngine engine;
 
   @Test
-  public void testFindFirstProcessInstance() {
+  void testFindFirstProcessInstance() {
     // given
     final DeploymentEvent deploymentEvent =
         Utilities.deployProcess(client, ProcessPackTimerStartEvent.RESOURCE_NAME);
@@ -43,7 +43,7 @@ class ProcessEventInspectionsTest {
   }
 
   @Test
-  public void testFindLastProcessInstance() {
+  void testFindLastProcessInstance() {
     // given
     final DeploymentEvent deploymentEvent =
         Utilities.deployProcess(client, ProcessPackTimerStartEvent.RESOURCE_NAME);
@@ -63,7 +63,7 @@ class ProcessEventInspectionsTest {
   }
 
   @Test
-  public void testFindFirstProcessInstance_wrongTimer() {
+  void testFindFirstProcessInstance_wrongTimer() {
     // given
     Utilities.deployProcess(client, ProcessPackTimerStartEvent.RESOURCE_NAME);
 
@@ -79,7 +79,7 @@ class ProcessEventInspectionsTest {
   }
 
   @Test
-  public void testFindProcessInstance_highIndex() {
+  void testFindProcessInstance_highIndex() {
     // given
     Utilities.deployProcess(client, ProcessPackTimerStartEvent.RESOURCE_NAME);
 

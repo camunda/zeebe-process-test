@@ -33,17 +33,17 @@ public class MultiThreadTest {
   private ExecutorService executorService;
 
   @BeforeEach
-  public void beforeEach() {
+  void beforeEach() {
     executorService = Executors.newFixedThreadPool(5);
   }
 
   @AfterEach
-  public void afterEach() {
+  void afterEach() {
     executorService.shutdown();
   }
 
   @Test
-  public void testMultiThreadingThrowsNoExceptions() throws InterruptedException {
+  void testMultiThreadingThrowsNoExceptions() throws InterruptedException {
     final List<Future<Boolean>> futures =
         executorService.invokeAll(
             Arrays.asList(

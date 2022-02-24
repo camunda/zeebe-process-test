@@ -50,20 +50,20 @@ class EngineClientTest {
   private ZeebeClient zeebeClient;
 
   @BeforeEach
-  public void setupGrpcServer() {
+  void setupGrpcServer() {
     zeebeEngine = EngineFactory.create();
     zeebeEngine.start();
     zeebeClient = zeebeEngine.createClient();
   }
 
   @AfterEach
-  public void tearDown() {
+  void tearDown() {
     zeebeEngine.stop();
     zeebeClient.close();
   }
 
   @Test
-  public void shouldRequestTopology() {
+  void shouldRequestTopology() {
     // given
 
     // when
@@ -89,7 +89,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldUseBuiltInClient() {
+  void shouldUseBuiltInClient() {
     // given
 
     // when
@@ -100,7 +100,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldUseGatewayAddressToBuildClient() {
+  void shouldUseGatewayAddressToBuildClient() {
     // given
     final ZeebeClient client =
         ZeebeClient.newClientBuilder()
@@ -117,7 +117,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldPublishMessage() {
+  void shouldPublishMessage() {
     // given
     zeebeClient
         .newDeployCommand()
@@ -156,7 +156,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldDeployProcess() {
+  void shouldDeployProcess() {
     // given
 
     // when
@@ -182,7 +182,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldCreateInstanceWithoutVariables() {
+  void shouldCreateInstanceWithoutVariables() {
     // given
     final DeploymentEvent deployment =
         zeebeClient
@@ -211,7 +211,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldRejectCommand() {
+  void shouldRejectCommand() {
     // given
 
     // when
@@ -226,7 +226,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldCreateProcessInstance() {
+  void shouldCreateProcessInstance() {
     // given
     final DeploymentEvent deployment =
         zeebeClient
@@ -256,7 +256,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldCancelProcessInstance() {
+  void shouldCancelProcessInstance() {
     // given
     zeebeClient
         .newDeployCommand()
@@ -299,7 +299,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldUpdateVariablesOnProcessInstance() {
+  void shouldUpdateVariablesOnProcessInstance() {
     // given
     zeebeClient
         .newDeployCommand()
@@ -337,7 +337,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldCreateProcessInstanceWithResult() {
+  void shouldCreateProcessInstanceWithResult() {
     // given
     final DeploymentEvent deployment =
         zeebeClient
@@ -369,7 +369,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldActivateJob() {
+  void shouldActivateJob() {
     // given
     final DeploymentEvent deployment =
         zeebeClient
@@ -423,7 +423,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldCompleteJob() {
+  void shouldCompleteJob() {
     // given
     zeebeClient
         .newDeployCommand()
@@ -460,7 +460,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldFailJob() {
+  void shouldFailJob() {
     // given
     zeebeClient
         .newDeployCommand()
@@ -527,7 +527,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldThrowErrorOnJob() {
+  void shouldThrowErrorOnJob() {
     // given
     zeebeClient
         .newDeployCommand()
@@ -600,7 +600,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldUpdateRetiresOnJob() {
+  void shouldUpdateRetiresOnJob() {
     // given
     zeebeClient
         .newDeployCommand()
@@ -661,7 +661,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldReadProcessInstanceRecords() {
+  void shouldReadProcessInstanceRecords() {
     // given
     zeebeClient
         .newDeployCommand()
@@ -719,7 +719,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldPrintRecords() {
+  void shouldPrintRecords() {
     // given
     zeebeClient
         .newDeployCommand()
@@ -756,7 +756,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldIncreaseTheTime() {
+  void shouldIncreaseTheTime() {
     // given
     zeebeClient
         .newDeployCommand()
