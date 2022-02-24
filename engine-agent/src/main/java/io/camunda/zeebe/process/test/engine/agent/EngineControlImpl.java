@@ -17,9 +17,9 @@ import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.Wai
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateResponse;
 import io.grpc.stub.StreamObserver;
 import java.time.Duration;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.List;
 
 public final class EngineControlImpl extends EngineControlImplBase {
 
