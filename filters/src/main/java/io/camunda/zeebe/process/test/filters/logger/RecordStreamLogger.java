@@ -115,7 +115,7 @@ public class RecordStreamLogger {
               stringBuilder.append(logGenericRecord(record));
               stringBuilder.append(
                   valueTypeLoggers
-                      .getOrDefault(record.getValueType(), this::logGenericRecord)
+                      .getOrDefault(record.getValueType(), var -> "")
                       .apply(record));
             });
 
