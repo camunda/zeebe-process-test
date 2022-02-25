@@ -1,6 +1,8 @@
 package io.camunda.zeebe.process.test.filters;
 
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.filters.logger.IncidentLogger;
+import io.camunda.zeebe.process.test.filters.logger.RecordStreamLogger;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordValue;
 import io.camunda.zeebe.protocol.record.ValueType;
@@ -17,8 +19,6 @@ import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import io.camunda.zeebe.protocol.record.value.deployment.Process;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
@@ -105,24 +105,13 @@ public class RecordStream {
   }
 
   public void print(final boolean compact) {
-    final List<Record<?>> recordsList = new ArrayList<>();
-    recordStreamSource.records().forEach(recordsList::add);
-
     if (compact) {
-      final StringBuilder stringBuilder = new StringBuilder();
-      recordsList.forEach(
-          record ->
-              stringBuilder
-                  .append(record.getRecordType())
-                  .append(" ")
-                  .append(record.getValueType())
-                  .append(" ")
-                  .append(record.getIntent()));
-      LOG.info(stringBuilder.toString());
+      new IncidentLogger(recordStreamSource).log();
+      new RecordStreamLogger(recordStreamSource).log();
     } else {
-      System.out.println("===== records (count: ${count()}) =====");
-      recordsList.forEach(record -> System.out.println(record.toJson()));
-      System.out.println("---------------------------");
+      LOG.info("===== records (count: ${count()}) =====");
+      recordStreamSource.records().forEach(record -> LOG.info(record.toJson()));
+      LOG.info("---------------------------");
     }
   }
 }
