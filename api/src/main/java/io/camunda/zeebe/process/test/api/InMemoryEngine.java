@@ -4,16 +4,19 @@ import io.camunda.zeebe.client.ZeebeClient;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
-/** The engine used for running processes. This engine runs fully in memory. */
+/**
+ * The engine used for running processes. This engine is a stripped down version of the actual Zeebe
+ * Engine. Its intended purpose is for testing purposes only.
+ */
 public interface InMemoryEngine {
 
-  /** Starts the engine */
+  /** Starts the test engine */
   void start();
 
-  /** Stops the engine */
+  /** Stops the test engine */
   void stop();
 
-  /** @return the {@link RecordStreamSource} of this engine */
+  /** @return the {@link RecordStreamSource} of this test engine */
   RecordStreamSource getRecordStreamSource();
 
   /** @return a newly created {@link ZeebeClient} */
@@ -23,15 +26,28 @@ public interface InMemoryEngine {
   String getGatewayAddress();
 
   /**
-   * Increases the time of the engine. Increasing the time can be useful for triggering timers with
-   * a date in the future.
+   * Increases the time of the test engine. Increasing the time can be useful for triggering timers
+   * with a date in the future.
    *
    * @param timeToAdd the amount of time to increase the engine with
    */
   void increaseTime(Duration timeToAdd);
 
   /**
-   * Waits for the engine to reach an idle state.
+   * Waits for the engine to reach an idle state. Idle state is a state in which the engine makes no
+   * progress and is waiting for new commands or events to trigger</br>
+   *
+   * <p>On a technical level, idle state is defined by
+   *
+   * <ul>
+   *   <li>The point in time when all current records in the commit log have been processed by the
+   *       engine
+   *   <li>This is insufficient, however, because the engine might still be in the process of
+   *       writing follow-up records
+   *   <li>Therefore, when the first idle state is detected, a grace period starts. If no new
+   *       records come in during that grace period, then at the end onf the grace period callbacks
+   *       are notified
+   * </ul>
    *
    * @param timeout the maximum amount of time to wait before idle state has been reached
    * @throws InterruptedException if the current thread was interrupted while waiting

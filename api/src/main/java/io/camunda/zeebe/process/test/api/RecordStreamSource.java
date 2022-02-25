@@ -5,6 +5,10 @@ import io.camunda.zeebe.protocol.record.value.*;
 
 public interface RecordStreamSource {
 
-  /** @return an iterable of all {@link Record} */
+  /**
+   * Gets an iterable of all records that have been published by the test engine.
+   *
+   * @return an iterable {@link Record}
+   */
   Iterable<Record<?>> records();
 }
