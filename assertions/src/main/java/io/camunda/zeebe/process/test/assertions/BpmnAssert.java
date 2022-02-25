@@ -20,7 +20,7 @@ public abstract class BpmnAssert {
     recordStream.remove();
   }
 
-  public static RecordStream getRecordStreamSource() {
+  public static RecordStream getRecordStream() {
     if (recordStream.get() == null) {
       throw new AssertionError(
           "No RecordStreamSource is set. Please make sure you are using the "
@@ -32,29 +32,29 @@ public abstract class BpmnAssert {
 
   public static ProcessInstanceAssert assertThat(final ProcessInstanceEvent instanceEvent) {
     return new ProcessInstanceAssert(
-        instanceEvent.getProcessInstanceKey(), getRecordStreamSource());
+        instanceEvent.getProcessInstanceKey(), getRecordStream());
   }
 
   public static ProcessInstanceAssert assertThat(final ProcessInstanceResult instanceResult) {
     return new ProcessInstanceAssert(
-        instanceResult.getProcessInstanceKey(), getRecordStreamSource());
+        instanceResult.getProcessInstanceKey(), getRecordStream());
   }
 
   public static ProcessInstanceAssert assertThat(
       final InspectedProcessInstance inspectedProcessInstance) {
     return new ProcessInstanceAssert(
-        inspectedProcessInstance.getProcessInstanceKey(), getRecordStreamSource());
+        inspectedProcessInstance.getProcessInstanceKey(), getRecordStream());
   }
 
   public static JobAssert assertThat(final ActivatedJob activatedJob) {
-    return new JobAssert(activatedJob, getRecordStreamSource());
+    return new JobAssert(activatedJob, getRecordStream());
   }
 
   public static DeploymentAssert assertThat(final DeploymentEvent deploymentEvent) {
-    return new DeploymentAssert(deploymentEvent, getRecordStreamSource());
+    return new DeploymentAssert(deploymentEvent, getRecordStream());
   }
 
   public static MessageAssert assertThat(final PublishMessageResponse publishMessageResponse) {
-    return new MessageAssert(publishMessageResponse, getRecordStreamSource());
+    return new MessageAssert(publishMessageResponse, getRecordStream());
   }
 }

@@ -7,11 +7,11 @@ public class InspectionUtility {
 
   public static ProcessEventInspections findProcessEvents() {
     return new ProcessEventInspections(
-        StreamFilter.processEventRecords(BpmnAssert.getRecordStreamSource()));
+        StreamFilter.processEventRecords(BpmnAssert.getRecordStream()));
   }
 
   public static ProcessInstanceInspections findProcessInstances() {
     return new ProcessInstanceInspections(
-        StreamFilter.processInstance(BpmnAssert.getRecordStreamSource()));
+        StreamFilter.processInstance(BpmnAssert.getRecordStream()));
   }
 }
