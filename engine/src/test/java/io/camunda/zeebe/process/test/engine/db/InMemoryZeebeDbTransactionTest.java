@@ -38,7 +38,7 @@ public final class InMemoryZeebeDbTransactionTest {
   private DbLong threeValue;
 
   @BeforeEach
-  public void setup() throws Exception {
+  void setup() throws Exception {
     final ZeebeDb<ColumnFamilies> zeebeDb = dbFactory.createDb();
     transactionContext = zeebeDb.createContext();
 
@@ -59,7 +59,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldUseTransaction() {
+  void shouldUseTransaction() {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
@@ -85,7 +85,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldNotGetPreviousValue() {
+  void shouldNotGetPreviousValue() {
     // given
     oneKey.wrapLong(123);
     oneValue.wrapLong(456);
@@ -105,7 +105,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldStartNewTransaction() throws Exception {
+  void shouldStartNewTransaction() throws Exception {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
@@ -135,7 +135,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldAccessOnOpenTransaction() throws Exception {
+  void shouldAccessOnOpenTransaction() throws Exception {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
@@ -165,7 +165,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldNotReopenTransaction() throws Exception {
+  void shouldNotReopenTransaction() throws Exception {
     // given
     final ZeebeDbTransaction transaction = transactionContext.getCurrentTransaction();
 
@@ -181,7 +181,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldNotReopenTransactionWithOperations() {
+  void shouldNotReopenTransactionWithOperations() {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
@@ -218,7 +218,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldRollbackTransaction() throws Exception {
+  void shouldRollbackTransaction() throws Exception {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
@@ -247,7 +247,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldGetValueInTransaction() {
+  void shouldGetValueInTransaction() {
     // given
     final AtomicLong actualValue = new AtomicLong(0);
     oneKey.wrapLong(1);
@@ -266,7 +266,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldFindValueInTransaction() {
+  void shouldFindValueInTransaction() {
     // given
     final Map<Long, Long> actualValues = new HashMap<>();
     oneKey.wrapLong(1);
@@ -299,7 +299,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldIterateAndFindValuesInTransaction() {
+  void shouldIterateAndFindValuesInTransaction() {
     // given
     final Map<Long, Long> actualValues = new HashMap<>();
 
@@ -336,7 +336,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldIterateAndDeleteInTransaction() {
+  void shouldIterateAndDeleteInTransaction() {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
@@ -357,7 +357,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldEndInSameTransaction() {
+  void shouldEndInSameTransaction() {
     // given
     final AtomicLong actualValue = new AtomicLong(0);
     oneKey.wrapLong(1);
@@ -381,7 +381,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldWriteAndDeleteInTransaction() {
+  void shouldWriteAndDeleteInTransaction() {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
@@ -419,7 +419,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldWriteAndDeleteSameKeyValuePairInTransaction() {
+  void shouldWriteAndDeleteSameKeyValuePairInTransaction() {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
@@ -439,7 +439,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldNotCommitOnError() {
+  void shouldNotCommitOnError() {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
@@ -472,7 +472,7 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  public void shouldWriteKeyAfterDeletion() {
+  void shouldWriteKeyAfterDeletion() {
     // given
     oneKey.wrapLong(1);
     oneValue.wrapLong(-1);
