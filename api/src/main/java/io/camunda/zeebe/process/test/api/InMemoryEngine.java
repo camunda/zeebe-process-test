@@ -30,15 +30,6 @@ public interface InMemoryEngine {
   void increaseTime(Duration timeToAdd);
 
   /**
-   * Runs the given function once the engine has reached an idle state.
-   *
-   * <p>For more info on the idle state refer to {@link IdleStateMonitor}
-   *
-   * @param callback the function that should be executed once an idle state has been reached
-   */
-  void runOnIdleState(Runnable callback);
-
-  /**
    * Waits for the engine to reach an idle state.
    *
    * <p>For more info on the idle state refer to {@link IdleStateMonitor}
