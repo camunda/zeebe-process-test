@@ -1,6 +1,5 @@
 package io.camunda.zeebe.process.test.filters.logger;
 
-
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.ValueType;
 import java.util.Arrays;
@@ -18,9 +17,12 @@ class RecordStreamLoggerTest {
 
     final SoftAssertions softly = new SoftAssertions();
     Arrays.asList(ValueType.values())
-        .forEach(valueType -> softly.assertThat(valueTypeLoggers.containsKey(valueType))
-            .withFailMessage("No value type logger defined for value type '%s'", valueType)
-            .isTrue());
+        .forEach(
+            valueType ->
+                softly
+                    .assertThat(valueTypeLoggers.containsKey(valueType))
+                    .withFailMessage("No value type logger defined for value type '%s'", valueType)
+                    .isTrue());
 
     softly.assertAll();
   }

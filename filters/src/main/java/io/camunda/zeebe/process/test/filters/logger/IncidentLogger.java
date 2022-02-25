@@ -50,9 +50,11 @@ public class IncidentLogger {
               stringBuilder.append(summarizeIncident(record)).append(System.lineSeparator());
             }
           });
-      stringBuilder.append(System.lineSeparator())
-          .append("If you did not expect any incidents to occur, then we recommend investigating"
-              + "these. These incidents may indicate what went wrong in your test case")
+      stringBuilder
+          .append(System.lineSeparator())
+          .append(
+              "If you did not expect any incidents to occur, then we recommend investigating"
+                  + "these. These incidents may indicate what went wrong in your test case")
           .append(System.lineSeparator());
     }
   }

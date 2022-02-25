@@ -50,13 +50,15 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.JOB_BATCH, this::logJobBatchRecordValue);
     valueTypeLoggers.put(ValueType.TIMER, this::logTimerRecordValue);
     valueTypeLoggers.put(
-        ValueType.MESSAGE_START_EVENT_SUBSCRIPTION, this::logMessageStartEventSubscriptionRecordValue);
+        ValueType.MESSAGE_START_EVENT_SUBSCRIPTION,
+        this::logMessageStartEventSubscriptionRecordValue);
     valueTypeLoggers.put(ValueType.VARIABLE, this::logVariableRecordValue);
     valueTypeLoggers.put(ValueType.VARIABLE_DOCUMENT, this::logVariableDocumentRecordValue);
     valueTypeLoggers.put(
         ValueType.PROCESS_INSTANCE_CREATION, this::logProcessInstanceCreationRecordValue);
     valueTypeLoggers.put(ValueType.ERROR, this::logErrorRecordValue);
-    valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_RESULT, this::logProcessInstanceResultRecordValue);
+    valueTypeLoggers.put(
+        ValueType.PROCESS_INSTANCE_RESULT, this::logProcessInstanceResultRecordValue);
     valueTypeLoggers.put(ValueType.PROCESS, this::logProcessRecordValue);
     valueTypeLoggers.put(ValueType.PROCESS_EVENT, this::logProcessEventRecordValue);
 
@@ -79,9 +81,7 @@ public class RecordStreamLogger {
             record -> {
               stringBuilder.append(logGenericRecord(record));
               stringBuilder.append(
-                  valueTypeLoggers
-                      .getOrDefault(record.getValueType(), var -> "")
-                      .apply(record));
+                  valueTypeLoggers.getOrDefault(record.getValueType(), var -> "").apply(record));
             });
 
     LOG.info(stringBuilder.toString());
