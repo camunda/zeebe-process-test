@@ -16,18 +16,18 @@ import java.util.stream.Stream;
 import org.assertj.core.api.AbstractAssert;
 
 /**
- * Assertions for {@code Process} instances.
+ * Assertions for {@link Process} instances.
  *
  * <p>These asserts can be obtained via:
  *
- * <pre>
- *   final DeploymentEvent deploymentEvent =
- *           client.newDeployCommand().addResourceFile(file).send().join();
+ * <pre>{@code
+ * final DeploymentEvent deploymentEvent =
+ *         client.newDeployCommand().addResourceFile(file).send().join();
  *
- *   final ProcessAssert processAssert =
- *           assertThat(deploymentEvent)
- *               .extractingProcessByBpmnProcessId(PROCESS_ID);
- * </pre>
+ * final ProcessAssert processAssert =
+ *         assertThat(deploymentEvent)
+ *             .extractingProcessByBpmnProcessId(PROCESS_ID);
+ * }</pre>
  */
 public class ProcessAssert extends AbstractAssert<ProcessAssert, Process> {
 

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 
+/** Assertions for {@link PublishMessageResponse} instances */
 public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageResponse> {
 
   private RecordStream recordStream;

@@ -9,7 +9,7 @@ import io.camunda.zeebe.process.test.filters.RecordStream;
 import java.util.List;
 import org.assertj.core.api.AbstractAssert;
 
-/** Assertions for {@code DeploymentEvent} instances */
+/** Assertions for {@link DeploymentEvent} instances */
 public class DeploymentAssert extends AbstractAssert<DeploymentAssert, DeploymentEvent> {
 
   private final RecordStream recordStream;

@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.SoftAssertions;
 
+/**
+ * Assertions for process instances. A process instance is identified by its process instance key.
+ */
 public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert, Long> {
 
   private final RecordStream recordStream;
