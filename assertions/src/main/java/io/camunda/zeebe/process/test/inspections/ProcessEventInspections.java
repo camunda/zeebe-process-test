@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Inspections for process events. This class is particularly useful to find processes that have
+ * been started without manually triggering them (e.g. with a timer start event).
+ */
 public class ProcessEventInspections {
 
   private final ProcessEventRecordStreamFilter filter;
