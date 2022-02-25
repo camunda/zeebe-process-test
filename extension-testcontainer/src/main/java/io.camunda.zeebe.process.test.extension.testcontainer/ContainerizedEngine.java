@@ -123,11 +123,6 @@ public class ContainerizedEngine implements InMemoryEngine {
   }
 
   @Override
-  public void runOnIdleState(final Runnable callback) {
-    // TODO remove this from interface?
-  }
-
-  @Override
   public void waitForIdleState() {
     final ManagedChannel channel = getChannel();
     final EngineControlBlockingStub stub = getStub(channel);

@@ -102,15 +102,10 @@ public class InMemoryEngineImpl implements InMemoryEngine {
   }
 
   @Override
-  public void runOnIdleState(final Runnable callback) {
-    idleStateMonitor.addCallback(callback);
-  }
-
-  @Override
   public void waitForIdleState() {
     final CompletableFuture<Void> idleState = new CompletableFuture<>();
 
-    runOnIdleState(() -> idleState.complete(null));
+    idleStateMonitor.addCallback(() -> idleState.complete(null));
 
     idleState.join();
   }
