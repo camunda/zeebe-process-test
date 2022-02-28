@@ -2,6 +2,7 @@ package io.camunda.zeebe.process.test.api;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 
 /** The engine used for running processes. This engine runs fully in memory. */
 public interface InMemoryEngine {
@@ -29,10 +30,15 @@ public interface InMemoryEngine {
    */
   void increaseTime(Duration timeToAdd);
 
-  /**
-   * Waits for the engine to reach an idle state.
-   *
-   * <p>For more info on the idle state refer to {@link IdleStateMonitor}
-   */
+  /** Waits for the engine to reach an idle state. */
   void waitForIdleState();
+
+  /**
+   * Waits for the engine to start processing.
+   *
+   * @param timeout the maximum amount of time to wait before processing state has been reached
+   * @throws InterruptedException if the current thread was interrupted while waiting
+   * @throws TimeoutException if the engine has not reached a processing state before the timeout
+   */
+  void waitForProcessingState(Duration timeout) throws InterruptedException, TimeoutException;
 }

@@ -15,9 +15,13 @@ import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.Sto
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StopEngineResponse;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateResponse;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForProcessingStateRequest;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForProcessingStateResponse;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +90,30 @@ public final class EngineControlImpl extends EngineControlImplBase {
     final WaitForIdleStateResponse response = WaitForIdleStateResponse.newBuilder().build();
     responseObserver.onNext(response);
     responseObserver.onCompleted();
+  }
+
+  @Override
+  public void waitForProcessingState(
+      final WaitForProcessingStateRequest request,
+      final StreamObserver<WaitForProcessingStateResponse> responseObserver) {
+    try {
+      engine.waitForProcessingState(Duration.ofMillis(request.getTimeout()));
+      final WaitForProcessingStateResponse response =
+          WaitForProcessingStateResponse.newBuilder().build();
+      responseObserver.onNext(response);
+      responseObserver.onCompleted();
+    } catch (InterruptedException e) {
+      responseObserver.onError(Status.INTERNAL.withCause(e).asException());
+    } catch (TimeoutException e) {
+      responseObserver.onError(
+          Status.DEADLINE_EXCEEDED
+              .withDescription(
+                  String.format(
+                      "Engine has not started processing within specified timeout of %d ms",
+                      request.getTimeout()))
+              .withCause(e)
+              .asException());
+    }
   }
 
   @Override

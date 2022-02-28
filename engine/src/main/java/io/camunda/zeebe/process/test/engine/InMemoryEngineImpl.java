@@ -13,6 +13,9 @@ import io.grpc.Server;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,5 +111,20 @@ public class InMemoryEngineImpl implements InMemoryEngine {
     idleStateMonitor.addOnIdleCallback(() -> idleState.complete(null));
 
     idleState.join();
+  }
+
+  @Override
+  public void waitForProcessingState(final Duration timeout)
+      throws InterruptedException, TimeoutException {
+    final CompletableFuture<Void> processingState = new CompletableFuture<>();
+
+    idleStateMonitor.addOnProcessingCallback(() -> processingState.complete(null));
+
+    try {
+      processingState.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+    } catch (ExecutionException e) {
+      // Do nothing. ExecutionExceptions won't appear. The function only completes the future, which
+      // in itself does not throw any exceptions.
+    }
   }
 }
