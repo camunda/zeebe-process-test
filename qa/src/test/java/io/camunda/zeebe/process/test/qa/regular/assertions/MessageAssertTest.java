@@ -94,7 +94,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasExpired() {
+    void testHasExpired() throws InterruptedException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Duration timeToLive = Duration.ofDays(1);
@@ -260,7 +260,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasNotExpiredFailure() {
+    void testHasNotExpiredFailure() throws InterruptedException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Duration timeToLive = Duration.ofDays(1);

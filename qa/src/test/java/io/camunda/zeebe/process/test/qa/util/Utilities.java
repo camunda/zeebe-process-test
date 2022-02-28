@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 public class Utilities {
@@ -149,15 +150,16 @@ public class Utilities {
     return response;
   }
 
-  public static void increaseTime(final InMemoryEngine engine, final Duration duration) {
+  public static void increaseTime(final InMemoryEngine engine, final Duration duration)
+      throws InterruptedException {
     engine.increaseTime(duration);
     try {
-      // we need to wait some physical time so that InMemoryEngine has a chance to fire the timers
-      Thread.sleep(100);
-    } catch (InterruptedException e) {
-      // do nothing
+      engine.waitForProcessingState(Duration.ofSeconds(1));
+      waitForIdleState(engine);
+    } catch (TimeoutException e) {
+      // Do nothing. We've waited up to 250 ms for processing to start, if it didn't start in this
+      // time the engine probably has not got anything left to process.
     }
-    waitForIdleState(engine);
   }
 
   public static void completeTask(
