@@ -66,6 +66,10 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.DEPLOYMENT_DISTRIBUTION, record -> "");
     valueTypeLoggers.put(ValueType.SBE_UNKNOWN, record -> "");
     valueTypeLoggers.put(ValueType.NULL_VAL, record -> "");
+
+    // DMN will not be part of the initial 1.4 release
+    valueTypeLoggers.put(ValueType.DECISION, record -> "");
+    valueTypeLoggers.put(ValueType.DECISION_REQUIREMENTS, record -> "");
   }
 
   public void log() {
