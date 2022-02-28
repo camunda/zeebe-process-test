@@ -4,6 +4,10 @@ import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.protocol.record.Record;
 import java.util.ArrayList;
 
+/**
+ * The source for record processed by the test engine. This class is responsible for getting the
+ * records from the test engine and storing them locally.
+ */
 public class RecordStreamSourceImpl implements RecordStreamSource {
 
   private final ContainerizedEngine engine;
@@ -19,6 +23,9 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
     this.records = records;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Iterable<Record<?>> records() {
     updateWithNewRecords();

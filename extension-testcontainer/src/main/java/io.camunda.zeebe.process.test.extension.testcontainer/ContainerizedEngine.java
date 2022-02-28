@@ -28,6 +28,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * The {@link ContainerizedEngine} is used for communicating with the actual test engine running in
+ * the testcontainer. Communicating will be done through gRPC. Implementation details for this gRPC
+ * service can be found in engine-protocol.
+ *
+ * This engine is a stripped down version of the actual Zeebe Engine.
+ * Its intended purpose is for testing purposes only.
+ */
 public class ContainerizedEngine implements InMemoryEngine {
 
   private final String host;
@@ -40,6 +48,9 @@ public class ContainerizedEngine implements InMemoryEngine {
     this.channelPort = channelPort;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void start() {
     final ManagedChannel channel = getChannel();
@@ -51,6 +62,9 @@ public class ContainerizedEngine implements InMemoryEngine {
     closeChannel(channel);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void stop() {
     final ManagedChannel channel = getChannel();
@@ -62,6 +76,10 @@ public class ContainerizedEngine implements InMemoryEngine {
     closeChannel(channel);
   }
 
+  /**
+   * Reset the test engine. Implementation wise a reset will result in stopping the old engine and
+   * creating a new one.
+   */
   public void reset() {
     final ManagedChannel channel = getChannel();
     final EngineControlBlockingStub stub = getStub(channel);
@@ -72,11 +90,19 @@ public class ContainerizedEngine implements InMemoryEngine {
     closeChannel(channel);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public RecordStreamSource getRecordStreamSource() {
     return new RecordStreamSourceImpl(this, getRecords());
   }
 
+  /**
+   * Gets a list of all records that have occurred on the test engine.
+   *
+   * @return a list of records
+   */
   public List<Record<?>> getRecords() {
     final ManagedChannel channel = getChannel();
     final EngineControlBlockingStub stub = getStub(channel);
@@ -101,6 +127,10 @@ public class ContainerizedEngine implements InMemoryEngine {
     return mappedRecords;
   }
 
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public ZeebeClient createClient() {
     return ZeebeClient.newClientBuilder()
@@ -109,11 +139,17 @@ public class ContainerizedEngine implements InMemoryEngine {
         .build();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getGatewayAddress() {
     return host + ":" + channelPort;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void increaseTime(final Duration timeToAdd) {
     final ManagedChannel channel = getChannel();
@@ -126,6 +162,9 @@ public class ContainerizedEngine implements InMemoryEngine {
     closeChannel(channel);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void waitForIdleState(final Duration timeout) {
     final ManagedChannel channel = getChannel();

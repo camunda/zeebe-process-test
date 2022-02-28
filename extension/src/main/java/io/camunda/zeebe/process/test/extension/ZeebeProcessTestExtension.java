@@ -18,6 +18,10 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This extension is used by the {@link ZeebeProcessTest} annotation. It is responsible for managing
+ * the lifecycle of the test engine.
+ */
 public class ZeebeProcessTestExtension
     implements BeforeEachCallback, AfterEachCallback, TestWatcher {
 
@@ -25,6 +29,13 @@ public class ZeebeProcessTestExtension
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
   private static final String KEY_ZEEBE_ENGINE = "ZEEBE_ENGINE";
 
+  /**
+   * Before each test a new test engine gets created and started. A client to communicate with the
+   * engine will also be created. Together with a {@link RecordStream} these will be injected in the
+   * fields of the test class, if they are available.
+   *
+   * @param extensionContext jUnit5 extension context
+   */
   @Override
   public void beforeEach(final ExtensionContext extensionContext) {
     final InMemoryEngine engine = EngineFactory.create();
@@ -45,6 +56,12 @@ public class ZeebeProcessTestExtension
     getStore(extensionContext).put(KEY_ZEEBE_ENGINE, engine);
   }
 
+  /**
+   * After each test the test engine en client will be closed. The {@link RecordStream} will get
+   * reset.
+   *
+   * @param extensionContext jUnit5 extension context
+   */
   @Override
   public void afterEach(final ExtensionContext extensionContext) {
     BpmnAssert.resetRecordStream();
@@ -58,6 +75,12 @@ public class ZeebeProcessTestExtension
     engine.stop();
   }
 
+  /**
+   * Upon test failure an overview of occurred events and incidents will be logged.
+   *
+   * @param extensionContext jUnit5 extension context
+   * @param cause the throwable that caused the test failure
+   */
   @Override
   public void testFailed(final ExtensionContext extensionContext, final Throwable cause) {
     final Object engineContent = getStore(extensionContext).get(KEY_ZEEBE_ENGINE);
