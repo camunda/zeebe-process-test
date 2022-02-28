@@ -105,7 +105,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
   public void waitForIdleState() {
     final CompletableFuture<Void> idleState = new CompletableFuture<>();
 
-    idleStateMonitor.addCallback(() -> idleState.complete(null));
+    idleStateMonitor.addOnIdleCallback(() -> idleState.complete(null));
 
     idleState.join();
   }

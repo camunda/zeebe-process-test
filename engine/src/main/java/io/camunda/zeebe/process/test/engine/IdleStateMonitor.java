@@ -30,7 +30,7 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
 
   private static final Timer TIMER = new Timer();
   public static final int GRACE_PERIOD = 30;
-  private final List<Runnable> callbacks = new ArrayList<>();
+  private final List<Runnable> idleCallbacks = new ArrayList<>();
   private final LogStreamReader reader;
   private volatile long lastEventPosition = -1L;
   private volatile long lastProcessedPosition = -1L;
@@ -44,9 +44,9 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
     reader = logStreamReader;
   }
 
-  public void addCallback(final Runnable callback) {
-    synchronized (callbacks) {
-      callbacks.add(callback);
+  public void addOnIdleCallback(final Runnable callback) {
+    synchronized (idleCallbacks) {
+      idleCallbacks.add(callback);
     }
     checkIdleState();
   }
@@ -116,9 +116,9 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
       @Override
       public void run() {
         if (isInIdleState()) {
-          synchronized (callbacks) {
-            callbacks.forEach(Runnable::run);
-            callbacks.clear();
+          synchronized (idleCallbacks) {
+            idleCallbacks.forEach(Runnable::run);
+            idleCallbacks.clear();
           }
         }
       }
