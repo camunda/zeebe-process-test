@@ -84,12 +84,11 @@ jobs:
         run : |
           git config --global user.name "Release Bot"
           git config --global user.email actions@github.com
-          git pull
           cd extension-testcontainer/src/main/resources
           IMAGE_ID=$OWNER/$IMAGE_NAME
           sed -i '/container.image.name=/ s:=.*:='$IMAGE_ID':' config.properties
           sed -i '/container.image.tag=/ s:=.*:='$TAG':' config.properties
-          if [[ `git status --porcelain --untracked-files=no` ]]; then
+          if [[ `git status --porcelain --untracked-files=no` ]] && [[ `git symbolic-ref -q HEAD` ]]; then
             git commit -am "(release): update image and tag ($IMAGE_ID:$TAG)"
             git push
           fi
@@ -129,7 +128,7 @@ jobs:
         uses: actions/setup-java@v3.0.0
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Import GPG key
         id: import_gpg
