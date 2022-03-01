@@ -39,7 +39,7 @@
     <dependency.awaitility.version>4.1.1</dependency.awaitility.version>
     <dependency.errorprone.version>2.11.0</dependency.errorprone.version>
     <dependency.eze.version>0.6.0</dependency.eze.version>
-    <dependency.feel.version>1.14.1</dependency.feel.version>
+    <dependency.feel.version>1.14.2</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>31.0.1-jre</dependency.guava.version>
     <dependency.immutables.version>2.9.0</dependency.immutables.version>
