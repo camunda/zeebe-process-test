@@ -70,6 +70,7 @@ public class RecordStreamLogger {
     // DMN will not be part of the initial 1.4 release
     valueTypeLoggers.put(ValueType.DECISION, record -> "");
     valueTypeLoggers.put(ValueType.DECISION_REQUIREMENTS, record -> "");
+    valueTypeLoggers.put(ValueType.DECISION_EVALUATION, record -> "");
   }
 
   public void log() {

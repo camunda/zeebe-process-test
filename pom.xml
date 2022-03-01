@@ -15,10 +15,8 @@
 
   <name>Zeebe Process Test Root</name>
 
-  <description>
-    This pom should be the parent of all specified modules. It defines all versions and provides
-    plugins that are required for the child modules.
-  </description>
+  <description>This pom should be the parent of all specified modules. It defines all versions and provides
+    plugins that are required for the child modules.</description>
 
   <modules>
     <module>api</module>
@@ -63,7 +61,7 @@
     <dependency.snakeyaml.version>1.30</dependency.snakeyaml.version>
     <dependency.spring.version>5.3.16</dependency.spring.version>
     <dependency.testcontainers.version>1.16.3</dependency.testcontainers.version>
-    <dependency.zeebe.version>1.4.0-alpha1</dependency.zeebe.version>
+    <dependency.zeebe.version>1.4.0-alpha2</dependency.zeebe.version>
 
     <nexus.release.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io</nexus.release.repository>
     <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
@@ -149,6 +147,36 @@
         <version>${dependency.zeebe.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-workflow-engine</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-util</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-logstreams</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-test-util</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-protocol-jackson</artifactId>
+        <version>${dependency.zeebe.version}</version>
       </dependency>
 
       <dependency>
