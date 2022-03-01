@@ -40,6 +40,7 @@
   <properties>
     <dependency.assertj.version>3.22.0</dependency.assertj.version>
     <dependency.awaitility.version>4.1.1</dependency.awaitility.version>
+    <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.11.0</dependency.errorprone.version>
     <dependency.eze.version>0.6.0</dependency.eze.version>
     <dependency.feel.version>1.14.2</dependency.feel.version>
@@ -306,6 +307,12 @@
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>${dependency.awaitility.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${dependency.commons.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
