@@ -69,12 +69,15 @@ jobs:
 
       - name: Push Docker image
         run: |
+          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
+            TAG="${{ github.event.release.tag_name }}"
+          fi
           echo '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_PSW }}' | docker login -u '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_USR }}' --password-stdin
           echo $IMAGE_NAME
           echo $TAG
           IMAGE_ID=$OWNER/$IMAGE_NAME
           echo $IMAGE_ID
-          docker tag $IMAGE_NAME $IMAGE_ID:$TAG
+          docker tag $IMAGE_NAME:$TAG $IMAGE_ID:$TAG
           docker push $IMAGE_ID:$TAG
 
       - name: Update image and tag in Git
