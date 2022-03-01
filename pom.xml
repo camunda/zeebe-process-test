@@ -388,7 +388,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
         <version>${plugin.version.flatten}</version>
-        <configuration combine.children="append">
+        <configuration>
           <flattenMode>ossrh</flattenMode>
           <!--
             do not change the outputDirectory; it must remain the same one as the relative project
