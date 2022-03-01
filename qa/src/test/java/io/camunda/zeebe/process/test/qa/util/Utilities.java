@@ -154,7 +154,7 @@ public class Utilities {
       throws InterruptedException {
     engine.increaseTime(duration);
     try {
-      engine.waitForProcessingState(Duration.ofSeconds(1));
+      engine.waitForBusyState(Duration.ofSeconds(1));
       waitForIdleState(engine);
     } catch (TimeoutException e) {
       // Do nothing. We've waited up to 250 ms for processing to start, if it didn't start in this

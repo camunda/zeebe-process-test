@@ -31,13 +31,13 @@ message WaitForIdleStateRequest {
 
 message WaitForIdleStateResponse {}
 
-message WaitForProcessingStateRequest {
+message WaitForBusyStateRequest {
   // timeout (in ms). The request will be closed if an idle state has not been
   // achieved withing the timeout.
   int64 timeout = 1;
 }
 
-message WaitForProcessingStateResponse {}
+message WaitForBusyStateResponse {}
 
 message GetRecordsRequest {}
 
@@ -82,9 +82,9 @@ service EngineControl {
   rpc WaitForIdleState (WaitForIdleStateRequest) returns (WaitForIdleStateResponse);
 
   /*
-    Waits a given timeout for the engine to have started processing.
+    Waits a given timeout for the engine to have reached a busy state.
    */
-  rpc WaitForProcessingState (WaitForProcessingStateRequest) returns (WaitForProcessingStateResponse);
+  rpc WaitForBusyState (WaitForBusyStateRequest) returns (WaitForBusyStateResponse);
 
   /*
     Get all records from the in-memory engine. These records will be returned

@@ -13,10 +13,10 @@ import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.Sta
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StartEngineResponse;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StopEngineRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StopEngineResponse;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForBusyStateRequest;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForBusyStateResponse;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateResponse;
-import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForProcessingStateRequest;
-import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForProcessingStateResponse;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import java.time.Duration;
@@ -93,13 +93,12 @@ public final class EngineControlImpl extends EngineControlImplBase {
   }
 
   @Override
-  public void waitForProcessingState(
-      final WaitForProcessingStateRequest request,
-      final StreamObserver<WaitForProcessingStateResponse> responseObserver) {
+  public void waitForBusyState(
+      final WaitForBusyStateRequest request,
+      final StreamObserver<WaitForBusyStateResponse> responseObserver) {
     try {
-      engine.waitForProcessingState(Duration.ofMillis(request.getTimeout()));
-      final WaitForProcessingStateResponse response =
-          WaitForProcessingStateResponse.newBuilder().build();
+      engine.waitForBusyState(Duration.ofMillis(request.getTimeout()));
+      final WaitForBusyStateResponse response = WaitForBusyStateResponse.newBuilder().build();
       responseObserver.onNext(response);
       responseObserver.onCompleted();
     } catch (InterruptedException e) {

@@ -34,11 +34,11 @@ public interface InMemoryEngine {
   void waitForIdleState();
 
   /**
-   * Waits for the engine to start processing.
+   * Waits for the engine to reach a busy state.
    *
-   * @param timeout the maximum amount of time to wait before processing state has been reached
+   * @param timeout the maximum amount of time to wait before busy state has been reached
    * @throws InterruptedException if the current thread was interrupted while waiting
-   * @throws TimeoutException if the engine has not reached a processing state before the timeout
+   * @throws TimeoutException if the engine has not reached a busy state before the timeout
    */
-  void waitForProcessingState(Duration timeout) throws InterruptedException, TimeoutException;
+  void waitForBusyState(Duration timeout) throws InterruptedException, TimeoutException;
 }

@@ -114,7 +114,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
   }
 
   @Override
-  public void waitForProcessingState(final Duration timeout)
+  public void waitForBusyState(final Duration timeout)
       throws InterruptedException, TimeoutException {
     final CompletableFuture<Void> processingState = new CompletableFuture<>();
 

@@ -13,8 +13,8 @@ import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.Rec
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.ResetEngineRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StartEngineRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StopEngineRequest;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForBusyStateRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateRequest;
-import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForProcessingStateRequest;
 import io.camunda.zeebe.protocol.jackson.record.AbstractRecord;
 import io.camunda.zeebe.protocol.record.Record;
 import io.grpc.ManagedChannel;
@@ -139,15 +139,15 @@ public class ContainerizedEngine implements InMemoryEngine {
   }
 
   @Override
-  public void waitForProcessingState(final Duration timeout)
+  public void waitForBusyState(final Duration timeout)
       throws InterruptedException, TimeoutException {
     final ManagedChannel channel = getChannel();
     final EngineControlBlockingStub stub = getStub(channel);
 
-    final WaitForProcessingStateRequest request =
-        WaitForProcessingStateRequest.newBuilder().setTimeout(timeout.toMillis()).build();
+    final WaitForBusyStateRequest request =
+        WaitForBusyStateRequest.newBuilder().setTimeout(timeout.toMillis()).build();
     try {
-      stub.waitForProcessingState(request);
+      stub.waitForBusyState(request);
     } catch (StatusRuntimeException e) {
       if (e.getStatus().getCode().equals(Status.DEADLINE_EXCEEDED.getCode())) {
         throw new TimeoutException(e.getMessage());
