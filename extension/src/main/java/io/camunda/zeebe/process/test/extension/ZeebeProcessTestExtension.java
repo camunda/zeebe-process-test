@@ -28,6 +28,7 @@ public class ZeebeProcessTestExtension
   @Override
   public void beforeEach(final ExtensionContext extensionContext) {
     final InMemoryEngine engine = EngineFactory.create();
+    engine.start();
     final ZeebeClient client = engine.createClient();
     final RecordStream recordStream = RecordStream.of(engine.getRecordStreamSource());
 
@@ -42,8 +43,6 @@ public class ZeebeProcessTestExtension
     BpmnAssert.initRecordStream(recordStream);
     getStore(extensionContext).put(KEY_ZEEBE_CLIENT, client);
     getStore(extensionContext).put(KEY_ZEEBE_ENGINE, engine);
-
-    engine.start();
   }
 
   @Override
