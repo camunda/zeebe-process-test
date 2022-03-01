@@ -9,6 +9,7 @@ import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 
 @ZeebeProcessTest
@@ -18,7 +19,7 @@ public class WorkerTest {
   private InMemoryEngine engine;
 
   @Test
-  void testJobsCanBeProcessedAsynchronouslyByWorker() throws InterruptedException {
+  void testJobsCanBeProcessedAsynchronouslyByWorker() throws InterruptedException, TimeoutException {
     // given
     client
         .newWorker()

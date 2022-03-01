@@ -14,6 +14,7 @@ import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackMessageStartEv
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +32,7 @@ class MessageAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testHasBeenCorrelated() {
+    void testHasBeenCorrelated() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -49,7 +50,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasMessageStartEventBeenCorrelated() {
+    void testHasMessageStartEventBeenCorrelated() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
@@ -66,7 +67,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasNotBeenCorrelated() {
+    void testHasNotBeenCorrelated() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
@@ -80,7 +81,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasMessageStartEventNotBeenCorrelated() {
+    void testHasMessageStartEventNotBeenCorrelated() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
@@ -94,7 +95,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasExpired() throws InterruptedException {
+    void testHasExpired() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Duration timeToLive = Duration.ofDays(1);
@@ -110,7 +111,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasNotExpired() {
+    void testHasNotExpired() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
@@ -124,7 +125,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testExtractingProcessInstance() {
+    void testExtractingProcessInstance() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -142,7 +143,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testExtractingProcessInstance_messageStartEvent() {
+    void testExtractingProcessInstance_messageStartEvent() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
@@ -166,7 +167,7 @@ class MessageAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testHasBeenCorrelatedFailure() {
+    void testHasBeenCorrelatedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
@@ -182,7 +183,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasMessageStartEventBeenCorrelatedFailure() {
+    void testHasMessageStartEventBeenCorrelatedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
@@ -200,7 +201,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasNotBeenCorrelatedFailure() {
+    void testHasNotBeenCorrelatedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -224,7 +225,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasMessageStartEventNotBeenCorrelatedFailure() {
+    void testHasMessageStartEventNotBeenCorrelatedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
@@ -244,7 +245,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasExpiredFailure() {
+    void testHasExpiredFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
@@ -260,7 +261,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasNotExpiredFailure() throws InterruptedException {
+    void testHasNotExpiredFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Duration timeToLive = Duration.ofDays(1);
@@ -278,7 +279,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testExtractingProcessInstanceFailure() {
+    void testExtractingProcessInstanceFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -300,7 +301,7 @@ class MessageAssertTest {
     }
 
     @Test
-    void testExtractingProcessInstanceFailure_messageStartEvent() {
+    void testExtractingProcessInstanceFailure_messageStartEvent() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 

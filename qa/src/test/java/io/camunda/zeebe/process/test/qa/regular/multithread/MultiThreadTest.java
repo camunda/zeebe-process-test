@@ -10,7 +10,9 @@ import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.filters.RecordStream;
+import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackStartEndEvent;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -18,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -65,13 +68,13 @@ public class MultiThreadTest {
   private class ProcessRunner implements Callable<Boolean> {
 
     @Override
-    public Boolean call() {
+    public Boolean call() throws InterruptedException, TimeoutException {
       BpmnAssert.initRecordStream(recordStream);
 
       deployProcess(client, ProcessPackStartEndEvent.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(engine, client, ProcessPackStartEndEvent.PROCESS_ID);
-      engine.waitForIdleState();
+      Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       assertThat(instanceEvent).isCompleted();
       BpmnAssert.resetRecordStream();

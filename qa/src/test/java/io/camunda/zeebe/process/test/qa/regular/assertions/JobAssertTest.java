@@ -17,6 +17,7 @@ import io.camunda.zeebe.protocol.record.value.ErrorType;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class JobAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testHasElementId() {
+    void testHasElementId() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -54,7 +55,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasDeadline() {
+    void testHasDeadline() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -79,7 +80,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasBpmnProcessId() {
+    void testHasBpmnProcessId() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -97,7 +98,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasRetries() {
+    void testHasRetries() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -115,7 +116,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasAnyIncidents() {
+    void testHasAnyIncidents() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -133,7 +134,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasNoIncidents() {
+    void testHasNoIncidents() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -148,7 +149,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testExtractLatestIncident() {
+    void testExtractLatestIncident() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -171,7 +172,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testExtractingVariables() {
+    void testExtractingVariables() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -192,7 +193,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testExtractingHeaders() {
+    void testExtractingHeaders() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -218,7 +219,7 @@ class JobAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testHasElementIdFailure() {
+    void testHasElementIdFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -241,7 +242,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasDeadlineFailure() {
+    void testHasDeadlineFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -268,7 +269,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasBpmnProcessIdFailure() {
+    void testHasBpmnProcessIdFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -291,7 +292,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasRetriesFailure() {
+    void testHasRetriesFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -313,7 +314,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasAnyIncidentsFailure() {
+    void testHasAnyIncidentsFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -330,7 +331,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testHasNoIncidentsFailure() {
+    void testHasNoIncidentsFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -348,7 +349,7 @@ class JobAssertTest {
     }
 
     @Test
-    void testExtractLatestIncidentFailure() {
+    void testExtractLatestIncidentFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);

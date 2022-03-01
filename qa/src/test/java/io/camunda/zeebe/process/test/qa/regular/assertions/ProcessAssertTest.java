@@ -10,6 +10,7 @@ import io.camunda.zeebe.process.test.assertions.ProcessAssert;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ class ProcessAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testHasBPMNProcessId() {
+    void testHasBPMNProcessId() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -41,7 +42,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasVersion() {
+    void testHasVersion() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -56,7 +57,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasResourceName() {
+    void testHasResourceName() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -71,7 +72,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasAnyInstances() {
+    void testHasAnyInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -88,7 +89,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasNoInstances() {
+    void testHasNoInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -103,7 +104,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasInstances() {
+    void testHasInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -129,7 +130,7 @@ class ProcessAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testHasBPMNProcessIdFailure() {
+    void testHasBPMNProcessIdFailure() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -148,7 +149,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasVersionFailure() {
+    void testHasVersionFailure() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -165,7 +166,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasResourceNameFailure() {
+    void testHasResourceNameFailure() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -184,7 +185,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasAnyInstancesFailure() {
+    void testHasAnyInstancesFailure() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -201,7 +202,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasNoInstances() {
+    void testHasNoInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
@@ -220,7 +221,7 @@ class ProcessAssertTest {
     }
 
     @Test
-    void testHasInstances() {
+    void testHasInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
           Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
