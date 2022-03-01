@@ -86,10 +86,23 @@ public final class EngineControlImpl extends EngineControlImplBase {
   public void waitForIdleState(
       final WaitForIdleStateRequest request,
       final StreamObserver<WaitForIdleStateResponse> responseObserver) {
-    engine.waitForIdleState();
-    final WaitForIdleStateResponse response = WaitForIdleStateResponse.newBuilder().build();
-    responseObserver.onNext(response);
-    responseObserver.onCompleted();
+    try {
+      engine.waitForIdleState(Duration.ofMillis(request.getTimeout()));
+      final WaitForIdleStateResponse response = WaitForIdleStateResponse.newBuilder().build();
+      responseObserver.onNext(response);
+      responseObserver.onCompleted();
+    } catch (InterruptedException e) {
+      responseObserver.onError(Status.INTERNAL.withCause(e).asException());
+    } catch (TimeoutException e) {
+      responseObserver.onError(
+          Status.DEADLINE_EXCEEDED
+              .withDescription(
+                  String.format(
+                      "Engine has not reached idle state within specified timeout of %d ms",
+                      request.getTimeout()))
+              .withCause(e)
+              .asException());
+    }
   }
 
   @Override

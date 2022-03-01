@@ -127,12 +127,12 @@ public class ContainerizedEngine implements InMemoryEngine {
   }
 
   @Override
-  public void waitForIdleState() {
+  public void waitForIdleState(final Duration timeout) {
     final ManagedChannel channel = getChannel();
     final EngineControlBlockingStub stub = getStub(channel);
 
     final WaitForIdleStateRequest request =
-        WaitForIdleStateRequest.newBuilder().setTimeout(1000).build();
+        WaitForIdleStateRequest.newBuilder().setTimeout(timeout.toMillis()).build();
     stub.waitForIdleState(request);
 
     closeChannel(channel);

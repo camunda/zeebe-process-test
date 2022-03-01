@@ -105,12 +105,18 @@ public class InMemoryEngineImpl implements InMemoryEngine {
   }
 
   @Override
-  public void waitForIdleState() {
+  public void waitForIdleState(final Duration timeout)
+      throws InterruptedException, TimeoutException {
     final CompletableFuture<Void> idleState = new CompletableFuture<>();
 
     engineStateMonitor.addOnIdleCallback(() -> idleState.complete(null));
 
-    idleState.join();
+    try {
+      idleState.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+    } catch (ExecutionException e) {
+      // Do nothing. ExecutionExceptions won't appear. The function only completes the future, which
+      // in itself does not throw any exceptions.
+    }
   }
 
   @Override
