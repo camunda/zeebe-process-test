@@ -15,6 +15,10 @@
 
   <name>Zeebe Process Test Extension Testcontainer</name>
 
+  <description>
+    Annotation and extension for running process tests using testcontainers.
+  </description>
+
   <properties>
     <version.java>8</version.java>
   </properties>
