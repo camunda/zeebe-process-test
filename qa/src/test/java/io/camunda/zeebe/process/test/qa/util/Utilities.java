@@ -124,6 +124,11 @@ public class Utilities {
     engine.waitForIdleState();
   }
 
+  public static void waitForBusyState(final InMemoryEngine engine, final Duration duration)
+      throws InterruptedException, TimeoutException {
+    engine.waitForBusyState(duration);
+  }
+
   public static PublishMessageResponse sendMessage(
       final InMemoryEngine engine,
       final ZeebeClient client,
@@ -154,7 +159,7 @@ public class Utilities {
       throws InterruptedException {
     engine.increaseTime(duration);
     try {
-      engine.waitForBusyState(Duration.ofSeconds(1));
+      waitForBusyState(engine, Duration.ofSeconds(1));
       waitForIdleState(engine);
     } catch (TimeoutException e) {
       // Do nothing. We've waited up to 250 ms for processing to start, if it didn't start in this
