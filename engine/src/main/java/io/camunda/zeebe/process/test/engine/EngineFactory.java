@@ -49,8 +49,8 @@ public class EngineFactory {
 
     final ZeebeDb<ZbColumnFamilies> zeebeDb = createDatabase();
 
-    final IdleStateMonitor idleStateMonitor =
-        new IdleStateMonitor(logStorage, logStream.newLogStreamReader().join());
+    final EngineStateMonitor engineStateMonitor =
+        new EngineStateMonitor(logStorage, logStream.newLogStreamReader().join());
 
     final StreamProcessor streamProcessor =
         createStreamProcessor(
@@ -58,7 +58,7 @@ public class EngineFactory {
             zeebeDb,
             scheduler,
             grpcResponseWriter,
-            idleStateMonitor,
+            engineStateMonitor,
             partitionCount,
             subscriptionCommandSenderFactory);
 
@@ -74,7 +74,7 @@ public class EngineFactory {
         scheduler,
         recordStream,
         clock,
-        idleStateMonitor);
+        engineStateMonitor);
   }
 
   private static ControlledActorClock createActorClock() {
@@ -125,7 +125,7 @@ public class EngineFactory {
       final ZeebeDb<ZbColumnFamilies> database,
       final ActorSchedulingService scheduler,
       final GrpcResponseWriter grpcResponseWriter,
-      final IdleStateMonitor idleStateMonitor,
+      final EngineStateMonitor engineStateMonitor,
       final int partitionCount,
       final SubscriptionCommandSenderFactory subscriptionCommandSenderFactory) {
     return StreamProcessor.builder()
@@ -136,7 +136,7 @@ public class EngineFactory {
         .streamProcessorFactory(
             context ->
                 EngineProcessors.createEngineProcessors(
-                    context.listener(idleStateMonitor),
+                    context.listener(engineStateMonitor),
                     partitionCount,
                     subscriptionCommandSenderFactory.createSender(),
                     new SinglePartitionDeploymentDistributor(),

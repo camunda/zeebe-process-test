@@ -11,8 +11,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Monitor that waits for an idle state. Idle state is a state in which the process engine makes no
- * progress and is waiting for new commands or events to trigger</br>
+ * Monitor that monitos whether the engine is busy or in idle state. Busy state is a state in which
+ * the engine is actively writing new events to the logstream. Idle state is a state in which
+ * the process engine makes no progress and is waiting for new commands or events to trigger</br>
  *
  * <p>On a technical level, idle state is defined by
  *
@@ -26,7 +27,7 @@ import java.util.TimerTask;
  *       notified
  * </ul>
  */
-final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcessorListener {
+final class EngineStateMonitor implements LogStorage.CommitListener, StreamProcessorListener {
 
   private static final Timer TIMER = new Timer();
   public static final int GRACE_PERIOD = 30;
@@ -39,7 +40,7 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
   private volatile TimerTask idleStateNotifier =
       createIdleStateNotifier(); // must never be null for the synchronization to work
 
-  IdleStateMonitor(final InMemoryLogStorage logStorage, final LogStreamReader logStreamReader) {
+  EngineStateMonitor(final InMemoryLogStorage logStorage, final LogStreamReader logStreamReader) {
     logStorage.addCommitListener(this);
 
     reader = logStreamReader;
@@ -49,22 +50,22 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
     synchronized (idleCallbacks) {
       idleCallbacks.add(callback);
     }
-    checkIdleState();
+    checkEngineStateAndNotifyCallbacks();
   }
 
   public void addOnProcessingCallback(final Runnable callback) {
     synchronized (processingCallbacks) {
       processingCallbacks.add(callback);
     }
-    checkIdleState();
+    checkEngineStateAndNotifyCallbacks();
   }
 
-  private void checkIdleState() {
+  private void checkEngineStateAndNotifyCallbacks() {
     synchronized (idleStateNotifier) {
       if (isInIdleState()) {
-        scheduleNotification();
+        scheduleIdleStateNotification();
       } else {
-        cancelNotification();
+        cancelIdleStateNotification();
         runProcessingCallbacks();
       }
     }
@@ -77,7 +78,7 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
     }
   }
 
-  private void scheduleNotification() {
+  private void scheduleIdleStateNotification() {
     idleStateNotifier = createIdleStateNotifier();
     try {
       TIMER.schedule(idleStateNotifier, GRACE_PERIOD);
@@ -87,7 +88,7 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
     }
   }
 
-  private void cancelNotification() {
+  private void cancelIdleStateNotification() {
     idleStateNotifier.cancel();
   }
 
@@ -106,25 +107,25 @@ final class IdleStateMonitor implements LogStorage.CommitListener, StreamProcess
 
   @Override
   public void onCommit() {
-    checkIdleState();
+    checkEngineStateAndNotifyCallbacks();
   }
 
   @Override
   public void onProcessed(final TypedRecord<?> processedCommand) {
     lastProcessedPosition = Math.max(lastProcessedPosition, processedCommand.getPosition());
-    checkIdleState();
+    checkEngineStateAndNotifyCallbacks();
   }
 
   @Override
   public void onSkipped(final LoggedEvent skippedRecord) {
     lastProcessedPosition = Math.max(lastProcessedPosition, skippedRecord.getPosition());
-    checkIdleState();
+    checkEngineStateAndNotifyCallbacks();
   }
 
   @Override
   public void onReplayed(final long lastReplayedEventPosition, final long lastReadRecordPosition) {
     lastProcessedPosition = Math.max(lastProcessedPosition, lastReplayedEventPosition);
-    checkIdleState();
+    checkEngineStateAndNotifyCallbacks();
   }
 
   private TimerTask createIdleStateNotifier() {

@@ -31,7 +31,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
   private final ActorScheduler scheduler;
   private final RecordStreamSource recordStream;
   private final ControlledActorClock clock;
-  private final IdleStateMonitor idleStateMonitor;
+  private final EngineStateMonitor engineStateMonitor;
 
   public InMemoryEngineImpl(
       final Server grpcServer,
@@ -42,7 +42,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
       final ActorScheduler scheduler,
       final RecordStreamSource recordStream,
       final ControlledActorClock clock,
-      final IdleStateMonitor idleStateMonitor) {
+      final EngineStateMonitor engineStateMonitor) {
     this.grpcServer = grpcServer;
     this.streamProcessor = streamProcessor;
     this.gateway = gateway;
@@ -51,7 +51,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
     this.scheduler = scheduler;
     this.recordStream = recordStream;
     this.clock = clock;
-    this.idleStateMonitor = idleStateMonitor;
+    this.engineStateMonitor = engineStateMonitor;
   }
 
   @Override
@@ -108,7 +108,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
   public void waitForIdleState() {
     final CompletableFuture<Void> idleState = new CompletableFuture<>();
 
-    idleStateMonitor.addOnIdleCallback(() -> idleState.complete(null));
+    engineStateMonitor.addOnIdleCallback(() -> idleState.complete(null));
 
     idleState.join();
   }
@@ -118,7 +118,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
       throws InterruptedException, TimeoutException {
     final CompletableFuture<Void> processingState = new CompletableFuture<>();
 
-    idleStateMonitor.addOnProcessingCallback(() -> processingState.complete(null));
+    engineStateMonitor.addOnProcessingCallback(() -> processingState.complete(null));
 
     try {
       processingState.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
