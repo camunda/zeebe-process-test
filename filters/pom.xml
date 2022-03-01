@@ -5,18 +5,16 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>zeebe-process-test-root</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.4.0-alpha2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>zeebe-process-test-filters</artifactId>
-  <version>1.3.4-SNAPSHOT</version>
+  <version>1.4.0-alpha2</version>
 
   <name>Zeebe Process Test Filters</name>
 
-  <description>
-    Filters for filtering through a list of Records.
-  </description>
+  <description>Filters for filtering through a list of Records.</description>
 
   <properties>
     <version.java>8</version.java>

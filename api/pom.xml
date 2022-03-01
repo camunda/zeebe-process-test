@@ -5,19 +5,17 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>zeebe-process-test-root</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.4.0-alpha2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>zeebe-process-test-api</artifactId>
-  <version>1.3.4-SNAPSHOT</version>
+  <version>1.4.0-alpha2</version>
   <packaging>jar</packaging>
 
   <name>Zeebe Process Test API</name>
 
-  <description>
-    Public interfaces for Zeebe Process Test.
-  </description>
+  <description>Public interfaces for Zeebe Process Test.</description>
 
   <properties>
     <version.java>8</version.java>

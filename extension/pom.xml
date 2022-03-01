@@ -5,19 +5,17 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>zeebe-process-test-root</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.4.0-alpha2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>zeebe-process-test-extension</artifactId>
-  <version>1.3.4-SNAPSHOT</version>
+  <version>1.4.0-alpha2</version>
   <packaging>jar</packaging>
 
   <name>Zeebe Process Test Extension</name>
 
-  <description>
-    Annotation and extension for running process tests in an embedded test engine.
-  </description>
+  <description>Annotation and extension for running process tests in an embedded test engine.</description>
 
   <dependencies>
     <dependency>

@@ -5,20 +5,18 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>zeebe-process-test-root</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.4.0-alpha2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>zeebe-process-test-engine</artifactId>
-  <version>1.3.4-SNAPSHOT</version>
+  <version>1.4.0-alpha2</version>
   <packaging>jar</packaging>
 
   <name>Zeebe Process Test Engine</name>
 
-  <description>
-    Test engine for running process tests. This a minimized version of the real Zeebe engine and
-    should be used for testing purposes only.
-  </description>
+  <description>Test engine for running process tests. This a minimized version of the real Zeebe engine and
+    should be used for testing purposes only.</description>
 
   <dependencies>
     <dependency>

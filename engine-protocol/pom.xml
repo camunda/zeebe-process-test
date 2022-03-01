@@ -5,19 +5,17 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>zeebe-process-test-root</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.4.0-alpha2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>zeebe-process-test-engine-protocol</artifactId>
-  <version>1.3.4-SNAPSHOT</version>
+  <version>1.4.0-alpha2</version>
   <packaging>jar</packaging>
 
   <name>Zeebe Process Test Engine Protocol</name>
 
-  <description>
-    Defines the protocol of communicating with the engine-agent.
-  </description>
+  <description>Defines the protocol of communicating with the engine-agent.</description>
 
   <properties>
     <plugin.version.proto-backwards-compatibility>1.0.7</plugin.version.proto-backwards-compatibility>
