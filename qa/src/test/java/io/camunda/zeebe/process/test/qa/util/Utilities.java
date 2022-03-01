@@ -103,7 +103,8 @@ public class Utilities {
       final InMemoryEngine engine,
       final ZeebeClient client,
       final String processId,
-      final Map<String, Object> variables) throws InterruptedException, TimeoutException {
+      final Map<String, Object> variables)
+      throws InterruptedException, TimeoutException {
     final ProcessInstanceEvent instanceEvent =
         client
             .newCreateInstanceCommand()
@@ -121,8 +122,7 @@ public class Utilities {
     return client.newActivateJobsCommand().jobType(jobType).maxJobsToActivate(1).send().join();
   }
 
-  public static void waitForIdleState(final InMemoryEngine engine,
-      final Duration duration)
+  public static void waitForIdleState(final InMemoryEngine engine, final Duration duration)
       throws InterruptedException, TimeoutException {
     engine.waitForIdleState(duration);
   }
@@ -136,7 +136,8 @@ public class Utilities {
       final InMemoryEngine engine,
       final ZeebeClient client,
       final String messageName,
-      final String correlationKey) throws InterruptedException, TimeoutException {
+      final String correlationKey)
+      throws InterruptedException, TimeoutException {
     return sendMessage(engine, client, messageName, correlationKey, Duration.ofMinutes(1));
   }
 
@@ -145,7 +146,8 @@ public class Utilities {
       final ZeebeClient client,
       final String messageName,
       final String correlationKey,
-      final Duration timeToLive) throws InterruptedException, TimeoutException {
+      final Duration timeToLive)
+      throws InterruptedException, TimeoutException {
     final PublishMessageResponse response =
         client
             .newPublishMessageCommand()
@@ -197,7 +199,8 @@ public class Utilities {
       final ZeebeClient client,
       final long key,
       final String errorCode,
-      final String errorMessage) throws InterruptedException, TimeoutException {
+      final String errorMessage)
+      throws InterruptedException, TimeoutException {
     client.newThrowErrorCommand(key).errorCode(errorCode).errorMessage(errorMessage).send().join();
     waitForIdleState(engine, Duration.ofSeconds(1));
   }

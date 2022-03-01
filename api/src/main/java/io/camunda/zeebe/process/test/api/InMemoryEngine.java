@@ -1,7 +1,6 @@
 package io.camunda.zeebe.process.test.api;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.netty.util.Timeout;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
@@ -31,7 +30,8 @@ public interface InMemoryEngine {
    */
   void increaseTime(Duration timeToAdd);
 
-  /** Waits for the engine to reach an idle state.
+  /**
+   * Waits for the engine to reach an idle state.
    *
    * @param timeout the maximum amount of time to wait before idle state has been reached
    * @throws InterruptedException if the current thread was interrupted while waiting

@@ -12,8 +12,8 @@ import java.util.TimerTask;
 
 /**
  * Monitor that monitors whether the engine is busy or in idle state. Busy state is a state in which
- * the engine is actively writing new events to the logstream. Idle state is a state in which
- * the process engine makes no progress and is waiting for new commands or events to trigger</br>
+ * the engine is actively writing new events to the logstream. Idle state is a state in which the
+ * process engine makes no progress and is waiting for new commands or events to trigger</br>
  *
  * <p>On a technical level, idle state is defined by
  *

@@ -1,6 +1,5 @@
 package io.camunda.zeebe.process.test.engine;
 
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -95,14 +94,16 @@ class EngineStateMonitorTest {
     assertThat(callbackFuture).isCompleted();
   }
 
-  private void changeToIdleState(final EngineStateMonitor monitor, final TestLogStreamReader reader) {
+  private void changeToIdleState(
+      final EngineStateMonitor monitor, final TestLogStreamReader reader) {
     // We use onCommit here because it is an easy way to trigger the EngineStateMonitor to check the
     // engine state and trigger the callbacks
     reader.setPosition(reader.getLastEventPosition());
     monitor.onCommit();
   }
 
-  private void changeToBusyState(final EngineStateMonitor monitor, final TestLogStreamReader reader) {
+  private void changeToBusyState(
+      final EngineStateMonitor monitor, final TestLogStreamReader reader) {
     // We use onReplayed here because it is an easy way to update the lastProcessedEventPosition of
     // the EngineStateMonitor
     final long position = reader.getLastEventPosition() + 1;
@@ -138,9 +139,7 @@ class EngineStateMonitorTest {
     }
 
     @Override
-    public void seekToFirstEvent() {
-
-    }
+    public void seekToFirstEvent() {}
 
     @Override
     public long seekToEnd() {
@@ -158,9 +157,7 @@ class EngineStateMonitorTest {
     }
 
     @Override
-    public void close() {
-
-    }
+    public void close() {}
 
     @Override
     public boolean hasNext() {

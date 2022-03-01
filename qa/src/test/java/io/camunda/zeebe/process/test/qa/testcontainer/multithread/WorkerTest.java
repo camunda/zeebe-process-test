@@ -19,7 +19,8 @@ public class WorkerTest {
   private InMemoryEngine engine;
 
   @Test
-  void testJobsCanBeProcessedAsynchronouslyByWorker() throws InterruptedException, TimeoutException {
+  void testJobsCanBeProcessedAsynchronouslyByWorker()
+      throws InterruptedException, TimeoutException {
     // given
     client
         .newWorker()

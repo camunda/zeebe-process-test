@@ -143,7 +143,8 @@ class MessageAssertTest {
     }
 
     @Test
-    void testExtractingProcessInstance_messageStartEvent() throws InterruptedException, TimeoutException {
+    void testExtractingProcessInstance_messageStartEvent()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
@@ -183,7 +184,8 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasMessageStartEventBeenCorrelatedFailure() throws InterruptedException, TimeoutException {
+    void testHasMessageStartEventBeenCorrelatedFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
@@ -225,7 +227,8 @@ class MessageAssertTest {
     }
 
     @Test
-    void testHasMessageStartEventNotBeenCorrelatedFailure() throws InterruptedException, TimeoutException {
+    void testHasMessageStartEventNotBeenCorrelatedFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
@@ -301,7 +304,8 @@ class MessageAssertTest {
     }
 
     @Test
-    void testExtractingProcessInstanceFailure_messageStartEvent() throws InterruptedException, TimeoutException {
+    void testExtractingProcessInstanceFailure_messageStartEvent()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
