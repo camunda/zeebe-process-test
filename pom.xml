@@ -180,6 +180,12 @@
 
       <dependency>
         <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${dependency.slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
         <version>${dependency.slf4j.version}</version>
       </dependency>
@@ -271,11 +277,6 @@
         <version>${dependency.spring.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${dependency.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.yaml</groupId>
