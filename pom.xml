@@ -15,10 +15,8 @@
 
   <name>Zeebe Process Test Root</name>
 
-  <description>
-    This pom should be the parent of all specified modules. It defines all versions and provides
-    plugins that are required for the child modules.
-  </description>
+  <description>This pom should be the parent of all specified modules. It defines all versions and provides
+    plugins that are required for the child modules.</description>
 
   <modules>
     <module>api</module>
@@ -149,6 +147,36 @@
         <version>${dependency.zeebe.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-workflow-engine</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-util</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-logstreams</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-test-util</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-protocol-jackson</artifactId>
+        <version>${dependency.zeebe.version}</version>
       </dependency>
 
       <dependency>
