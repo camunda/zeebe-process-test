@@ -283,6 +283,40 @@
   </dependencyManagement>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>${plugin.version.spotless}</version>
+          <configuration>
+            <!-- Google code format plugin -->
+            <java>
+              <googleJavaFormat>
+                <version>${plugin.version.googlejavaformat}</version>
+                <style>GOOGLE</style>
+              </googleJavaFormat>
+            </java>
+            <!-- SortPOM plugin -->
+            <pom>
+              <sortPom>
+                <expandEmptyElements>false</expandEmptyElements>
+                <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+                <sortProperties>true</sortProperties>
+              </sortPom>
+            </pom>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>apply</goal>
+              </goals>
+              <phase>process-sources</phase>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -315,26 +349,23 @@
         <artifactId>spotless-maven-plugin</artifactId>
         <version>${plugin.version.spotless}</version>
         <configuration>
-          <java>
-            <googleJavaFormat>
-              <version>${plugin.version.googlejavaformat}</version>
-              <style>GOOGLE</style>
-            </googleJavaFormat>
-          </java>
-          <pom>
-            <sortPom>
-              <expandEmptyElements>false</expandEmptyElements>
-              <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
-              <sortProperties>true</sortProperties>
-            </sortPom>
-          </pom>
+          <markdown>
+            <includes>
+              <include>**/*.md</include>
+            </includes>
+            <excludes>
+              <exclude>**/target/**/*.md</exclude>
+              <exclude>clients/go/vendor/**/*.md</exclude>
+            </excludes>
+            <flexmark />
+          </markdown>
         </configuration>
         <executions>
           <execution>
             <goals>
               <goal>apply</goal>
             </goals>
-            <phase>compile</phase>
+            <phase>process-sources</phase>
           </execution>
         </executions>
       </plugin>
