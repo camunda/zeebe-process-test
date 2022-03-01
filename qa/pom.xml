@@ -14,6 +14,10 @@
 
   <name>Zeebe Process Test QA</name>
 
+  <description>
+    QA tests for testing the Zeebe Process Test project.
+  </description>
+
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>

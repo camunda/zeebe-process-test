@@ -15,6 +15,11 @@
 
   <name>Zeebe Process Test Root</name>
 
+  <description>
+    This pom should be the parent of all specified modules. It defines all versions and provides
+    plugins that are required for the child modules.
+  </description>
+
   <modules>
     <module>api</module>
     <module>assertions</module>
@@ -65,6 +70,7 @@
     <nexus.snapshot.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots</nexus.snapshot.repository>
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
 
+    <plugin.version.flatten>1.2.2</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
     <plugin.version.googlejavaformat>1.12.0</plugin.version.googlejavaformat>
     <plugin.version.jacoco>0.8.7</plugin.version.jacoco>
@@ -380,6 +386,41 @@
               <goal>extract-flaky-tests</goal>
             </goals>
             <phase>post-integration-test</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Flatten pom plugin -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>${plugin.version.flatten}</version>
+        <configuration>
+          <flattenMode>ossrh</flattenMode>
+          <!--
+            do not change the outputDirectory; it must remain the same one as the relative project
+            directory, as many plugins expect to resolve the project directory from the current POM
+            file's parent, and any plugin which would run post flatten would resolve the project
+            directory to the wrong one. For example, if you configure it to
+            ${project.build.directory}, then any plugin after will think that the project's
+            directory is not /parent/ but /parent/target, which may affect the execution of plugins
+            (e.g. resource file resolution)
+            -->
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <phase>clean</phase>
           </execution>
         </executions>
       </plugin>

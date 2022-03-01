@@ -14,6 +14,10 @@
 
   <name>Zeebe Process Test Filters</name>
 
+  <description>
+    Filters for filtering through a list of Records.
+  </description>
+
   <properties>
     <version.java>8</version.java>
   </properties>

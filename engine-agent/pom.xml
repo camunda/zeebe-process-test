@@ -15,6 +15,11 @@
 
   <name>Zeebe Process Test Engine Agent</name>
 
+  <description>
+    A wrapper around the test engine. This wrapper makes it possible to run the engine in a
+    testcontainer.
+  </description>
+
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>

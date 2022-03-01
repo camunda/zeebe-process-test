@@ -15,6 +15,11 @@
 
   <name>Zeebe Process Test Engine</name>
 
+  <description>
+    Test engine for running process tests. This a minimized version of the real Zeebe engine and
+    should be used for testing purposes only.
+  </description>
+
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>

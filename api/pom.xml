@@ -15,6 +15,10 @@
 
   <name>Zeebe Process Test API</name>
 
+  <description>
+    Public interfaces for Zeebe Process Test.
+  </description>
+
   <properties>
     <version.java>8</version.java>
   </properties>

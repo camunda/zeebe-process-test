@@ -15,6 +15,10 @@
 
   <name>Zeebe Process Test Extension</name>
 
+  <description>
+    Annotation and extension for running process tests in an embedded test engine.
+  </description>
+
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>

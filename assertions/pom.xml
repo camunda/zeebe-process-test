@@ -15,6 +15,10 @@
 
   <name>Zeebe Process Test Assertions</name>
 
+  <description>
+    Assertions for verifying the state of a process.
+  </description>
+
   <properties>
     <version.java>8</version.java>
   </properties>

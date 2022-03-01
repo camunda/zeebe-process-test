@@ -15,6 +15,10 @@
 
   <name>Zeebe Process Test Engine Protocol</name>
 
+  <description>
+    Defines the protocol of communicating with the engine-agent.
+  </description>
+
   <properties>
     <plugin.version.proto-backwards-compatibility>1.0.7</plugin.version.proto-backwards-compatibility>
 
