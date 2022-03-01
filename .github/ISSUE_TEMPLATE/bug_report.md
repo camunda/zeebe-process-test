@@ -1,4 +1,5 @@
 ---
+
 name: Bug report
 about: Create a report to help us improve
 title: ''
@@ -8,14 +9,16 @@ assignees: ''
 ---
 
 ## Description
+
 <!-- A clear and concise description of the bug you've encountered. -->
 
 ### Expected behaviour
+
 <!-- The behaviour that you expect to happen. -->
 
 ## Reproduction steps
-<!-- How can we reproduce your issue? -->
 
+<!-- How can we reproduce your issue? -->
 <details>
 <summary>Test code</summary>
 <!-- If possible, please add your test code in this code block. -->
@@ -27,6 +30,7 @@ assignees: ''
 
 <details>
 <summary>Process</summary>
+
 <!-- If possible, please add your process in this code block. -->
 
 ```xml
@@ -35,5 +39,7 @@ assignees: ''
 </details>
 
 ## Environment
+
 - OS: <!-- e.g. Linux -->
 - Version: <!-- e.g. 1.0.0 -->
+

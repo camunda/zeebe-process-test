@@ -24,7 +24,7 @@ the test code.
 Every issue should have a meaningful name and a description which either
 describes:
 - a new feature with details about the use case the feature would solve or
-  improve
+improve
 - a problem, how we can reproduce it and what would be the expected behavior
 
 ## Starting on an issue
@@ -37,11 +37,13 @@ To work on an issue, follow the following steps:
 1. Check that a [GitHub issue][issues] exists for the task you want to work on. If this is not the
    case, please create one.
 2. Checkout the `main` branch and pull the latest changes.
+
    ```
    git checkout main
    git pull
    ```
 3. Create a new branch with the naming scheme `issueId-description`.
+
    ```
    git checkout -b 123-add-process-assertion`
    ```
@@ -49,6 +51,7 @@ To work on an issue, follow the following steps:
    and [Zeebe Code Style](https://github.com/zeebe-io/zeebe/wiki/Code-Style) while coding.
 5. Implement the required changes on your branch and regularly push your
    changes to the origin so that the CI can run.
+
    ```
    git commit -am 'feat: add process assertion'
    git push -u origin 123-add-process-assertion
@@ -60,6 +63,7 @@ To work on an issue, follow the following steps:
    that you should think about how a reviewer can best understand your changes.
    Please follow the [commit message guidelines](#commit-message-guidelines).
 7. After finishing up the squashing force push your changes to your branch.
+
    ```
    git push --force-with-lease
    ```
@@ -77,10 +81,10 @@ To work on an issue, follow the following steps:
    you either feedback or accept the changes. Your reviewer might use
    [emoji code](https://devblogs.microsoft.com/appcenter/how-the-visual-studio-mobile-center-team-does-code-review/#introducing-the-emoji-code)
    during the reviewing process.
-  1. If there are changes requested address them in a new commit. Notify the
-     reviewer in a comment if the pull request is ready for review again. If
-     the changes are accepted squash them again in the related commit and force push.
-  2. If no changes are requested the reviewer will merge your changes.
+4. If there are changes requested address them in a new commit. Notify the
+   reviewer in a comment if the pull request is ready for review again. If
+   the changes are accepted squash them again in the related commit and force push.
+5. If no changes are requested the reviewer will merge your changes.
 
 ## Commit Message Guidelines
 
@@ -94,8 +98,8 @@ Commit messages use [Conventional Commits](https://www.conventionalcommits.org/e
 <footer> (optional)
 ```
 
-
 ### Commit message header
+
 Examples:
 
 * `docs: add commit styles to contribution guide`
@@ -103,6 +107,7 @@ Examples:
 * `fix: prevent nullpointer on assertion`
 
 The commit header should match the following pattern:
+
 ```
 %{type}: %{description}
 ```
@@ -145,3 +150,4 @@ By participating, you are expected to uphold this code. Please [report](https://
 unacceptable behavior as soon as possible.
 
 [issues]: https://github.com/camunda-cloud/zeebe-process-test/issues
+
