@@ -68,7 +68,7 @@
     <nexus.snapshot.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots</nexus.snapshot.repository>
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
 
-    <plugin.version.flatten>1.2.2</plugin.version.flatten>
+    <plugin.version.flatten>1.2.7</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
     <plugin.version.googlejavaformat>1.12.0</plugin.version.googlejavaformat>
     <plugin.version.jacoco>0.8.7</plugin.version.jacoco>
