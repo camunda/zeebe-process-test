@@ -16,10 +16,10 @@ import org.agrona.concurrent.UnsafeBuffer;
 
 public class InMemoryLogStorage implements LogStorage {
 
-  private final ConcurrentSkipListMap<Long, Integer> positionIndexMapping =
-      new ConcurrentSkipListMap<>();
-  private final List<ByteBuffer> logEntries = new ArrayList<>();
-  private final Set<CommitListener> commitListeners = new HashSet<>();
+    private final ConcurrentSkipListMap<Long, Integer> positionIndexMapping =
+        new ConcurrentSkipListMap<>();
+    private final List<ByteBuffer> logEntries = new ArrayList<>();
+    private final Set<CommitListener> commitListeners = new HashSet<>();
 
   @Override
   public LogStorageReader newReader() {
