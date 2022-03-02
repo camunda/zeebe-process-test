@@ -15,7 +15,7 @@ jobs:
   test:
     uses: ./.github/workflows/build-test.yml
 
-  deploy-to-docker:
+  deploy:
     runs-on: ubuntu-latest
     needs: [test]
 
@@ -47,76 +47,6 @@ jobs:
           secrets: |
             secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test REGISTRY_HUB_DOCKER_COM_USR;
             secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test REGISTRY_HUB_DOCKER_COM_PSW;
-
-      - name: Set up Java environment
-        uses: actions/setup-java@v3.0.0
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Build jar
-        run: |
-          cd engine-agent
-          mvn clean package -DskipTests
-
-      - name: Build Docker image
-        run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
-            TAG="${{ github.event.release.tag_name }}"
-          fi
-          cd engine-agent
-          docker build . -t $IMAGE_NAME:$TAG
-
-      - name: Push Docker image
-        run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
-            TAG="${{ github.event.release.tag_name }}"
-          fi
-          echo '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_PSW }}' | docker login -u '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_USR }}' --password-stdin
-          echo $IMAGE_NAME
-          echo $TAG
-          IMAGE_ID=$OWNER/$IMAGE_NAME
-          echo $IMAGE_ID
-          docker tag $IMAGE_NAME:$TAG $IMAGE_ID:$TAG
-          docker push $IMAGE_ID:$TAG
-
-      - name: Update image and tag in Git
-        run : |
-          git config --global user.name "Release Bot"
-          git config --global user.email actions@github.com
-          cd extension-testcontainer/src/main/resources
-          IMAGE_ID=$OWNER/$IMAGE_NAME
-          sed -i '/container.image.name=/ s:=.*:='$IMAGE_ID':' config.properties
-          sed -i '/container.image.tag=/ s:=.*:='$TAG':' config.properties
-          if [[ `git status --porcelain --untracked-files=no` ]] && [[ `git symbolic-ref -q HEAD` ]]; then
-            git commit -am "(release): update image and tag ($IMAGE_ID:$TAG)"
-            git push
-          fi
-
-  deploy-to-maven:
-    runs-on: ubuntu-latest
-    needs: [deploy-to-docker]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@v2.4.0
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          secrets: |
             secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_USR;
             secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_PSW;
             secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_DEPLOYMENT_USR;
@@ -130,6 +60,48 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Build jar
+        run: |
+          cd engine-agent
+          mvn clean package -DskipTests
+
+        # We build a docker image with a specific tag. There are 2 possible scenarios here.
+        # 1. The workflow is triggered manually or by a change on the main branch. The tag should be 'latest'.
+        # 2. The workflow is triggered by a new release. The tag should be the version of the release.
+      - name: Build Docker image
+        run: |
+          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+          cd engine-agent
+          docker build . -t $IMAGE_NAME:$TAG
+
+        # We push the docker image to dockerhub
+      - name: Push Docker image
+        run: |
+          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+          echo '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_PSW }}' | docker login -u '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_USR }}' --password-stdin
+          echo $IMAGE_NAME
+          echo $TAG
+          IMAGE_ID=$OWNER/$IMAGE_NAME
+          echo $IMAGE_ID
+          docker tag $IMAGE_NAME:$TAG $IMAGE_ID:$TAG
+          docker push $IMAGE_ID:$TAG
+
+        # In extension-testcontainer we have a config file which contains the image tag. This is managed by maven and
+        # maven will set this to the project version upon packaging the application (e.g. 1.4.0, 1.4.0-alpha1, etc.).
+        # In the case this workflow is triggered by a change on the main branch we want this tag to be set to latest.
+        # Maven would set it to a SNAPSHOT version in this case. Therefore, we need to manually set this tag to latest
+        # in this step. This replaces the other value (${project.version}), so it doesn't get replaced by maven anymore.
+      - name: Update tag in config
+        if: github.ref == 'refs/head/main'
+        run: |
+          cd extension-testcontainer/src/main/resources
+          sed -i '/container.image.tag=/ s:=.*:='$TAG':' config.properties
+          cat config.properties
+
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v4
@@ -137,6 +109,10 @@ jobs:
           gpg_private_key: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
           passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
 
+        # In extension-testcontainer we have a config file which contains the image tag. This is managed by maven and
+        # maven will set this to the project version in this step, unless the placeholder (${project.version}) has been
+        # overridden by the "Update tag in config" step. This happens when the workflow is triggered by a change on the
+        # main branch.
       - name: Build and deploy to Maven
         id: release
         uses: camunda-community-hub/community-action-maven-release@v1.0.12
