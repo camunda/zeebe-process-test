@@ -31,6 +31,14 @@ message WaitForIdleStateRequest {
 
 message WaitForIdleStateResponse {}
 
+message WaitForBusyStateRequest {
+  // timeout (in ms). The request will be closed if an idle state has not been
+  // achieved withing the timeout.
+  int64 timeout = 1;
+}
+
+message WaitForBusyStateResponse {}
+
 message GetRecordsRequest {}
 
 message RecordResponse {
@@ -72,6 +80,11 @@ service EngineControl {
      or events to trigger.
    */
   rpc WaitForIdleState (WaitForIdleStateRequest) returns (WaitForIdleStateResponse);
+
+  /*
+    Waits a given timeout for the engine to have reached a busy state.
+   */
+  rpc WaitForBusyState (WaitForBusyStateRequest) returns (WaitForBusyStateResponse);
 
   /*
     Get all records from the in-memory engine. These records will be returned

@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 public class Utilities {
@@ -93,7 +94,8 @@ public class Utilities {
   }
 
   public static ProcessInstanceEvent startProcessInstance(
-      final InMemoryEngine engine, final ZeebeClient client, final String processId) {
+      final InMemoryEngine engine, final ZeebeClient client, final String processId)
+      throws InterruptedException, TimeoutException {
     return startProcessInstance(engine, client, processId, new HashMap<>());
   }
 
@@ -101,7 +103,8 @@ public class Utilities {
       final InMemoryEngine engine,
       final ZeebeClient client,
       final String processId,
-      final Map<String, Object> variables) {
+      final Map<String, Object> variables)
+      throws InterruptedException, TimeoutException {
     final ProcessInstanceEvent instanceEvent =
         client
             .newCreateInstanceCommand()
@@ -110,7 +113,7 @@ public class Utilities {
             .variables(variables)
             .send()
             .join();
-    waitForIdleState(engine);
+    waitForIdleState(engine, Duration.ofSeconds(1));
     return instanceEvent;
   }
 
@@ -119,15 +122,22 @@ public class Utilities {
     return client.newActivateJobsCommand().jobType(jobType).maxJobsToActivate(1).send().join();
   }
 
-  public static void waitForIdleState(final InMemoryEngine engine) {
-    engine.waitForIdleState();
+  public static void waitForIdleState(final InMemoryEngine engine, final Duration duration)
+      throws InterruptedException, TimeoutException {
+    engine.waitForIdleState(duration);
+  }
+
+  public static void waitForBusyState(final InMemoryEngine engine, final Duration duration)
+      throws InterruptedException, TimeoutException {
+    engine.waitForBusyState(duration);
   }
 
   public static PublishMessageResponse sendMessage(
       final InMemoryEngine engine,
       final ZeebeClient client,
       final String messageName,
-      final String correlationKey) {
+      final String correlationKey)
+      throws InterruptedException, TimeoutException {
     return sendMessage(engine, client, messageName, correlationKey, Duration.ofMinutes(1));
   }
 
@@ -136,7 +146,8 @@ public class Utilities {
       final ZeebeClient client,
       final String messageName,
       final String correlationKey,
-      final Duration timeToLive) {
+      final Duration timeToLive)
+      throws InterruptedException, TimeoutException {
     final PublishMessageResponse response =
         client
             .newPublishMessageCommand()
@@ -145,23 +156,25 @@ public class Utilities {
             .timeToLive(timeToLive)
             .send()
             .join();
-    waitForIdleState(engine);
+    waitForIdleState(engine, Duration.ofSeconds(1));
     return response;
   }
 
-  public static void increaseTime(final InMemoryEngine engine, final Duration duration) {
+  public static void increaseTime(final InMemoryEngine engine, final Duration duration)
+      throws InterruptedException {
     engine.increaseTime(duration);
     try {
-      // we need to wait some physical time so that InMemoryEngine has a chance to fire the timers
-      Thread.sleep(100);
-    } catch (InterruptedException e) {
-      // do nothing
+      waitForBusyState(engine, Duration.ofSeconds(1));
+      waitForIdleState(engine, Duration.ofSeconds(1));
+    } catch (TimeoutException e) {
+      // Do nothing. We've waited up to 250 ms for processing to start, if it didn't start in this
+      // time the engine probably has not got anything left to process.
     }
-    waitForIdleState(engine);
   }
 
   public static void completeTask(
-      final InMemoryEngine engine, final ZeebeClient client, final String taskId) {
+      final InMemoryEngine engine, final ZeebeClient client, final String taskId)
+      throws InterruptedException, TimeoutException {
     final List<Record<JobRecordValue>> records =
         StreamFilter.jobRecords(RecordStream.of(engine.getRecordStreamSource()))
             .withElementId(taskId)
@@ -178,7 +191,7 @@ public class Utilities {
           String.format("Tried to complete task `%s`, but it was not found", taskId));
     }
 
-    waitForIdleState(engine);
+    waitForIdleState(engine, Duration.ofSeconds(1));
   }
 
   public static void throwErrorCommand(
@@ -186,8 +199,9 @@ public class Utilities {
       final ZeebeClient client,
       final long key,
       final String errorCode,
-      final String errorMessage) {
+      final String errorMessage)
+      throws InterruptedException, TimeoutException {
     client.newThrowErrorCommand(key).errorCode(errorCode).errorMessage(errorMessage).send().join();
-    waitForIdleState(engine);
+    waitForIdleState(engine, Duration.ofSeconds(1));
   }
 }

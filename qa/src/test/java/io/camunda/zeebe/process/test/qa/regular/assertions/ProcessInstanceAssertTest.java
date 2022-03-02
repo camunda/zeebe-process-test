@@ -15,10 +15,12 @@ import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingService
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackMessageEvent;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackMultipleTasks;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Nested;
@@ -44,7 +46,7 @@ class ProcessInstanceAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testProcessInstanceIsStarted() {
+    void testProcessInstanceIsStarted() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -60,7 +62,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsActive() {
+    void testProcessInstanceIsActive() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -76,7 +78,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsCompleted() {
+    void testProcessInstanceIsCompleted() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -93,7 +95,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotCompleted() {
+    void testProcessInstanceIsNotCompleted() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -109,7 +111,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsTerminated() {
+    void testProcessInstanceIsTerminated() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -120,14 +122,14 @@ class ProcessInstanceAssertTest {
 
       // when
       client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
-      Utilities.waitForIdleState(engine);
+      Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       // then
       BpmnAssert.assertThat(instanceEvent).isTerminated();
     }
 
     @Test
-    void testProcessInstanceIsNotTerminated() {
+    void testProcessInstanceIsNotTerminated() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -143,7 +145,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasPassedElement() {
+    void testProcessInstanceHasPassedElement() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -161,7 +163,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasNotPassedElement() {
+    void testProcessInstanceHasNotPassedElement() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -178,7 +180,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasPassedElementMultipleTimes() {
+    void testProcessInstanceHasPassedElementMultipleTimes()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final int totalLoops = 5;
@@ -199,7 +202,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasPassedElementsInOrder() {
+    void testProcessInstanceHasPassedElementsInOrder()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -220,7 +224,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsWaitingAt() {
+    void testProcessInstanceIsWaitingAt() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -234,7 +238,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessIsWaitingAtMultipleElements() {
+    void testProcessIsWaitingAtMultipleElements() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -251,7 +255,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotWaitingAt() {
+    void testProcessInstanceIsNotWaitingAt() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -266,7 +270,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotWaitingAtMultipleElements() {
+    void testProcessInstanceIsNotWaitingAtMultipleElements()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -286,7 +291,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotWaitingAtNonExistingElement() {
+    void testProcessInstanceIsNotWaitingAtNonExistingElement()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -300,7 +306,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsWaitingExactlyAtElements() {
+    void testProcessInstanceIsWaitingExactlyAtElements()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -316,7 +323,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsWaitingForMessage() {
+    void testProcessInstanceIsWaitingForMessage() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -333,7 +340,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotWaitingForMessage() {
+    void testProcessInstanceIsNotWaitingForMessage() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -353,7 +360,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasVariable() {
+    void testProcessInstanceHasVariable() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -369,7 +376,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasVariableWithValue() {
+    void testProcessInstanceHasVariableWithValue() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -388,7 +395,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testHasCorrelatedMessageByName() {
+    void testHasCorrelatedMessageByName() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -407,7 +414,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testHasCorrelatedMessageByCorrelationKey() {
+    void testHasCorrelatedMessageByCorrelationKey() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -426,7 +433,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testHasAnyIncidents() {
+    void testHasAnyIncidents() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -446,7 +453,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testHasNoIncidents() {
+    void testHasNoIncidents() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -459,7 +466,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testExtractLatestIncident() {
+    void testExtractLatestIncident() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -495,7 +502,7 @@ class ProcessInstanceAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testProcessInstanceIsStartedFailure() {
+    void testProcessInstanceIsStartedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent mockInstanceEvent = mock(ProcessInstanceEvent.class);
@@ -511,7 +518,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotStartedIfProcessInstanceKeyNoMatch() {
+    void testProcessInstanceIsNotStartedIfProcessInstanceKeyNoMatch()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -527,7 +535,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsActiveFailure() {
+    void testProcessInstanceIsActiveFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -547,7 +555,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsCompletedFailure() {
+    void testProcessInstanceIsCompletedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -567,7 +575,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotCompletedFailure() {
+    void testProcessInstanceIsNotCompletedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -587,7 +595,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsTerminatedFailure() {
+    void testProcessInstanceIsTerminatedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -607,7 +615,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotTerminatedFailure() {
+    void testProcessInstanceIsNotTerminatedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -619,7 +627,7 @@ class ProcessInstanceAssertTest {
 
       // when
       client.newCancelInstanceCommand(instanceEvent.getProcessInstanceKey()).send().join();
-      Utilities.waitForIdleState(engine);
+      Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       // then
       assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).isNotTerminated())
@@ -628,7 +636,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasPassedElementFailure() {
+    void testProcessInstanceHasPassedElementFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -652,7 +661,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasNotPassedElementFailure() {
+    void testProcessInstanceHasNotPassedElementFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -677,7 +687,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasPassedElementsInOrderFailure() {
+    void testProcessInstanceHasPassedElementsInOrderFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -707,7 +718,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsWaitingAtFailure() {
+    void testProcessInstanceIsWaitingAtFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -726,7 +737,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsWaitingAtMultipleElementsFailure() {
+    void testProcessInstanceIsWaitingAtMultipleElementsFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
@@ -754,7 +766,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceWaitingAtNonExistingElementFailure() {
+    void testProcessInstanceWaitingAtNonExistingElementFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -771,7 +784,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotWaitingAtFailure() {
+    void testProcessInstanceIsNotWaitingAtFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -789,7 +802,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotWaitingAtMulitpleElementsFailure() {
+    void testProcessInstanceIsNotWaitingAtMulitpleElementsFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -814,7 +828,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooManyElements() {
+    void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooManyElements()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -838,7 +853,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooLittleElements() {
+    void testProcessInstanceIsWaitingExactlyAtElementsFailure_tooLittleElements()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -867,7 +883,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsWaitingExactlyAtElementsFailure_combination() {
+    void testProcessInstanceIsWaitingExactlyAtElementsFailure_combination()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMultipleTasks.RESOURCE_NAME);
 
@@ -898,7 +915,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsWaitingForMessageFailure() {
+    void testProcessInstanceIsWaitingForMessageFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -921,7 +939,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceIsNotWaitingForMessageFailure() {
+    void testProcessInstanceIsNotWaitingForMessageFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -943,7 +962,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasVariableFailure() {
+    void testProcessInstanceHasVariableFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final String expectedVariable = "variable";
@@ -962,7 +981,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testProcessInstanceHasVariableWithValueFailure() {
+    void testProcessInstanceHasVariableWithValueFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final String variable = "variable";
@@ -989,7 +1009,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testHasCorrelatedMessageByNameFailure() {
+    void testHasCorrelatedMessageByNameFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -1013,7 +1033,8 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testHasCorrelatedMessageByCorrelationKeyFailure() {
+    void testHasCorrelatedMessageByCorrelationKeyFailure()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final String correlationKey = "key";
@@ -1038,7 +1059,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testHasAnyIncidentsFailure() {
+    void testHasAnyIncidentsFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -1053,7 +1074,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testHasNoIncidentsFailure() {
+    void testHasNoIncidentsFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
@@ -1074,7 +1095,7 @@ class ProcessInstanceAssertTest {
     }
 
     @Test
-    void testExtractLatestIncidentFailure() {
+    void testExtractLatestIncidentFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -1097,7 +1118,8 @@ class ProcessInstanceAssertTest {
     private InMemoryEngine engine;
 
     @Test // regression test for #78
-    public void testShouldCaptureLatestValueOfVariable() {
+    public void testShouldCaptureLatestValueOfVariable()
+        throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables1 =
@@ -1125,7 +1147,7 @@ class ProcessInstanceAssertTest {
           .send()
           .join();
 
-      Utilities.waitForIdleState(engine);
+      Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       // then
       BpmnAssert.assertThat(instanceEvent)

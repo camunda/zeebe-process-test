@@ -13,16 +13,20 @@ import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.Rec
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.ResetEngineRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StartEngineRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StopEngineRequest;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForBusyStateRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateRequest;
 import io.camunda.zeebe.protocol.jackson.record.AbstractRecord;
 import io.camunda.zeebe.protocol.record.Record;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class ContainerizedEngine implements InMemoryEngine {
 
@@ -123,15 +127,36 @@ public class ContainerizedEngine implements InMemoryEngine {
   }
 
   @Override
-  public void waitForIdleState() {
+  public void waitForIdleState(final Duration timeout) {
     final ManagedChannel channel = getChannel();
     final EngineControlBlockingStub stub = getStub(channel);
 
     final WaitForIdleStateRequest request =
-        WaitForIdleStateRequest.newBuilder().setTimeout(1000).build();
+        WaitForIdleStateRequest.newBuilder().setTimeout(timeout.toMillis()).build();
     stub.waitForIdleState(request);
 
     closeChannel(channel);
+  }
+
+  @Override
+  public void waitForBusyState(final Duration timeout)
+      throws InterruptedException, TimeoutException {
+    final ManagedChannel channel = getChannel();
+    final EngineControlBlockingStub stub = getStub(channel);
+
+    final WaitForBusyStateRequest request =
+        WaitForBusyStateRequest.newBuilder().setTimeout(timeout.toMillis()).build();
+    try {
+      stub.waitForBusyState(request);
+    } catch (StatusRuntimeException e) {
+      if (e.getStatus().getCode().equals(Status.DEADLINE_EXCEEDED.getCode())) {
+        throw new TimeoutException(e.getMessage());
+      } else if (e.getStatus().getCode().equals(Status.INTERNAL.getCode())) {
+        throw new InterruptedException(e.getMessage());
+      }
+    } finally {
+      closeChannel(channel);
+    }
   }
 
   private ManagedChannel getChannel() {

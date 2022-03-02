@@ -10,6 +10,7 @@ import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackCallActivity;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ public class ProcessInstanceInspectionsTest {
   private InMemoryEngine engine;
 
   @Test
-  void testStartedByProcessInstanceWithProcessId() {
+  void testStartedByProcessInstanceWithProcessId() throws InterruptedException, TimeoutException {
     // given
     Utilities.deployProcesses(
         client,
@@ -45,7 +46,8 @@ public class ProcessInstanceInspectionsTest {
   }
 
   @Test
-  void testStartedByProcessInstanceWithProcessId_wrongId() {
+  void testStartedByProcessInstanceWithProcessId_wrongId()
+      throws InterruptedException, TimeoutException {
     // given
     Utilities.deployProcesses(
         client,

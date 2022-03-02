@@ -13,8 +13,10 @@ import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.StringAssert;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +37,7 @@ class IncidentAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testHasErrorType() {
+    void testHasErrorType() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -54,7 +56,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testHasErrorMessage() {
+    void testHasErrorMessage() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -74,7 +76,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testExtractErrorMessage() {
+    void testExtractErrorMessage() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -98,7 +100,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testWasRaisedInProcessInstance() {
+    void testWasRaisedInProcessInstance() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent processInstanceEvent =
@@ -120,7 +122,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testOccurredOnElement() {
+    void testOccurredOnElement() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -138,7 +140,7 @@ class IncidentAssertTest {
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       client.newCompleteCommand(job.getKey()).send().join();
 
-      engine.waitForIdleState();
+      Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       final IncidentAssert incidentAssert =
           BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
@@ -148,7 +150,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testOccurredDuringJob() {
+    void testOccurredDuringJob() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -168,7 +170,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testIsResolved() {
+    void testIsResolved() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -186,14 +188,14 @@ class IncidentAssertTest {
       final long incidentKey = incidentAssert.getIncidentKey();
       client.newResolveIncidentCommand(incidentKey).send().join();
 
-      Utilities.waitForIdleState(engine);
+      Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       // then
       incidentAssert.isResolved();
     }
 
     @Test
-    void testIsUnresolved() {
+    void testIsUnresolved() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -221,7 +223,7 @@ class IncidentAssertTest {
     private InMemoryEngine engine;
 
     @Test
-    void testHasErrorTypeFailure() {
+    void testHasErrorTypeFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -244,7 +246,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testHasErrorMessageFailure() {
+    void testHasErrorMessageFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -267,7 +269,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testWasRaisedInProcessInstanceFailure() {
+    void testWasRaisedInProcessInstanceFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent processInstanceEvent =
@@ -292,7 +294,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testOccurredOnElementFailure() {
+    void testOccurredOnElementFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
@@ -310,7 +312,7 @@ class IncidentAssertTest {
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       client.newCompleteCommand(job.getKey()).send().join();
 
-      engine.waitForIdleState();
+      Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       final IncidentAssert incidentAssert =
           BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
@@ -324,7 +326,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testOccurredDuringJobFailure() {
+    void testOccurredDuringJobFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -347,7 +349,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testIsResolvedFailure() {
+    void testIsResolvedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -369,7 +371,7 @@ class IncidentAssertTest {
     }
 
     @Test
-    void testIsUnresolvedFailure() {
+    void testIsUnresolvedFailure() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -387,7 +389,7 @@ class IncidentAssertTest {
       final long incidentKey = incidentAssert.getIncidentKey();
       client.newResolveIncidentCommand(incidentKey).send().join();
 
-      engine.waitForIdleState();
+      Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       // then
       assertThatThrownBy(incidentAssert::isUnresolved)
