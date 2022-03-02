@@ -37,6 +37,7 @@ jobs:
   build-and-test:
     name: Run tests on ${{ matrix.os }}
     timeout-minutes: 15
+    needs: code-formatting
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -77,6 +78,7 @@ jobs:
   build-and-test-testcontainers:
     name: Run tests on ubuntu-latest using testcontainers
     timeout-minutes: 15
+    needs: code-formatting
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: "qa-tests"
