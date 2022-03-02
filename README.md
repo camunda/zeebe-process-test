@@ -1,4 +1,5 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.camunda/zeebe-process-test)](https://search.maven.org/search?q=g:io.camunda%20a:zeebe-process-test)
+
 # Zeebe Process Test
 
 **This project is in very early stages of development.**
@@ -7,13 +8,16 @@ This project allows you to unit test your Camunda Cloud BPMN processes. It will 
 engine and provide you with a set of assertions you can use to verify your process behaves as expected.
 
 ## Prerequisites
+
 * Java 11 or higher (in the future Java 8 will be supported as well)
 * JUnit 5
 
 ## Getting Started
 
 ### Dependency
+
 Add the following dependency to your project
+
 ```xml
 <dependency>
   <groupId>io.camunda</groupId>
@@ -26,20 +30,22 @@ Add the following dependency to your project
 **Note**: This snapshot version is bound to change in the future. Only use this when you want to play around with the project.
 
 ### Annotation
+
 Annotate your test class with the `@ZeebeProcessTest` annotation. This annotation will do a couple of things:
 
 1. It will create and start the in memory engine. This will be a new engine for each test case.
 2. It will create a client which can be used to interact with the engine.
 3. It will (optionally) inject 3 fields in your test class:
    1. `InMemoryEngine` - This is the engine that will run your process. It will provide some basic functionality
-       to help you write your tests, such as waiting for an idle state and increasing the time.
+      to help you write your tests, such as waiting for an idle state and increasing the time.
    2. `ZeebeClient` - This is the client that allows you to communicate with the engine.
-       It allows you to send commands to the engine.
+      It allows you to send commands to the engine.
    3. `RecordStreamSource` - This gives you access to all the records that are processed by the engine.
       It is what the assertions use to verify expectations. This grants you the freedom to create your own assertions.
 4. It will take care of cleaning up the engine and client when the testcase is finished.
 
 Example:
+
 ```java
 @ZeebeProcessTest
 class DeploymentAssertTest {
@@ -54,6 +60,7 @@ class DeploymentAssertTest {
 There are multiple entrypoints for starting assertions:
 
 #### Deployment Assertions
+
 ```java
 DeploymentEvent event = client.newDeployCommand()
   .addResourceFromClasspath("my-process.bpmn")
@@ -63,7 +70,9 @@ DeploymentAssert assertions = BpmnAssert.assertThat(event);
 ```
 
 #### Process Instance Assertions
+
 Started by manually sending an event:
+
 ```java
 ProcessInstanceEvent event = client.newCreateInstanceCommand()
   .bpmnProcessId("<processId>")
@@ -84,6 +93,7 @@ ProcessInstanceResult event = client.newCreateInstanceCommand()
 ```
 
 Started by a timer:
+
 ```java
 Optional<InspectedProcessInstance> firstProcessInstance = InspectionUtility.findProcessEvents()
   .triggeredByTimer(ProcessPackTimerStartEvent.TIMER_ID)
@@ -92,6 +102,7 @@ ProcessInstanceAssert assertions = BpmnAssert.assertThat(firstProcessInstance.ge
 ```
 
 Started by a call activity:
+
 ```java
 Optional<InspectedProcessInstance> firstProcessInstance = InspectionUtility.findProcessInstances()
   .withParentProcessInstanceKey(<key>)
@@ -101,6 +112,7 @@ ProcessInstanceAssert assertions = BpmnAssert.assertThat(firstProcessInstance.ge
 ```
 
 #### Job Assertions
+
 ```java
 ActivateJobsResponse response = client.newActivateJobsCommand()
   .jobType("<jobType>")
@@ -112,6 +124,7 @@ JobAssert assertions = BpmnAssert.assertThat(activatedJob);
 ```
 
 #### Message Assertions
+
 ```java
 PublishMessageResponse response = client
   .newPublishMessageCommand()
@@ -143,24 +156,27 @@ Once the engine has detected it has become idle it will wait for a delay (30ms) 
 If this is the case it is considered to be in idle state and continue your test / execute the runnables.
 
 ## Examples
+
 For example tests the best place to look right now is the tests in the QA module.
 
 ## Project Structure
+
 The project consists of 5 different modules:
 1. Api
-    - This module contains public interfaces. It should always be Java 8 compatible.
+- This module contains public interfaces. It should always be Java 8 compatible.
 2. Assertions
-    - This module contains all the assertions. It should always be Java 8 compatible.
+- This module contains all the assertions. It should always be Java 8 compatible.
 3. Engine
-    - This module contains the in memory engine. It is not bound to a specific Java version.
-      Therefore, it is not recommended to depend on this module.
+- This module contains the in memory engine. It is not bound to a specific Java version.
+Therefore, it is not recommended to depend on this module.
 4. Extension
-    - This module contains the annotation for your unit tests. As of now it depends on the engine
-      and thus is not bound to a specific Java version. In the future this should be Java 8 compatible.
+- This module contains the annotation for your unit tests. As of now it depends on the engine
+and thus is not bound to a specific Java version. In the future this should be Java 8 compatible.
 5. QA
-   - This module contains our QA tests. There is no reason to depend on this module. It is not bound to a specific Java version.
+- This module contains our QA tests. There is no reason to depend on this module. It is not bound to a specific Java version.
 
 ## Contributing
+
 Please refer to the [Contributions Guide](/CONTRIBUTING.md).
 
 ## Credits
