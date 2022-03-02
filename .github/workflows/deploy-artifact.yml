@@ -86,6 +86,12 @@ jobs:
           docker tag $IMAGE_NAME:$TAG $IMAGE_ID:$TAG
           docker push $IMAGE_ID:$TAG
 
+      - name: Update tag in config
+        if: github.ref == 'refs/head/main'
+        run: |
+          sed -i '/container.image.tag=/ s:=.*:='$TAG':' config.properties
+          cat config.properties
+
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v4
