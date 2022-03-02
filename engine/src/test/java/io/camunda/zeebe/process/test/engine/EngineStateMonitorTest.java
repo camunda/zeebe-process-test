@@ -95,11 +95,11 @@ class EngineStateMonitorTest {
 
   private void changeToIdleState(
       final EngineStateMonitor monitor, final TestLogStreamReader reader, final boolean lockState) {
-    // We use onCommit here because it is an easy way to trigger the EngineStateMonitor to check the
-    // engine state and trigger the callbacks
-    reader.setStateLocked(lockState);
-    reader.setPosition(reader.getLastEventPosition());
+    // We use onCommit here because it is an easy way to synchronize the EngineStateMonitor with the
+    // TestLogStreamReader. For this synchronize to happen the state cannot be locked!
+    reader.setStateLocked(false);
     monitor.onCommit();
+    reader.setStateLocked(lockState);
   }
 
   private void changeToBusyState(
@@ -115,8 +115,8 @@ class EngineStateMonitorTest {
   private class TestLogStreamReader implements LogStreamReader {
 
     private boolean stateLocked = false;
-    private long position = 0L;
-    private long lastEventPosition = 0L;
+    private long position = -1L;
+    private long lastEventPosition = -1L;
 
     void setStateLocked(final boolean stateLocked) {
         this.stateLocked = stateLocked;
@@ -128,10 +128,6 @@ class EngineStateMonitorTest {
 
     void setLastEventPosition(final long position) {
         lastEventPosition = position;
-    }
-
-    void setPosition(final long position) {
-        this.position = position;
     }
 
     @Override
