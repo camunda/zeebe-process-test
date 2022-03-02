@@ -4,7 +4,7 @@ on:
   workflow_call: { }
 jobs:
   code-formatting:
-    name: Apply code formatting
+    name: check code formatting
     timeout-minutes: 15
     runs-on: ubuntu-latest
 
@@ -27,12 +27,7 @@ jobs:
           java-version: 17
 
       - name: Apply format
-        run: mvn spotless:apply
-
-      - name: Commit and push format changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "chore: apply format"
+        run: mvn spotless:check
 
   build-and-test:
     name: Run tests on ${{ matrix.os }}
