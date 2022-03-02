@@ -10,22 +10,21 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class EngineStateMonitorTest {
 
-    private InMemoryLogStorage logStorage;
-    private TestLogStreamReader logStreamReader;
-    private EngineStateMonitor monitor;
+  private InMemoryLogStorage logStorage;
+  private TestLogStreamReader logStreamReader;
+  private EngineStateMonitor monitor;
 
-    @BeforeEach
-    void beforeEach() {
-        logStorage = mock(InMemoryLogStorage.class);
-        logStreamReader = new TestLogStreamReader();
-        monitor = new EngineStateMonitor(logStorage, logStreamReader);
-    }
+  @BeforeEach
+  void beforeEach() {
+    logStorage = mock(InMemoryLogStorage.class);
+    logStreamReader = new TestLogStreamReader();
+    monitor = new EngineStateMonitor(logStorage, logStreamReader);
+  }
 
   @Test
   void testOnIdleCallbackIsCalledWhenEngineIsAlreadyIdle()
@@ -119,15 +118,15 @@ class EngineStateMonitorTest {
     private long lastEventPosition = -1L;
 
     void setStateLocked(final boolean stateLocked) {
-        this.stateLocked = stateLocked;
+      this.stateLocked = stateLocked;
     }
 
     long getLastEventPosition() {
-        return lastEventPosition;
+      return lastEventPosition;
     }
 
     void setLastEventPosition(final long position) {
-        lastEventPosition = position;
+      lastEventPosition = position;
     }
 
     @Override
