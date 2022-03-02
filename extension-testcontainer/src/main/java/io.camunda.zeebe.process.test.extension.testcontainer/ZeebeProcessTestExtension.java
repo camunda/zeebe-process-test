@@ -17,6 +17,10 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This extension is used by the {@link ZeebeProcessTest} annotation. It is responsible for managing
+ * the lifecycle of the test engine.
+ */
 public class ZeebeProcessTestExtension
     implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, TestWatcher {
 
@@ -24,6 +28,18 @@ public class ZeebeProcessTestExtension
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
   private static final String KEY_ZEEBE_ENGINE = "ZEEBE_ENGINE";
 
+  /**
+   * A new testcontainer container gets created and started. This container will run the test
+   * engine. After this a {@link ContainerizedEngine} is created, which allows communicating with
+   * the testcontainer.
+   *
+   * <p>Even though this method is called before each test class, the test container will only get
+   * created and started once! {@link EngineContainer} is a Singleton so no new object is created
+   * each time. This is done for performance reasons. Starting a testcontainer can take a couple of
+   * seconds, so we aim to restart it a minimal amount of times.
+   *
+   * @param extensionContext jUnit5 extension context
+   */
   @Override
   public void beforeAll(final ExtensionContext extensionContext) {
     final EngineContainer container = EngineContainer.getContainer();
@@ -38,6 +54,13 @@ public class ZeebeProcessTestExtension
     getStore(extensionContext).put(KEY_ZEEBE_ENGINE, engine);
   }
 
+  /**
+   * Before each test the {@link ContainerizedEngine} is reset. A client to communicate with the
+   * engine will be created, together with a {@link RecordStream}. These will be injected in the
+   * fields of the test class, if they are available.
+   *
+   * @param extensionContext jUnit5 extension context
+   */
   @Override
   public void beforeEach(final ExtensionContext extensionContext) {
     final Object engineContent = getStore(extensionContext.getParent().get()).get(KEY_ZEEBE_ENGINE);
@@ -52,6 +75,11 @@ public class ZeebeProcessTestExtension
     injectFields(extensionContext, engine, client, recordStream);
   }
 
+  /**
+   * After each test the client will be closed.
+   *
+   * @param extensionContext jUnit5 extension context
+   */
   @Override
   public void afterEach(final ExtensionContext extensionContext) {
     final Object clientContent = getStore(extensionContext).get(KEY_ZEEBE_CLIENT);
@@ -59,6 +87,12 @@ public class ZeebeProcessTestExtension
     client.close();
   }
 
+  /**
+   * Upon test failure an overview of occurred events and incidents will be logged.
+   *
+   * @param extensionContext jUnit5 extension context
+   * @param cause the throwable that caused the test failure
+   */
   @Override
   public void testFailed(final ExtensionContext extensionContext, final Throwable cause) {
     final Object engineContent = getStore(extensionContext.getParent().get()).get(KEY_ZEEBE_ENGINE);

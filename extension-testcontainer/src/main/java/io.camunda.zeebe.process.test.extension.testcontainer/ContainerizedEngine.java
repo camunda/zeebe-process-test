@@ -28,6 +28,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * The {@link ContainerizedEngine} is used for communicating with the actual test engine running in
+ * the testcontainer. Communicating will be done through gRPC. Implementation details for this gRPC
+ * service can be found in engine-protocol.
+ *
+ * <p>This engine is a stripped down version of the actual Zeebe Engine. Its intended purpose is for
+ * testing purposes only.
+ */
 public class ContainerizedEngine implements InMemoryEngine {
 
   private final String host;
@@ -62,6 +70,10 @@ public class ContainerizedEngine implements InMemoryEngine {
     closeChannel(channel);
   }
 
+  /**
+   * Reset the test engine. A reset stops the current engine, and replaces it with a new engine.
+   * Note that you'll need to redeploy your processes because it is an entirely new engine.
+   */
   public void reset() {
     final ManagedChannel channel = getChannel();
     final EngineControlBlockingStub stub = getStub(channel);
@@ -77,6 +89,11 @@ public class ContainerizedEngine implements InMemoryEngine {
     return new RecordStreamSourceImpl(this, getRecords());
   }
 
+  /**
+   * Gets a list of all records that have occurred on the test engine.
+   *
+   * @return a list of records
+   */
   public List<Record<?>> getRecords() {
     final ManagedChannel channel = getChannel();
     final EngineControlBlockingStub stub = getStub(channel);

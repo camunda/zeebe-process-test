@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Inspections for process instance events. This class is particularly useful to find process
+ * instances that have been started by other process instances (e.g. by a call activity).
+ */
 public class ProcessInstanceInspections {
 
   private final ProcessInstanceRecordStreamFilter filter;

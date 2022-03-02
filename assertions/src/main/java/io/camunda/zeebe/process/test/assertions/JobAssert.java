@@ -15,7 +15,7 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.data.Offset;
 
-/** Assertions for {@code ActivatedJob} instances */
+/** Assertions for {@link ActivatedJob} instances */
 public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
 
   private final RecordStream recordStream;
@@ -42,8 +42,6 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
         .isEqualTo(expectedElementId);
     return this;
   }
-
-  // TODO decide whether this assertion has any value
 
   /**
    * Asserts that the activated job has the given deadline
