@@ -23,9 +23,7 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
     this.records = records;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Iterable<Record<?>> records() {
     updateWithNewRecords();

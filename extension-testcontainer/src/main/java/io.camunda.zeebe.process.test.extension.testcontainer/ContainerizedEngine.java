@@ -33,8 +33,8 @@ import java.util.concurrent.TimeoutException;
  * the testcontainer. Communicating will be done through gRPC. Implementation details for this gRPC
  * service can be found in engine-protocol.
  *
- * This engine is a stripped down version of the actual Zeebe Engine.
- * Its intended purpose is for testing purposes only.
+ * <p>This engine is a stripped down version of the actual Zeebe Engine. Its intended purpose is for
+ * testing purposes only.
  */
 public class ContainerizedEngine implements InMemoryEngine {
 
@@ -48,9 +48,6 @@ public class ContainerizedEngine implements InMemoryEngine {
     this.channelPort = channelPort;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void start() {
     final ManagedChannel channel = getChannel();
@@ -62,9 +59,6 @@ public class ContainerizedEngine implements InMemoryEngine {
     closeChannel(channel);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void stop() {
     final ManagedChannel channel = getChannel();
@@ -77,8 +71,8 @@ public class ContainerizedEngine implements InMemoryEngine {
   }
 
   /**
-   * Reset the test engine. Implementation wise a reset will result in stopping the old engine and
-   * creating a new one.
+   * Reset the test engine. A reset stops the current engine, and replaces it with a new engine.
+   * Note that you'll need to redeploy your processes because it is an entirely new engine.
    */
   public void reset() {
     final ManagedChannel channel = getChannel();
@@ -90,9 +84,6 @@ public class ContainerizedEngine implements InMemoryEngine {
     closeChannel(channel);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public RecordStreamSource getRecordStreamSource() {
     return new RecordStreamSourceImpl(this, getRecords());
@@ -127,10 +118,6 @@ public class ContainerizedEngine implements InMemoryEngine {
     return mappedRecords;
   }
 
-
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public ZeebeClient createClient() {
     return ZeebeClient.newClientBuilder()
@@ -139,17 +126,11 @@ public class ContainerizedEngine implements InMemoryEngine {
         .build();
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public String getGatewayAddress() {
     return host + ":" + channelPort;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void increaseTime(final Duration timeToAdd) {
     final ManagedChannel channel = getChannel();
@@ -162,9 +143,6 @@ public class ContainerizedEngine implements InMemoryEngine {
     closeChannel(channel);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void waitForIdleState(final Duration timeout) {
     final ManagedChannel channel = getChannel();

@@ -6,9 +6,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.utility.DockerImageName;
 
-/**
- * Singleton object which manages access to the testcontainer that's running the test engine
- */
+/** Singleton object which manages access to the testcontainer that's running the test engine */
 public final class EngineContainer extends GenericContainer<EngineContainer> {
 
   private static final Logger LOG = LoggerFactory.getLogger("io.camunda.zeebe-process-test");

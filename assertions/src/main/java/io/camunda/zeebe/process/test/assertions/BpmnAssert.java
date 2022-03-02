@@ -8,14 +8,28 @@ import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 
-/** This class manages all the entry points for the specific assertions. */
+/**
+ * This class manages all the entry points for the specific assertions.
+ *
+ * <p>For example when starting a process instance:
+ *
+ * <pre>{@code
+ * ProcessInstanceEvent event = client.newCreateInstanceCommand()
+ *     .bpmnProcessId("processId")
+ *     .latestVersion()
+ *     .send()
+ *     .join();
+ * ProcessInstanceAssert assertions = BpmnAssert.assertThat(event);
+ * }</pre>
+ */
 public abstract class BpmnAssert {
 
   static ThreadLocal<RecordStream> recordStream = new ThreadLocal<>();
 
   /**
    * Initializes a {@link RecordStream}. The {@link RecordStream} will be stored in a {@link
-   * ThreadLocal} and thus will only be accessible in the current thread.
+   * ThreadLocal} and thus will only be accessible in the current thread. This will be managed for
+   * you if you're using the @ZeebeProcessTest annotation.
    *
    * @param recordStream the {@link RecordStream}
    */
@@ -30,6 +44,7 @@ public abstract class BpmnAssert {
 
   /**
    * Gets the {@link RecordStream} that is stored in the {@link ThreadLocal} for the current thread.
+   * This will be managed for you if you're using the @ZeebeProcessTest annotation.
    *
    * @return the {@link RecordStream} stored for this thread
    * @throws AssertionError if no {@link RecordStream} has been initialized for the current thread

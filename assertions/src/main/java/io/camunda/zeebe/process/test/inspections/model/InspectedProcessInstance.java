@@ -6,12 +6,8 @@ package io.camunda.zeebe.process.test.inspections.model;
  * process instance key. This object is required to use {@link
  * io.camunda.zeebe.process.test.assertions.BpmnAssert#assertThat(InspectedProcessInstance)}.
  *
- * <p>Without this object we would need a method {@code assertThat(long)}. This would conflict with
- * the similar method in AssertJ, which is often imported in a static way.
- *
- * <p>Besides that it would also conflict with other assertions, such as {@link
- * io.camunda.zeebe.process.test.assertions.IncidentAssert}, which could also be accessed using a
- * long.
+ * <p>The helper object enabled asserting process instances which were not started with a command
+ * send by the client (e.g. by a timer or a call activity).
  */
 public class InspectedProcessInstance {
 

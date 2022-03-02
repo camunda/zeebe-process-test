@@ -33,11 +33,10 @@ public class ZeebeProcessTestExtension
    * engine. After this a {@link ContainerizedEngine} is created, which allows communicating with
    * the testcontainer.
    *
-   * Even though this method is called before each test class, the test container will only get
+   * <p>Even though this method is called before each test class, the test container will only get
    * created and started once! {@link EngineContainer} is a Singleton so no new object is created
-   * each time.
-   * This is done for performance reasons. Starting a testcontainer can take a couple of seconds, so
-   * we aim to restart it a minimal amount of times.
+   * each time. This is done for performance reasons. Starting a testcontainer can take a couple of
+   * seconds, so we aim to restart it a minimal amount of times.
    *
    * @param extensionContext jUnit5 extension context
    */

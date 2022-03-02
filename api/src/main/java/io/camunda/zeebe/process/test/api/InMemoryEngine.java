@@ -5,8 +5,8 @@ import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 /**
- * The engine used for running processes. This engine is a stripped down version of the actual Zeebe
- * Engine. Its intended purpose is for testing purposes only.
+ * The engine used to execute processes. This engine is a stripped down version of the actual Zeebe
+ * Engine. It's intended for testing purposes only.
  */
 public interface InMemoryEngine {
 
@@ -34,8 +34,10 @@ public interface InMemoryEngine {
   void increaseTime(Duration timeToAdd);
 
   /**
-   * Waits for the engine to reach an idle state. Idle state is a state in which the engine makes no
-   * progress and is waiting for new commands or events to trigger</br>
+   * The engine is in an idle state when there is nothing left to do for it. In this state, the
+   * engine is waiting for an external command sent by a client, or for an event to trigger. For
+   * example, when a timer expires the engine may need to continue orchestrating some process
+   * instance(s).</br>
    *
    * <p>On a technical level, idle state is defined by
    *
@@ -44,8 +46,8 @@ public interface InMemoryEngine {
    *       engine
    *   <li>This is insufficient, however, because the engine might still be in the process of
    *       writing follow-up records
-   *   <li>Therefore, when the first idle state is detected, a grace period starts. If no new
-   *       records come in during that grace period, then at the end onf the grace period callbacks
+   *   <li>Therefore, when the first idle state is detected, a grace period (30ms) starts. If no new
+   *       records come in during that grace period, then at the end of the grace period callbacks
    *       are notified
    * </ul>
    *
