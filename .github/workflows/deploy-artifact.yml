@@ -86,19 +86,6 @@ jobs:
           docker tag $IMAGE_NAME:$TAG $IMAGE_ID:$TAG
           docker push $IMAGE_ID:$TAG
 
-      - name: Update image and tag in Git
-        run : |
-          git config --global user.name "Release Bot"
-          git config --global user.email actions@github.com
-          cd extension-testcontainer/src/main/resources
-          IMAGE_ID=$OWNER/$IMAGE_NAME
-          sed -i '/container.image.name=/ s:=.*:='$IMAGE_ID':' config.properties
-          sed -i '/container.image.tag=/ s:=.*:='$TAG':' config.properties
-          if [[ `git status --porcelain --untracked-files=no` ]] && [[ `git symbolic-ref -q HEAD` ]]; then
-            git commit -am "(release): update image and tag ($IMAGE_ID:$TAG)"
-            git push
-          fi
-
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v4
