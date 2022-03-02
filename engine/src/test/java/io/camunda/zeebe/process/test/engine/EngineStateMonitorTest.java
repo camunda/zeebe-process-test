@@ -10,40 +10,32 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class EngineStateMonitorTest {
 
-  @Test
-  void testCallbackIsCalledWhenEngineIsAlreadyIdle()
-      throws ExecutionException, InterruptedException, TimeoutException {
-    // given
-    final InMemoryLogStorage logStorage = mock(InMemoryLogStorage.class);
-    final TestLogStreamReader logStreamReader = new TestLogStreamReader();
-    final EngineStateMonitor monitor = new EngineStateMonitor(logStorage, logStreamReader);
+    private InMemoryLogStorage logStorage;
+    private TestLogStreamReader logStreamReader;
+    private EngineStateMonitor monitor;
 
-    // when
-    final CompletableFuture<Void> callbackFuture = new CompletableFuture<>();
-    final Runnable callback = () -> callbackFuture.complete(null);
-    monitor.addOnIdleCallback(callback);
-
-    // then
-    callbackFuture.get(50L, TimeUnit.MILLISECONDS);
-    assertThat(callbackFuture).isCompleted();
-  }
+    @BeforeEach
+    void beforeEach() {
+        logStorage = mock(InMemoryLogStorage.class);
+        logStreamReader = new TestLogStreamReader();
+        monitor = new EngineStateMonitor(logStorage, logStreamReader);
+    }
 
   @Test
-  void testCallbackIsCalledWhenIdleStateIsReached()
+  void testOnIdleCallbackIsCalledWhenEngineIsAlreadyIdle()
       throws ExecutionException, InterruptedException, TimeoutException {
     // given
-    final InMemoryLogStorage logStorage = mock(InMemoryLogStorage.class);
-    final TestLogStreamReader logStreamReader = new TestLogStreamReader();
-    final EngineStateMonitor monitor = new EngineStateMonitor(logStorage, logStreamReader);
-    changeToBusyState(monitor, logStreamReader);
-
-    // when
     final CompletableFuture<Void> callbackFuture = new CompletableFuture<>();
     final Runnable callback = () -> callbackFuture.complete(null);
+
+    // when
+    changeToIdleState(monitor, logStreamReader, false);
     monitor.addOnIdleCallback(callback);
 
     // then
@@ -52,21 +44,30 @@ class EngineStateMonitorTest {
   }
 
   @Test
-  void testCallbackIsCalledWhenEngineIsAlreadyBusy()
+  void testOnIdleCallbackIsCalledWhenIdleStateIsReached()
       throws ExecutionException, InterruptedException, TimeoutException {
     // given
-    final InMemoryLogStorage logStorage = mock(InMemoryLogStorage.class);
-    final TestLogStreamReader logStreamReader = new TestLogStreamReader();
-    final EngineStateMonitor monitor = new EngineStateMonitor(logStorage, logStreamReader);
-    changeToBusyState(monitor, logStreamReader);
-    // We need to set the position of the reader high enough the so hasNext() resolves to false. If
-    // we don't do this adding the callback will make the engine idle because of the
-    // forwardToLastEvent() method in the EngineStateMonitor, and the callback will never get called
-    logStreamReader.setPosition(100L);
-
-    // when
     final CompletableFuture<Void> callbackFuture = new CompletableFuture<>();
     final Runnable callback = () -> callbackFuture.complete(null);
+
+    // when
+    changeToBusyState(monitor, logStreamReader, false);
+    monitor.addOnIdleCallback(callback);
+
+    // then
+    callbackFuture.get(1L, TimeUnit.SECONDS);
+    assertThat(callbackFuture).isCompleted();
+  }
+
+  @Test
+  void testOnProcessingCallbackIsCalledWhenEngineIsAlreadyBusy()
+      throws ExecutionException, InterruptedException, TimeoutException {
+    // given
+    final CompletableFuture<Void> callbackFuture = new CompletableFuture<>();
+    final Runnable callback = () -> callbackFuture.complete(null);
+
+    // when
+    changeToBusyState(monitor, logStreamReader, true);
     monitor.addOnProcessingCallback(callback);
 
     // then
@@ -75,19 +76,15 @@ class EngineStateMonitorTest {
   }
 
   @Test
-  void testCallbackIsCalledWhenBusyStateIsReached()
+  void testOnProcessingCallbackIsCalledWhenBusyStateIsReached()
       throws ExecutionException, InterruptedException, TimeoutException {
     // given
-    final InMemoryLogStorage logStorage = mock(InMemoryLogStorage.class);
-    final TestLogStreamReader logStreamReader = new TestLogStreamReader();
-    final EngineStateMonitor monitor = new EngineStateMonitor(logStorage, logStreamReader);
-
     final CompletableFuture<Void> callbackFuture = new CompletableFuture<>();
     final Runnable callback = () -> callbackFuture.complete(null);
-    monitor.addOnProcessingCallback(callback);
 
     // when
-    changeToBusyState(monitor, logStreamReader);
+    changeToBusyState(monitor, logStreamReader, true);
+    monitor.addOnProcessingCallback(callback);
 
     // then
     callbackFuture.get(1L, TimeUnit.SECONDS);
@@ -95,17 +92,19 @@ class EngineStateMonitorTest {
   }
 
   private void changeToIdleState(
-      final EngineStateMonitor monitor, final TestLogStreamReader reader) {
+      final EngineStateMonitor monitor, final TestLogStreamReader reader, final boolean lockState) {
     // We use onCommit here because it is an easy way to trigger the EngineStateMonitor to check the
     // engine state and trigger the callbacks
+    reader.setStateLocked(lockState);
     reader.setPosition(reader.getLastEventPosition());
     monitor.onCommit();
   }
 
   private void changeToBusyState(
-      final EngineStateMonitor monitor, final TestLogStreamReader reader) {
+      final EngineStateMonitor monitor, final TestLogStreamReader reader, final boolean lockState) {
     // We use onReplayed here because it is an easy way to update the lastProcessedEventPosition of
     // the EngineStateMonitor
+    reader.setStateLocked(lockState);
     final long position = reader.getLastEventPosition() + 1;
     monitor.onReplayed(position, -1L);
     reader.setLastEventPosition(position);
@@ -113,19 +112,24 @@ class EngineStateMonitorTest {
 
   private class TestLogStreamReader implements LogStreamReader {
 
+    private boolean stateLocked = false;
     private long position = 0L;
     private long lastEventPosition = 0L;
 
+    void setStateLocked(final boolean stateLocked) {
+        this.stateLocked = stateLocked;
+    }
+
     long getLastEventPosition() {
-      return lastEventPosition;
+        return lastEventPosition;
     }
 
     void setLastEventPosition(final long position) {
-      lastEventPosition = position;
+        lastEventPosition = position;
     }
 
     void setPosition(final long position) {
-      this.position = position;
+        this.position = position;
     }
 
     @Override
@@ -161,7 +165,7 @@ class EngineStateMonitorTest {
 
     @Override
     public boolean hasNext() {
-      return position < lastEventPosition;
+      return !stateLocked && position < lastEventPosition;
     }
 
     @Override

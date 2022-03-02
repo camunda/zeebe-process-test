@@ -66,12 +66,12 @@ final class EngineStateMonitor implements LogStorage.CommitListener, StreamProce
         scheduleIdleStateNotification();
       } else {
         cancelIdleStateNotification();
-        runProcessingCallbacks();
+        notifyProcessingCallbacks();
       }
     }
   }
 
-  private void runProcessingCallbacks() {
+  private void notifyProcessingCallbacks() {
     synchronized (processingCallbacks) {
       processingCallbacks.forEach(Runnable::run);
       processingCallbacks.clear();
