@@ -51,8 +51,9 @@ class EngineStateMonitorTest {
     final Runnable callback = () -> callbackFuture.complete(null);
 
     // when
-    changeToBusyState(monitor, logStreamReader, false);
+    changeToBusyState(monitor, logStreamReader, true);
     monitor.addOnIdleCallback(callback);
+    changeToIdleState(monitor, logStreamReader, false);
 
     // then
     callbackFuture.get(1L, TimeUnit.SECONDS);
@@ -83,8 +84,9 @@ class EngineStateMonitorTest {
     final Runnable callback = () -> callbackFuture.complete(null);
 
     // when
-    changeToBusyState(monitor, logStreamReader, true);
+    changeToIdleState(monitor, logStreamReader, true);
     monitor.addOnProcessingCallback(callback);
+    changeToBusyState(monitor, logStreamReader, false);
 
     // then
     callbackFuture.get(1L, TimeUnit.SECONDS);
