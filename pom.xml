@@ -40,6 +40,7 @@
   <properties>
     <dependency.assertj.version>3.22.0</dependency.assertj.version>
     <dependency.awaitility.version>4.1.1</dependency.awaitility.version>
+    <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.11.0</dependency.errorprone.version>
     <dependency.eze.version>0.6.0</dependency.eze.version>
     <dependency.feel.version>1.14.2</dependency.feel.version>
@@ -51,7 +52,6 @@
     <dependency.jna.version>5.10.0</dependency.jna.version>
     <dependency.junit.version>5.8.2</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
-    <dependency.log4j.version>2.17.1</dependency.log4j.version>
     <dependency.mockito.version>4.3.1</dependency.mockito.version>
     <dependency.netty.version>4.1.74.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
@@ -181,6 +181,12 @@
 
       <dependency>
         <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${dependency.slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
         <version>${dependency.slf4j.version}</version>
       </dependency>
@@ -274,19 +280,9 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${dependency.slf4j.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
         <version>${dependency.snakeyaml.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
-        <version>${dependency.log4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.immutables</groupId>
@@ -311,6 +307,12 @@
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>${dependency.awaitility.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${dependency.commons.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
