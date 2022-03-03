@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 @ZeebeProcessTest
 class ProcessInstanceAssertTest {
+
   private static final String LINE_SEPARATOR = System.lineSeparator();
   private static final Map<String, Object> TYPED_TEST_VARIABLES = new HashMap<>();
 
@@ -482,7 +483,7 @@ class ProcessInstanceAssertTest {
       Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
       final IncidentAssert incidentAssert =
-          BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
+          BpmnAssert.assertThat(instanceEvent).extractingLatestIncident();
 
       // then
 
@@ -1104,7 +1105,7 @@ class ProcessInstanceAssertTest {
           Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // then
-      assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).extractLatestIncident())
+      assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).extractingLatestIncident())
           .isInstanceOf(AssertionError.class)
           .hasMessage("No incidents were raised for this process instance");
     }
