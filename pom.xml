@@ -38,6 +38,7 @@
   </scm>
 
   <properties>
+    <dependency.agrona.version>1.14.0</dependency.agrona.version>
     <dependency.assertj.version>3.22.0</dependency.assertj.version>
     <dependency.awaitility.version>4.1.1</dependency.awaitility.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
@@ -55,6 +56,7 @@
     <dependency.mockito.version>4.3.1</dependency.mockito.version>
     <dependency.netty.version>4.1.74.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
+    <dependency.proto.version>2.0.1</dependency.proto.version>
     <dependency.protobuf.version>3.19.4</dependency.protobuf.version>
     <dependency.scala.version>2.13.8</dependency.scala.version>
     <dependency.slf4j.version>1.7.36</dependency.slf4j.version>
@@ -67,6 +69,7 @@
     <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
     <nexus.snapshot.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots</nexus.snapshot.repository>
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
+    <plugin.version.dependency>3.2.0</plugin.version.dependency>
 
     <plugin.version.flatten>1.2.7</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
@@ -151,6 +154,48 @@
 
       <dependency>
         <groupId>io.camunda</groupId>
+        <artifactId>zeebe-client-java</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-msgpack-value</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-protocol</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-protocol-impl</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-bpmn-model</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-gateway-protocol</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-db</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
         <artifactId>zeebe-workflow-engine</artifactId>
         <version>${dependency.zeebe.version}</version>
       </dependency>
@@ -170,6 +215,12 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-test-util</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-gateway-protocol-impl</artifactId>
         <version>${dependency.zeebe.version}</version>
       </dependency>
 
@@ -296,6 +347,18 @@
         <version>${dependency.feel.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.google.api.grpc</groupId>
+        <artifactId>proto-google-common-protos</artifactId>
+        <version>${dependency.proto.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.agrona</groupId>
+        <artifactId>agrona</artifactId>
+        <version>${dependency.agrona.version}</version>
+      </dependency>
+
       <!-- Test scope-->
       <dependency>
         <groupId>org.mockito</groupId>
@@ -369,6 +432,24 @@
               <goal>enforce</goal>
             </goals>
             <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${plugin.version.dependency}</version>
+        <executions>
+          <execution>
+            <id>analyze</id>
+            <goals>
+              <goal>analyze-only</goal>
+              <goal>analyze-dep-mgt</goal>
+              <goal>analyze-duplicate</goal>
+            </goals>
+            <configuration>
+              <failOnWarning>true</failOnWarning>
+            </configuration>
           </execution>
         </executions>
       </plugin>
