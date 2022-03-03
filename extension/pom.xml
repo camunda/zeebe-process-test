@@ -53,12 +53,12 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
-    <!-- Test scope-->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
     </dependency>
 
+    <!-- Test scope-->
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
