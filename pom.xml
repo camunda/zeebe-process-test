@@ -67,6 +67,7 @@
     <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
     <nexus.snapshot.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots</nexus.snapshot.repository>
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
+    <plugin.version.dependency>3.2.0</plugin.version.dependency>
 
     <plugin.version.flatten>1.2.7</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
@@ -369,6 +370,24 @@
               <goal>enforce</goal>
             </goals>
             <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${plugin.version.dependency}</version>
+        <executions>
+          <execution>
+            <id>analyze</id>
+            <goals>
+              <goal>analyze-only</goal>
+              <goal>analyze-dep-mgt</goal>
+              <goal>analyze-duplicate</goal>
+            </goals>
+            <configuration>
+              <failOnWarning>true</failOnWarning>
+            </configuration>
           </execution>
         </executions>
       </plugin>
