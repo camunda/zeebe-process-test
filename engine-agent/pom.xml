@@ -34,6 +34,15 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
+    <!--  Usually we don't want to provide an slf4j implementation in this project. This module
+      is the only exception to this rule. This is because we need to provide the engine with an
+      implementation, and since this runs in a docker container the user won't be providing it. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-stub</artifactId>
@@ -79,6 +88,15 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <failOnWarning>true</failOnWarning>
+          <ignoreUnusedRuntime>true</ignoreUnusedRuntime>
+        </configuration>
       </plugin>
     </plugins>
   </build>
