@@ -127,7 +127,7 @@ public class JobAssert extends AbstractAssert<JobAssert, ActivatedJob> {
    *
    * @return {@link IncidentAssert} for the latest incident
    */
-  public IncidentAssert extractLatestIncident() {
+  public IncidentAssert extractingLatestIncident() {
     hasAnyIncidents();
 
     final List<Record<IncidentRecordValue>> incidentCreatedRecords =

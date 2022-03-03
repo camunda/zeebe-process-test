@@ -49,7 +49,8 @@ class IncidentAssertTest {
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       // then
       incidentAssert.hasErrorType(ErrorType.UNHANDLED_ERROR_EVENT);
@@ -68,7 +69,8 @@ class IncidentAssertTest {
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       // then
       incidentAssert.hasErrorMessage(
@@ -89,9 +91,10 @@ class IncidentAssertTest {
 
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
-      final StringAssert messageAssert = incidentAssert.extractErrorMessage();
+      final StringAssert messageAssert = incidentAssert.extractingErrorMessage();
 
       // then
       Assertions.assertThat(messageAssert).isNotNull();
@@ -114,7 +117,8 @@ class IncidentAssertTest {
 
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       // then
       incidentAssert.wasRaisedInProcessInstance(processInstanceEvent);
@@ -143,7 +147,7 @@ class IncidentAssertTest {
       Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       final IncidentAssert incidentAssert =
-          BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
+          BpmnAssert.assertThat(instanceEvent).extractingLatestIncident();
 
       // then
       incidentAssert.occurredOnElement(ProcessPackLoopingServiceTask.GATEWAY_ELEMENT_ID);
@@ -162,7 +166,7 @@ class IncidentAssertTest {
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       Utilities.throwErrorCommand(engine, client, job.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(job).extractLatestIncident();
+      final IncidentAssert incidentAssert = BpmnAssert.assertThat(job).extractingLatestIncident();
 
       // then
       incidentAssert.occurredDuringJob(job);
@@ -183,7 +187,8 @@ class IncidentAssertTest {
 
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       final long incidentKey = incidentAssert.getIncidentKey();
       client.newResolveIncidentCommand(incidentKey).send().join();
@@ -208,7 +213,8 @@ class IncidentAssertTest {
 
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       // then
       incidentAssert.isUnresolved();
@@ -236,7 +242,8 @@ class IncidentAssertTest {
 
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       // then
       assertThatThrownBy(() -> incidentAssert.hasErrorType(ErrorType.IO_MAPPING_ERROR))
@@ -259,7 +266,8 @@ class IncidentAssertTest {
 
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       // then
       assertThatThrownBy(() -> incidentAssert.hasErrorMessage(WRONG_VALUE))
@@ -283,7 +291,8 @@ class IncidentAssertTest {
 
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       // then
       assertThatThrownBy(() -> incidentAssert.wasRaisedInProcessInstance(-1))
@@ -315,7 +324,7 @@ class IncidentAssertTest {
       Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
 
       final IncidentAssert incidentAssert =
-          BpmnAssert.assertThat(instanceEvent).extractLatestIncident();
+          BpmnAssert.assertThat(instanceEvent).extractingLatestIncident();
 
       // then
       assertThatThrownBy(() -> incidentAssert.occurredOnElement(WRONG_VALUE))
@@ -338,7 +347,7 @@ class IncidentAssertTest {
       final ActivatedJob job = jobActivationResponse.getJobs().get(0);
       Utilities.throwErrorCommand(engine, client, job.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(job).extractLatestIncident();
+      final IncidentAssert incidentAssert = BpmnAssert.assertThat(job).extractingLatestIncident();
 
       // then
       assertThatThrownBy(() -> incidentAssert.occurredDuringJob(-1))
@@ -362,7 +371,8 @@ class IncidentAssertTest {
 
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       // then
       assertThatThrownBy(incidentAssert::isResolved)
@@ -384,7 +394,8 @@ class IncidentAssertTest {
 
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MESSAGE);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       final long incidentKey = incidentAssert.getIncidentKey();
       client.newResolveIncidentCommand(incidentKey).send().join();

@@ -161,7 +161,8 @@ class JobAssertTest {
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
       Utilities.throwErrorCommand(engine, client, actual.getKey(), ERROR_CODE, ERROR_MSG);
 
-      final IncidentAssert incidentAssert = BpmnAssert.assertThat(actual).extractLatestIncident();
+      final IncidentAssert incidentAssert =
+          BpmnAssert.assertThat(actual).extractingLatestIncident();
 
       // then
       Assertions.assertThat(incidentAssert).isNotNull();
@@ -360,7 +361,7 @@ class JobAssertTest {
 
       // then
       final ActivatedJob actual = jobActivationResponse.getJobs().get(0);
-      assertThatThrownBy(() -> BpmnAssert.assertThat(actual).extractLatestIncident())
+      assertThatThrownBy(() -> BpmnAssert.assertThat(actual).extractingLatestIncident())
           .isInstanceOf(AssertionError.class)
           .hasMessage("No incidents were raised for this job");
     }

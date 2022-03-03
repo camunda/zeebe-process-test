@@ -15,7 +15,12 @@ import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.SoftAssertions;
@@ -559,7 +564,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    *
    * @return {@link IncidentAssert} for the latest incident
    */
-  public IncidentAssert extractLatestIncident() {
+  public IncidentAssert extractingLatestIncident() {
     hasAnyIncidents();
 
     final List<Record<IncidentRecordValue>> incidentCreatedRecords =
