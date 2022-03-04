@@ -14,9 +14,16 @@
   <packaging>pom</packaging>
 
   <name>Zeebe Process Test Root</name>
-
   <description>This pom should be the parent of all specified modules. It defines all versions and provides
     plugins that are required for the child modules.</description>
+  <inceptionYear>2021</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
 
   <modules>
     <module>api</module>
@@ -63,12 +70,12 @@
     <dependency.testcontainers.version>1.16.3</dependency.testcontainers.version>
     <dependency.zeebe.version>1.4.0-alpha2</dependency.zeebe.version>
 
+    <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
+
     <nexus.release.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io</nexus.release.repository>
     <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
     <nexus.snapshot.repository>https://app.camunda.com/nexus/content/repositories/zeebe-io-snapshots</nexus.snapshot.repository>
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
-
-    <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
     <plugin.version.flatten>1.2.7</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>

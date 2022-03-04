@@ -18,6 +18,13 @@
   <description>A wrapper around the test engine. This wrapper makes it possible to run the engine in a
     testcontainer.</description>
 
+  <licenses>
+    <license>
+      <name>Zeebe Community License v1.1</name>
+      <url>https://zeebe.io/legal/zeebe-community-license-1.1</url>
+    </license>
+  </licenses>
+
   <properties>
     <!--suppress UnresolvedMavenProperty -->
     <license.header>${maven.multiModuleProjectDirectory}/licenses/ZEEBE-COPYING-HEADER.txt</license.header>
