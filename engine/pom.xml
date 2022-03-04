@@ -18,6 +18,11 @@
   <description>Test engine for running process tests. This a minimized version of the real Zeebe engine and
     should be used for testing purposes only.</description>
 
+  <properties>
+    <!--suppress UnresolvedMavenProperty -->
+    <license.header>${maven.multiModuleProjectDirectory}/licenses/ZEEBE-COPYING-HEADER.txt</license.header>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>

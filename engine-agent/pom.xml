@@ -18,6 +18,11 @@
   <description>A wrapper around the test engine. This wrapper makes it possible to run the engine in a
     testcontainer.</description>
 
+  <properties>
+    <!--suppress UnresolvedMavenProperty -->
+    <license.header>${maven.multiModuleProjectDirectory}/licenses/ZEEBE-COPYING-HEADER.txt</license.header>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>

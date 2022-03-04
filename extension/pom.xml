@@ -17,6 +17,11 @@
 
   <description>Annotation and extension for running process tests in an embedded test engine.</description>
 
+  <properties>
+    <!--suppress UnresolvedMavenProperty -->
+    <license.header>${maven.multiModuleProjectDirectory}/licenses/ZEEBE-COPYING-HEADER.txt</license.header>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>
