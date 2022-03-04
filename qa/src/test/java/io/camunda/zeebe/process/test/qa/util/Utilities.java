@@ -21,58 +21,6 @@ import java.util.stream.Collectors;
 
 public class Utilities {
 
-  public static final class ProcessPackLoopingServiceTask {
-    public static final String RESOURCE_NAME = "looping-servicetask.bpmn";
-    public static final String PROCESS_ID = "looping-servicetask";
-
-    public static final String ELEMENT_ID = "servicetask"; // id of the service task
-    public static final String JOB_TYPE = "test"; // job type of service task
-    public static final String TOTAL_LOOPS =
-        "totalLoops"; // variable name to indicate number of loops
-    public static final String GATEWAY_ELEMENT_ID = "Gateway_0fhwf5d";
-    public static final String START_EVENT_ID = "startevent";
-    public static final String END_EVENT_ID = "endevent";
-  }
-
-  public static final class ProcessPackMultipleTasks {
-    public static final String RESOURCE_NAME = "multiple-tasks.bpmn";
-    public static final String PROCESS_ID = "multiple-tasks";
-    public static final String ELEMENT_ID_1 = "servicetask1";
-    public static final String ELEMENT_ID_2 = "servicetask2";
-    public static final String ELEMENT_ID_3 = "servicetask3";
-  }
-
-  public static final class ProcessPackMessageEvent {
-    public static final String RESOURCE_NAME = "message-event.bpmn";
-    public static final String PROCESS_ID = "message-event";
-    public static final String MESSAGE_NAME = "message";
-    public static final String CORRELATION_KEY_VARIABLE = "correlationKey";
-  }
-
-  public static final class ProcessPackMessageStartEvent {
-    public static final String RESOURCE_NAME = "message-start-event.bpmn";
-    public static final String MESSAGE_NAME = "start-message";
-    public static final String CORRELATION_KEY = "";
-  }
-
-  public static final class ProcessPackTimerStartEvent {
-    public static final String RESOURCE_NAME = "timer-start-event-daily.bpmn";
-    public static final String TIMER_ID = "timer";
-  }
-
-  public static final class ProcessPackCallActivity {
-    public static final String RESOURCE_NAME = "call-activity.bpmn";
-    public static final String PROCESS_ID = "call-activity";
-    public static final String CALL_ACTIVITY_ID = "callactivity";
-    public static final String CALLED_RESOURCE_NAME = ProcessPackStartEndEvent.RESOURCE_NAME;
-    public static final String CALLED_PROCESS_ID = ProcessPackStartEndEvent.PROCESS_ID;
-  }
-
-  public static final class ProcessPackStartEndEvent {
-    public static final String RESOURCE_NAME = "start-end.bpmn";
-    public static final String PROCESS_ID = "start-end";
-  }
-
   public static DeploymentEvent deployProcess(final ZeebeClient client, final String process) {
     return deployProcesses(client, process);
   }
@@ -162,12 +110,13 @@ public class Utilities {
 
   public static void increaseTime(final InMemoryEngine engine, final Duration duration)
       throws InterruptedException {
-    engine.increaseTime(duration);
     try {
-      waitForBusyState(engine, Duration.ofSeconds(5));
       waitForIdleState(engine, Duration.ofSeconds(1));
-    } catch (TimeoutException e) {
-      // Do nothing. We've waited up to 250 ms for processing to start, if it didn't start in this
+      engine.increaseTime(duration);
+      waitForBusyState(engine, Duration.ofSeconds(1));
+      waitForIdleState(engine, Duration.ofSeconds(1));
+    } catch (final TimeoutException e) {
+      // Do nothing. We've waited up to 1 second for processing to start, if it didn't start in this
       // time the engine probably has not got anything left to process.
     }
   }
@@ -203,5 +152,64 @@ public class Utilities {
       throws InterruptedException, TimeoutException {
     client.newThrowErrorCommand(key).errorCode(errorCode).errorMessage(errorMessage).send().join();
     waitForIdleState(engine, Duration.ofSeconds(1));
+  }
+
+  public static final class ProcessPackLoopingServiceTask {
+
+    public static final String RESOURCE_NAME = "looping-servicetask.bpmn";
+    public static final String PROCESS_ID = "looping-servicetask";
+
+    public static final String ELEMENT_ID = "servicetask"; // id of the service task
+    public static final String JOB_TYPE = "test"; // job type of service task
+    public static final String TOTAL_LOOPS =
+        "totalLoops"; // variable name to indicate number of loops
+    public static final String GATEWAY_ELEMENT_ID = "Gateway_0fhwf5d";
+    public static final String START_EVENT_ID = "startevent";
+    public static final String END_EVENT_ID = "endevent";
+  }
+
+  public static final class ProcessPackMultipleTasks {
+
+    public static final String RESOURCE_NAME = "multiple-tasks.bpmn";
+    public static final String PROCESS_ID = "multiple-tasks";
+    public static final String ELEMENT_ID_1 = "servicetask1";
+    public static final String ELEMENT_ID_2 = "servicetask2";
+    public static final String ELEMENT_ID_3 = "servicetask3";
+  }
+
+  public static final class ProcessPackMessageEvent {
+
+    public static final String RESOURCE_NAME = "message-event.bpmn";
+    public static final String PROCESS_ID = "message-event";
+    public static final String MESSAGE_NAME = "message";
+    public static final String CORRELATION_KEY_VARIABLE = "correlationKey";
+  }
+
+  public static final class ProcessPackMessageStartEvent {
+
+    public static final String RESOURCE_NAME = "message-start-event.bpmn";
+    public static final String MESSAGE_NAME = "start-message";
+    public static final String CORRELATION_KEY = "";
+  }
+
+  public static final class ProcessPackTimerStartEvent {
+
+    public static final String RESOURCE_NAME = "timer-start-event-daily.bpmn";
+    public static final String TIMER_ID = "timer";
+  }
+
+  public static final class ProcessPackCallActivity {
+
+    public static final String RESOURCE_NAME = "call-activity.bpmn";
+    public static final String PROCESS_ID = "call-activity";
+    public static final String CALL_ACTIVITY_ID = "callactivity";
+    public static final String CALLED_RESOURCE_NAME = ProcessPackStartEndEvent.RESOURCE_NAME;
+    public static final String CALLED_PROCESS_ID = ProcessPackStartEndEvent.PROCESS_ID;
+  }
+
+  public static final class ProcessPackStartEndEvent {
+
+    public static final String RESOURCE_NAME = "start-end.bpmn";
+    public static final String PROCESS_ID = "start-end";
   }
 }
