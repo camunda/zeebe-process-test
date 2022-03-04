@@ -56,7 +56,7 @@
     <dependency.mockito.version>4.3.1</dependency.mockito.version>
     <dependency.netty.version>4.1.74.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
-    <dependency.proto.version>2.0.1</dependency.proto.version>
+    <dependency.proto.version>2.7.4</dependency.proto.version>
     <dependency.protobuf.version>3.19.4</dependency.protobuf.version>
     <dependency.scala.version>2.13.8</dependency.scala.version>
     <dependency.slf4j.version>1.7.36</dependency.slf4j.version>
