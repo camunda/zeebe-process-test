@@ -52,7 +52,9 @@ public abstract class BpmnAssert {
     BpmnAssert.recordStream.set(recordStream);
   }
 
-  /** Removes the {@link RecordStream} from the {@link ThreadLocal}. */
+  /**
+   * Removes the {@link RecordStream} from the {@link ThreadLocal}.
+   */
   public static void resetRecordStream() {
     recordStream.remove();
   }
@@ -67,7 +69,7 @@ public abstract class BpmnAssert {
   public static RecordStream getRecordStream() {
     if (recordStream.get() == null) {
       throw new AssertionError(
-          "No RecordStreamSource is set. Please make sure you are using the "
+          "No RecordStream is set. Please make sure you are using the "
               + "@ZeebeProcessTest annotation. Alternatively, set one manually using "
               + "BpmnAssert.initRecordStream.");
     }
@@ -98,7 +100,7 @@ public abstract class BpmnAssert {
    * Creates a new instance of {@link ProcessInstanceAssert}.
    *
    * @param inspectedProcessInstance the {@link InspectedProcessInstance} received from the {@link
-   *     io.camunda.zeebe.process.test.inspections.ProcessInstanceInspections}
+   * io.camunda.zeebe.process.test.inspections.ProcessInstanceInspections}
    * @return the created assertion object
    */
   public static ProcessInstanceAssert assertThat(
