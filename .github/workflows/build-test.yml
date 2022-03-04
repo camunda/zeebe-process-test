@@ -26,8 +26,11 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Apply format
+      - name: Check format
         run: mvn spotless:check
+
+      - name: Check license
+        run: mvn license:check
 
   build-and-test:
     name: Run tests on ${{ matrix.os }}
