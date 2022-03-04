@@ -1,7 +1,7 @@
 <component name="CopyrightManager">
   <settings default="apache-copyright">
     <module2copyright>
-      <element module="zeebe-license-scope" copyright="zeebe-copyright" />
+      <element module="zeebe-license-scope" copyright="zeebe_community_license" />
     </module2copyright>
   </settings>
 </component>
