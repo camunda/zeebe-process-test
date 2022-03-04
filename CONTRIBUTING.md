@@ -139,9 +139,15 @@ your code without restriction. We ask this of all contributors in order to
 assure our users of the origin and continuing existence of the code. You only
 need to sign the CLA once.
 
-## Licenses
+## License
 
-Source files are made available under the [Apache License, Version 2.0](/licenses/APACHE-2.0.txt).
+Zeebe Process Test source files are made available under the [Apache License, Version 2.0](/licenses/APACHE-2.0.txt)
+except for the parts listed below, which are made available under the [Zeebe Community License, Version 1.1](/licenses/ZEEBE-COMMUNITY-LICENSE-1.1.txt).
+
+Available under the [Zeebe Community License, Version 1.1](/licenses/ZEEBE-COMMUNITY-LICENSE-1.1.txt):
+- Engine ([engine](/engine))
+- Engine Agent ([engine-agent](/engine-agent))
+- Extension ([extension](/extension))
 
 ## Code of Conduct
 

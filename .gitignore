@@ -3,6 +3,10 @@
 !.idea/externalDependencies.xml
 !.idea/google-java-format.xml
 !.idea/saveactions_settings.xml
+!.idea/scopes/zeebe_license_scope.xml
+!.idea/copyright/apache_copyright.xml
+!.idea/copyright/zeebe_community_license.xml.xml
+!.idea/copyright/profiles_settings.xml
 
 target
 .classpath

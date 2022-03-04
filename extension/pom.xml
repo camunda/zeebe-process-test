@@ -17,6 +17,18 @@
 
   <description>Annotation and extension for running process tests in an embedded test engine.</description>
 
+  <licenses>
+    <license>
+      <name>Zeebe Community License v1.1</name>
+      <url>https://zeebe.io/legal/zeebe-community-license-1.1</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <!--suppress UnresolvedMavenProperty -->
+    <license.header>${maven.multiModuleProjectDirectory}/licenses/ZEEBE-COPYING-HEADER.txt</license.header>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>

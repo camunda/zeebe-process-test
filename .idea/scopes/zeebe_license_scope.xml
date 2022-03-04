@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="zeebe-license-scope" pattern="file[zeebe-process-test-engine]:*/||file[zeebe-process-test-engine-agent]:*/||file[zeebe-process-test-extension]:*/" />
+</component>

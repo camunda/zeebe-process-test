@@ -184,3 +184,13 @@ Please refer to the [Contributions Guide](/CONTRIBUTING.md).
 Special thanks to the creators of the [Embedded Zeebe Engine](https://github.com/camunda-community-hub/eze)
 and [Camunda BPMN Assert](https://github.com/camunda/camunda-bpm-assert).
 This project was heavily inspired by these solutions.
+
+## License
+
+Zeebe Process Test source files are made available under the [Apache License, Version 2.0](/licenses/APACHE-2.0.txt)
+except for the parts listed below, which are made available under the [Zeebe Community License, Version 1.1](/licenses/ZEEBE-COMMUNITY-LICENSE-1.1.txt).
+
+Available under the [Zeebe Community License, Version 1.1](/licenses/ZEEBE-COMMUNITY-LICENSE-1.1.txt):
+- Engine ([engine](/engine))
+- Engine Agent ([engine-agent](/engine-agent))
+- Extension ([extension](/extension))
