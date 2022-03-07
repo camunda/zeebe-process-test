@@ -26,7 +26,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InMemoryEngine implements ZeebeTestEngine {
+class InMemoryEngine implements ZeebeTestEngine {
 
   private static final Logger LOG = LoggerFactory.getLogger(InMemoryEngine.class);
 

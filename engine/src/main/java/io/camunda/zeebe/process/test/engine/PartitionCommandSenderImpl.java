@@ -12,7 +12,7 @@ import io.camunda.zeebe.engine.processing.message.command.SubscriptionCommandMes
 import io.camunda.zeebe.util.buffer.BufferWriter;
 import org.agrona.concurrent.UnsafeBuffer;
 
-public class PartitionCommandSenderImpl implements PartitionCommandSender {
+class PartitionCommandSenderImpl implements PartitionCommandSender {
 
   private final SubscriptionCommandMessageHandler subscriptionHandler;
   private final int partitionId;

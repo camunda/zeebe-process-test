@@ -8,7 +8,7 @@
 package io.camunda.zeebe.process.test.engine.db;
 
 @FunctionalInterface
-public interface inMemoryDbStateOperation {
+interface inMemoryDbStateOperation {
 
   void run(final InMemoryDbState state) throws Exception;
 }

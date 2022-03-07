@@ -12,7 +12,7 @@ import io.camunda.zeebe.util.sched.future.ActorFuture;
 import io.camunda.zeebe.util.sched.future.CompletableActorFuture;
 import org.agrona.DirectBuffer;
 
-public class SinglePartitionDeploymentDistributor implements DeploymentDistributor {
+class SinglePartitionDeploymentDistributor implements DeploymentDistributor {
 
   @Override
   public ActorFuture<Void> pushDeploymentToPartition(

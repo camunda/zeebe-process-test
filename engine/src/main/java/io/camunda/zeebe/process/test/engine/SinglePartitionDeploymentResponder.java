@@ -9,7 +9,7 @@ package io.camunda.zeebe.process.test.engine;
 
 import io.camunda.zeebe.engine.processing.deployment.DeploymentResponder;
 
-public class SinglePartitionDeploymentResponder implements DeploymentResponder {
+class SinglePartitionDeploymentResponder implements DeploymentResponder {
 
   @Override
   public void sendDeploymentResponse(final long deploymentKey, final int partitionId) {

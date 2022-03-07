@@ -13,7 +13,7 @@ import io.camunda.zeebe.logstreams.log.LogStreamRecordWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class SubscriptionCommandSenderFactory {
+class SubscriptionCommandSenderFactory {
 
   final LogStreamRecordWriter streamWriter;
   private final ExecutorService subscriptionHandlerExecutor = Executors.newSingleThreadExecutor();
