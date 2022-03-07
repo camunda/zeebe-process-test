@@ -9,7 +9,8 @@ engine and provide you with a set of assertions you can use to verify your proce
 
 ## Prerequisites
 
-* Java 11 or higher (in the future Java 8 will be supported as well)
+* Java 17+ when running with an embedded engine (`zeebe-process-test-extension`)
+* Java 8+ and Docker when running using testcontainers (`zeebe-process-test-extension-testcontainer`)
 * JUnit 5
 
 ## Getting Started
@@ -36,11 +37,11 @@ Annotate your test class with the `@ZeebeProcessTest` annotation. This annotatio
 1. It will create and start the in memory engine. This will be a new engine for each test case.
 2. It will create a client which can be used to interact with the engine.
 3. It will (optionally) inject 3 fields in your test class:
-   1. `InMemoryEngine` - This is the engine that will run your process. It will provide some basic functionality
+   1. `ZeebeTestEngine` - This is the engine that will run your process. It will provide some basic functionality
       to help you write your tests, such as waiting for an idle state and increasing the time.
    2. `ZeebeClient` - This is the client that allows you to communicate with the engine.
       It allows you to send commands to the engine.
-   3. `RecordStreamSource` - This gives you access to all the records that are processed by the engine.
+   3. `RecordStream` - This gives you access to all the records that are processed by the engine.
       It is what the assertions use to verify expectations. This grants you the freedom to create your own assertions.
 4. It will take care of cleaning up the engine and client when the testcase is finished.
 
@@ -49,9 +50,9 @@ Example:
 ```java
 @ZeebeProcessTest
 class DeploymentAssertTest {
-  private InMemoryEngine engine;
+  private ZeebeTestEngine engine;
   private ZeebeClient client;
-  private RecordStreamSource recordStreamSource;
+  private RecordStream recordStream;
 }
 ```
 
@@ -138,7 +139,7 @@ MessageAssert assertions = BpmnAssert.assertThat(response);
 ### Waiting for idle state
 
 > **Warning!** Waiting for idle state is a new feature. When the engine is detected to be idle it
-> will wait 10ms before checking again. If it is still idle at that stage it is considered to be in
+> will wait 30ms before checking again. If it is still idle at that stage it is considered to be in
 > an idle state.
 >
 > **We do not know if the 30ms delay is sufficient. Using it could result in flaky tests!**
@@ -146,10 +147,8 @@ MessageAssert assertions = BpmnAssert.assertThat(response);
 > Any feedback about the wait for idle state is highly appreciated! Please let us know if the delay should be higher, or configurable.
 
 The engine allows you to wait until it is idle before continuing with your test.
-The engine provides 2 methods for this:
 
-1. `engine.waitForIdleState()` - This method will cause your test to stop executing until the engine has reached the idle state.
-2. `engine.runOnIdleState(Runnable)` - This method will run your runnable once it has reached an idle state. Your test will continue executing without waiting.
+`engine.waitForIdleState()` - This method will cause your test to stop executing until the engine has reached the idle state.
 
 We have defined an idle state as a state in which the process engine makes no progress and is waiting for new commands or events to trigger.
 Once the engine has detected it has become idle it will wait for a delay (30ms) and check if it is still idle.
@@ -174,6 +173,12 @@ Therefore, it is not recommended to depend on this module.
 and thus is not bound to a specific Java version. In the future this should be Java 8 compatible.
 5. QA
 - This module contains our QA tests. There is no reason to depend on this module. It is not bound to a specific Java version.
+
+## Backwards compatibility
+Starting from release 1.4.0 we will ensure backwards compatibility in this project. This will be
+limited to the extension, the assertions and the public interfaces.
+We will aim to be backwards compatible on other modules, however this is not guaranteed.
+Using / extending these are at your own risk.
 
 ## Contributing
 
