@@ -7,7 +7,7 @@
  */
 package io.camunda.zeebe.process.test.engine.agent;
 
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.EngineFactory;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlGrpc.EngineControlImplBase;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.GetRecordsRequest;
@@ -36,12 +36,12 @@ public final class EngineControlImpl extends EngineControlImplBase {
 
   private static final Logger LOG = LoggerFactory.getLogger(EngineControlImpl.class);
 
-  private InMemoryEngine engine;
+  private ZeebeTestEngine engine;
   private RecordStreamSourceWrapper recordStreamSource;
 
-  public EngineControlImpl(final InMemoryEngine engine) {
+  public EngineControlImpl(final ZeebeTestEngine engine) {
     this.engine = engine;
-    this.recordStreamSource = new RecordStreamSourceWrapper(engine.getRecordStreamSource());
+    recordStreamSource = new RecordStreamSourceWrapper(engine.getRecordStreamSource());
   }
 
   @Override
@@ -98,9 +98,9 @@ public final class EngineControlImpl extends EngineControlImplBase {
       final WaitForIdleStateResponse response = WaitForIdleStateResponse.newBuilder().build();
       responseObserver.onNext(response);
       responseObserver.onCompleted();
-    } catch (InterruptedException e) {
+    } catch (final InterruptedException e) {
       responseObserver.onError(Status.INTERNAL.withCause(e).asException());
-    } catch (TimeoutException e) {
+    } catch (final TimeoutException e) {
       responseObserver.onError(
           Status.DEADLINE_EXCEEDED
               .withDescription(
@@ -121,9 +121,9 @@ public final class EngineControlImpl extends EngineControlImplBase {
       final WaitForBusyStateResponse response = WaitForBusyStateResponse.newBuilder().build();
       responseObserver.onNext(response);
       responseObserver.onCompleted();
-    } catch (InterruptedException e) {
+    } catch (final InterruptedException e) {
       responseObserver.onError(Status.INTERNAL.withCause(e).asException());
-    } catch (TimeoutException e) {
+    } catch (final TimeoutException e) {
       responseObserver.onError(
           Status.DEADLINE_EXCEEDED
               .withDescription(

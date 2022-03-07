@@ -22,7 +22,7 @@ import static org.assertj.core.data.Offset.offset;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.IncidentAssert;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
@@ -49,7 +49,7 @@ class JobAssertTest {
   class HappyPathTests {
 
     private ZeebeClient client;
-    private InMemoryEngine engine;
+    private ZeebeTestEngine engine;
 
     @Test
     void testHasElementId() throws InterruptedException, TimeoutException {
@@ -232,7 +232,7 @@ class JobAssertTest {
   class UnhappyPathTests {
 
     private ZeebeClient client;
-    private InMemoryEngine engine;
+    private ZeebeTestEngine engine;
 
     @Test
     void testHasElementIdFailure() throws InterruptedException, TimeoutException {

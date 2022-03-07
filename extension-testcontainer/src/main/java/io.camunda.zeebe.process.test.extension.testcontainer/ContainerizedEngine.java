@@ -18,8 +18,8 @@ package io.camunda.zeebe.process.test.extension.testcontainer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlGrpc;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlGrpc.EngineControlBlockingStub;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.GetRecordsRequest;
@@ -48,10 +48,11 @@ import java.util.concurrent.TimeoutException;
  * the testcontainer. Communicating will be done through gRPC. Implementation details for this gRPC
  * service can be found in engine-protocol.
  *
- * <p>This engine is a stripped down version of the actual Zeebe Engine. Its intended purpose is for
+ * <p>This engine is a stripped down version of the actual Zeebe Engine. Its intended purpose is
+ * for
  * testing purposes only.
  */
-public class ContainerizedEngine implements InMemoryEngine {
+public class ContainerizedEngine implements ZeebeTestEngine {
 
   private final String host;
   private final int containerPort;
@@ -85,52 +86,9 @@ public class ContainerizedEngine implements InMemoryEngine {
     closeChannel(channel);
   }
 
-  /**
-   * Reset the test engine. A reset stops the current engine, and replaces it with a new engine.
-   * Note that you'll need to redeploy your processes because it is an entirely new engine.
-   */
-  public void reset() {
-    final ManagedChannel channel = getChannel();
-    final EngineControlBlockingStub stub = getStub(channel);
-
-    final ResetEngineRequest request = ResetEngineRequest.newBuilder().build();
-    stub.resetEngine(request);
-
-    closeChannel(channel);
-  }
-
   @Override
   public RecordStreamSource getRecordStreamSource() {
     return new RecordStreamSourceImpl(this, getRecords());
-  }
-
-  /**
-   * Gets a list of all records that have occurred on the test engine.
-   *
-   * @return a list of records
-   */
-  public List<Record<?>> getRecords() {
-    final ManagedChannel channel = getChannel();
-    final EngineControlBlockingStub stub = getStub(channel);
-    final ObjectMapper mapper = new ObjectMapper();
-    final List<Record<?>> mappedRecords = new ArrayList<>();
-
-    final GetRecordsRequest request = GetRecordsRequest.newBuilder().build();
-    final Iterator<RecordResponse> response = stub.getRecords(request);
-
-    while (response.hasNext()) {
-      final RecordResponse recordResponse = response.next();
-      try {
-        final Record<?> record =
-            mapper.readValue(recordResponse.getRecordJson(), AbstractRecord.class);
-        mappedRecords.add(record);
-      } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    closeChannel(channel);
-    return mappedRecords;
   }
 
   @Override
@@ -180,7 +138,7 @@ public class ContainerizedEngine implements InMemoryEngine {
         WaitForBusyStateRequest.newBuilder().setTimeout(timeout.toMillis()).build();
     try {
       stub.waitForBusyState(request);
-    } catch (StatusRuntimeException e) {
+    } catch (final StatusRuntimeException e) {
       if (e.getStatus().getCode().equals(Status.DEADLINE_EXCEEDED.getCode())) {
         throw new TimeoutException(e.getMessage());
       } else if (e.getStatus().getCode().equals(Status.INTERNAL.getCode())) {
@@ -189,6 +147,49 @@ public class ContainerizedEngine implements InMemoryEngine {
     } finally {
       closeChannel(channel);
     }
+  }
+
+  /**
+   * Reset the test engine. A reset stops the current engine, and replaces it with a new engine.
+   * Note that you'll need to redeploy your processes because it is an entirely new engine.
+   */
+  public void reset() {
+    final ManagedChannel channel = getChannel();
+    final EngineControlBlockingStub stub = getStub(channel);
+
+    final ResetEngineRequest request = ResetEngineRequest.newBuilder().build();
+    stub.resetEngine(request);
+
+    closeChannel(channel);
+  }
+
+  /**
+   * Gets a list of all records that have occurred on the test engine.
+   *
+   * @return a list of records
+   */
+  public List<Record<?>> getRecords() {
+    final ManagedChannel channel = getChannel();
+    final EngineControlBlockingStub stub = getStub(channel);
+    final ObjectMapper mapper = new ObjectMapper();
+    final List<Record<?>> mappedRecords = new ArrayList<>();
+
+    final GetRecordsRequest request = GetRecordsRequest.newBuilder().build();
+    final Iterator<RecordResponse> response = stub.getRecords(request);
+
+    while (response.hasNext()) {
+      final RecordResponse recordResponse = response.next();
+      try {
+        final Record<?> record =
+            mapper.readValue(recordResponse.getRecordJson(), AbstractRecord.class);
+        mappedRecords.add(record);
+      } catch (final JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    closeChannel(channel);
+    return mappedRecords;
   }
 
   private ManagedChannel getChannel() {
@@ -203,7 +204,7 @@ public class ContainerizedEngine implements InMemoryEngine {
     channel.shutdown();
     try {
       channel.awaitTermination(100, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException e) {
+    } catch (final InterruptedException e) {
       throw new RuntimeException(e);
     }
   }

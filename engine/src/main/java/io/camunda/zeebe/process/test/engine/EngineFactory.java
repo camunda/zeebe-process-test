@@ -16,7 +16,7 @@ import io.camunda.zeebe.logstreams.log.LogStream;
 import io.camunda.zeebe.logstreams.log.LogStreamBuilder;
 import io.camunda.zeebe.logstreams.log.LogStreamReader;
 import io.camunda.zeebe.logstreams.storage.LogStorage;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.db.InMemoryDbFactory;
 import io.camunda.zeebe.util.sched.Actor;
 import io.camunda.zeebe.util.sched.ActorScheduler;
@@ -29,11 +29,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class EngineFactory {
 
-  public static InMemoryEngine create() {
+  public static ZeebeTestEngine create() {
     return create(26500);
   }
 
-  public static InMemoryEngine create(final int port) {
+  public static ZeebeTestEngine create(final int port) {
     final int partitionId = 1;
     final int partitionCount = 1;
 
@@ -72,7 +72,7 @@ public class EngineFactory {
     final LogStreamReader reader = logStream.newLogStreamReader().join();
     final RecordStreamSourceImpl recordStream = new RecordStreamSourceImpl(reader, partitionId);
 
-    return new InMemoryEngineImpl(
+    return new InMemoryEngine(
         grpcServer,
         streamProcessor,
         gateway,
@@ -148,7 +148,8 @@ public class EngineFactory {
                     subscriptionCommandSenderFactory.createSender(),
                     new SinglePartitionDeploymentDistributor(),
                     new SinglePartitionDeploymentResponder(),
-                    jobType -> {}))
+                    jobType -> {
+                    }))
         .actorSchedulingService(scheduler)
         .build();
   }

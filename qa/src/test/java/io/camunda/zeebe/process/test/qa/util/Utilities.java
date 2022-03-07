@@ -21,7 +21,7 @@ import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
@@ -57,13 +57,13 @@ public class Utilities {
   }
 
   public static ProcessInstanceEvent startProcessInstance(
-      final InMemoryEngine engine, final ZeebeClient client, final String processId)
+      final ZeebeTestEngine engine, final ZeebeClient client, final String processId)
       throws InterruptedException, TimeoutException {
     return startProcessInstance(engine, client, processId, new HashMap<>());
   }
 
   public static ProcessInstanceEvent startProcessInstance(
-      final InMemoryEngine engine,
+      final ZeebeTestEngine engine,
       final ZeebeClient client,
       final String processId,
       final Map<String, Object> variables)
@@ -85,18 +85,18 @@ public class Utilities {
     return client.newActivateJobsCommand().jobType(jobType).maxJobsToActivate(1).send().join();
   }
 
-  public static void waitForIdleState(final InMemoryEngine engine, final Duration duration)
+  public static void waitForIdleState(final ZeebeTestEngine engine, final Duration duration)
       throws InterruptedException, TimeoutException {
     engine.waitForIdleState(duration);
   }
 
-  public static void waitForBusyState(final InMemoryEngine engine, final Duration duration)
+  public static void waitForBusyState(final ZeebeTestEngine engine, final Duration duration)
       throws InterruptedException, TimeoutException {
     engine.waitForBusyState(duration);
   }
 
   public static PublishMessageResponse sendMessage(
-      final InMemoryEngine engine,
+      final ZeebeTestEngine engine,
       final ZeebeClient client,
       final String messageName,
       final String correlationKey)
@@ -105,7 +105,7 @@ public class Utilities {
   }
 
   public static PublishMessageResponse sendMessage(
-      final InMemoryEngine engine,
+      final ZeebeTestEngine engine,
       final ZeebeClient client,
       final String messageName,
       final String correlationKey,
@@ -123,7 +123,7 @@ public class Utilities {
     return response;
   }
 
-  public static void increaseTime(final InMemoryEngine engine, final Duration duration)
+  public static void increaseTime(final ZeebeTestEngine engine, final Duration duration)
       throws InterruptedException {
     try {
       waitForIdleState(engine, Duration.ofSeconds(1));
@@ -137,7 +137,7 @@ public class Utilities {
   }
 
   public static void completeTask(
-      final InMemoryEngine engine, final ZeebeClient client, final String taskId)
+      final ZeebeTestEngine engine, final ZeebeClient client, final String taskId)
       throws InterruptedException, TimeoutException {
     final List<Record<JobRecordValue>> records =
         StreamFilter.jobRecords(RecordStream.of(engine.getRecordStreamSource()))
@@ -159,7 +159,7 @@ public class Utilities {
   }
 
   public static void throwErrorCommand(
-      final InMemoryEngine engine,
+      final ZeebeTestEngine engine,
       final ZeebeClient client,
       final long key,
       final String errorCode,

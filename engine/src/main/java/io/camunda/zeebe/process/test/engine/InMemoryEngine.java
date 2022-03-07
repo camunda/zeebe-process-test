@@ -12,8 +12,8 @@ import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.engine.processing.streamprocessor.StreamProcessor;
 import io.camunda.zeebe.engine.state.ZbColumnFamilies;
 import io.camunda.zeebe.logstreams.log.LogStream;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.util.sched.ActorScheduler;
 import io.camunda.zeebe.util.sched.clock.ControlledActorClock;
 import io.grpc.Server;
@@ -26,9 +26,9 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InMemoryEngineImpl implements InMemoryEngine {
+public class InMemoryEngine implements ZeebeTestEngine {
 
-  private static final Logger LOG = LoggerFactory.getLogger(InMemoryEngineImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(InMemoryEngine.class);
 
   private final Server grpcServer;
   private final StreamProcessor streamProcessor;
@@ -40,7 +40,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
   private final ControlledActorClock clock;
   private final EngineStateMonitor engineStateMonitor;
 
-  public InMemoryEngineImpl(
+  public InMemoryEngine(
       final Server grpcServer,
       final StreamProcessor streamProcessor,
       final GrpcToLogStreamGateway gateway,
@@ -120,7 +120,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
 
     try {
       idleState.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-    } catch (ExecutionException e) {
+    } catch (final ExecutionException e) {
       // Do nothing. ExecutionExceptions won't appear. The function only completes the future, which
       // in itself does not throw any exceptions.
     }
@@ -135,7 +135,7 @@ public class InMemoryEngineImpl implements InMemoryEngine {
 
     try {
       processingState.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-    } catch (ExecutionException e) {
+    } catch (final ExecutionException e) {
       // Do nothing. ExecutionExceptions won't appear. The function only completes the future, which
       // in itself does not throw any exceptions.
     }

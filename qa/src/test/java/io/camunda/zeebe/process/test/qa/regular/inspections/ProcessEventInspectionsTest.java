@@ -17,7 +17,7 @@ package io.camunda.zeebe.process.test.qa.regular.inspections;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.inspections.InspectionUtility;
@@ -35,7 +35,7 @@ class ProcessEventInspectionsTest {
   private static final String WRONG_TIMER_ID = "wrongtimer";
 
   private ZeebeClient client;
-  private InMemoryEngine engine;
+  private ZeebeTestEngine engine;
 
   @Test
   void testFindFirstProcessInstance() throws InterruptedException {

@@ -7,7 +7,7 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -21,12 +21,12 @@ class PrintRecordStreamExtension implements TestWatcher {
     try {
       final Field zeebeEngineField = context.getRequiredTestClass().getDeclaredField("zeebeEngine");
       ReflectionUtils.makeAccessible(zeebeEngineField);
-      final InMemoryEngine zeebeEngine =
-          (InMemoryEngine) zeebeEngineField.get(context.getRequiredTestInstance());
+      final ZeebeTestEngine zeebeEngine =
+          (ZeebeTestEngine) zeebeEngineField.get(context.getRequiredTestInstance());
 
       System.out.println("===== Test failed! Printing records from the stream:");
       RecordStream.of(zeebeEngine.getRecordStreamSource()).print(true);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
     }
   }

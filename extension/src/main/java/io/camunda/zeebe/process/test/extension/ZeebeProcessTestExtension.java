@@ -8,7 +8,7 @@
 package io.camunda.zeebe.process.test.extension;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.engine.EngineFactory;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -45,7 +45,7 @@ public class ZeebeProcessTestExtension
    */
   @Override
   public void beforeEach(final ExtensionContext extensionContext) {
-    final InMemoryEngine engine = EngineFactory.create();
+    final ZeebeTestEngine engine = EngineFactory.create();
     engine.start();
     final ZeebeClient client = engine.createClient();
     final RecordStream recordStream = RecordStream.of(engine.getRecordStreamSource());
@@ -78,7 +78,7 @@ public class ZeebeProcessTestExtension
     client.close();
 
     final Object engineContent = getStore(extensionContext).get(KEY_ZEEBE_ENGINE);
-    final InMemoryEngine engine = (InMemoryEngine) engineContent;
+    final ZeebeTestEngine engine = (ZeebeTestEngine) engineContent;
     engine.stop();
   }
 
@@ -91,7 +91,7 @@ public class ZeebeProcessTestExtension
   @Override
   public void testFailed(final ExtensionContext extensionContext, final Throwable cause) {
     final Object engineContent = getStore(extensionContext).get(KEY_ZEEBE_ENGINE);
-    final InMemoryEngine engine = (InMemoryEngine) engineContent;
+    final ZeebeTestEngine engine = (ZeebeTestEngine) engineContent;
 
     LOG.error("===== Test failed!");
     RecordStream.of(engine.getRecordStreamSource()).print(true);
@@ -100,7 +100,7 @@ public class ZeebeProcessTestExtension
   private void injectFields(final ExtensionContext extensionContext, final Object... objects) {
     final Class<?> requiredTestClass = extensionContext.getRequiredTestClass();
     final Field[] declaredFields = requiredTestClass.getDeclaredFields();
-    for (Object object : objects) {
+    for (final Object object : objects) {
       final Optional<Field> field = getField(declaredFields, object);
       field.ifPresent(value -> injectField(extensionContext, value, object));
     }
@@ -128,7 +128,7 @@ public class ZeebeProcessTestExtension
     try {
       ReflectionUtils.makeAccessible(field);
       field.set(extensionContext.getRequiredTestInstance(), object);
-    } catch (IllegalAccessException e) {
+    } catch (final IllegalAccessException e) {
       throw new RuntimeException(e);
     }
   }
