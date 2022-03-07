@@ -48,8 +48,7 @@ import java.util.concurrent.TimeoutException;
  * the testcontainer. Communicating will be done through gRPC. Implementation details for this gRPC
  * service can be found in engine-protocol.
  *
- * <p>This engine is a stripped down version of the actual Zeebe Engine. Its intended purpose is
- * for
+ * <p>This engine is a stripped down version of the actual Zeebe Engine. Its intended purpose is for
  * testing purposes only.
  */
 public class ContainerizedEngine implements ZeebeTestEngine {

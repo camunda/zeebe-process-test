@@ -32,7 +32,7 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
   }
 
   @Override
-  public Iterable<Record<?>> records() {
+  public Iterable<Record<?>> getRecords() {
     updateWithNewRecords();
     return Collections.unmodifiableList(records);
   }

@@ -148,8 +148,7 @@ public class EngineFactory {
                     subscriptionCommandSenderFactory.createSender(),
                     new SinglePartitionDeploymentDistributor(),
                     new SinglePartitionDeploymentResponder(),
-                    jobType -> {
-                    }))
+                    jobType -> {}))
         .actorSchedulingService(scheduler)
         .build();
   }

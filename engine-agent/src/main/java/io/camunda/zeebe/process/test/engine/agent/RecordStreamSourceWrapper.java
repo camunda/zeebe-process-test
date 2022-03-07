@@ -25,7 +25,7 @@ public class RecordStreamSourceWrapper {
 
   public List<String> getMappedRecords() {
     synchronized (mappedRecords) {
-      StreamSupport.stream(recordStreamSource.records().spliterator(), false)
+      StreamSupport.stream(recordStreamSource.getRecords().spliterator(), false)
           .filter(record -> record.getPosition() > lastEventPosition)
           .forEach(
               record -> {

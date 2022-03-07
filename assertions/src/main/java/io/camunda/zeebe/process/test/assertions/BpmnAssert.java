@@ -52,9 +52,7 @@ public abstract class BpmnAssert {
     BpmnAssert.recordStream.set(recordStream);
   }
 
-  /**
-   * Removes the {@link RecordStream} from the {@link ThreadLocal}.
-   */
+  /** Removes the {@link RecordStream} from the {@link ThreadLocal}. */
   public static void resetRecordStream() {
     recordStream.remove();
   }
@@ -100,7 +98,7 @@ public abstract class BpmnAssert {
    * Creates a new instance of {@link ProcessInstanceAssert}.
    *
    * @param inspectedProcessInstance the {@link InspectedProcessInstance} received from the {@link
-   * io.camunda.zeebe.process.test.inspections.ProcessInstanceInspections}
+   *     io.camunda.zeebe.process.test.inspections.ProcessInstanceInspections}
    * @return the created assertion object
    */
   public static ProcessInstanceAssert assertThat(
