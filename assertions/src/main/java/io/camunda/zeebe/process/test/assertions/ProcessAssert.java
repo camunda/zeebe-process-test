@@ -59,7 +59,7 @@ public class ProcessAssert extends AbstractAssert<ProcessAssert, Process> {
    * @param expectedBpmnProcessId BPMN process IDs to check
    * @return this {@link ProcessAssert}
    */
-  public ProcessAssert hasBPMNProcessId(final String expectedBpmnProcessId) {
+  public ProcessAssert hasBpmnProcessId(final String expectedBpmnProcessId) {
     assertThat(expectedBpmnProcessId).isNotEmpty();
 
     final String actualBpmnProcessId = actual.getBpmnProcessId();

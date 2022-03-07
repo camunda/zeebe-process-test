@@ -53,7 +53,7 @@ class ProcessAssertTest {
               .extractingProcessByBpmnProcessId(ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // then
-      processAssert.hasBPMNProcessId(ProcessPackLoopingServiceTask.PROCESS_ID);
+      processAssert.hasBpmnProcessId(ProcessPackLoopingServiceTask.PROCESS_ID);
     }
 
     @Test
@@ -156,7 +156,7 @@ class ProcessAssertTest {
               .extractingProcessByBpmnProcessId(ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // then
-      assertThatThrownBy(() -> processAssert.hasBPMNProcessId(WRONG_VALUE))
+      assertThatThrownBy(() -> processAssert.hasBpmnProcessId(WRONG_VALUE))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected BPMN process ID to be '%s' but was '%s' instead.",

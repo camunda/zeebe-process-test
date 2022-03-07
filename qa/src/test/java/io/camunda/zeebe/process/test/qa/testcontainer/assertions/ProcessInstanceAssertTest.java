@@ -233,7 +233,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .hasPassedElementInOrder(
+          .hasPassedElementsInOrder(
               ProcessPackLoopingServiceTask.START_EVENT_ID,
               ProcessPackLoopingServiceTask.ELEMENT_ID,
               ProcessPackLoopingServiceTask.END_EVENT_ID);
@@ -250,7 +250,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1);
+          .isWaitingAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
 
     @Test
@@ -264,7 +264,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isWaitingAtElement(
+          .isWaitingAtElements(
               ProcessPackMultipleTasks.ELEMENT_ID_1,
               ProcessPackMultipleTasks.ELEMENT_ID_2,
               ProcessPackMultipleTasks.ELEMENT_ID_3);
@@ -282,7 +282,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isNotWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1);
+          .isNotWaitingAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
 
     @Test
@@ -300,7 +300,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isNotWaitingAtElement(
+          .isNotWaitingAtElements(
               ProcessPackMultipleTasks.ELEMENT_ID_1,
               ProcessPackMultipleTasks.ELEMENT_ID_2,
               ProcessPackMultipleTasks.ELEMENT_ID_3);
@@ -318,7 +318,7 @@ class ProcessInstanceAssertTest {
       final String nonExistingElementId = "non-existing-task";
 
       // then
-      BpmnAssert.assertThat(instanceEvent).isNotWaitingAtElement(nonExistingElementId);
+      BpmnAssert.assertThat(instanceEvent).isNotWaitingAtElements(nonExistingElementId);
     }
 
     @Test
@@ -352,7 +352,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
+          .isWaitingForMessages(ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
@@ -372,7 +372,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isNotWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
+          .isNotWaitingForMessages(ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
@@ -667,9 +667,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected element with id %s to be passed 1 times, but was 0",
@@ -693,9 +693,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .hasNotPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .hasNotPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected element with id %s to be passed 0 times, but was 1",
@@ -718,12 +718,12 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .hasPassedElementInOrder(
-                          ProcessPackLoopingServiceTask.END_EVENT_ID,
-                          ProcessPackLoopingServiceTask.ELEMENT_ID,
-                          ProcessPackLoopingServiceTask.START_EVENT_ID))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .hasPassedElementsInOrder(
+                      ProcessPackLoopingServiceTask.END_EVENT_ID,
+                      ProcessPackLoopingServiceTask.ELEMENT_ID,
+                      ProcessPackLoopingServiceTask.START_EVENT_ID))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "[Ordered elements] "
@@ -745,9 +745,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .isWaitingAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("to contain", ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
@@ -767,12 +767,12 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .isWaitingAtElement(
-                          ProcessPackMultipleTasks.ELEMENT_ID_1,
-                          ProcessPackMultipleTasks.ELEMENT_ID_2,
-                          ProcessPackMultipleTasks.ELEMENT_ID_3))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .isWaitingAtElements(
+                      ProcessPackMultipleTasks.ELEMENT_ID_1,
+                      ProcessPackMultipleTasks.ELEMENT_ID_2,
+                      ProcessPackMultipleTasks.ELEMENT_ID_3))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               "to contain:",
@@ -794,7 +794,7 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () -> BpmnAssert.assertThat(instanceEvent).isWaitingAtElement(nonExistingTaskId))
+          () -> BpmnAssert.assertThat(instanceEvent).isWaitingAtElements(nonExistingTaskId))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("to contain", nonExistingTaskId);
     }
@@ -810,9 +810,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .isNotWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .isNotWaitingAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("not to contain", ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
@@ -829,12 +829,12 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .isNotWaitingAtElement(
-                          ProcessPackMultipleTasks.ELEMENT_ID_1,
-                          ProcessPackMultipleTasks.ELEMENT_ID_2,
-                          ProcessPackMultipleTasks.ELEMENT_ID_3))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .isNotWaitingAtElements(
+                      ProcessPackMultipleTasks.ELEMENT_ID_1,
+                      ProcessPackMultipleTasks.ELEMENT_ID_2,
+                      ProcessPackMultipleTasks.ELEMENT_ID_3))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               "not to contain",
@@ -855,9 +855,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .isWaitingExactlyAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .isWaitingExactlyAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               String.format(
@@ -882,12 +882,12 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .isWaitingExactlyAtElements(
-                          ProcessPackMultipleTasks.ELEMENT_ID_1,
-                          ProcessPackMultipleTasks.ELEMENT_ID_2,
-                          ProcessPackMultipleTasks.ELEMENT_ID_3))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .isWaitingExactlyAtElements(
+                      ProcessPackMultipleTasks.ELEMENT_ID_1,
+                      ProcessPackMultipleTasks.ELEMENT_ID_2,
+                      ProcessPackMultipleTasks.ELEMENT_ID_3))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               String.format(
@@ -912,11 +912,11 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .isWaitingExactlyAtElements(
-                          ProcessPackMultipleTasks.ELEMENT_ID_1,
-                          ProcessPackMultipleTasks.ELEMENT_ID_2))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .isWaitingExactlyAtElements(
+                      ProcessPackMultipleTasks.ELEMENT_ID_1,
+                      ProcessPackMultipleTasks.ELEMENT_ID_2))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll(
               String.format(
@@ -947,9 +947,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .isWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .isWaitingForMessages(ProcessPackMessageEvent.MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("to contain:", ProcessPackMessageEvent.MESSAGE_NAME);
     }
@@ -970,9 +970,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .isNotWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .isNotWaitingForMessages(ProcessPackMessageEvent.MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("not to contain", ProcessPackMessageEvent.MESSAGE_NAME);
     }
@@ -1013,9 +1013,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .hasVariableWithValue(variable, expectedValue))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .hasVariableWithValue(variable, expectedValue))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "The variable '%s' does not have the expected value. The value passed in"
@@ -1039,9 +1039,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .hasCorrelatedMessageByName(ProcessPackMessageEvent.MESSAGE_NAME, 1))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .hasCorrelatedMessageByName(ProcessPackMessageEvent.MESSAGE_NAME, 1))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected message with name '%s' to be correlated %d times, but was %d times",
@@ -1064,9 +1064,9 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () ->
-                  BpmnAssert.assertThat(instanceEvent)
-                      .hasCorrelatedMessageByCorrelationKey(correlationKey, 1))
+          () ->
+              BpmnAssert.assertThat(instanceEvent)
+                  .hasCorrelatedMessageByCorrelationKey(correlationKey, 1))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Expected message with correlation key '%s' to be correlated %d "
