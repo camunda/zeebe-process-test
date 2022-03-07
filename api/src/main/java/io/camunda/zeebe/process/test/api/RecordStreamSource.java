@@ -17,9 +17,7 @@ package io.camunda.zeebe.process.test.api;
 
 import io.camunda.zeebe.protocol.record.Record;
 
-/**
- * The source of records that have been processed by the test engine
- */
+/** The source of records that have been processed by the test engine */
 public interface RecordStreamSource {
 
   /**

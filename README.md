@@ -175,6 +175,7 @@ and thus is not bound to a specific Java version. In the future this should be J
 - This module contains our QA tests. There is no reason to depend on this module. It is not bound to a specific Java version.
 
 ## Backwards compatibility
+
 Starting from release 1.4.0 we will ensure backwards compatibility in this project. This will be
 limited to the extension, the assertions and the public interfaces.
 We will aim to be backwards compatible on other modules, however this is not guaranteed.
