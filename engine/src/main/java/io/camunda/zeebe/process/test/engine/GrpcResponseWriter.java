@@ -49,7 +49,7 @@ import org.agrona.ExpandableArrayBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 
-public class GrpcResponseWriter implements CommandResponseWriter {
+class GrpcResponseWriter implements CommandResponseWriter {
 
   final GrpcToLogStreamGateway gateway;
   private int partitionId = -1;
@@ -98,7 +98,7 @@ public class GrpcResponseWriter implements CommandResponseWriter {
 
   @Override
   public CommandResponseWriter recordType(final RecordType type) {
-    this.recordType = type;
+    recordType = type;
     return this;
   }
 
@@ -139,7 +139,7 @@ public class GrpcResponseWriter implements CommandResponseWriter {
       final GeneratedMessageV3 response = responseMap.get(valueType).call();
       gateway.responseCallback(requestId, response);
       return true;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new RuntimeException(e);
     }
   }

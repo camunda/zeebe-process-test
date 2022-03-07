@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
  * The engine used to execute processes. This engine is a stripped down version of the actual Zeebe
  * Engine. It's intended for testing purposes only.
  */
-public interface InMemoryEngine {
+public interface ZeebeTestEngine {
 
   /** Starts the test engine */
   void start();

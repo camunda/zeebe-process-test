@@ -43,7 +43,7 @@ public class RecordStream {
 
   private static final Logger LOG = LoggerFactory.getLogger("io.camunda.zeebe.process.test");
 
-  private RecordStreamSource recordStreamSource;
+  private final RecordStreamSource recordStreamSource;
 
   private RecordStream(final RecordStreamSource recordStreamSource) {
     this.recordStreamSource = recordStreamSource;
@@ -54,13 +54,13 @@ public class RecordStream {
   }
 
   public Iterable<Record<?>> records() {
-    return recordStreamSource.records();
+    return recordStreamSource.getRecords();
   }
 
   <T extends RecordValue> Iterable<Record<T>> recordsOfValueType(final ValueType valueType) {
     final Stream<Record<T>> stream =
         (Stream)
-            StreamSupport.stream(recordStreamSource.records().spliterator(), false)
+            StreamSupport.stream(recordStreamSource.getRecords().spliterator(), false)
                 .filter((record) -> record.getValueType() == valueType);
     return stream::iterator;
   }
@@ -125,7 +125,7 @@ public class RecordStream {
       new RecordStreamLogger(recordStreamSource).log();
     } else {
       LOG.info("===== records (count: ${count()}) =====");
-      recordStreamSource.records().forEach(record -> LOG.info(record.toJson()));
+      recordStreamSource.getRecords().forEach(record -> LOG.info(record.toJson()));
       LOG.info("---------------------------");
     }
   }

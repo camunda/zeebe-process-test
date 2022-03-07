@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class RecordStreamSourceImpl implements RecordStreamSource {
+class RecordStreamSourceImpl implements RecordStreamSource {
 
   private final LogStreamReader logStreamReader;
   private final int partitionId;
@@ -32,7 +32,7 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
   }
 
   @Override
-  public Iterable<Record<?>> records() {
+  public Iterable<Record<?>> getRecords() {
     updateWithNewRecords();
     return Collections.unmodifiableList(records);
   }

@@ -75,7 +75,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements AutoCloseable {
+class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements AutoCloseable {
 
   private final LogStreamRecordWriter writer;
   private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -112,61 +112,72 @@ public class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implemen
   }
 
   @Override
-  public void publishMessage(
-      final PublishMessageRequest request,
-      final StreamObserver<PublishMessageResponse> responseObserver) {
+  public void activateJobs(
+      final ActivateJobsRequest request,
+      final StreamObserver<ActivateJobsResponse> responseObserver) {
     executor.submit(
         () -> {
           final Long requestId = registerNewRequest(responseObserver);
 
           prepareRecordMetadata()
               .requestId(requestId)
-              .valueType(ValueType.MESSAGE)
-              .intent(MessageIntent.PUBLISH);
+              .valueType(ValueType.JOB_BATCH)
+              .intent(JobBatchIntent.ACTIVATE);
 
-          final MessageRecord messageRecord = new MessageRecord();
+          final JobBatchRecord jobBatchRecord = new JobBatchRecord();
 
-          messageRecord.setCorrelationKey(request.getCorrelationKey());
-          messageRecord.setMessageId(request.getMessageId());
-          messageRecord.setName(request.getName());
-          messageRecord.setTimeToLive(request.getTimeToLive());
-          final String variables = request.getVariables();
-          if (!variables.isEmpty()) {
-            messageRecord.setVariables(
-                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
-          }
+          jobBatchRecord.setType(request.getType());
+          jobBatchRecord.setWorker(request.getWorker());
+          jobBatchRecord.setTimeout(request.getTimeout());
+          jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
 
-          writeCommandWithoutKey(recordMetadata, messageRecord);
+          writeCommandWithoutKey(recordMetadata, jobBatchRecord);
         });
   }
 
   @Override
-  public void deployProcess(
-      final DeployProcessRequest request,
-      final StreamObserver<DeployProcessResponse> responseObserver) {
+  public void cancelProcessInstance(
+      final CancelProcessInstanceRequest request,
+      final StreamObserver<CancelProcessInstanceResponse> responseObserver) {
     executor.submit(
         () -> {
           final Long requestId = registerNewRequest(responseObserver);
 
           prepareRecordMetadata()
               .requestId(requestId)
-              .valueType(ValueType.DEPLOYMENT)
-              .intent(DeploymentIntent.CREATE);
+              .valueType(ValueType.PROCESS_INSTANCE)
+              .intent(ProcessInstanceIntent.CANCEL);
 
-          final DeploymentRecord deploymentRecord = new DeploymentRecord();
-          final ValueArray<DeploymentResource> resources = deploymentRecord.resources();
+          final ProcessInstanceRecord processInstanceRecord = new ProcessInstanceRecord();
+          processInstanceRecord.setProcessInstanceKey(request.getProcessInstanceKey());
 
-          request
-              .getProcessesList()
-              .forEach(
-                  (processRequestObject -> {
-                    resources
-                        .add()
-                        .setResourceName(processRequestObject.getName())
-                        .setResource(processRequestObject.getDefinition().toByteArray());
-                  }));
+          writeCommandWithKey(
+              request.getProcessInstanceKey(), recordMetadata, processInstanceRecord);
+        });
+  }
 
-          writeCommandWithoutKey(recordMetadata, deploymentRecord);
+  @Override
+  public void completeJob(
+      final CompleteJobRequest request,
+      final StreamObserver<CompleteJobResponse> responseObserver) {
+    executor.submit(
+        () -> {
+          final Long requestId = registerNewRequest(responseObserver);
+
+          prepareRecordMetadata()
+              .requestId(requestId)
+              .valueType(ValueType.JOB)
+              .intent(JobIntent.COMPLETE);
+
+          final JobRecord jobRecord = new JobRecord();
+
+          final String variables = request.getVariables();
+          if (!variables.isEmpty()) {
+            jobRecord.setVariables(
+                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+          }
+
+          writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
         });
   }
 
@@ -211,122 +222,32 @@ public class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implemen
   }
 
   @Override
-  public void cancelProcessInstance(
-      final CancelProcessInstanceRequest request,
-      final StreamObserver<CancelProcessInstanceResponse> responseObserver) {
+  public void deployProcess(
+      final DeployProcessRequest request,
+      final StreamObserver<DeployProcessResponse> responseObserver) {
     executor.submit(
         () -> {
           final Long requestId = registerNewRequest(responseObserver);
 
           prepareRecordMetadata()
               .requestId(requestId)
-              .valueType(ValueType.PROCESS_INSTANCE)
-              .intent(ProcessInstanceIntent.CANCEL);
+              .valueType(ValueType.DEPLOYMENT)
+              .intent(DeploymentIntent.CREATE);
 
-          final ProcessInstanceRecord processInstanceRecord = new ProcessInstanceRecord();
-          processInstanceRecord.setProcessInstanceKey(request.getProcessInstanceKey());
+          final DeploymentRecord deploymentRecord = new DeploymentRecord();
+          final ValueArray<DeploymentResource> resources = deploymentRecord.resources();
 
-          writeCommandWithKey(
-              request.getProcessInstanceKey(), recordMetadata, processInstanceRecord);
-        });
-  }
+          request
+              .getProcessesList()
+              .forEach(
+                  (processRequestObject -> {
+                    resources
+                        .add()
+                        .setResourceName(processRequestObject.getName())
+                        .setResource(processRequestObject.getDefinition().toByteArray());
+                  }));
 
-  @Override
-  public void setVariables(
-      final SetVariablesRequest request,
-      final StreamObserver<SetVariablesResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId = registerNewRequest(responseObserver);
-
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.VARIABLE_DOCUMENT)
-              .intent(VariableDocumentIntent.UPDATE);
-
-          final VariableDocumentRecord variableDocumentRecord = new VariableDocumentRecord();
-
-          final String variables = request.getVariables();
-          if (!variables.isEmpty()) {
-            variableDocumentRecord.setVariables(
-                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
-          }
-
-          variableDocumentRecord.setScopeKey(request.getElementInstanceKey());
-          variableDocumentRecord.setUpdateSemantics(
-              request.getLocal()
-                  ? VariableDocumentUpdateSemantic.LOCAL
-                  : VariableDocumentUpdateSemantic.PROPAGATE);
-
-          writeCommandWithoutKey(recordMetadata, variableDocumentRecord);
-        });
-  }
-
-  @Override
-  public void resolveIncident(
-      final ResolveIncidentRequest request,
-      final StreamObserver<ResolveIncidentResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId = registerNewRequest(responseObserver);
-
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.INCIDENT)
-              .intent(IncidentIntent.RESOLVE);
-
-          final IncidentRecord incidentRecord = new IncidentRecord();
-
-          writeCommandWithKey(request.getIncidentKey(), recordMetadata, incidentRecord);
-        });
-  }
-
-  @Override
-  public void activateJobs(
-      final ActivateJobsRequest request,
-      final StreamObserver<ActivateJobsResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId = registerNewRequest(responseObserver);
-
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.JOB_BATCH)
-              .intent(JobBatchIntent.ACTIVATE);
-
-          final JobBatchRecord jobBatchRecord = new JobBatchRecord();
-
-          jobBatchRecord.setType(request.getType());
-          jobBatchRecord.setWorker(request.getWorker());
-          jobBatchRecord.setTimeout(request.getTimeout());
-          jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
-
-          writeCommandWithoutKey(recordMetadata, jobBatchRecord);
-        });
-  }
-
-  @Override
-  public void completeJob(
-      final CompleteJobRequest request,
-      final StreamObserver<CompleteJobResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId = registerNewRequest(responseObserver);
-
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.JOB)
-              .intent(JobIntent.COMPLETE);
-
-          final JobRecord jobRecord = new JobRecord();
-
-          final String variables = request.getVariables();
-          if (!variables.isEmpty()) {
-            jobRecord.setVariables(
-                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
-          }
-
-          writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
+          writeCommandWithoutKey(recordMetadata, deploymentRecord);
         });
   }
 
@@ -373,22 +294,81 @@ public class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implemen
   }
 
   @Override
-  public void updateJobRetries(
-      final UpdateJobRetriesRequest request,
-      final StreamObserver<UpdateJobRetriesResponse> responseObserver) {
+  public void publishMessage(
+      final PublishMessageRequest request,
+      final StreamObserver<PublishMessageResponse> responseObserver) {
     executor.submit(
         () -> {
           final Long requestId = registerNewRequest(responseObserver);
 
           prepareRecordMetadata()
               .requestId(requestId)
-              .valueType(ValueType.JOB)
-              .intent(JobIntent.UPDATE_RETRIES);
+              .valueType(ValueType.MESSAGE)
+              .intent(MessageIntent.PUBLISH);
 
-          final JobRecord jobRecord = new JobRecord();
-          jobRecord.setRetries(request.getRetries());
+          final MessageRecord messageRecord = new MessageRecord();
 
-          writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
+          messageRecord.setCorrelationKey(request.getCorrelationKey());
+          messageRecord.setMessageId(request.getMessageId());
+          messageRecord.setName(request.getName());
+          messageRecord.setTimeToLive(request.getTimeToLive());
+          final String variables = request.getVariables();
+          if (!variables.isEmpty()) {
+            messageRecord.setVariables(
+                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+          }
+
+          writeCommandWithoutKey(recordMetadata, messageRecord);
+        });
+  }
+
+  @Override
+  public void resolveIncident(
+      final ResolveIncidentRequest request,
+      final StreamObserver<ResolveIncidentResponse> responseObserver) {
+    executor.submit(
+        () -> {
+          final Long requestId = registerNewRequest(responseObserver);
+
+          prepareRecordMetadata()
+              .requestId(requestId)
+              .valueType(ValueType.INCIDENT)
+              .intent(IncidentIntent.RESOLVE);
+
+          final IncidentRecord incidentRecord = new IncidentRecord();
+
+          writeCommandWithKey(request.getIncidentKey(), recordMetadata, incidentRecord);
+        });
+  }
+
+  @Override
+  public void setVariables(
+      final SetVariablesRequest request,
+      final StreamObserver<SetVariablesResponse> responseObserver) {
+    executor.submit(
+        () -> {
+          final Long requestId = registerNewRequest(responseObserver);
+
+          prepareRecordMetadata()
+              .requestId(requestId)
+              .valueType(ValueType.VARIABLE_DOCUMENT)
+              .intent(VariableDocumentIntent.UPDATE);
+
+          final VariableDocumentRecord variableDocumentRecord = new VariableDocumentRecord();
+
+          final String variables = request.getVariables();
+          if (!variables.isEmpty()) {
+            variableDocumentRecord.setVariables(
+                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+          }
+
+          variableDocumentRecord.setScopeKey(request.getElementInstanceKey());
+          variableDocumentRecord.setUpdateSemantics(
+              request.getLocal()
+                  ? VariableDocumentUpdateSemantic.LOCAL
+                  : VariableDocumentUpdateSemantic.PROPAGATE);
+
+          writeCommandWithoutKey(recordMetadata, variableDocumentRecord);
         });
   }
 
@@ -424,11 +404,31 @@ public class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implemen
   }
 
   @Override
+  public void updateJobRetries(
+      final UpdateJobRetriesRequest request,
+      final StreamObserver<UpdateJobRetriesResponse> responseObserver) {
+    executor.submit(
+        () -> {
+          final Long requestId = registerNewRequest(responseObserver);
+
+          prepareRecordMetadata()
+              .requestId(requestId)
+              .valueType(ValueType.JOB)
+              .intent(JobIntent.UPDATE_RETRIES);
+
+          final JobRecord jobRecord = new JobRecord();
+          jobRecord.setRetries(request.getRetries());
+
+          writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
+        });
+  }
+
+  @Override
   public void close() {
     try {
       executor.shutdownNow();
       executor.awaitTermination(60, TimeUnit.SECONDS);
-    } catch (InterruptedException ie) {
+    } catch (final InterruptedException ie) {
       // TODO handle
     }
   }

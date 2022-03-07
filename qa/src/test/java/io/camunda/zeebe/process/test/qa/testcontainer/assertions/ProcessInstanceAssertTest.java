@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.IncidentAssert;
 import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
@@ -59,7 +59,7 @@ class ProcessInstanceAssertTest {
   class HappyPathTests {
 
     private ZeebeClient client;
-    private InMemoryEngine engine;
+    private ZeebeTestEngine engine;
 
     @Test
     void testProcessInstanceIsStarted() throws InterruptedException, TimeoutException {
@@ -233,7 +233,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .hasPassedElementInOrder(
+          .hasPassedElementsInOrder(
               ProcessPackLoopingServiceTask.START_EVENT_ID,
               ProcessPackLoopingServiceTask.ELEMENT_ID,
               ProcessPackLoopingServiceTask.END_EVENT_ID);
@@ -250,7 +250,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1);
+          .isWaitingAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
 
     @Test
@@ -264,7 +264,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isWaitingAtElement(
+          .isWaitingAtElements(
               ProcessPackMultipleTasks.ELEMENT_ID_1,
               ProcessPackMultipleTasks.ELEMENT_ID_2,
               ProcessPackMultipleTasks.ELEMENT_ID_3);
@@ -282,7 +282,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isNotWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1);
+          .isNotWaitingAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
 
     @Test
@@ -300,7 +300,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isNotWaitingAtElement(
+          .isNotWaitingAtElements(
               ProcessPackMultipleTasks.ELEMENT_ID_1,
               ProcessPackMultipleTasks.ELEMENT_ID_2,
               ProcessPackMultipleTasks.ELEMENT_ID_3);
@@ -318,7 +318,7 @@ class ProcessInstanceAssertTest {
       final String nonExistingElementId = "non-existing-task";
 
       // then
-      BpmnAssert.assertThat(instanceEvent).isNotWaitingAtElement(nonExistingElementId);
+      BpmnAssert.assertThat(instanceEvent).isNotWaitingAtElements(nonExistingElementId);
     }
 
     @Test
@@ -352,7 +352,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
+          .isWaitingForMessages(ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
@@ -372,7 +372,7 @@ class ProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent)
-          .isNotWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME);
+          .isNotWaitingForMessages(ProcessPackMessageEvent.MESSAGE_NAME);
     }
 
     @Test
@@ -515,7 +515,7 @@ class ProcessInstanceAssertTest {
   class UnhappyPathTests {
 
     private ZeebeClient client;
-    private InMemoryEngine engine;
+    private ZeebeTestEngine engine;
 
     @Test
     void testProcessInstanceIsStartedFailure() throws InterruptedException, TimeoutException {
@@ -720,7 +720,7 @@ class ProcessInstanceAssertTest {
       assertThatThrownBy(
               () ->
                   BpmnAssert.assertThat(instanceEvent)
-                      .hasPassedElementInOrder(
+                      .hasPassedElementsInOrder(
                           ProcessPackLoopingServiceTask.END_EVENT_ID,
                           ProcessPackLoopingServiceTask.ELEMENT_ID,
                           ProcessPackLoopingServiceTask.START_EVENT_ID))
@@ -747,7 +747,7 @@ class ProcessInstanceAssertTest {
       assertThatThrownBy(
               () ->
                   BpmnAssert.assertThat(instanceEvent)
-                      .isWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1))
+                      .isWaitingAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("to contain", ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
@@ -769,7 +769,7 @@ class ProcessInstanceAssertTest {
       assertThatThrownBy(
               () ->
                   BpmnAssert.assertThat(instanceEvent)
-                      .isWaitingAtElement(
+                      .isWaitingAtElements(
                           ProcessPackMultipleTasks.ELEMENT_ID_1,
                           ProcessPackMultipleTasks.ELEMENT_ID_2,
                           ProcessPackMultipleTasks.ELEMENT_ID_3))
@@ -794,7 +794,7 @@ class ProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(
-              () -> BpmnAssert.assertThat(instanceEvent).isWaitingAtElement(nonExistingTaskId))
+              () -> BpmnAssert.assertThat(instanceEvent).isWaitingAtElements(nonExistingTaskId))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("to contain", nonExistingTaskId);
     }
@@ -812,7 +812,7 @@ class ProcessInstanceAssertTest {
       assertThatThrownBy(
               () ->
                   BpmnAssert.assertThat(instanceEvent)
-                      .isNotWaitingAtElement(ProcessPackMultipleTasks.ELEMENT_ID_1))
+                      .isNotWaitingAtElements(ProcessPackMultipleTasks.ELEMENT_ID_1))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("not to contain", ProcessPackMultipleTasks.ELEMENT_ID_1);
     }
@@ -831,7 +831,7 @@ class ProcessInstanceAssertTest {
       assertThatThrownBy(
               () ->
                   BpmnAssert.assertThat(instanceEvent)
-                      .isNotWaitingAtElement(
+                      .isNotWaitingAtElements(
                           ProcessPackMultipleTasks.ELEMENT_ID_1,
                           ProcessPackMultipleTasks.ELEMENT_ID_2,
                           ProcessPackMultipleTasks.ELEMENT_ID_3))
@@ -949,7 +949,7 @@ class ProcessInstanceAssertTest {
       assertThatThrownBy(
               () ->
                   BpmnAssert.assertThat(instanceEvent)
-                      .isWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME))
+                      .isWaitingForMessages(ProcessPackMessageEvent.MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("to contain:", ProcessPackMessageEvent.MESSAGE_NAME);
     }
@@ -972,7 +972,7 @@ class ProcessInstanceAssertTest {
       assertThatThrownBy(
               () ->
                   BpmnAssert.assertThat(instanceEvent)
-                      .isNotWaitingForMessage(ProcessPackMessageEvent.MESSAGE_NAME))
+                      .isNotWaitingForMessages(ProcessPackMessageEvent.MESSAGE_NAME))
           .isInstanceOf(AssertionError.class)
           .hasMessageContainingAll("not to contain", ProcessPackMessageEvent.MESSAGE_NAME);
     }
@@ -1131,7 +1131,7 @@ class ProcessInstanceAssertTest {
   class RegressionTests {
 
     private ZeebeClient client;
-    private InMemoryEngine engine;
+    private ZeebeTestEngine engine;
 
     @Test // regression test for #78
     public void testShouldCaptureLatestValueOfVariable()

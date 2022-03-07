@@ -21,7 +21,7 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.IncidentAssert;
 import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
@@ -49,7 +49,7 @@ class IncidentAssertTest {
   class HappyPathTests {
 
     private ZeebeClient client;
-    private InMemoryEngine engine;
+    private ZeebeTestEngine engine;
 
     @Test
     void testHasErrorType() throws InterruptedException, TimeoutException {
@@ -241,7 +241,7 @@ class IncidentAssertTest {
   class UnhappyPathTests {
 
     private ZeebeClient client;
-    private InMemoryEngine engine;
+    private ZeebeTestEngine engine;
 
     @Test
     void testHasErrorTypeFailure() throws InterruptedException, TimeoutException {

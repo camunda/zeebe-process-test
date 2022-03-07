@@ -20,7 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
@@ -44,7 +44,7 @@ class MessageAssertTest {
   class HappyPathTests {
 
     private ZeebeClient client;
-    private InMemoryEngine engine;
+    private ZeebeTestEngine engine;
 
     @Test
     void testHasBeenCorrelated() throws InterruptedException, TimeoutException {
@@ -180,7 +180,7 @@ class MessageAssertTest {
   class UnhappyPathTests {
 
     private ZeebeClient client;
-    private InMemoryEngine engine;
+    private ZeebeTestEngine engine;
 
     @Test
     void testHasBeenCorrelatedFailure() throws InterruptedException, TimeoutException {

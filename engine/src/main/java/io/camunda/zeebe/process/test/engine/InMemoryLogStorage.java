@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import org.agrona.DirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 
-public class InMemoryLogStorage implements LogStorage {
+class InMemoryLogStorage implements LogStorage {
 
   private final ConcurrentSkipListMap<Long, Integer> positionIndexMapping =
       new ConcurrentSkipListMap<>();
@@ -31,16 +31,6 @@ public class InMemoryLogStorage implements LogStorage {
   @Override
   public LogStorageReader newReader() {
     return new ListLogStorageReader();
-  }
-
-  @Override
-  public void addCommitListener(final CommitListener listener) {
-    commitListeners.add(listener);
-  }
-
-  @Override
-  public void removeCommitListener(final CommitListener listener) {
-    commitListeners.remove(listener);
   }
 
   @Override
@@ -57,9 +47,19 @@ public class InMemoryLogStorage implements LogStorage {
 
       listener.onCommit(index);
       commitListeners.forEach(LogStorage.CommitListener::onCommit);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       listener.onWriteError(e);
     }
+  }
+
+  @Override
+  public void addCommitListener(final CommitListener listener) {
+    commitListeners.add(listener);
+  }
+
+  @Override
+  public void removeCommitListener(final CommitListener listener) {
+    commitListeners.remove(listener);
   }
 
   private class ListLogStorageReader implements LogStorageReader {

@@ -12,7 +12,7 @@ import io.camunda.zeebe.db.TransactionOperation;
 import io.camunda.zeebe.db.ZeebeDbTransaction;
 import java.util.TreeMap;
 
-public class InMemoryDbTransactionContext implements TransactionContext {
+class InMemoryDbTransactionContext implements TransactionContext {
   private final InMemoryDbTransaction transaction;
 
   public InMemoryDbTransactionContext(final TreeMap<Bytes, Bytes> database) {
@@ -33,6 +33,14 @@ public class InMemoryDbTransactionContext implements TransactionContext {
     }
   }
 
+  @Override
+  public ZeebeDbTransaction getCurrentTransaction() {
+    if (!transaction.isInCurrentTransaction()) {
+      transaction.resetTransaction();
+    }
+    return transaction;
+  }
+
   private void runInNewTransaction(final TransactionOperation operations) throws Exception {
     try {
       transaction.resetTransaction();
@@ -42,13 +50,5 @@ public class InMemoryDbTransactionContext implements TransactionContext {
       transaction.rollback();
       throw e;
     }
-  }
-
-  @Override
-  public ZeebeDbTransaction getCurrentTransaction() {
-    if (!transaction.isInCurrentTransaction()) {
-      transaction.resetTransaction();
-    }
-    return transaction;
   }
 }

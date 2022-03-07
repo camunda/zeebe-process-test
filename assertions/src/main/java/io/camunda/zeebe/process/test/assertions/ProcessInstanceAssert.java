@@ -231,7 +231,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @param elementIds The element ids
    * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssert hasPassedElementInOrder(final String... elementIds) {
+  public ProcessInstanceAssert hasPassedElementsInOrder(final String... elementIds) {
     final List<String> foundElementRecords =
         StreamFilter.processInstance(recordStream)
             .withProcessInstanceKey(actual)
@@ -257,7 +257,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @param elementIds The ids of the elements
    * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssert isWaitingAtElement(final String... elementIds) {
+  public ProcessInstanceAssert isWaitingAtElements(final String... elementIds) {
     final Set<String> elementsInWaitState = getElementsInWaitState();
     assertThat(elementsInWaitState).containsAll(Arrays.asList(elementIds));
     return this;
@@ -270,7 +270,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @param elementIds The ids of the elements
    * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssert isNotWaitingAtElement(final String... elementIds) {
+  public ProcessInstanceAssert isNotWaitingAtElements(final String... elementIds) {
     final Set<String> elementsInWaitState = getElementsInWaitState();
     assertThat(elementsInWaitState).doesNotContainAnyElementsOf(Arrays.asList(elementIds));
     return this;
@@ -363,7 +363,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @param messageNames Names of the messages
    * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssert isWaitingForMessage(final String... messageNames) {
+  public ProcessInstanceAssert isWaitingForMessages(final String... messageNames) {
     final Set<String> openMessageSubscriptions = getOpenMessageSubscriptions();
     assertThat(openMessageSubscriptions).containsAll(Arrays.asList(messageNames));
     return this;
@@ -376,7 +376,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @param messageNames Names of the messages
    * @return this {@link ProcessInstanceAssert}
    */
-  public ProcessInstanceAssert isNotWaitingForMessage(final String... messageNames) {
+  public ProcessInstanceAssert isNotWaitingForMessages(final String... messageNames) {
     final Set<String> openMessageSubscriptions = getOpenMessageSubscriptions();
     assertThat(openMessageSubscriptions).doesNotContainAnyElementsOf(Arrays.asList(messageNames));
     return this;

@@ -67,7 +67,7 @@ public abstract class BpmnAssert {
   public static RecordStream getRecordStream() {
     if (recordStream.get() == null) {
       throw new AssertionError(
-          "No RecordStreamSource is set. Please make sure you are using the "
+          "No RecordStream is set. Please make sure you are using the "
               + "@ZeebeProcessTest annotation. Alternatively, set one manually using "
               + "BpmnAssert.initRecordStream.");
     }

@@ -40,7 +40,7 @@ public class RecordStreamSourceImpl implements RecordStreamSource {
 
   /** {@inheritDoc} */
   @Override
-  public Iterable<Record<?>> records() {
+  public Iterable<Record<?>> getRecords() {
     updateWithNewRecords();
     return records;
   }

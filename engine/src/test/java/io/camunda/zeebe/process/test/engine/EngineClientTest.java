@@ -26,7 +26,7 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.client.api.response.SetVariablesResponse;
 import io.camunda.zeebe.client.api.response.Topology;
 import io.camunda.zeebe.model.bpmn.Bpmn;
-import io.camunda.zeebe.process.test.api.InMemoryEngine;
+import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
@@ -53,7 +53,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(PrintRecordStreamExtension.class)
 class EngineClientTest {
 
-  private InMemoryEngine zeebeEngine;
+  private ZeebeTestEngine zeebeEngine;
   private ZeebeClient zeebeClient;
 
   @BeforeEach
