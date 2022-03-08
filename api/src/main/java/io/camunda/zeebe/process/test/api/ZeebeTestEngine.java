@@ -73,7 +73,8 @@ public interface ZeebeTestEngine {
   void waitForIdleState(Duration timeout) throws InterruptedException, TimeoutException;
 
   /**
-   * Waits for the engine to reach a busy state.
+   * Waits for the engine to reach a busy state. We consider the engine to be in a busy state if any
+   * new records / commands have been processed since we started waiting.
    *
    * @param timeout the maximum amount of time to wait before busy state has been reached
    * @throws InterruptedException if the current thread was interrupted while waiting

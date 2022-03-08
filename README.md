@@ -188,7 +188,9 @@ IncidentAssert assertions = BpmnAssert.assertThat(activatedJob)
   .extractingLatestIncident();
 ```
 
-### Waiting for idle state
+### Waiting for idle and busy state
+
+#### Wait for idle state
 
 > **Warning!** Waiting for idle state is a new feature. When the engine is detected to be idle it
 > will wait 30ms before checking again. If it is still idle at that stage it is considered to be in
@@ -198,13 +200,29 @@ IncidentAssert assertions = BpmnAssert.assertThat(activatedJob)
 >
 > Any feedback about the wait for idle state is highly appreciated! Please let us know if the delay should be higher, or configurable.
 
-The engine allows you to wait until it is idle before continuing with your test.
+`engine.waitForIdleState(timeout)` will cause your test to stop executing until the engine has
+reached an idle state. If the engine does not reach an idle state within the specified timeout a
+`TimeoutException` will be thrown.
 
-`engine.waitForIdleState()` - This method will cause your test to stop executing until the engine has reached the idle state.
+We have defined an idle state as a state in which the engine makes no progress and is waiting for
+new commands or events to trigger. Once the engine has detected it has become idle it will wait for
+a delay (30ms) and check if it is still idle. If this is the case it is considered to be in idle
+state and continue your test.
 
-We have defined an idle state as a state in which the process engine makes no progress and is waiting for new commands or events to trigger.
-Once the engine has detected it has become idle it will wait for a delay (30ms) and check if it is still idle.
-If this is the case it is considered to be in idle state and continue your test / execute the runnables.
+#### Wait for busy state
+
+`engine.waitForBusyState(timeout)` will cause your test to stop executing until the engine has
+reached a busy state. If the engine does not reach a busy state within the specified timeout a
+`TimeoutException` will be thrown.
+
+We consider the engine to have reached a busy state when any new record / command is processed since
+we've started waiting.
+
+Waiting for a busy state is useful in scenarios where you're expecting the engine to start doing
+something, without explicitly triggering it yourself. An example of this would be a process with a
+timer event. We can increase the time of the engine, but we cannot trigger the timer explicitly.
+Because of this we should wait for a busy state after increasing the engine time.
+
 
 ## Examples
 
