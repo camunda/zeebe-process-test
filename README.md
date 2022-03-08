@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/io.camunda/zeebe-process-test)](https://search.maven.org/search?q=g:io.camunda%20a:zeebe-process-test)
+[![Maven Central](https://img.shields.io/maven-central/v/io.camunda/zeebe-process-test-root)](https://search.maven.org/search?q=g:io.camunda%20zeebe-process-test)
 
 # Zeebe Process Test
 
