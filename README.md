@@ -20,7 +20,7 @@ and provide you with a set of assertions you can use to verify your process beha
 If you are building your project with a JDK that's lower than 17 you should use this dependency. It
 starts a testcontainer in which a Zeebe test engine is running. The advantage of using this version
 instead of the embedded version is that you will be completely separated from the Java version that is
-used in the Zeebe engine. This does come at a cost. Testcontainers provide some overhead, which means
+used by the Zeebe engine. This does come at a cost. Testcontainers provide some overhead, which means
 tests will be slower. There is also the extra requirement that Docker must be running to execute the tests.
 
 ```xml
@@ -54,7 +54,7 @@ or upgrade your own JDK to match the Zeebe engine.
 
 Annotate your test class with the `@ZeebeProcessTest` annotation. This annotation will do a couple of things:
 
-1. It will manage the lifecycle of the testcontainer / embedded test engine
+1. It will manage the [lifecycle](#engine-lifecycle) of the testcontainer / embedded test engine
 2. It will create a client which can be used to interact with the engine.
 3. It will (optionally) inject 3 fields in your test class:
    1. `ZeebeTestEngine` - This is the engine that will run your process. It will provide some basic functionality
@@ -237,6 +237,22 @@ Switching between testcontainers and embedded is very easy to do. You'll have to
 2. Change the import of `@ZeebeProcessTest`
    - Testcontainers: `import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;`
    - Embedded: `import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;`
+
+## Engine lifecycle
+
+The lifecycle of the engine will be fully managed by the extension. The lifecycle for both
+extensions differs slightly.
+
+**Testcontainers**
+1. Before all tests start the testcontainer
+2. Before each test stop and recreate the Zeebe test engine
+3. Run the test
+4. After all tests stop the testcontainer
+
+**Embedded**
+1. Before each test create a new Zeebe test engine
+2. Run the test
+3. After each test stop the Zeebe test engine
 
 ## Project Structure
 
