@@ -54,20 +54,25 @@ or upgrade your own JDK to match the Zeebe engine.
 
 Annotate your test class with the `@ZeebeProcessTest` annotation. This annotation will do a couple of things:
 
-1. It will create and start the in memory engine. This will be a new engine for each test case.
+1. It will manage the lifecycle of the testcontainer / embedded test engine
 2. It will create a client which can be used to interact with the engine.
 3. It will (optionally) inject 3 fields in your test class:
    1. `ZeebeTestEngine` - This is the engine that will run your process. It will provide some basic functionality
       to help you write your tests, such as waiting for an idle state and increasing the time.
-   2. `ZeebeClient` - This is the client that allows you to communicate with the engine.
-      It allows you to send commands to the engine.
+   2. `ZeebeClient` - This is the client that allows you to  send commands to the engine, such as
+      starting a process instance.
    3. `RecordStream` - This gives you access to all the records that are processed by the engine.
-      It is what the assertions use to verify expectations. This grants you the freedom to create your own assertions.
-4. It will take care of cleaning up the engine and client when the testcase is finished.
+      It is what the assertions use for verifying expectations. This grants you the freedom to create your own assertions.
 
 Example:
 
 ```java
+// When using the embedded test engine
+import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+
+// When using testcontainers
+import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
+
 @ZeebeProcessTest
 class DeploymentAssertTest {
   private ZeebeTestEngine engine;
