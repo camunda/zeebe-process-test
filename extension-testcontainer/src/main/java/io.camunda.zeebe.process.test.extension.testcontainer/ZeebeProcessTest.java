@@ -30,20 +30,30 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>Annotating test classes with this annotation will do a couple of things:
  *
  * <ul>
- *   <li>It start a docker container running and in memory engine.
+ *   <li>It will manage the lifecycle of the testcontainer and Zeebe test engine.
  *   <li>It will create a client which can be used to interact with the engine.
  *   <li>It will (optionally) inject 3 fields in your test class:
  *       <ul>
- *         <li>InMemoryEngine - This is the engine that will run your process. It will provide some
+ *         <li>ZeebeTestEngine - This is the engine that will run your process. It will provide some
  *             basic functionality to help you write your tests, such as waiting for an idle state
  *             and increasing the time.
- *         <li>ZeebeClient - This is the client that allows you to communicate with the engine. It
- *             allows you to send commands to the engine.
+ *         <li>ZeebeClient - This is the client that allows you to send commands to the engine, such
+ *             as starting a process instance. The interface of this client is identical to the
+ *             interface you use to connect to a real Zeebe engine.
  *         <li>RecordStream - This gives you access to all the records that are processed by the
- *             engine. It is what the assertions use to verify expectations. This grants you the
+ *             engine. Assertions use the records for verifying expectations. This grants you the
  *             freedom to create your own assertions.
  *       </ul>
- *   <li>It will take care of cleaning up the engine and client when the testcase is finished.
+ * </ul>
+ *
+ * <p>Lifecycle:
+ *
+ * <ul>
+ *   <li>Before the test suite start the testcontainer
+ *   <li>Before each test stop the current Zeebe test engine (if applicable) and create a new Zeebe
+ *       test engine for the next test
+ *   <li>Run the test
+ *   <li>After the test suite stop the testcontainer
  * </ul>
  *
  * @since Java 8

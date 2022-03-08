@@ -15,13 +15,17 @@ and provide you with a set of assertions you can use to verify your process beha
 
 ### Dependency
 
+Zeepe Process Test provides you with two dependencies. Which one you need to use is dependent on the
+Java version you are using.
+
 #### Testcontainers (JDK 8+)
 
-If you are building your project with a JDK that's lower than 17 you should use this dependency. It
+If you are building your project with a JDK that's lower than 17 you need to use this dependency. It
 starts a testcontainer in which a Zeebe test engine is running. The advantage of using this version
-instead of the embedded version is that you will be completely separated from the Java version that is
-used by the Zeebe engine. This does come at a cost. Testcontainers provide some overhead, which means
-tests will be slower. There is also the extra requirement that Docker must be running to execute the tests.
+instead of the embedded version is that your code can be implemented independently of the Java
+version that is used by the Zeebe engine. This has some downsides: Testcontainers provide some
+overhead, which means tests will be slower. There is also the extra requirement that Docker must be
+running to execute the tests.
 
 ```xml
 <dependency>
@@ -37,9 +41,9 @@ tests will be slower. There is also the extra requirement that Docker must be ru
 If you are building your project with JDK 17+ you can make use of an embedded Zeebe test engine. The
 advantage of using this instead of the testcontainer version is that this is the faster solution.
 This also does not require Docker to be running. There is also a downside to this solution. The JDK
-requirement is bound to the Java version of the Zeebe engine. Whenever this Java version gets updated,
+requirement is bound to the Java version of the Zeebe engine. Whenever this Java version changes,
 you'd either have to [switch to the testcontainer version](#switching-between-testcontainers-and-embedded),
-or upgrade your own JDK to match the Zeebe engine.
+or upgrade your own JDK to match Zeebe engine.
 
 ```xml
 <dependency>
@@ -60,17 +64,18 @@ Annotate your test class with the `@ZeebeProcessTest` annotation. This annotatio
    1. `ZeebeTestEngine` - This is the engine that will run your process. It will provide some basic functionality
       to help you write your tests, such as waiting for an idle state and increasing the time.
    2. `ZeebeClient` - This is the client that allows you to  send commands to the engine, such as
-      starting a process instance.
+      starting a process instance. The interface of this client is identical to the interface you
+      use to connect to a real Zeebe engine.
    3. `RecordStream` - This gives you access to all the records that are processed by the engine.
-      It is what the assertions use for verifying expectations. This grants you the freedom to create your own assertions.
+      Assertions use the records for verifying expectations. This grants you the freedom to create your own assertions.
 
 Example:
 
 ```java
-// When using the embedded test engine
+// When using the embedded test engine (Java 17+)
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 
-// When using testcontainers
+// When using testcontainers (Java 8+)
 import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 
 @ZeebeProcessTest
@@ -80,6 +85,20 @@ class DeploymentAssertTest {
   private RecordStream recordStream;
 }
 ```
+
+### Switching between testcontainers and embedded
+
+Switching between testcontainers and embedded is very easy to do. You'll have to take two steps:
+
+1. Switch to the relevant dependency
+
+- Testcontainers: `zeebe-process-test-extension-testcontainer`
+- Embedded: `zeebe-process-test-extension`
+
+2. Change the import of `@ZeebeProcessTest`
+
+- Testcontainers: `import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;`
+- Embedded: `import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;`
 
 ### Assertions
 
@@ -227,27 +246,17 @@ Because of this we should wait for a busy state after increasing the engine time
 
 For example tests the best place to look right now is the tests in the QA module.
 
-## Switching between testcontainers and embedded
-
-Switching between testcontainers and embedded is very easy to do. You'll have to take two steps:
-
-1. Switch to the relevant dependency
-   - Testcontainers: `zeebe-process-test-extension-testcontainer`
-   - Embedded: `zeebe-process-test-extension`
-2. Change the import of `@ZeebeProcessTest`
-   - Testcontainers: `import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;`
-   - Embedded: `import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;`
-
 ## Engine lifecycle
 
 The lifecycle of the engine will be fully managed by the extension. The lifecycle for both
 extensions differs slightly.
 
 **Testcontainers**
-1. Before all tests start the testcontainer
-2. Before each test stop and recreate the Zeebe test engine
+1. Before the test suite start the testcontainer
+2. Before each test stop the current Zeebe test engine (if applicable) and create a new Zeebe test
+engine for the next test
 3. Run the test
-4. After all tests stop the testcontainer
+4. After the test suite stop the testcontainer
 
 **Embedded**
 1. Before each test create a new Zeebe test engine
@@ -257,24 +266,24 @@ extensions differs slightly.
 ## Project Structure
 
 The project consists of 5 different modules:
-1. Api
+1. Api ([api](/api))
 - This module contains public interfaces. It should always be Java 8 compatible.
-2. Assertions
+2. Assertions ([assertions](/assertions))
 - This module contains all the assertions. It should always be Java 8 compatible.
-3. Engine
+3. Engine ([engine](/engine))
 - This module contains the in memory engine. It is not bound to a specific Java version.
 Therefore, it is not recommended to depend on this module.
-4. Engine agent
+4. Engine agent ([engine-agent](engine-agent))
 - This module is a wrapper around the engine. It enables running the engine in a docker container.
-5. Engine protocol
+5. Engine protocol ([engine-protocol](/engine-protocol))
 - This module defines the gRPC protocol used for communicating with the engine agent.
-6. Extension
+6. Extension ([extension](/extension))
 - This module contains the extension for using the embedded test engine.
-7. Extension testcontainer
+7. Extension testcontainer ([extension-testcontainer](/extension-testcontainer))
 - This module contains the extension for using the test engine in a testcontainer.
-8. Filters
+8. Filters ([filters](/filters))
 - This module contains filters that can be used to filter a list of Zeebe records.
-9. QA
+9. QA ([qa](/qa))
 - This module contains our QA tests. There is no reason to depend on this module. It is not bound to a specific Java version.
 
 ## Backwards compatibility
