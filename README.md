@@ -161,6 +161,33 @@ PublishMessageResponse response = client
 MessageAssert assertions = BpmnAssert.assertThat(response);
 ```
 
+#### Incident Assertions
+
+Via a process instance
+
+```java
+ProcessInstanceEvent event = client.newCreateInstanceCommand()
+  .bpmnProcessId("<processId>")
+  .latestVersion()
+  .send()
+  .join();
+IncidentAssert assertions = BpmnAssert.assertThat(event)
+  .extractingLatestIncident();
+```
+
+Via a job:
+
+```java
+ActivateJobsResponse response = client.newActivateJobsCommand()
+  .jobType("<jobType>")
+  .maxJobsToActivate(1)
+  .send()
+  .join();
+ActivatedJob activatedJob = response.getJobs().get(0);
+IncidentAssert assertions = BpmnAssert.assertThat(activatedJob)
+  .extractingLatestIncident();
+```
+
 ### Waiting for idle state
 
 > **Warning!** Waiting for idle state is a new feature. When the engine is detected to be idle it
