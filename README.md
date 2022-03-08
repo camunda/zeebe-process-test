@@ -2,10 +2,8 @@
 
 # Zeebe Process Test
 
-**This project is in very early stages of development.**
-
-This project allows you to unit test your Camunda Cloud BPMN processes. It will spin up an in-memory
-engine and provide you with a set of assertions you can use to verify your process behaves as expected.
+This project allows you to unit test your Camunda Cloud BPMN processes. It will start a Zeebe test engine
+and provide you with a set of assertions you can use to verify your process behaves as expected.
 
 ## Prerequisites
 
@@ -17,7 +15,31 @@ engine and provide you with a set of assertions you can use to verify your proce
 
 ### Dependency
 
-Add the following dependency to your project
+#### Testcontainers (JDK 8+)
+
+If you are building your project with a JDK that's lower than 17 you should use this dependency. It
+starts a testcontainer in which a Zeebe test engine is running. The advantage of using this version
+instead of the embedded version is that you will be completely separated from the Java version that is
+used in the Zeebe engine. This does come at a cost. Testcontainers provide some overhead, which means
+tests will be slower. There is also the extra requirement that Docker must be running to execute the tests.
+
+```xml
+<dependency>
+  <groupId>io.camunda</groupId>
+  <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
+  <version>X.Y.Z</version>
+  <scope>test</scope>
+</dependency>
+```
+
+#### Embedded (JDK 17+)
+
+If you are building your project with JDK 17+ you can make use of an embedded Zeebe test engine. The
+advantage of using this instead of the testcontainer version is that this is the faster solution.
+This also does not require Docker to be running. There is also a downside to this solution. The JDK
+requirement is bound to the Java version of the Zeebe engine. Whenever this Java version gets updated,
+you'd either have to [switch to the testcontainer version](#switching-between-testcontainers-and-embedded),
+or upgrade your own JDK to match the Zeebe engine.
 
 ```xml
 <dependency>
@@ -27,8 +49,6 @@ Add the following dependency to your project
   <scope>test</scope>
 </dependency>
 ```
-
-**Note**: This snapshot version is bound to change in the future. Only use this when you want to play around with the project.
 
 ### Annotation
 
@@ -157,6 +177,17 @@ If this is the case it is considered to be in idle state and continue your test 
 ## Examples
 
 For example tests the best place to look right now is the tests in the QA module.
+
+## Switching between testcontainers and embedded
+
+Switching between testcontainers and embedded is very easy to do. You'll have to take two steps:
+
+1. Switch to the relevant dependency
+   - Testcontainers: `zeebe-process-test-extension-testcontainer`
+   - Embedded: `zeebe-process-test-extension`
+2. Change the import of `@ZeebeProcessTest`
+   - Testcontainers: `import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;`
+   - Embedded: `import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;`
 
 ## Project Structure
 
