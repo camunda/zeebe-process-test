@@ -243,17 +243,24 @@ Switching between testcontainers and embedded is very easy to do. You'll have to
 
 The project consists of 5 different modules:
 1. Api
-- This module contains public interfaces. It should always be Java 8 compatible.
+   - This module contains public interfaces. It should always be Java 8 compatible.
 2. Assertions
-- This module contains all the assertions. It should always be Java 8 compatible.
+   - This module contains all the assertions. It should always be Java 8 compatible.
 3. Engine
-- This module contains the in memory engine. It is not bound to a specific Java version.
-Therefore, it is not recommended to depend on this module.
-4. Extension
-- This module contains the annotation for your unit tests. As of now it depends on the engine
-and thus is not bound to a specific Java version. In the future this should be Java 8 compatible.
-5. QA
-- This module contains our QA tests. There is no reason to depend on this module. It is not bound to a specific Java version.
+   - This module contains the in memory engine. It is not bound to a specific Java version.
+   Therefore, it is not recommended to depend on this module.
+4. Engine agent
+   - This module is a wrapper around the engine. It enables running the engine in a docker container.
+5. Engine protocol
+   - This module defines the gRPC protocol used for communicating with the engine agent.
+6. Extension
+   - This module contains the extension for using the embedded test engine.
+7. Extension testcontainer
+   - This module contains the extension for using the test engine in a testcontainer.
+8. Filters
+   - This module contains filters that can be used to filter a list of Zeebe records.
+9. QA
+   - This module contains our QA tests. There is no reason to depend on this module. It is not bound to a specific Java version.
 
 ## Backwards compatibility
 
