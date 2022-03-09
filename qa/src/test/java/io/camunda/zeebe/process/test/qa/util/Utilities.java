@@ -20,6 +20,7 @@ import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -78,6 +79,26 @@ public class Utilities {
             .join();
     waitForIdleState(engine, Duration.ofSeconds(1));
     return instanceEvent;
+  }
+
+  public static ProcessInstanceResult startProcessInstanceWithResult(
+      final ZeebeTestEngine engine,
+      final ZeebeClient client,
+      final String processId,
+      final Map<String, Object> variables)
+      throws InterruptedException, TimeoutException {
+    final ProcessInstanceResult instanceResult =
+        client
+            .newCreateInstanceCommand()
+            .bpmnProcessId(processId)
+            .latestVersion()
+            .variables(variables)
+            .withResult()
+            .send()
+            .join();
+
+    waitForIdleState(engine, Duration.ofSeconds(1));
+    return instanceResult;
   }
 
   public static ActivateJobsResponse activateSingleJob(
