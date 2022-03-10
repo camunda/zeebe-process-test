@@ -38,10 +38,10 @@
   </modules>
 
   <scm>
-    <connection>scm:git:git@github.com:camunda-cloud/zeebe-process-test.git</connection>
-    <developerConnection>scm:git:git@github.com:camunda-cloud/zeebe-process-test.git</developerConnection>
+    <connection>scm:git:git@github.com:camunda/zeebe-process-test.git</connection>
+    <developerConnection>scm:git:git@github.com:camunda/zeebe-process-test.git</developerConnection>
     <tag>HEAD</tag>
-    <url>https://github.com/camunda-cloud/zeebe-process-test</url>
+    <url>https://github.com/camunda/zeebe-process-test</url>
   </scm>
 
   <properties>
