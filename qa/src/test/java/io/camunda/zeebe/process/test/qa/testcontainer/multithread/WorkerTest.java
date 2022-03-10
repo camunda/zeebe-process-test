@@ -15,8 +15,10 @@
  */
 package io.camunda.zeebe.process.test.qa.testcontainer.multithread;
 
+import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
+
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
@@ -51,15 +53,12 @@ public class WorkerTest {
         Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 3);
 
     // when
-    final ProcessInstanceEvent instanceEvent =
-        Utilities.startProcessInstance(
+    final ProcessInstanceResult instanceEvent =
+        Utilities.startProcessInstanceWithResult(
             engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
     // then
-    BpmnAssert.assertThat(instanceEvent).isStarted();
-    // TODO: Idle state monitor does not work in this case.
-    //  Might be fixed when switching to the zeebe built-in idle state monitor
-    Thread.sleep(1000);
+    assertThat(instanceEvent).isStarted();
     BpmnAssert.assertThat(instanceEvent)
         .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID, 3)
         .isCompleted();
