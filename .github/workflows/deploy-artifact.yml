@@ -45,10 +45,10 @@ jobs:
           roleId: ${{ secrets.VAULT_ROLE_ID }}
           secretId: ${{ secrets.VAULT_SECRET_ID }}
           secrets: |
-            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test REGISTRY_HUB_DOCKER_COM_USR;
-            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test REGISTRY_HUB_DOCKER_COM_PSW;
-            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_USR;
-            secret/data/common/github.com/actions/camunda-cloud/zeebe-process-test ARTIFACTS_PSW;
+            secret/data/common/github.com/actions/camunda/zeebe-process-test REGISTRY_HUB_DOCKER_COM_USR;
+            secret/data/common/github.com/actions/camunda/zeebe-process-test REGISTRY_HUB_DOCKER_COM_PSW;
+            secret/data/common/github.com/actions/camunda/zeebe-process-test ARTIFACTS_USR;
+            secret/data/common/github.com/actions/camunda/zeebe-process-test ARTIFACTS_PSW;
             secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_DEPLOYMENT_USR;
             secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_DEPLOYMENT_PSW;
             secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE;
