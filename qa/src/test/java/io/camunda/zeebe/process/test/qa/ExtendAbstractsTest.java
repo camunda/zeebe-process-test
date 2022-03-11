@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Test;
 
 class ExtendAbstractsTest {
 
-  public static final String REGULAR = "regular";
+  public static final String EMBEDDED = "embedded";
   public static final String TESTCONTAINER = "testcontainer";
-  public static final Class<ZeebeProcessTest> REGULAR_ANNOTATION = ZeebeProcessTest.class;
+  public static final Class<ZeebeProcessTest> EMBEDDED_ANNOTATION = ZeebeProcessTest.class;
   public static final Class<io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest>
       TESTCONTAINER_ANNOTATION =
           io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest.class;
@@ -44,7 +44,7 @@ class ExtendAbstractsTest {
   void testAbstractClassesAreExtendedWithBothExtensions() throws IOException {
     final Map<String, List<Class<?>>> classes = new HashMap<>();
     classes.put(ABSTRACTS, new ArrayList<>());
-    classes.put(REGULAR, new ArrayList<>());
+    classes.put(EMBEDDED, new ArrayList<>());
     classes.put(TESTCONTAINER, new ArrayList<>());
 
     ClassPath.from(ClassLoader.getSystemClassLoader()).getTopLevelClasses().stream()
@@ -53,8 +53,8 @@ class ExtendAbstractsTest {
             classInfo -> {
               if (classInfo.getPackageName().contains(BASE_PACKAGE + "." + ABSTRACTS)) {
                 classes.get(ABSTRACTS).add(classInfo.load());
-              } else if (classInfo.getPackageName().contains(BASE_PACKAGE + "." + REGULAR)) {
-                classes.get(REGULAR).add(classInfo.load());
+              } else if (classInfo.getPackageName().contains(BASE_PACKAGE + "." + EMBEDDED)) {
+                classes.get(EMBEDDED).add(classInfo.load());
               } else if (classInfo.getPackageName().contains(BASE_PACKAGE + "." + TESTCONTAINER)) {
                 classes.get(TESTCONTAINER).add(classInfo.load());
               }
@@ -66,7 +66,7 @@ class ExtendAbstractsTest {
         .forEach(
             abstractClass -> {
               assertExtendingClass(
-                  abstractClass, classes.get(REGULAR), REGULAR, REGULAR_ANNOTATION, softly);
+                  abstractClass, classes.get(EMBEDDED), EMBEDDED, EMBEDDED_ANNOTATION, softly);
               assertExtendingClass(
                   abstractClass,
                   classes.get(TESTCONTAINER),

@@ -13,33 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.process.test.qa.regular.multithread;
+package io.camunda.zeebe.process.test.qa.embedded.assertions;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.filters.RecordStream;
-import io.camunda.zeebe.process.test.qa.abstracts.multithread.AbstractMultiThreadTest;
+import io.camunda.zeebe.process.test.qa.abstracts.assertions.AbstractJobAssertTest;
 
 @ZeebeProcessTest
-class MultiThreadTest extends AbstractMultiThreadTest {
-
-  private ZeebeTestEngine engine;
-  private ZeebeClient client;
-  private RecordStream recordStream;
-
-  @Override
-  public ZeebeClient getClient() {
-    return client;
-  }
-
-  @Override
-  public ZeebeTestEngine getEngine() {
-    return engine;
-  }
-
-  @Override
-  public RecordStream getRecordStream() {
-    return recordStream;
-  }
-}
+class JobAssertTest extends AbstractJobAssertTest {}

@@ -114,7 +114,7 @@
 
   <profiles>
     <profile>
-      <id>regular</id>
+      <id>embedded</id>
       <build>
         <plugins>
           <plugin>
@@ -141,7 +141,7 @@
             <version>${plugin.version.surefire}</version>
             <configuration>
               <excludes>
-                <exclude>**/regular/**/*.java</exclude>
+                <exclude>**/embedded/**/*.java</exclude>
               </excludes>
             </configuration>
           </plugin>

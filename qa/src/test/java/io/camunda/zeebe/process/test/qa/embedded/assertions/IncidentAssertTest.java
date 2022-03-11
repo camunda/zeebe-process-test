@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.process.test.qa.regular.assertions;
+package io.camunda.zeebe.process.test.qa.embedded.assertions;
 
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.qa.abstracts.assertions.AbstractDeploymentAssertTest;
+import io.camunda.zeebe.process.test.qa.abstracts.assertions.AbstractIncidentAssertTest;
 
 @ZeebeProcessTest
-class DeploymentAssertTest extends AbstractDeploymentAssertTest {}
+class IncidentAssertTest extends AbstractIncidentAssertTest {}

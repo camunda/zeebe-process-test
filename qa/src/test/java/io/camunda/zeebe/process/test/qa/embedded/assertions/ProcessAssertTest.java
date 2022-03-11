@@ -13,26 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.process.test.qa.regular.inspections;
+package io.camunda.zeebe.process.test.qa.embedded.assertions;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.qa.abstracts.inspections.AbstractProcessInstanceInspectionsTest;
+import io.camunda.zeebe.process.test.qa.abstracts.assertions.AbstractProcessAssertTest;
 
 @ZeebeProcessTest
-class ProcessInstanceInspectionsTest extends AbstractProcessInstanceInspectionsTest {
-
-  private ZeebeClient client;
-  private ZeebeTestEngine engine;
-
-  @Override
-  public ZeebeClient getClient() {
-    return client;
-  }
-
-  @Override
-  public ZeebeTestEngine getEngine() {
-    return engine;
-  }
-}
+class ProcessAssertTest extends AbstractProcessAssertTest {}
