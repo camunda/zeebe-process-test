@@ -278,16 +278,17 @@
         <version>${dependency.testcontainers.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${dependency.guava.version}</version>
+      </dependency>
+
       <!-- Only for dependency convergence issues -->
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
         <version>${dependency.protobuf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${dependency.guava.version}</version>
       </dependency>
       <dependency>
         <groupId>net.java.dev.jna</groupId>
