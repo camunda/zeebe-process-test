@@ -16,69 +16,23 @@
 package io.camunda.zeebe.process.test.qa.regular.inspections;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
-import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.inspections.InspectionUtility;
-import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
-import io.camunda.zeebe.process.test.qa.util.Utilities;
-import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackCallActivity;
-import java.util.Optional;
-import java.util.concurrent.TimeoutException;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import io.camunda.zeebe.process.test.qa.abstracts.inspections.AbstractProcessInstanceInspectionsTest;
 
 @ZeebeProcessTest
-public class ProcessInstanceInspectionsTest {
+class ProcessInstanceInspectionsTest extends AbstractProcessInstanceInspectionsTest {
 
   private ZeebeClient client;
   private ZeebeTestEngine engine;
 
-  @Test
-  void testStartedByProcessInstanceWithProcessId() throws InterruptedException, TimeoutException {
-    // given
-    Utilities.deployProcesses(
-        client,
-        ProcessPackCallActivity.RESOURCE_NAME,
-        ProcessPackCallActivity.CALLED_RESOURCE_NAME);
-    final ProcessInstanceEvent instanceEvent =
-        Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
-
-    // when
-    final Optional<InspectedProcessInstance> firstProcessInstance =
-        InspectionUtility.findProcessInstances()
-            .withParentProcessInstanceKey(instanceEvent.getProcessInstanceKey())
-            .withBpmnProcessId(ProcessPackCallActivity.CALLED_PROCESS_ID)
-            .findFirstProcessInstance();
-
-    // then
-    Assertions.assertThat(firstProcessInstance).isNotEmpty();
-    BpmnAssert.assertThat(firstProcessInstance.get()).isCompleted();
-    BpmnAssert.assertThat(instanceEvent)
-        .hasPassedElement(ProcessPackCallActivity.CALL_ACTIVITY_ID)
-        .isCompleted();
+  @Override
+  public ZeebeClient getClient() {
+    return client;
   }
 
-  @Test
-  void testStartedByProcessInstanceWithProcessId_wrongId()
-      throws InterruptedException, TimeoutException {
-    // given
-    Utilities.deployProcesses(
-        client,
-        ProcessPackCallActivity.RESOURCE_NAME,
-        ProcessPackCallActivity.CALLED_RESOURCE_NAME);
-    final ProcessInstanceEvent instanceEvent =
-        Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
-
-    // when
-    final Optional<InspectedProcessInstance> firstProcessInstance =
-        InspectionUtility.findProcessInstances()
-            .withParentProcessInstanceKey(instanceEvent.getProcessInstanceKey())
-            .withBpmnProcessId("wrongId")
-            .findFirstProcessInstance();
-
-    // then
-    Assertions.assertThat(firstProcessInstance).isEmpty();
+  @Override
+  public ZeebeTestEngine getEngine() {
+    return engine;
   }
 }
