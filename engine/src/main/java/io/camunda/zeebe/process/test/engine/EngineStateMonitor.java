@@ -18,11 +18,16 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Monitor that monitors whether the engine is busy or in idle state. Busy state is a state in which
  * the engine is actively writing new events to the logstream. Idle state is a state in which the
- * process engine makes no progress and is waiting for new commands or events to trigger</br>
+ * process engine makes no progress and is waiting for new commands or events to trigger<br>
+ * The busy state callbacks are notified immediately as soon as a new commit is registered in the
+ * log storage.<br>
+ * The idle state callbacks are notified when the idle state has lasted <code>
+ * PERIOD * NOTIFICATION_THRESHOLD</code> ms<br>
  */
 final class EngineStateMonitor implements LogStorage.CommitListener {
 
-  public static final int GRACE_PERIOD_MS = 50;
+  private static final int GRACE_PERIOD_MS = 50;
+  private static final int NOTIFICATION_THRESHOLD = 2;
   private static final Timer TIMER = new Timer();
   private final List<Runnable> idleCallbacks = new ArrayList<>();
   private final List<Runnable> processingCallbacks = new ArrayList<>();
@@ -88,11 +93,20 @@ final class EngineStateMonitor implements LogStorage.CommitListener {
 
   private TimerTask createStateNotifier() {
     return new TimerTask() {
+
+      private int idleStateReachedCounter = 0;
+
       @Override
       public void run() {
         if (isInIdleState()) {
-          notifyIdleCallbacks();
+          idleStateReachedCounter++;
+
+          if (idleStateReachedCounter >= NOTIFICATION_THRESHOLD) {
+            notifyIdleCallbacks();
+          }
         } else {
+          idleStateReachedCounter = 0;
+
           notifyProcessingCallbacks();
         }
         if (idleCallbacks.isEmpty() && processingCallbacks.isEmpty()) {
