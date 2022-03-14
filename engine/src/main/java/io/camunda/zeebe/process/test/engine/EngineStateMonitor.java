@@ -67,8 +67,17 @@ final class EngineStateMonitor implements LogStorage.CommitListener {
   }
 
   private boolean isInIdleState() {
-    return CompletableFuture.supplyAsync(() -> streamProcessor.hasProcessingReachedTheEnd().join())
-        .join();
+    try {
+      return CompletableFuture.supplyAsync(
+              () -> streamProcessor.hasProcessingReachedTheEnd().join())
+          .join();
+    } catch (final Exception e) {
+      if (e.getMessage().contains("Actor is closed")) {
+        return true;
+      } else {
+        throw e;
+      }
+    }
   }
 
   @Override
