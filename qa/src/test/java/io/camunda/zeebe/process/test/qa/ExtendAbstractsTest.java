@@ -15,80 +15,88 @@
  */
 package io.camunda.zeebe.process.test.qa;
 
-import com.google.common.reflect.ClassPath;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.Test;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ClassInfoList;
+import java.util.stream.Stream;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class ExtendAbstractsTest {
 
-  public static final String EMBEDDED = "embedded";
-  public static final String TESTCONTAINER = "testcontainer";
   public static final Class<ZeebeProcessTest> EMBEDDED_ANNOTATION = ZeebeProcessTest.class;
   public static final Class<io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest>
       TESTCONTAINER_ANNOTATION =
           io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest.class;
-  private static final String BASE_PACKAGE = "io.camunda.zeebe.process.test.qa";
-  private static final String ABSTRACTS = "abstracts";
+  private static final String ABSTRACT_PACKAGE = "io.camunda.zeebe.process.test.qa.abstracts";
+  private static final String EMBEDDED_PACKAGE = "io.camunda.zeebe.process.test.qa.embedded";
+  private static final String TESTCONTAINER_PACKAGE =
+      "io.camunda.zeebe.process.test.qa.testcontainer";
 
-  @Test
-  void testAbstractClassesAreExtendedWithBothExtensions() throws IOException {
-    final Map<String, List<Class<?>>> classes = new HashMap<>();
-    classes.put(ABSTRACTS, new ArrayList<>());
-    classes.put(EMBEDDED, new ArrayList<>());
-    classes.put(TESTCONTAINER, new ArrayList<>());
+  private static final ClassInfoList EMBEDDED_CLASSES =
+      new ClassGraph()
+          .acceptPackages(EMBEDDED_PACKAGE)
+          .ignoreClassVisibility()
+          .enableAnnotationInfo()
+          .scan()
+          .getAllStandardClasses()
+          .filter(info -> !info.isInnerClass());
 
-    ClassPath.from(ClassLoader.getSystemClassLoader()).getTopLevelClasses().stream()
-        .filter(clazz -> clazz.getPackageName().startsWith(BASE_PACKAGE))
-        .forEach(
-            classInfo -> {
-              if (classInfo.getPackageName().contains(BASE_PACKAGE + "." + ABSTRACTS)) {
-                classes.get(ABSTRACTS).add(classInfo.load());
-              } else if (classInfo.getPackageName().contains(BASE_PACKAGE + "." + EMBEDDED)) {
-                classes.get(EMBEDDED).add(classInfo.load());
-              } else if (classInfo.getPackageName().contains(BASE_PACKAGE + "." + TESTCONTAINER)) {
-                classes.get(TESTCONTAINER).add(classInfo.load());
-              }
-            });
+  private static final ClassInfoList TESTCONTAINER_CLASSES =
+      new ClassGraph()
+          .acceptPackages(TESTCONTAINER_PACKAGE)
+          .ignoreClassVisibility()
+          .enableAnnotationInfo()
+          .scan()
+          .getAllStandardClasses()
+          .filter(info -> !info.isInnerClass());
 
-    final SoftAssertions softly = new SoftAssertions();
-    classes
-        .get(ABSTRACTS)
-        .forEach(
-            abstractClass -> {
-              assertExtendingClass(
-                  abstractClass, classes.get(EMBEDDED), EMBEDDED, EMBEDDED_ANNOTATION, softly);
-              assertExtendingClass(
-                  abstractClass,
-                  classes.get(TESTCONTAINER),
-                  TESTCONTAINER,
-                  TESTCONTAINER_ANNOTATION,
-                  softly);
-            });
-    softly.assertAll();
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("provideAbstractClasses")
+  void testAbstractClassIsExtendedWithEmbeddedExtension(
+      final String className, final Class<?> abstractClass) {
+    final ClassInfoList embeddedClass =
+        EMBEDDED_CLASSES
+            .filter(info -> info.getPackageName().contains("embedded"))
+            .filter(info -> info.extendsSuperclass(abstractClass))
+            .filter(info -> info.hasAnnotation(EMBEDDED_ANNOTATION));
+
+    assertThat(embeddedClass)
+        .withFailMessage(
+            "Expected 1 embedded implementation of %s, but found %d: %s",
+            className, embeddedClass.size(), embeddedClass)
+        .hasSize(1);
   }
 
-  private void assertExtendingClass(
-      final Class<?> abstractClass,
-      final List<Class<?>> classes,
-      final String classPackage,
-      final Class<? extends Annotation> annotation,
-      final SoftAssertions softly) {
-    final Optional<Class<?>> clazzOptional =
-        classes.stream().filter(abstractClass::isAssignableFrom).findFirst();
-    softly
-        .assertThat(clazzOptional)
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("provideAbstractClasses")
+  void testAbstractClassIsExtendedWithTestcontainerExtension(
+      final String className, final Class<?> abstractClass) {
+    final ClassInfoList testcontainerClass =
+        TESTCONTAINER_CLASSES
+            .filter(info -> info.getPackageName().contains("testcontainer"))
+            .filter(info -> info.extendsSuperclass(abstractClass))
+            .filter(info -> info.hasAnnotation(TESTCONTAINER_ANNOTATION));
+
+    assertThat(testcontainerClass)
         .withFailMessage(
-            "Package %s.%s does not contain a class extending %s",
-            BASE_PACKAGE, classPackage, abstractClass)
-        .isNotEmpty();
-    clazzOptional.ifPresent(clazz -> softly.assertThat(clazz).hasAnnotation(annotation));
+            "Expected 1 testcontainer implementation of %s, but found %d: %s",
+            className, testcontainerClass.size(), testcontainerClass)
+        .hasSize(1);
+  }
+
+  private static Stream<Arguments> provideAbstractClasses() {
+    return new ClassGraph()
+            .acceptPackages(ABSTRACT_PACKAGE)
+            .scan()
+            .getAllStandardClasses()
+            .filter(ClassInfo::isAbstract)
+            .filter(info -> !info.isInnerClass())
+            .stream()
+            .map(info -> Arguments.of(info.getSimpleName(), info.loadClass()));
   }
 }
