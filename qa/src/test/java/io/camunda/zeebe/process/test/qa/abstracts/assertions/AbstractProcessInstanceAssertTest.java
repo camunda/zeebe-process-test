@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.process.test.qa.regular.assertions;
+package io.camunda.zeebe.process.test.qa.abstracts.assertions;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -24,7 +24,6 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.IncidentAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackMessageEvent;
@@ -41,8 +40,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@ZeebeProcessTest
-class ProcessInstanceAssertTest {
+public abstract class AbstractProcessInstanceAssertTest {
 
   private static final String LINE_SEPARATOR = System.lineSeparator();
   private static final Map<String, Object> TYPED_TEST_VARIABLES = new HashMap<>();

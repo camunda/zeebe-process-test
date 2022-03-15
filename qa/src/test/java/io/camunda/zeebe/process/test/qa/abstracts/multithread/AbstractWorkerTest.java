@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.process.test.qa.regular.multithread;
+package io.camunda.zeebe.process.test.qa.abstracts.multithread;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
 import java.util.Collections;
@@ -29,31 +27,26 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 
-@ZeebeProcessTest
-public class WorkerTest {
-
-  private ZeebeClient client;
-  private ZeebeTestEngine engine;
-  private RecordStream recordStream;
+public abstract class AbstractWorkerTest {
 
   @Test
   void testJobsCanBeProcessedAsynchronouslyByWorker()
       throws InterruptedException, TimeoutException {
     // given
-    client
+    getClient()
         .newWorker()
         .jobType(ProcessPackLoopingServiceTask.JOB_TYPE)
         .handler((client, job) -> client.newCompleteCommand(job.getKey()).send())
         .open();
 
-    Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+    Utilities.deployProcess(getClient(), ProcessPackLoopingServiceTask.RESOURCE_NAME);
     final Map<String, Object> variables =
         Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 3);
 
     // when
     final ProcessInstanceResult instanceEvent =
         Utilities.startProcessInstanceWithResult(
-            engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+            getEngine(), getClient(), ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
     // then
     assertThat(instanceEvent).isStarted();
@@ -61,4 +54,8 @@ public class WorkerTest {
         .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID, 3)
         .isCompleted();
   }
+
+  public abstract ZeebeClient getClient();
+
+  public abstract ZeebeTestEngine getEngine();
 }

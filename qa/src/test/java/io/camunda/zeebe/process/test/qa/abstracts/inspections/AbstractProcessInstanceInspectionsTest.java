@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.process.test.qa.regular.inspections;
+package io.camunda.zeebe.process.test.qa.abstracts.inspections;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.inspections.InspectionUtility;
 import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
@@ -29,21 +28,18 @@ import java.util.concurrent.TimeoutException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-@ZeebeProcessTest
-public class ProcessInstanceInspectionsTest {
-
-  private ZeebeClient client;
-  private ZeebeTestEngine engine;
+public abstract class AbstractProcessInstanceInspectionsTest {
 
   @Test
   void testStartedByProcessInstanceWithProcessId() throws InterruptedException, TimeoutException {
     // given
     Utilities.deployProcesses(
-        client,
+        getClient(),
         ProcessPackCallActivity.RESOURCE_NAME,
         ProcessPackCallActivity.CALLED_RESOURCE_NAME);
     final ProcessInstanceEvent instanceEvent =
-        Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
+        Utilities.startProcessInstance(
+            getEngine(), getClient(), ProcessPackCallActivity.PROCESS_ID);
 
     // when
     final Optional<InspectedProcessInstance> firstProcessInstance =
@@ -65,11 +61,12 @@ public class ProcessInstanceInspectionsTest {
       throws InterruptedException, TimeoutException {
     // given
     Utilities.deployProcesses(
-        client,
+        getClient(),
         ProcessPackCallActivity.RESOURCE_NAME,
         ProcessPackCallActivity.CALLED_RESOURCE_NAME);
     final ProcessInstanceEvent instanceEvent =
-        Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
+        Utilities.startProcessInstance(
+            getEngine(), getClient(), ProcessPackCallActivity.PROCESS_ID);
 
     // when
     final Optional<InspectedProcessInstance> firstProcessInstance =
@@ -81,4 +78,8 @@ public class ProcessInstanceInspectionsTest {
     // then
     Assertions.assertThat(firstProcessInstance).isEmpty();
   }
+
+  public abstract ZeebeClient getClient();
+
+  public abstract ZeebeTestEngine getEngine();
 }

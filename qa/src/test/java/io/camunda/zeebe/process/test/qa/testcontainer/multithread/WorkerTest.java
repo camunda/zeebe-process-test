@@ -15,52 +15,24 @@
  */
 package io.camunda.zeebe.process.test.qa.testcontainer.multithread;
 
-import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
-import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.qa.util.Utilities;
-import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackLoopingServiceTask;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
-import org.junit.jupiter.api.Test;
+import io.camunda.zeebe.process.test.qa.abstracts.multithread.AbstractWorkerTest;
 
 @ZeebeProcessTest
-public class WorkerTest {
+class WorkerTest extends AbstractWorkerTest {
 
   private ZeebeClient client;
   private ZeebeTestEngine engine;
 
-  @Test
-  void testJobsCanBeProcessedAsynchronouslyByWorker()
-      throws InterruptedException, TimeoutException {
-    // given
-    client
-        .newWorker()
-        .jobType(ProcessPackLoopingServiceTask.JOB_TYPE)
-        .handler(
-            (client, job) -> {
-              client.newCompleteCommand(job.getKey()).send();
-            })
-        .open();
+  @Override
+  public ZeebeClient getClient() {
+    return client;
+  }
 
-    Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-    final Map<String, Object> variables =
-        Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 3);
-
-    // when
-    final ProcessInstanceResult instanceEvent =
-        Utilities.startProcessInstanceWithResult(
-            engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
-
-    // then
-    assertThat(instanceEvent).isStarted();
-    BpmnAssert.assertThat(instanceEvent)
-        .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID, 3)
-        .isCompleted();
+  @Override
+  public ZeebeTestEngine getEngine() {
+    return engine;
   }
 }

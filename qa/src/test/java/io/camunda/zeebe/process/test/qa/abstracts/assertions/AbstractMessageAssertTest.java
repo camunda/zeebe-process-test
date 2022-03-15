@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.process.test.qa.regular.assertions;
+package io.camunda.zeebe.process.test.qa.abstracts.assertions;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -22,7 +22,6 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackMessageEvent;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackMessageStartEvent;
@@ -33,8 +32,7 @@ import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@ZeebeProcessTest
-class MessageAssertTest {
+public abstract class AbstractMessageAssertTest {
 
   public static final String CORRELATION_KEY = "correlationkey";
   public static final String WRONG_CORRELATION_KEY = "wrongcorrelationkey";

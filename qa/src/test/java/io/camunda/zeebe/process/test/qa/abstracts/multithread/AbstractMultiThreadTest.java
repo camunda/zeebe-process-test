@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.process.test.qa.regular.multithread;
+package io.camunda.zeebe.process.test.qa.abstracts.multithread;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.process.test.qa.util.Utilities.deployProcess;
@@ -23,7 +23,6 @@ import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
-import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import io.camunda.zeebe.process.test.qa.util.Utilities.ProcessPackStartEndEvent;
@@ -42,12 +41,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@ZeebeProcessTest
-public class MultiThreadTest {
+public abstract class AbstractMultiThreadTest {
 
-  private ZeebeTestEngine engine;
-  private ZeebeClient client;
-  private RecordStream recordStream;
   private ExecutorService executorService;
 
   @BeforeEach
@@ -80,16 +75,22 @@ public class MultiThreadTest {
     }
   }
 
+  public abstract ZeebeClient getClient();
+
+  public abstract ZeebeTestEngine getEngine();
+
+  public abstract RecordStream getRecordStream();
+
   private class ProcessRunner implements Callable<Boolean> {
 
     @Override
     public Boolean call() throws InterruptedException, TimeoutException {
-      BpmnAssert.initRecordStream(recordStream);
+      BpmnAssert.initRecordStream(getRecordStream());
 
-      deployProcess(client, ProcessPackStartEndEvent.RESOURCE_NAME);
+      deployProcess(getClient(), ProcessPackStartEndEvent.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
-          startProcessInstance(engine, client, ProcessPackStartEndEvent.PROCESS_ID);
-      Utilities.waitForIdleState(engine, Duration.ofSeconds(1));
+          startProcessInstance(getEngine(), getClient(), ProcessPackStartEndEvent.PROCESS_ID);
+      Utilities.waitForIdleState(getEngine(), Duration.ofSeconds(1));
 
       assertThat(instanceEvent).isCompleted();
       BpmnAssert.resetRecordStream();

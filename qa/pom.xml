@@ -88,6 +88,18 @@
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>io.github.classgraph</groupId>
+      <artifactId>classgraph</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -108,7 +120,7 @@
 
   <profiles>
     <profile>
-      <id>regular</id>
+      <id>embedded</id>
       <build>
         <plugins>
           <plugin>
@@ -135,7 +147,7 @@
             <version>${plugin.version.surefire}</version>
             <configuration>
               <excludes>
-                <exclude>**/regular/**/*.java</exclude>
+                <exclude>**/embedded/**/*.java</exclude>
               </excludes>
             </configuration>
           </plugin>

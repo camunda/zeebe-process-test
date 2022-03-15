@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.camunda.zeebe.process.test.qa.testcontainer.inspections;
+package io.camunda.zeebe.process.test.qa.embedded.multithread;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
-import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.qa.abstracts.inspections.AbstractProcessEventInspectionsTest;
+import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.filters.RecordStream;
+import io.camunda.zeebe.process.test.qa.abstracts.multithread.AbstractMultiThreadTest;
 
 @ZeebeProcessTest
-class ProcessEventInspectionsTest extends AbstractProcessEventInspectionsTest {
+class MultiThreadTest extends AbstractMultiThreadTest {
 
-  private ZeebeClient client;
   private ZeebeTestEngine engine;
+  private ZeebeClient client;
+  private RecordStream recordStream;
 
   @Override
   public ZeebeClient getClient() {
@@ -34,5 +36,10 @@ class ProcessEventInspectionsTest extends AbstractProcessEventInspectionsTest {
   @Override
   public ZeebeTestEngine getEngine() {
     return engine;
+  }
+
+  @Override
+  public RecordStream getRecordStream() {
+    return recordStream;
   }
 }

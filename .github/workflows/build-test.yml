@@ -49,7 +49,7 @@ jobs:
 
       - name: Build
         id: build
-        run: mvn -B -U -P regular "-Dsurefire.rerunFailingTestsCount=5" clean install
+        run: mvn -B -U -P embedded "-Dsurefire.rerunFailingTestsCount=5" clean install
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v2
