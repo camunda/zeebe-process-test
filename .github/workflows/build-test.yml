@@ -12,19 +12,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
       - name: Set up Java environment
         uses: actions/setup-java@v3.0.0
         with:
           distribution: temurin
           java-version: 17
+          cache: maven
 
       - name: Check format
         run: mvn spotless:check
@@ -47,19 +40,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
       - name: Set up Java environment
         uses: actions/setup-java@v3.0.0
         with:
           distribution: temurin
           java-version: 17
+          cache: maven
 
       - name: Build
         id: build
@@ -85,19 +71,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
       - name: Set up Java environment
         uses: actions/setup-java@v3.0.0
         with:
           distribution: temurin
           java-version: 17 # Change to java 8 when tests are properly separated (https://github.com/camunda-cloud/zeebe-process-test/issues/195)
+          cache: maven
 
       - name: Package
         run: mvn -B -U clean package -DskipTests
