@@ -45,7 +45,7 @@
   </scm>
 
   <properties>
-    <dependency.agrona.version>1.14.0</dependency.agrona.version>
+    <dependency.agrona.version>1.15.0</dependency.agrona.version>
     <dependency.assertj.version>3.22.0</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
     <dependency.classgraph.version>4.8.141</dependency.classgraph.version>
