@@ -10,7 +10,6 @@ on:
     branches: [main]
   release:
     types: [published]
-  workflow_dispatch: { }
 jobs:
   test:
     uses: ./.github/workflows/build-test.yml
@@ -116,9 +115,8 @@ jobs:
       # to stable/major.minor.
       - name: Decide git branch
         id: branch
-        if: github.ref != 'refs/head/main'
         run: |
-          if [[ ${{ github.event.release.tag_name }} != *"alpha"* ]]; then
+          if ! [ -z "${{ github.event.release.tag_name }}" ] && [[ ${{ github.event.release.tag_name }} != *"alpha"* ]]; then
             MAJOR_MINOR_VERSION=$(echo ${{ github.event.release.tag_name }} | sed -rn 's/^([0-9]+.[0-9]+).[0-9]+.*$/\1/p')
             test -z "${MAJOR_MINOR_VERSION}" && echo "::error::Tag ${{ github.event.release.tag_name }} does not adhere to semantic versioning" && exit 1
             echo "::set-output name=branch::stable/$MAJOR_MINOR_VERSION"
