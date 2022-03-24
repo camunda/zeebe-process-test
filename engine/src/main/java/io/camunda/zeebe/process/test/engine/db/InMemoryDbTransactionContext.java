@@ -9,6 +9,7 @@ package io.camunda.zeebe.process.test.engine.db;
 
 import io.camunda.zeebe.db.TransactionContext;
 import io.camunda.zeebe.db.TransactionOperation;
+import io.camunda.zeebe.db.ZeebeDbInconsistentException;
 import io.camunda.zeebe.db.ZeebeDbTransaction;
 import java.util.TreeMap;
 
@@ -27,6 +28,8 @@ class InMemoryDbTransactionContext implements TransactionContext {
       } else {
         runInNewTransaction(operations);
       }
+    } catch (final ZeebeDbInconsistentException e) {
+      throw e;
     } catch (final Exception e) {
       throw new RuntimeException(
           "Unexpected error occurred during zeebe db transaction operation.", e);

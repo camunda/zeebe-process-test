@@ -103,4 +103,10 @@ final class InMemoryDbTransaction implements ZeebeDbTransaction, InMemoryDbState
 
     return new InMemoryDbIterator(snapshot);
   }
+
+  @Override
+  public boolean contains(final FullyQualifiedKey fullyQualifiedKey) {
+    final Bytes keyBytes = fullyQualifiedKey.getKeyBytes();
+    return transactionCache.containsKey(keyBytes) || database.containsKey(keyBytes);
+  }
 }
