@@ -10,7 +10,6 @@ on:
     branches: [main]
   release:
     types: [published]
-  workflow_dispatch: { }
 jobs:
   test:
     uses: ./.github/workflows/build-test.yml
@@ -101,13 +100,32 @@ jobs:
           gpg_private_key: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
           passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
 
+      # We want the community-action-maven-release to update the versions on the correct branch. For
+      # this reason an extra step is introduced to decide what branch we should pass to this action.
+      # In the case of a push to the main branch, or an alpha release we should update the main branch.
+      # In other cases a stable/major.minor branch should be available. In this step we first find
+      # the major and minor versions of this tag. If we found them we will set the BRANCH env variable
+      # to stable/major.minor.
+      - name: Decide git branch
+        id: branch
+        run: |
+          if ! [ -z "${{ github.event.release.tag_name }}" ] && [[ "${{ github.event.release.tag_name }}" != *"alpha"* ]]; then
+            MAJOR_MINOR_VERSION=$(echo ${{ github.event.release.tag_name }} | sed -rn 's/^([0-9]+.[0-9]+).[0-9]+.*$/\1/p')
+            test -z "${MAJOR_MINOR_VERSION}" && echo "::error::Tag ${{ github.event.release.tag_name }} does not adhere to semantic versioning" && exit 1
+            echo "::set-output name=branch::stable/$MAJOR_MINOR_VERSION"
+            echo "Branch = stable/$MAJOR_MINOR_VERSION"
+          else
+            echo "::set-output name=branch::${{ github.event.repository.default_branch }}"
+            echo "Branch = ${{ github.event.repository.default_branch }}"
+          fi
+
         # In extension-testcontainer we have a config file which contains the image tag. This is managed by maven and
         # maven will set this to the project version in this step, unless the placeholder (${project.version}) has been
         # overridden by the "Update tag in config" step. This happens when the workflow is triggered by a change on the
         # main branch.
       - name: Build and deploy to Maven
         id: release
-        uses: camunda-community-hub/community-action-maven-release@v1.0.12
+        uses: camunda-community-hub/community-action-maven-release@v1
         with:
           release-version: ${{ github.event.release.tag_name }}
           release-profile: community-action-maven-release
@@ -118,6 +136,7 @@ jobs:
           maven-gpg-passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
           maven-url: s01.oss.sonatype.org
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.branch.outputs.branch }}
 
       - name: Attach artifacts to GitHub Release (Release only)
         if: github.event.release
