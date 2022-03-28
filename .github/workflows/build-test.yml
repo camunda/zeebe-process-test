@@ -75,7 +75,7 @@ jobs:
         uses: actions/setup-java@v3.0.0
         with:
           distribution: temurin
-          java-version: 17 # Change to java 8 when tests are properly separated (https://github.com/camunda-cloud/zeebe-process-test/issues/195)
+          java-version: 17 # Change to java 8 when tests are properly separated (https://github.com/camunda/zeebe-process-test/issues/195)
           cache: maven
 
       - name: Package
