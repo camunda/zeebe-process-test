@@ -48,7 +48,7 @@
     <dependency.agrona.version>1.15.0</dependency.agrona.version>
     <dependency.assertj.version>3.22.0</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
-    <dependency.classgraph.version>4.8.141</dependency.classgraph.version>
+    <dependency.classgraph.version>4.8.143</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.11.0</dependency.errorprone.version>
     <dependency.eze.version>0.6.0</dependency.eze.version>
