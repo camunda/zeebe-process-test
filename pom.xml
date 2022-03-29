@@ -88,7 +88,7 @@
     <plugin.version.license>4.1</plugin.version.license>
     <plugin.version.maven-enforcer>3.0.0</plugin.version.maven-enforcer>
     <plugin.version.os-maven>1.7.0</plugin.version.os-maven>
-    <plugin.version.spotless>2.21.0</plugin.version.spotless>
+    <plugin.version.spotless>2.22.0</plugin.version.spotless>
     <plugin.version.surefire>3.0.0-M5</plugin.version.surefire>
 
     <version.grpc>1.45.0</version.grpc>
