@@ -8,9 +8,11 @@
 package io.camunda.zeebe.process.test.engine.db;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.camunda.zeebe.db.ColumnFamily;
 import io.camunda.zeebe.db.ZeebeDb;
+import io.camunda.zeebe.db.ZeebeDbInconsistentException;
 import io.camunda.zeebe.db.impl.DbLong;
 import io.camunda.zeebe.db.impl.DefaultColumnFamily;
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   private DbLong value;
 
   @BeforeEach
-  void setup() throws Exception {
+  void setup() {
     zeebeDb = dbFactory.createDb();
 
     key = new DbLong();
@@ -38,13 +40,13 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  void shouldPutValue() {
+  void shouldInsertValue() {
     // given
     key.wrapLong(1213);
     value.wrapLong(255);
 
     // when
-    columnFamily.put(key, value);
+    columnFamily.insert(key, value);
     value.wrapLong(221);
 
     // then
@@ -55,6 +57,22 @@ public final class InMemoryZeebeDbColumnFamilyTest {
 
     // zbLong and value are referencing the same object
     assertThat(value.getValue()).isEqualTo(255);
+  }
+
+  @Test
+  void shouldThrowExceptionWhenInsertingDuplicateKey() {
+    // given
+    key.wrapLong(1213);
+    value.wrapLong(255);
+    columnFamily.insert(key, value);
+
+    // when
+    value.wrapLong(221);
+
+    // then
+    assertThatThrownBy(() -> columnFamily.insert(key, value))
+        .isInstanceOf(ZeebeDbInconsistentException.class)
+        .hasMessage("Key DbLong{1213} in ColumnFamily DEFAULT already exists");
   }
 
   @Test
@@ -70,12 +88,12 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  void shouldPutMultipleValues() {
+  void shouldInsertMultipleValues() {
     // given
-    putKeyValuePair(1213, 255);
+    insertKeyValuePair(1213, 255);
 
     // when
-    putKeyValuePair(456789, 12345);
+    insertKeyValuePair(456789, 12345);
     value.wrapLong(221);
 
     // then
@@ -93,13 +111,13 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  void shouldPutAndGetMultipleValues() {
+  void shouldInsertAndGetMultipleValues() {
     // given
-    putKeyValuePair(1213, 255);
+    insertKeyValuePair(1213, 255);
 
     // when
     DbLong longValue = columnFamily.get(key);
-    putKeyValuePair(456789, 12345);
+    insertKeyValuePair(456789, 12345);
     value.wrapLong(221);
 
     // then
@@ -118,9 +136,64 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
+  void shouldUpdateValue() {
+    // given
+    key.wrapLong(1213);
+    value.wrapLong(255);
+    columnFamily.insert(key, value);
+
+    // when
+    value.wrapLong(221);
+    columnFamily.update(key, value);
+
+    // then
+    assertThat(columnFamily.get(key).getValue()).isEqualTo(221);
+  }
+
+  @Test
+  void shouldThrowExceptionWhenUpdatingNonExistingValue() {
+    // given
+    key.wrapLong(1213);
+    value.wrapLong(255);
+
+    // when then
+    assertThatThrownBy(() -> columnFamily.update(key, value))
+        .isInstanceOf(ZeebeDbInconsistentException.class)
+        .hasMessage("Key DbLong{1213} in ColumnFamily DEFAULT does not exist");
+  }
+
+  @Test
+  void shouldUpsertNonExistingKey() {
+    // given
+    key.wrapLong(1213);
+    value.wrapLong(255);
+
+    // when
+    columnFamily.upsert(key, value);
+
+    // then
+    assertThat(columnFamily.get(key).getValue()).isEqualTo(255);
+  }
+
+  @Test
+  void shouldUpsertExistingKey() {
+    // given
+    key.wrapLong(1213);
+    value.wrapLong(255);
+    columnFamily.insert(key, value);
+
+    // when
+    value.wrapLong(221);
+    columnFamily.upsert(key, value);
+
+    // then
+    assertThat(columnFamily.get(key).getValue()).isEqualTo(221);
+  }
+
+  @Test
   void shouldCheckForExistence() {
     // given
-    putKeyValuePair(1213, 255);
+    insertKeyValuePair(1213, 255);
 
     // when
     final boolean exists = columnFamily.exists(key);
@@ -142,12 +215,12 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  void shouldDelete() {
+  void shouldDeleteExisting() {
     // given
-    putKeyValuePair(1213, 255);
+    insertKeyValuePair(1213, 255);
 
     // when
-    columnFamily.delete(key);
+    columnFamily.deleteExisting(key);
 
     // then
     final boolean exists = columnFamily.exists(key);
@@ -158,13 +231,13 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  void shouldNotDeleteDifferentKey() {
+  void shouldNotDeleteExistingDifferentKey() {
     // given
-    putKeyValuePair(1213, 255);
+    insertKeyValuePair(1213, 255);
 
     // when
     key.wrapLong(700);
-    columnFamily.delete(key);
+    columnFamily.deleteIfExists(key);
 
     // then
     key.wrapLong(1213);
@@ -179,11 +252,11 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   @Test
   void shouldUseForeachValue() {
     // given
-    putKeyValuePair(4567, 123);
-    putKeyValuePair(6734, 921);
-    putKeyValuePair(1213, 255);
-    putKeyValuePair(1, Short.MAX_VALUE);
-    putKeyValuePair(Short.MAX_VALUE, 1);
+    insertKeyValuePair(4567, 123);
+    insertKeyValuePair(6734, 921);
+    insertKeyValuePair(1213, 255);
+    insertKeyValuePair(1, Short.MAX_VALUE);
+    insertKeyValuePair(Short.MAX_VALUE, 1);
 
     // when
     final List<Long> values = new ArrayList<>();
@@ -196,11 +269,11 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   @Test
   void shouldUseForeachPair() {
     // given
-    putKeyValuePair(4567, 123);
-    putKeyValuePair(6734, 921);
-    putKeyValuePair(1213, 255);
-    putKeyValuePair(1, Short.MAX_VALUE);
-    putKeyValuePair(Short.MAX_VALUE, 1);
+    insertKeyValuePair(4567, 123);
+    insertKeyValuePair(6734, 921);
+    insertKeyValuePair(1213, 255);
+    insertKeyValuePair(1, Short.MAX_VALUE);
+    insertKeyValuePair(Short.MAX_VALUE, 1);
 
     // when
     final List<Long> keys = new ArrayList<>();
@@ -217,16 +290,16 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  void shouldDeleteOnForeachPair() {
+  void shouldDeleteExistingOnForeachPair() {
     // given
-    putKeyValuePair(4567, 123);
-    putKeyValuePair(6734, 921);
-    putKeyValuePair(1213, 255);
-    putKeyValuePair(1, Short.MAX_VALUE);
-    putKeyValuePair(Short.MAX_VALUE, 1);
+    insertKeyValuePair(4567, 123);
+    insertKeyValuePair(6734, 921);
+    insertKeyValuePair(1213, 255);
+    insertKeyValuePair(1, Short.MAX_VALUE);
+    insertKeyValuePair(Short.MAX_VALUE, 1);
 
     // when
-    columnFamily.forEach((key, value) -> columnFamily.delete(key));
+    columnFamily.forEach((key, value) -> columnFamily.deleteExisting(key));
 
     final List<Long> keys = new ArrayList<>();
     final List<Long> values = new ArrayList<>();
@@ -258,11 +331,11 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   @Test
   void shouldUseWhileTrue() {
     // given
-    putKeyValuePair(4567, 123);
-    putKeyValuePair(6734, 921);
-    putKeyValuePair(1213, 255);
-    putKeyValuePair(1, Short.MAX_VALUE);
-    putKeyValuePair(Short.MAX_VALUE, 1);
+    insertKeyValuePair(4567, 123);
+    insertKeyValuePair(6734, 921);
+    insertKeyValuePair(1213, 255);
+    insertKeyValuePair(1, Short.MAX_VALUE);
+    insertKeyValuePair(Short.MAX_VALUE, 1);
 
     // when
     final List<Long> keys = new ArrayList<>();
@@ -281,18 +354,18 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
-  void shouldDeleteWhileTrue() {
+  void shouldDeleteExistingWhileTrue() {
     // given
-    putKeyValuePair(4567, 123);
-    putKeyValuePair(6734, 921);
-    putKeyValuePair(1213, 255);
-    putKeyValuePair(1, Short.MAX_VALUE);
-    putKeyValuePair(Short.MAX_VALUE, 1);
+    insertKeyValuePair(4567, 123);
+    insertKeyValuePair(6734, 921);
+    insertKeyValuePair(1213, 255);
+    insertKeyValuePair(1, Short.MAX_VALUE);
+    insertKeyValuePair(Short.MAX_VALUE, 1);
 
     // when
     columnFamily.whileTrue(
         (key, value) -> {
-          columnFamily.delete(key);
+          columnFamily.deleteExisting(key);
           return key.getValue() != 4567;
         });
 
@@ -310,19 +383,50 @@ public final class InMemoryZeebeDbColumnFamilyTest {
   }
 
   @Test
+  void shouldDeleteKeyIfExists() {
+    // given
+    insertKeyValuePair(1213, 255);
+
+    // when
+    columnFamily.deleteIfExists(key);
+
+    // then
+    final boolean exists = columnFamily.exists(key);
+    assertThat(exists).isFalse();
+
+    final DbLong zbLong = columnFamily.get(key);
+    assertThat(zbLong).isNull();
+  }
+
+  @Test
+  void shouldDeleteKeyIfNotExists() {
+    // given
+
+    // when
+    columnFamily.deleteIfExists(key);
+
+    // then
+    final boolean exists = columnFamily.exists(key);
+    assertThat(exists).isFalse();
+
+    final DbLong zbLong = columnFamily.get(key);
+    assertThat(zbLong).isNull();
+  }
+
+  @Test
   void shouldCheckIfEmpty() {
     assertThat(columnFamily.isEmpty()).isTrue();
 
-    putKeyValuePair(1, 10);
+    insertKeyValuePair(1, 10);
     assertThat(columnFamily.isEmpty()).isFalse();
 
-    columnFamily.delete(key);
+    columnFamily.deleteExisting(key);
     assertThat(columnFamily.isEmpty()).isTrue();
   }
 
-  private void putKeyValuePair(final int key, final int value) {
+  private void insertKeyValuePair(final int key, final int value) {
     this.key.wrapLong(key);
     this.value.wrapLong(value);
-    columnFamily.put(this.key, this.value);
+    columnFamily.insert(this.key, this.value);
   }
 }

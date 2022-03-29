@@ -7,7 +7,12 @@
  */
 package io.camunda.zeebe.process.test.engine.db;
 
-import io.camunda.zeebe.db.*;
+import io.camunda.zeebe.db.ColumnFamily;
+import io.camunda.zeebe.db.DbKey;
+import io.camunda.zeebe.db.DbValue;
+import io.camunda.zeebe.db.KeyValuePairVisitor;
+import io.camunda.zeebe.db.TransactionContext;
+import io.camunda.zeebe.db.ZeebeDbInconsistentException;
 import io.camunda.zeebe.util.buffer.BufferUtil;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,7 +55,37 @@ final class InMemoryDbColumnFamily<
   }
 
   @Override
-  public void put(final KeyType key, final ValueType value) {
+  public void insert(final KeyType key, final ValueType value) {
+    ensureInOpenTransaction(
+        context,
+        state -> {
+          final FullyQualifiedKey fullyQualifiedKey = new FullyQualifiedKey(columnFamily, key);
+          if (state.contains(fullyQualifiedKey)) {
+            throw new ZeebeDbInconsistentException(
+                "Key " + keyInstance + " in ColumnFamily " + columnFamily + " already exists");
+          } else {
+            state.put(fullyQualifiedKey, value);
+          }
+        });
+  }
+
+  @Override
+  public void update(final KeyType key, final ValueType value) {
+    ensureInOpenTransaction(
+        context,
+        state -> {
+          final FullyQualifiedKey fullyQualifiedKey = new FullyQualifiedKey(columnFamily, key);
+          if (state.contains(fullyQualifiedKey)) {
+            state.put(fullyQualifiedKey, value);
+          } else {
+            throw new ZeebeDbInconsistentException(
+                "Key " + keyInstance + " in ColumnFamily " + columnFamily + " does not exist");
+          }
+        });
+  }
+
+  @Override
+  public void upsert(final KeyType key, final ValueType value) {
     ensureInOpenTransaction(
         context, state -> state.put(new FullyQualifiedKey(columnFamily, key), value));
   }
@@ -71,17 +106,6 @@ final class InMemoryDbColumnFamily<
     return null;
   }
 
-  private DirectBuffer getValue(final InMemoryDbState state, final DbKey key) {
-    final FullyQualifiedKey fullyQualifiedKey = new FullyQualifiedKey(columnFamily, key);
-    final byte[] value = state.get(fullyQualifiedKey);
-
-    if (value != null) {
-      return BufferUtil.wrapArray(value);
-    } else {
-      return null;
-    }
-  }
-
   @Override
   public void forEach(final Consumer<ValueType> consumer) {
     forEach(context, (key, value) -> consumer.accept(value));
@@ -92,19 +116,9 @@ final class InMemoryDbColumnFamily<
     forEach(context, consumer);
   }
 
-  private void forEach(
-      final TransactionContext context, final BiConsumer<KeyType, ValueType> consumer) {
-    whileEqualPrefix(context, keyInstance, valueInstance, consumer);
-  }
-
   @Override
   public void whileTrue(final KeyValuePairVisitor<KeyType, ValueType> visitor) {
     whileTrue(context, visitor);
-  }
-
-  private void whileTrue(
-      final TransactionContext context, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
-    whileEqualPrefix(context, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
   }
 
   @Override
@@ -117,6 +131,74 @@ final class InMemoryDbColumnFamily<
   public void whileEqualPrefix(
       final DbKey keyPrefix, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
     whileEqualPrefix(context, keyPrefix, keyInstance, valueInstance, visitor);
+  }
+
+  @Override
+  public void deleteExisting(final KeyType key) {
+    ensureInOpenTransaction(
+        context,
+        state -> {
+          final FullyQualifiedKey fullyQualifiedKey = new FullyQualifiedKey(columnFamily, key);
+          if (state.contains(fullyQualifiedKey)) {
+            state.delete(fullyQualifiedKey);
+          } else {
+            throw new ZeebeDbInconsistentException(
+                "Key " + keyInstance + " in ColumnFamily " + columnFamily + " does not exist");
+          }
+        });
+  }
+
+  @Override
+  public void deleteIfExists(final KeyType key) {
+    ensureInOpenTransaction(
+        context,
+        state -> {
+          final FullyQualifiedKey fullyQualifiedKey = new FullyQualifiedKey(columnFamily, key);
+          state.delete(fullyQualifiedKey);
+        });
+  }
+
+  @Override
+  public boolean exists(final KeyType key) {
+    final AtomicBoolean exists = new AtomicBoolean(true);
+
+    ensureInOpenTransaction(context, state -> exists.set(getValue(state, key) != null));
+
+    return exists.get();
+  }
+
+  @Override
+  public boolean isEmpty() {
+    final AtomicBoolean isEmpty = new AtomicBoolean(true);
+    whileEqualPrefix(
+        DbNullKey.INSTANCE,
+        (key, value) -> {
+          isEmpty.set(false);
+          return false;
+        });
+
+    return isEmpty.get();
+  }
+
+  private DirectBuffer getValue(final InMemoryDbState state, final DbKey key) {
+    final FullyQualifiedKey fullyQualifiedKey = new FullyQualifiedKey(columnFamily, key);
+    final byte[] value = state.get(fullyQualifiedKey);
+
+    if (value != null) {
+      return BufferUtil.wrapArray(value);
+    } else {
+      return null;
+    }
+  }
+
+  private void forEach(
+      final TransactionContext context, final BiConsumer<KeyType, ValueType> consumer) {
+    whileEqualPrefix(context, keyInstance, valueInstance, consumer);
+  }
+
+  private void whileTrue(
+      final TransactionContext context, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    whileEqualPrefix(context, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
   }
 
   private void whileEqualPrefix(
@@ -169,34 +251,6 @@ final class InMemoryDbColumnFamily<
                     }
                   }
                 }));
-  }
-
-  @Override
-  public void delete(final KeyType key) {
-    final FullyQualifiedKey fullyQualifiedKey = new FullyQualifiedKey(columnFamily, key);
-    ensureInOpenTransaction(context, state -> state.delete(fullyQualifiedKey));
-  }
-
-  @Override
-  public boolean exists(final KeyType key) {
-    final AtomicBoolean exists = new AtomicBoolean(true);
-
-    ensureInOpenTransaction(context, state -> exists.set(getValue(state, key) != null));
-
-    return exists.get();
-  }
-
-  @Override
-  public boolean isEmpty() {
-    final AtomicBoolean isEmpty = new AtomicBoolean(true);
-    whileEqualPrefix(
-        DbNullKey.INSTANCE,
-        (key, value) -> {
-          isEmpty.set(false);
-          return false;
-        });
-
-    return isEmpty.get();
   }
 
   private static final class Visitor<KeyType extends DbKey, ValueType extends DbValue>

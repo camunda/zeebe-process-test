@@ -17,4 +17,6 @@ interface InMemoryDbState {
   void delete(FullyQualifiedKey fullyQualifiedKey);
 
   InMemoryDbIterator newIterator();
+
+  boolean contains(FullyQualifiedKey fullyQualifiedKey);
 }

@@ -16,6 +16,7 @@
 package io.camunda.zeebe.process.test.extension.testcontainer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
@@ -30,7 +31,7 @@ import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.Sta
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.StopEngineRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForBusyStateRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.WaitForIdleStateRequest;
-import io.camunda.zeebe.protocol.jackson.record.AbstractRecord;
+import io.camunda.zeebe.protocol.jackson.ZeebeProtocolModule;
 import io.camunda.zeebe.protocol.record.Record;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -170,7 +171,7 @@ public class ContainerizedEngine implements ZeebeTestEngine {
   public List<Record<?>> getRecords() {
     final ManagedChannel channel = getChannel();
     final EngineControlBlockingStub stub = getStub(channel);
-    final ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper().registerModule(new ZeebeProtocolModule());
     final List<Record<?>> mappedRecords = new ArrayList<>();
 
     final GetRecordsRequest request = GetRecordsRequest.newBuilder().build();
@@ -180,7 +181,7 @@ public class ContainerizedEngine implements ZeebeTestEngine {
       final RecordResponse recordResponse = response.next();
       try {
         final Record<?> record =
-            mapper.readValue(recordResponse.getRecordJson(), AbstractRecord.class);
+            mapper.readValue(recordResponse.getRecordJson(), new TypeReference<Record<?>>() {});
         mappedRecords.add(record);
       } catch (final JsonProcessingException e) {
         throw new RuntimeException(e);

@@ -45,7 +45,7 @@ public final class DbStringColumnFamilyTest {
     value.wrapString("baring");
 
     // when
-    columnFamily.put(key, value);
+    columnFamily.upsert(key, value);
     value.wrapString("yes");
 
     // then
@@ -223,6 +223,6 @@ public final class DbStringColumnFamilyTest {
   private void putKeyValuePair(final String key, final String value) {
     this.key.wrapString(key);
     this.value.wrapString(value);
-    columnFamily.put(this.key, this.value);
+    columnFamily.upsert(this.key, this.value);
   }
 }
