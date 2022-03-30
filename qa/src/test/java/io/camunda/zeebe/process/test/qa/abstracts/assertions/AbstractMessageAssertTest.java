@@ -116,7 +116,12 @@ public abstract class AbstractMessageAssertTest {
       // when
       final PublishMessageResponse response =
           Utilities.sendMessage(
-              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
+              engine,
+              client,
+              ProcessPackMessageEvent.MESSAGE_NAME,
+              CORRELATION_KEY,
+              timeToLive,
+              Collections.emptyMap());
       Utilities.increaseTime(engine, timeToLive.plusMinutes(1));
 
       // then
@@ -285,7 +290,12 @@ public abstract class AbstractMessageAssertTest {
       // when
       final PublishMessageResponse response =
           Utilities.sendMessage(
-              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY, timeToLive);
+              engine,
+              client,
+              ProcessPackMessageEvent.MESSAGE_NAME,
+              CORRELATION_KEY,
+              timeToLive,
+              Collections.emptyMap());
       Utilities.increaseTime(engine, timeToLive.plusMinutes(1));
 
       // then
