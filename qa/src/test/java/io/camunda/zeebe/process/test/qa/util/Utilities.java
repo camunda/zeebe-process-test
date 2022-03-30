@@ -29,6 +29,7 @@ import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +123,8 @@ public class Utilities {
       final String messageName,
       final String correlationKey)
       throws InterruptedException, TimeoutException {
-    return sendMessage(engine, client, messageName, correlationKey, Duration.ofMinutes(1));
+    return sendMessage(
+        engine, client, messageName, correlationKey, Duration.ofMinutes(1), Collections.emptyMap());
   }
 
   public static PublishMessageResponse sendMessage(
@@ -130,7 +132,19 @@ public class Utilities {
       final ZeebeClient client,
       final String messageName,
       final String correlationKey,
-      final Duration timeToLive)
+      final Map<String, Object> variables)
+      throws InterruptedException, TimeoutException {
+    return sendMessage(
+        engine, client, messageName, correlationKey, Duration.ofMinutes(1), variables);
+  }
+
+  public static PublishMessageResponse sendMessage(
+      final ZeebeTestEngine engine,
+      final ZeebeClient client,
+      final String messageName,
+      final String correlationKey,
+      final Duration timeToLive,
+      final Map<String, Object> variables)
       throws InterruptedException, TimeoutException {
     final PublishMessageResponse response =
         client
@@ -138,6 +152,7 @@ public class Utilities {
             .messageName(messageName)
             .correlationKey(correlationKey)
             .timeToLive(timeToLive)
+            .variables(variables)
             .send()
             .join();
     waitForIdleState(engine, Duration.ofSeconds(1));
