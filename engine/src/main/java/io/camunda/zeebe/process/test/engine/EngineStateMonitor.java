@@ -36,8 +36,8 @@ import java.util.TimerTask;
  */
 final class EngineStateMonitor implements LogStorage.CommitListener, StreamProcessorListener {
 
+  public static final int GRACE_PERIOD_MS = 50;
   private static final Timer TIMER = new Timer();
-  public static final int GRACE_PERIOD = 30;
   private final List<Runnable> idleCallbacks = new ArrayList<>();
   private final List<Runnable> processingCallbacks = new ArrayList<>();
   private final LogStreamReader reader;
@@ -88,8 +88,8 @@ final class EngineStateMonitor implements LogStorage.CommitListener, StreamProce
   private void scheduleIdleStateNotification() {
     idleStateNotifier = createIdleStateNotifier();
     try {
-      TIMER.schedule(idleStateNotifier, GRACE_PERIOD);
-    } catch (IllegalStateException e) {
+      TIMER.schedule(idleStateNotifier, GRACE_PERIOD_MS);
+    } catch (final IllegalStateException e) {
       // thrown - among others - if task was cancelled before it could be scheduled
       // do nothing in this case
     }
