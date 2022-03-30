@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.process.test.filters.IncidentRecordStreamFilter;
+import io.camunda.zeebe.process.test.filters.ProcessInstanceRecordStreamFilter;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
@@ -596,5 +598,41 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
         .withRejectionType(RejectionType.NULL_VAL)
         .withIntent(IncidentIntent.CREATED)
         .withProcessInstanceKey(actual);
+  }
+
+  /**
+   * Extracts the latest called process. This will result in a failed assertion when no process has
+   * been called.
+   *
+   * @return {@link ProcessInstanceAssert} for the called process
+   */
+  public ProcessInstanceAssert extractingLatestCalledProcess(final String processId) {
+    hasCalledProcess(processId);
+
+    final Record<ProcessInstanceRecordValue> latestCalledProcessRecord =
+        getCalledProcessRecords().stream()
+            .reduce((first, second) -> second)
+            .orElseThrow(NoSuchElementException::new);
+
+    return new ProcessInstanceAssert(latestCalledProcessRecord.getKey(), recordStream);
+  }
+
+  /**
+   * Asserts whether this process has called another process
+   *
+   * @param processId The id of the process that should be called
+   * @return this {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert hasCalledProcess(final String processId) {
+    final boolean hasCalledProcess = getCalledProcessRecords().stream().findAny().isPresent();
+
+    assertThat(hasCalledProcess)
+        .withFailMessage("No process with id `%s` was called from this process", processId)
+        .isTrue();
+    return this;
+  }
+
+  private ProcessInstanceRecordStreamFilter getCalledProcessRecords() {
+    return StreamFilter.processInstance(recordStream).withParentProcessInstanceKey(actual);
   }
 }
