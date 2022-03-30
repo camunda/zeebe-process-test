@@ -248,4 +248,24 @@ public class Utilities {
     public static final String RESOURCE_NAME = "start-end.bpmn";
     public static final String PROCESS_ID = "start-end";
   }
+
+  public static final class ProcessPackPRCreated {
+
+    public static final String RESOURCE_NAME = "pr-created.bpmn";
+    public static final String PROCESS_ID = "prCreatedProcess";
+    public static final String PR_CREATED_MSG = "prCreated";
+    public static final String REVIEW_RECEIVED_MSG = "reviewReceived";
+    public static final String PR_ID_VAR = "prId";
+    public static final String REVIEW_RESULT_VAR = "reviewResult";
+    public static final String REQUEST_REVIEW = "requestReview";
+    public static final String REMIND_REVIEWER = "remindReviewer";
+    public static final String MAKE_CHANGES = "makeChanges";
+    public static final String MERGE_CODE = "mergeCode";
+    public static final String DEPLOY_SNAPSHOT = "deploySnapshot";
+    public static final String TRIGGER_TESTS = "triggerTests";
+
+    public static final String AUTOMATED_TESTS_RESOURCE_NAME = "automated-tests.bpmn";
+    public static final String AUTOMATED_TESTS_PROCESS_ID = "automatedTestsProcess";
+    public static final String AUTOMATED_TESTS_RUN_TESTS = "runTests";
+  }
 }
