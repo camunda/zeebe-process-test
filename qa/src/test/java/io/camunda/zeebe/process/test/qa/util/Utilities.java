@@ -182,6 +182,12 @@ public class Utilities {
             .stream()
             .collect(Collectors.toList());
 
+    StreamFilter.jobRecords(RecordStream.of(engine.getRecordStreamSource()))
+        .withElementId(taskId)
+        .withIntent(JobIntent.COMPLETED)
+        .stream()
+        .forEach(record -> records.removeIf(r -> record.getKey() == r.getKey()));
+
     if (!records.isEmpty()) {
       final Record<JobRecordValue> lastRecord;
       lastRecord = records.get(records.size() - 1);
