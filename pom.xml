@@ -65,6 +65,7 @@
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.8.0</dependency.proto.version>
     <dependency.protobuf.version>3.19.4</dependency.protobuf.version>
+    <dependency.revapi.version>0.26.1</dependency.revapi.version>
     <dependency.scala.version>2.13.8</dependency.scala.version>
     <dependency.slf4j.version>1.7.36</dependency.slf4j.version>
     <dependency.snakeyaml.version>1.30</dependency.snakeyaml.version>
@@ -88,6 +89,7 @@
     <plugin.version.license>4.1</plugin.version.license>
     <plugin.version.maven-enforcer>3.0.0</plugin.version.maven-enforcer>
     <plugin.version.os-maven>1.7.0</plugin.version.os-maven>
+    <plugin.version.revapi>0.14.6</plugin.version.revapi>
     <plugin.version.spotless>2.22.0</plugin.version.spotless>
     <plugin.version.surefire>3.0.0-M5</plugin.version.surefire>
 
@@ -430,8 +432,47 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.revapi</groupId>
+          <artifactId>revapi-maven-plugin</artifactId>
+          <version>${plugin.version.revapi}</version>
+          <configuration>
+            <!-- expands maven properties in the configuration files -->
+            <expandProperties>true</expandProperties>
+            <!-- allows us to pre-defined ignored-changes, even when missing -->
+            <failOnMissingConfigurationFiles>false</failOnMissingConfigurationFiles>
+            <analysisConfigurationFiles>
+              <!-- look for an optional relative configuration file -->
+              <configurationFile>
+                <path>revapi.json</path>
+              </configurationFile>
+              <!-- will pick up a project relative ignored-changes file -->
+              <configurationFile>
+                <path>ignored-changes.json</path>
+              </configurationFile>
+            </analysisConfigurationFiles>
+            <oldVersion>LATEST</oldVersion>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.revapi</groupId>
+              <artifactId>revapi-java</artifactId>
+              <version>${dependency.revapi.version}</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <phase>verify</phase>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
