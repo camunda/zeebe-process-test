@@ -421,6 +421,13 @@
               </sortPom>
             </pom>
           </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>com.google.googlejavaformat</groupId>
+              <artifactId>google-java-format</artifactId>
+              <version>${plugin.version.googlejavaformat}</version>
+            </dependency>
+          </dependencies>
           <executions>
             <execution>
               <goals>
