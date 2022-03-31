@@ -6,6 +6,7 @@ on:
     workflows: [Build and test]
     types:
       - completed
+    workflow_dispatch: { }
 jobs:
   unit-test-results:
     name: Unit Test Results

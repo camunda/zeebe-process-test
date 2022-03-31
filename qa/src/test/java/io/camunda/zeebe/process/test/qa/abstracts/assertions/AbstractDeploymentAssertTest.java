@@ -15,6 +15,7 @@
  */
 package io.camunda.zeebe.process.test.qa.abstracts.assertions;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.camunda.zeebe.client.ZeebeClient;
@@ -51,6 +52,8 @@ public abstract class AbstractDeploymentAssertTest {
       BpmnAssert.assertThat(deploymentEvent)
           .containsProcessesByBpmnProcessId(
               ProcessPackLoopingServiceTask.PROCESS_ID, ProcessPackMultipleTasks.PROCESS_ID);
+
+      assertThat(false).isTrue();
     }
 
     @Test
