@@ -78,11 +78,14 @@
     <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
     <nexus.snapshot.repository>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</nexus.snapshot.repository>
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
-    <plugin.version.dependency>3.3.0</plugin.version.dependency>
 
+    <plugin.version.dependency>3.3.0</plugin.version.dependency>
     <plugin.version.flatten>1.2.7</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
+
+    <!-- when updating this version, also change it in .idea/externalDependencies.xml -->
     <plugin.version.googlejavaformat>1.12.0</plugin.version.googlejavaformat>
+
     <plugin.version.jacoco>0.8.7</plugin.version.jacoco>
     <plugin.version.javadoc>3.3.2</plugin.version.javadoc>
     <plugin.version.license>4.1</plugin.version.license>
@@ -421,6 +424,13 @@
               </sortPom>
             </pom>
           </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>com.google.googlejavaformat</groupId>
+              <artifactId>google-java-format</artifactId>
+              <version>${plugin.version.googlejavaformat}</version>
+            </dependency>
+          </dependencies>
           <executions>
             <execution>
               <goals>
