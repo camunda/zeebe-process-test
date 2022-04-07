@@ -75,7 +75,7 @@ jobs:
         uses: actions/setup-java@v3.1.0
         with:
           distribution: temurin
-          java-version: 17 # Change to java 8 when tests are properly separated (https://github.com/camunda/zeebe-process-test/issues/195)
+          java-version: 17
           cache: maven
 
       - name: Package
@@ -96,9 +96,19 @@ jobs:
           IMAGE_NAME_KEY: container.image.name
           IMAGE_TAG_KEY: container.image.tag
 
+      - name: Downgrade Java environment
+        uses: actions/setup-java@v3.0.0
+        with:
+          distribution: temurin
+          java-version: 8
+          cache: maven
+
+      # Deleting .mvn/jvm.config is a workaround for JDK8, which does not support the --add-exports options
       - name: Build
         id: build
-        run: mvn -B -U -P testcontainer "-Dsurefire.rerunFailingTestsCount=5" install
+        run: |
+          rm .mvn/jvm.config
+          mvn -B -U -pl :zeebe-process-test-qa -am -P testcontainer "-Dsurefire.rerunFailingTestsCount=5" install -DskipChecks
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v3
