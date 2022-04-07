@@ -37,7 +37,7 @@ import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.qa.util.Utilities;
 import java.time.Duration;
-import java.util.Map;
+import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,12 +73,17 @@ public abstract class AbstractPrCreatedTest {
     // Given
     final String prId = "123";
     final PublishMessageResponse prCreatedResponse =
-        Utilities.sendMessage(engine, client, PR_CREATED_MSG, "", Map.of(PR_ID_VAR, prId));
+        Utilities.sendMessage(
+            engine, client, PR_CREATED_MSG, "", Collections.singletonMap(PR_ID_VAR, prId));
 
     // When
     completeTask(REQUEST_REVIEW);
     Utilities.sendMessage(
-        engine, client, REVIEW_RECEIVED_MSG, prId, Map.of(REVIEW_RESULT_VAR, "approved"));
+        engine,
+        client,
+        REVIEW_RECEIVED_MSG,
+        prId,
+        Collections.singletonMap(REVIEW_RESULT_VAR, "approved"));
     completeTask(AUTOMATED_TESTS_RUN_TESTS);
     completeTask(AUTOMATED_TESTS_RUN_TESTS);
     completeTask(AUTOMATED_TESTS_RUN_TESTS);
@@ -103,7 +108,8 @@ public abstract class AbstractPrCreatedTest {
     // Given
     final String prId = "123";
     final PublishMessageResponse prCreatedResponse =
-        Utilities.sendMessage(engine, client, PR_CREATED_MSG, "", Map.of(PR_ID_VAR, prId));
+        Utilities.sendMessage(
+            engine, client, PR_CREATED_MSG, "", Collections.singletonMap(PR_ID_VAR, prId));
 
     // When
     completeTask(REQUEST_REVIEW);
@@ -113,7 +119,11 @@ public abstract class AbstractPrCreatedTest {
     Utilities.increaseTime(engine, Duration.ofDays(1));
     completeTask(REMIND_REVIEWER);
     Utilities.sendMessage(
-        engine, client, REVIEW_RECEIVED_MSG, prId, Map.of(REVIEW_RESULT_VAR, "approved"));
+        engine,
+        client,
+        REVIEW_RECEIVED_MSG,
+        prId,
+        Collections.singletonMap(REVIEW_RESULT_VAR, "approved"));
     completeTask(MERGE_CODE);
     completeTask(DEPLOY_SNAPSHOT);
 
@@ -131,7 +141,8 @@ public abstract class AbstractPrCreatedTest {
     // Given
     final String prId = "123";
     final PublishMessageResponse prCreatedResponse =
-        Utilities.sendMessage(engine, client, PR_CREATED_MSG, "", Map.of(PR_ID_VAR, prId));
+        Utilities.sendMessage(
+            engine, client, PR_CREATED_MSG, "", Collections.singletonMap(PR_ID_VAR, prId));
 
     // When
     completeTask(REQUEST_REVIEW);
@@ -139,11 +150,19 @@ public abstract class AbstractPrCreatedTest {
     completeTask(AUTOMATED_TESTS_RUN_TESTS);
     completeTask(AUTOMATED_TESTS_RUN_TESTS);
     Utilities.sendMessage(
-        engine, client, REVIEW_RECEIVED_MSG, prId, Map.of(REVIEW_RESULT_VAR, "rejected"));
+        engine,
+        client,
+        REVIEW_RECEIVED_MSG,
+        prId,
+        Collections.singletonMap(REVIEW_RESULT_VAR, "rejected"));
     completeTask(MAKE_CHANGES);
     completeTask(REQUEST_REVIEW);
     Utilities.sendMessage(
-        engine, client, REVIEW_RECEIVED_MSG, prId, Map.of(REVIEW_RESULT_VAR, "approved"));
+        engine,
+        client,
+        REVIEW_RECEIVED_MSG,
+        prId,
+        Collections.singletonMap(REVIEW_RESULT_VAR, "approved"));
     completeTask(MERGE_CODE);
     completeTask(DEPLOY_SNAPSHOT);
 

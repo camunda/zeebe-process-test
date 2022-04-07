@@ -16,6 +16,10 @@
 
   <description>QA tests for testing the Zeebe Process Test project.</description>
 
+  <properties>
+    <version.java>8</version.java>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.camunda</groupId>
