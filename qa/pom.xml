@@ -22,18 +22,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-process-test-extension</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
@@ -124,7 +112,38 @@
 
   <profiles>
     <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>io.camunda</groupId>
+          <artifactId>zeebe-process-test-extension</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.camunda</groupId>
+          <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
       <id>embedded</id>
+      <dependencies>
+        <dependency>
+          <groupId>io.camunda</groupId>
+          <artifactId>zeebe-process-test-extension</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>io.camunda</groupId>
+          <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
       <build>
         <plugins>
           <plugin>
@@ -143,16 +162,23 @@
 
     <profile>
       <id>testcontainer</id>
+      <dependencies>
+        <dependency>
+          <groupId>io.camunda</groupId>
+          <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>${plugin.version.surefire}</version>
+            <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-              <excludes>
-                <exclude>**/embedded/**/*.java</exclude>
-              </excludes>
+              <testExcludes>
+                <testExclude>**/embedded/**/*.java</testExclude>
+                <testExclude>**/ExtendAbstractsTest.java</testExclude>
+              </testExcludes>
             </configuration>
           </plugin>
         </plugins>
