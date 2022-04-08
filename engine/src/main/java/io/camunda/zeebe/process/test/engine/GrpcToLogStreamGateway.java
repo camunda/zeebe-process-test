@@ -533,7 +533,9 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
     return "0.0.0.0:" + port;
   }
 
-  private record ResponseSender(StreamObserver<?> responseObserver, GrpcResponseMapper<? extends GeneratedMessageV3> responseMapper) {
+  private record ResponseSender(
+      StreamObserver<?> responseObserver,
+      GrpcResponseMapper<? extends GeneratedMessageV3> responseMapper) {
 
     void sendResponse() {
       final GeneratedMessageV3 response = responseMapper.apply();

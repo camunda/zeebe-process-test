@@ -312,14 +312,15 @@ class GrpcResponseWriter implements CommandResponseWriter {
   }
 
   private Status createRejectionResponse() {
-    final int statusCode = switch (rejectionType) {
-      case INVALID_ARGUMENT -> Code.INVALID_ARGUMENT_VALUE;
-      case NOT_FOUND -> Code.NOT_FOUND_VALUE;
-      case ALREADY_EXISTS -> Code.ALREADY_EXISTS_VALUE;
-      case INVALID_STATE -> Code.FAILED_PRECONDITION_VALUE;
-      case PROCESSING_ERROR -> Code.INTERNAL_VALUE;
-      default -> Code.UNKNOWN_VALUE;
-    };
+    final int statusCode =
+        switch (rejectionType) {
+          case INVALID_ARGUMENT -> Code.INVALID_ARGUMENT_VALUE;
+          case NOT_FOUND -> Code.NOT_FOUND_VALUE;
+          case ALREADY_EXISTS -> Code.ALREADY_EXISTS_VALUE;
+          case INVALID_STATE -> Code.FAILED_PRECONDITION_VALUE;
+          case PROCESSING_ERROR -> Code.INTERNAL_VALUE;
+          default -> Code.UNKNOWN_VALUE;
+        };
 
     return Status.newBuilder()
         .setMessage(
