@@ -17,7 +17,11 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CancelProcessInstance
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CompleteJobResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CreateProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CreateProcessInstanceWithResultResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DecisionMetadata;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DecisionRequirementsMetadata;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployProcessResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse.Builder;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ProcessMetadata;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.PublishMessageResponse;
@@ -151,7 +155,51 @@ class GrpcResponseWriter implements CommandResponseWriter {
         .build();
   }
 
-  private GeneratedMessageV3 createProcessInstanceResponse() {
+  protected static GeneratedMessageV3 createDeployResourceResponse() {
+    final DeploymentRecord deployment = new DeploymentRecord();
+    deployment.wrap(valueBufferView);
+
+    final Builder builder = DeployResourceResponse.newBuilder().setKey(key);
+    deployment.getProcessesMetadata().stream()
+        .map(
+            metadata ->
+                ProcessMetadata.newBuilder()
+                    .setBpmnProcessId(metadata.getBpmnProcessId())
+                    .setVersion(metadata.getVersion())
+                    .setProcessDefinitionKey(metadata.getProcessDefinitionKey())
+                    .setResourceName(metadata.getResourceName())
+                    .build())
+        .forEach(metadata -> builder.addDeploymentsBuilder().setProcess(metadata));
+
+    deployment.decisionsMetadata().stream()
+        .map(
+            metadata ->
+                DecisionMetadata.newBuilder()
+                    .setDmnDecisionId(metadata.getDecisionId())
+                    .setDmnDecisionName(metadata.getDecisionName())
+                    .setVersion(metadata.getVersion())
+                    .setDecisionKey(metadata.getDecisionKey())
+                    .setDmnDecisionRequirementsId(metadata.getDecisionRequirementsId())
+                    .setDecisionRequirementsKey(metadata.getDecisionRequirementsKey())
+                    .build())
+        .forEach(metadata -> builder.addDeploymentsBuilder().setDecision(metadata));
+
+    deployment.decisionRequirementsMetadata().stream()
+        .map(
+            metadata ->
+                DecisionRequirementsMetadata.newBuilder()
+                    .setDmnDecisionRequirementsId(metadata.getDecisionRequirementsId())
+                    .setDmnDecisionRequirementsName(metadata.getDecisionRequirementsName())
+                    .setVersion(metadata.getDecisionRequirementsVersion())
+                    .setDecisionRequirementsKey(metadata.getDecisionRequirementsKey())
+                    .setResourceName(metadata.getResourceName())
+                    .build())
+        .forEach(metadata -> builder.addDeploymentsBuilder().setDecisionRequirements(metadata));
+
+    return builder.build();
+  }
+
+  protected static GeneratedMessageV3 createProcessInstanceResponse() {
     final ProcessInstanceCreationRecord processInstance = new ProcessInstanceCreationRecord();
     processInstance.wrap(valueBufferView);
 

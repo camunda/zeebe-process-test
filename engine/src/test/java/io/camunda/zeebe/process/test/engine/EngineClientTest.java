@@ -189,6 +189,32 @@ class EngineClientTest {
   }
 
   @Test
+  void shouldDeployResource() {
+    // given
+
+    // when
+    final DeploymentEvent deployment =
+        zeebeClient
+            .newDeployResourceCommand()
+            .addProcessModel(
+                Bpmn.createExecutableProcess("simpleProcess").startEvent().endEvent().done(),
+                "simpleProcess.bpmn")
+            .send()
+            .join();
+
+    // then
+    assertThat(deployment.getKey()).isPositive();
+    assertThat(deployment.getProcesses()).isNotEmpty();
+
+    final Process process = deployment.getProcesses().get(0);
+
+    assertThat(process.getVersion()).isEqualTo(1);
+    assertThat(process.getResourceName()).isEqualTo("simpleProcess.bpmn");
+    assertThat(process.getBpmnProcessId()).isEqualTo("simpleProcess");
+    assertThat(process.getProcessDefinitionKey()).isPositive();
+  }
+
+  @Test
   void shouldCreateInstanceWithoutVariables() {
     // given
     final DeploymentEvent deployment =

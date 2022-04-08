@@ -24,6 +24,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CreateProcessInstance
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CreateProcessInstanceWithResultResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployProcessRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployProcessResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.Partition;
@@ -256,6 +258,37 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
                         .setResourceName(processRequestObject.getName())
                         .setResource(processRequestObject.getDefinition().toByteArray());
                   }));
+
+          writeCommandWithoutKey(recordMetadata, deploymentRecord);
+        });
+  }
+
+  @Override
+  public void deployResource(
+      final DeployResourceRequest request,
+      final StreamObserver<DeployResourceResponse> responseObserver) {
+    executor.submit(
+        () -> {
+          final Long requestId =
+              registerNewRequest(
+                  responseObserver, GrpcResponseWriter::createDeployResourceResponse);
+
+          prepareRecordMetadata()
+              .requestId(requestId)
+              .valueType(ValueType.DEPLOYMENT)
+              .intent(DeploymentIntent.CREATE);
+
+          final DeploymentRecord deploymentRecord = new DeploymentRecord();
+          final ValueArray<DeploymentResource> resources = deploymentRecord.resources();
+
+          request
+              .getResourcesList()
+              .forEach(
+                  (resource ->
+                      resources
+                          .add()
+                          .setResourceName(resource.getName())
+                          .setResource(resource.getContent().toByteArray())));
 
           writeCommandWithoutKey(recordMetadata, deploymentRecord);
         });
