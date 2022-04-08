@@ -265,44 +265,26 @@ class GrpcResponseWriter implements CommandResponseWriter {
     return UpdateJobRetriesResponse.newBuilder().build();
   }
 
-  private GeneratedMessageV3 createJobResponse() {
-    switch ((JobIntent) intent) {
-      case COMPLETED:
-        return createCompleteJobResponse();
-      case FAILED:
-        return createFailJobResponse();
-      case ERROR_THROWN:
-        return createJobThrowErrorResponse();
-      case RETRIES_UPDATED:
-        return createJobUpdateRetriesResponse();
-      default:
-        throw new UnsupportedOperationException(
-            String.format("Job command '%s' is not supported", intent));
-    }
+  protected static GeneratedMessageV3 createJobResponse() {
+    return switch ((JobIntent) intent) {
+      case COMPLETED -> createCompleteJobResponse();
+      case FAILED -> createFailJobResponse();
+      case ERROR_THROWN -> createJobThrowErrorResponse();
+      case RETRIES_UPDATED -> createJobUpdateRetriesResponse();
+      default -> throw new UnsupportedOperationException(
+          String.format("Job command '%s' is not supported", intent));
+    };
   }
 
   private Status createRejectionResponse() {
-    final int statusCode;
-    switch (rejectionType) {
-      case INVALID_ARGUMENT:
-        statusCode = Code.INVALID_ARGUMENT_VALUE;
-        break;
-      case NOT_FOUND:
-        statusCode = Code.NOT_FOUND_VALUE;
-        break;
-      case ALREADY_EXISTS:
-        statusCode = Code.ALREADY_EXISTS_VALUE;
-        break;
-      case INVALID_STATE:
-        statusCode = Code.FAILED_PRECONDITION_VALUE;
-        break;
-      case PROCESSING_ERROR:
-        statusCode = Code.INTERNAL_VALUE;
-        break;
-      default:
-        statusCode = Code.UNKNOWN_VALUE;
-        break;
-    }
+    final int statusCode = switch (rejectionType) {
+      case INVALID_ARGUMENT -> Code.INVALID_ARGUMENT_VALUE;
+      case NOT_FOUND -> Code.NOT_FOUND_VALUE;
+      case ALREADY_EXISTS -> Code.ALREADY_EXISTS_VALUE;
+      case INVALID_STATE -> Code.FAILED_PRECONDITION_VALUE;
+      case PROCESSING_ERROR -> Code.INTERNAL_VALUE;
+      default -> Code.UNKNOWN_VALUE;
+    };
 
     return Status.newBuilder()
         .setMessage(
