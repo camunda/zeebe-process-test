@@ -52,7 +52,7 @@ jobs:
         run: mvn -B -U -P embedded "-Dsurefire.rerunFailingTestsCount=5" clean install
 
       - name: Archive Test Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: Unit Test Results ${{ matrix.os }}
@@ -101,7 +101,7 @@ jobs:
         run: mvn -B -U -P testcontainer "-Dsurefire.rerunFailingTestsCount=5" install
 
       - name: Archive Test Results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: Unit Test Results Testcontainers
@@ -116,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Event File
           path: ${{ github.event_path }}
