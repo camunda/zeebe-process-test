@@ -53,7 +53,7 @@ public class RecordStreamLogger {
   private final Map<ValueType, Function<Record<?>, String>> valueTypeLoggers = new HashMap<>();
 
   public RecordStreamLogger(final RecordStreamSource recordStreamSource) {
-    this.recordStream = RecordStream.of(recordStreamSource);
+    recordStream = RecordStream.of(recordStreamSource);
     valueTypeLoggers.put(ValueType.JOB, this::logJobRecordValue);
     valueTypeLoggers.put(ValueType.DEPLOYMENT, this::logDeploymentRecordValue);
     valueTypeLoggers.put(ValueType.PROCESS_INSTANCE, this::logProcessInstanceRecordValue);
@@ -272,7 +272,14 @@ public class RecordStreamLogger {
     }
 
     final StringJoiner joiner = new StringJoiner(", ", "[", "]");
-    variables.forEach((key, value) -> joiner.add(key + " -> " + value.toString()));
+    variables.forEach(
+        (key, value) -> {
+          if (value != null) {
+            joiner.add(key + " -> " + value);
+          } else {
+            joiner.add(key + " -> null");
+          }
+        });
     return String.format("(Variables: %s)", joiner);
   }
 
