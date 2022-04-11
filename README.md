@@ -11,8 +11,11 @@ and provide you with a set of assertions you can use to verify your process beha
 * Java 8+ and Docker when running using testcontainers (`zeebe-process-test-extension-testcontainer`)
 * JUnit 5
 
-:::
+---
+**NOTE**:
+
 If you use Spring and want to write tests, please use `spring-zeebe-test` as a wrapper around Zeebe Process Test to hook everything into the Spring lifecycle. See [Spring Zeebe: Writing test cases](https://github.com/camunda-community-hub/spring-zeebe#writing-test-cases) for details.
+---
 
 ## Getting Started
 
