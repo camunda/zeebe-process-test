@@ -28,27 +28,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class ExtendAbstractsTest {
 
-  public static final Class<ZeebeProcessTest> EMBEDDED_ANNOTATION = ZeebeProcessTest.class;
-  public static final Class<io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest>
-      TESTCONTAINER_ANNOTATION =
-          io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest.class;
+  public static final Class<ZeebeProcessTest> ANNOTATION = ZeebeProcessTest.class;
   private static final String ABSTRACT_PACKAGE = "io.camunda.zeebe.process.test.qa.abstracts";
-  private static final String EMBEDDED_PACKAGE = "io.camunda.zeebe.process.test.qa.embedded";
-  private static final String TESTCONTAINER_PACKAGE =
-      "io.camunda.zeebe.process.test.qa.testcontainer";
-
-  private static final ClassInfoList EMBEDDED_CLASSES =
+  private static final String TEST_PACKAGE = "io.camunda.zeebe.process.test.qa.embedded";
+  private static final ClassInfoList CLASSES =
       new ClassGraph()
-          .acceptPackages(EMBEDDED_PACKAGE)
-          .ignoreClassVisibility()
-          .enableAnnotationInfo()
-          .scan()
-          .getAllStandardClasses()
-          .filter(info -> !info.isInnerClass());
-
-  private static final ClassInfoList TESTCONTAINER_CLASSES =
-      new ClassGraph()
-          .acceptPackages(TESTCONTAINER_PACKAGE)
+          .acceptPackages(TEST_PACKAGE)
           .ignoreClassVisibility()
           .enableAnnotationInfo()
           .scan()
@@ -60,32 +45,15 @@ class ExtendAbstractsTest {
   void testAbstractClassIsExtendedWithEmbeddedExtension(
       final String className, final Class<?> abstractClass) {
     final ClassInfoList embeddedClass =
-        EMBEDDED_CLASSES
+        CLASSES
             .filter(info -> info.getPackageName().contains("embedded"))
             .filter(info -> info.extendsSuperclass(abstractClass))
-            .filter(info -> info.hasAnnotation(EMBEDDED_ANNOTATION));
+            .filter(info -> info.hasAnnotation(ANNOTATION));
 
     assertThat(embeddedClass)
         .withFailMessage(
             "Expected 1 embedded implementation of %s, but found %d: %s",
             className, embeddedClass.size(), embeddedClass)
-        .hasSize(1);
-  }
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("provideAbstractClasses")
-  void testAbstractClassIsExtendedWithTestcontainerExtension(
-      final String className, final Class<?> abstractClass) {
-    final ClassInfoList testcontainerClass =
-        TESTCONTAINER_CLASSES
-            .filter(info -> info.getPackageName().contains("testcontainer"))
-            .filter(info -> info.extendsSuperclass(abstractClass))
-            .filter(info -> info.hasAnnotation(TESTCONTAINER_ANNOTATION));
-
-    assertThat(testcontainerClass)
-        .withFailMessage(
-            "Expected 1 testcontainer implementation of %s, but found %d: %s",
-            className, testcontainerClass.size(), testcontainerClass)
         .hasSize(1);
   }
 
