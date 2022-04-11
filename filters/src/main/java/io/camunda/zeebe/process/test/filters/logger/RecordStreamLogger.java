@@ -266,20 +266,13 @@ public class RecordStreamLogger {
     return joiner.toString();
   }
 
-  private String logVariables(final Map<String, Object> variables) {
+  protected String logVariables(final Map<String, Object> variables) {
     if (variables.isEmpty()) {
       return "";
     }
 
     final StringJoiner joiner = new StringJoiner(", ", "[", "]");
-    variables.forEach(
-        (key, value) -> {
-          if (value != null) {
-            joiner.add(key + " -> " + value);
-          } else {
-            joiner.add(key + " -> null");
-          }
-        });
+    variables.forEach((key, value) -> joiner.add(key + " -> " + value));
     return String.format("(Variables: %s)", joiner);
   }
 
