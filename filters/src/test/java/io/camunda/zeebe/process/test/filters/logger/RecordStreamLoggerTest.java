@@ -15,15 +15,33 @@
  */
 package io.camunda.zeebe.process.test.filters.logger;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.ValueType;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class RecordStreamLoggerTest {
+
+  private static final Map<String, Object> TYPED_TEST_VARIABLES = new HashMap<>();
+
+  static {
+    TYPED_TEST_VARIABLES.put("stringProperty", "stringValue");
+    TYPED_TEST_VARIABLES.put("numberProperty", 123);
+    TYPED_TEST_VARIABLES.put("booleanProperty", true);
+    TYPED_TEST_VARIABLES.put("complexProperty", Arrays.asList("Element 1", "Element 2"));
+    TYPED_TEST_VARIABLES.put("nullProperty", null);
+  }
 
   @Test
   void testAllValueTypesAreMapped() {
@@ -40,5 +58,35 @@ class RecordStreamLoggerTest {
                     .isTrue());
 
     softly.assertAll();
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("provideVariables")
+  void testLogVariable(final String key, final Object value) {
+    final RecordStreamLogger logger = new RecordStreamLogger(null);
+
+    final String result = logger.logVariables(Collections.singletonMap(key, value));
+
+    assertThat(result).isEqualTo(String.format("(Variables: [%s -> %s])", key, value));
+  }
+
+  @Test
+  void testLogMultipleVariables() {
+    final RecordStreamLogger logger = new RecordStreamLogger(null);
+
+    final String result = logger.logVariables(TYPED_TEST_VARIABLES);
+
+    assertThat(result)
+        .contains("Variables: ")
+        .contains("stringProperty -> stringValue")
+        .contains("numberProperty -> 123")
+        .contains("booleanProperty -> true")
+        .contains("complexProperty -> [Element 1, Element 2]")
+        .contains("nullProperty -> null");
+  }
+
+  private static Stream<Arguments> provideVariables() {
+    return TYPED_TEST_VARIABLES.entrySet().stream()
+        .map(entry -> Arguments.of(entry.getKey(), entry.getValue()));
   }
 }
