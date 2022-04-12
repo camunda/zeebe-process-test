@@ -36,7 +36,7 @@ public abstract class AbstractProcessEventInspectionsTest {
   void testFindFirstProcessInstance() throws InterruptedException {
     // given
     final DeploymentEvent deploymentEvent =
-        Utilities.deployProcess(getClient(), ProcessPackTimerStartEvent.RESOURCE_NAME);
+        Utilities.deployResource(getClient(), ProcessPackTimerStartEvent.RESOURCE_NAME);
 
     // when
     Utilities.increaseTime(getEngine(), Duration.ofDays(1));
@@ -56,7 +56,7 @@ public abstract class AbstractProcessEventInspectionsTest {
   void testFindLastProcessInstance() throws InterruptedException {
     // given
     final DeploymentEvent deploymentEvent =
-        Utilities.deployProcess(getClient(), ProcessPackTimerStartEvent.RESOURCE_NAME);
+        Utilities.deployResource(getClient(), ProcessPackTimerStartEvent.RESOURCE_NAME);
 
     // when
     Utilities.increaseTime(getEngine(), Duration.ofDays(1));
@@ -75,7 +75,7 @@ public abstract class AbstractProcessEventInspectionsTest {
   @Test
   void testFindFirstProcessInstance_wrongTimer() throws InterruptedException {
     // given
-    Utilities.deployProcess(getClient(), ProcessPackTimerStartEvent.RESOURCE_NAME);
+    Utilities.deployResource(getClient(), ProcessPackTimerStartEvent.RESOURCE_NAME);
 
     // when
     Utilities.increaseTime(getEngine(), Duration.ofDays(1));
@@ -91,7 +91,7 @@ public abstract class AbstractProcessEventInspectionsTest {
   @Test
   void testFindProcessInstance_highIndex() throws InterruptedException {
     // given
-    Utilities.deployProcess(getClient(), ProcessPackTimerStartEvent.RESOURCE_NAME);
+    Utilities.deployResource(getClient(), ProcessPackTimerStartEvent.RESOURCE_NAME);
 
     // when
     Utilities.increaseTime(getEngine(), Duration.ofDays(1));

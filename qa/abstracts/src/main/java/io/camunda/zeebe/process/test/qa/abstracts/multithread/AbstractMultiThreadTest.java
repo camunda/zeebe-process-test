@@ -16,7 +16,7 @@
 package io.camunda.zeebe.process.test.qa.abstracts.multithread;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
-import static io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.deployProcess;
+import static io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.deployResource;
 import static io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.startProcessInstance;
 
 import io.camunda.zeebe.client.ZeebeClient;
@@ -87,7 +87,7 @@ public abstract class AbstractMultiThreadTest {
     public Boolean call() throws InterruptedException, TimeoutException {
       BpmnAssert.initRecordStream(getRecordStream());
 
-      deployProcess(getClient(), ProcessPackStartEndEvent.RESOURCE_NAME);
+      deployResource(getClient(), ProcessPackStartEndEvent.RESOURCE_NAME);
       final ProcessInstanceEvent instanceEvent =
           startProcessInstance(getEngine(), getClient(), ProcessPackStartEndEvent.PROCESS_ID);
       Utilities.waitForIdleState(getEngine(), Duration.ofSeconds(1));

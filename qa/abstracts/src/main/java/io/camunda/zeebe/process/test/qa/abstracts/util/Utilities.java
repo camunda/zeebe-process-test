@@ -38,16 +38,16 @@ import java.util.stream.Collectors;
 
 public class Utilities {
 
-  public static DeploymentEvent deployProcess(final ZeebeClient client, final String process) {
-    return deployProcesses(client, process);
+  public static DeploymentEvent deployResource(final ZeebeClient client, final String resource) {
+    return deployResources(client, resource);
   }
 
-  public static DeploymentEvent deployProcesses(
-      final ZeebeClient client, final String... processes) {
+  public static DeploymentEvent deployResources(
+      final ZeebeClient client, final String... resources) {
     final DeployResourceCommandStep1 commandStep1 = client.newDeployResourceCommand();
 
     DeployResourceCommandStep1.DeployResourceCommandStep2 commandStep2 = null;
-    for (final String process : processes) {
+    for (final String process : resources) {
       if (commandStep2 == null) {
         commandStep2 = commandStep1.addResourceFromClasspath(process);
       } else {

@@ -42,7 +42,7 @@ public abstract class AbstractDeploymentAssertTest {
     void testContainsProcessesById() {
       // when
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcesses(
+          Utilities.deployResources(
               client,
               ProcessPackLoopingServiceTask.RESOURCE_NAME,
               ProcessPackMultipleTasks.RESOURCE_NAME);
@@ -57,7 +57,7 @@ public abstract class AbstractDeploymentAssertTest {
     void testContainsProcessesByResourceName() {
       // when
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcesses(
+          Utilities.deployResources(
               client,
               ProcessPackLoopingServiceTask.RESOURCE_NAME,
               ProcessPackMultipleTasks.RESOURCE_NAME);
@@ -72,7 +72,7 @@ public abstract class AbstractDeploymentAssertTest {
     void testExtractingProcessByBpmnProcessId() {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -87,7 +87,7 @@ public abstract class AbstractDeploymentAssertTest {
     void testExtractingProcessByResourceName() {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -109,7 +109,7 @@ public abstract class AbstractDeploymentAssertTest {
     void testContainsProcessesByIdFailure() {
       // when
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // then
       assertThatThrownBy(
@@ -124,7 +124,7 @@ public abstract class AbstractDeploymentAssertTest {
     void testContainsProcessesByResourceNameFailure() {
       // when
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // then
       assertThatThrownBy(
@@ -139,7 +139,7 @@ public abstract class AbstractDeploymentAssertTest {
     void testExtractingProcessByBpmnProcessIdFailure() {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // then
       assertThatThrownBy(
@@ -155,7 +155,7 @@ public abstract class AbstractDeploymentAssertTest {
     void testExtractingProcessByResourceName() {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // then
       assertThatThrownBy(

@@ -47,7 +47,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasBeenCorrelated() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
@@ -65,7 +65,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasMessageStartEventBeenCorrelated() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
@@ -82,7 +82,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasNotBeenCorrelated() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
@@ -96,7 +96,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasMessageStartEventNotBeenCorrelated() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
@@ -110,7 +110,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasExpired() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Duration timeToLive = Duration.ofDays(1);
 
       // when
@@ -131,7 +131,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasNotExpired() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
@@ -145,7 +145,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testExtractingProcessInstance() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
@@ -164,7 +164,7 @@ public abstract class AbstractMessageAssertTest {
     void testExtractingProcessInstance_messageStartEvent()
         throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
@@ -188,7 +188,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasBeenCorrelatedFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
@@ -205,7 +205,7 @@ public abstract class AbstractMessageAssertTest {
     void testHasMessageStartEventBeenCorrelatedFailure()
         throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
@@ -223,7 +223,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasNotBeenCorrelatedFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
@@ -248,7 +248,7 @@ public abstract class AbstractMessageAssertTest {
     void testHasMessageStartEventNotBeenCorrelatedFailure()
         throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
@@ -268,7 +268,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasExpiredFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
@@ -284,7 +284,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testHasNotExpiredFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Duration timeToLive = Duration.ofDays(1);
 
       // when
@@ -307,7 +307,7 @@ public abstract class AbstractMessageAssertTest {
     @Test
     void testExtractingProcessInstanceFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageEvent.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(
               ProcessPackMessageEvent.CORRELATION_KEY_VARIABLE, CORRELATION_KEY);
@@ -330,7 +330,7 @@ public abstract class AbstractMessageAssertTest {
     void testExtractingProcessInstanceFailure_messageStartEvent()
         throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackMessageStartEvent.RESOURCE_NAME);
 
       // when
       final PublishMessageResponse response =
