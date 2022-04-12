@@ -52,7 +52,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasElementId() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -70,7 +70,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasDeadline() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -95,7 +95,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasBpmnProcessId() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -113,7 +113,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasRetries() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -131,7 +131,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasAnyIncidents() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -149,7 +149,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasNoIncidents() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -164,7 +164,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testExtractLatestIncident() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -188,7 +188,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testExtractingVariables() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -209,7 +209,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testExtractingHeaders() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -235,7 +235,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasElementIdFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -258,7 +258,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasDeadlineFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -285,7 +285,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasBpmnProcessIdFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -308,7 +308,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasRetriesFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
           Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
       Utilities.startProcessInstance(
@@ -330,7 +330,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasAnyIncidentsFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -347,7 +347,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testHasNoIncidentsFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -365,7 +365,7 @@ public abstract class AbstractJobAssertTest {
     @Test
     void testExtractLatestIncidentFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when

@@ -33,7 +33,7 @@ public abstract class AbstractProcessInstanceInspectionsTest {
   @Test
   void testStartedByProcessInstanceWithProcessId() throws InterruptedException, TimeoutException {
     // given
-    Utilities.deployProcesses(
+    Utilities.deployResources(
         getClient(),
         ProcessPackCallActivity.RESOURCE_NAME,
         ProcessPackCallActivity.CALLED_RESOURCE_NAME);
@@ -60,7 +60,7 @@ public abstract class AbstractProcessInstanceInspectionsTest {
   void testStartedByProcessInstanceWithProcessId_wrongId()
       throws InterruptedException, TimeoutException {
     // given
-    Utilities.deployProcesses(
+    Utilities.deployResources(
         getClient(),
         ProcessPackCallActivity.RESOURCE_NAME,
         ProcessPackCallActivity.CALLED_RESOURCE_NAME);

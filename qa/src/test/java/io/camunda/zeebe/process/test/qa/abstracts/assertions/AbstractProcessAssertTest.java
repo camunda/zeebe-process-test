@@ -43,7 +43,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasBPMNProcessId() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -58,7 +58,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasVersion() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -73,7 +73,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasResourceName() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -88,7 +88,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasAnyInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -105,7 +105,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasNoInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -120,7 +120,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -146,7 +146,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasBPMNProcessIdFailure() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -165,7 +165,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasVersionFailure() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -182,7 +182,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasResourceNameFailure() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -201,7 +201,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasAnyInstancesFailure() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       final ProcessAssert processAssert =
@@ -218,7 +218,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasNoInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
@@ -237,7 +237,7 @@ public abstract class AbstractProcessAssertTest {
     void testHasInstances() throws InterruptedException, TimeoutException {
       // given
       final DeploymentEvent deploymentEvent =
-          Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+          Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       // when
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
