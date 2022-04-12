@@ -50,6 +50,7 @@ public abstract class AbstractProcessInstanceAssertTest {
     TYPED_TEST_VARIABLES.put("numberProperty", 123);
     TYPED_TEST_VARIABLES.put("booleanProperty", true);
     TYPED_TEST_VARIABLES.put("complexProperty", Arrays.asList("Element 1", "Element 2"));
+    TYPED_TEST_VARIABLES.put("nullProperty", null);
   }
 
   // These tests are for testing assertions as well as examples for users
