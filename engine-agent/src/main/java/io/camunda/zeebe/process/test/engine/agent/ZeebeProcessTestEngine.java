@@ -23,7 +23,6 @@ public class ZeebeProcessTestEngine {
             .addService(engineService)
             .build();
 
-    engine.start();
     server.start();
   }
 }
