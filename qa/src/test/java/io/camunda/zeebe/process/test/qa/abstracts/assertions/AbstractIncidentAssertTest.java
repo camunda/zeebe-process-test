@@ -52,7 +52,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testHasErrorType() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -72,7 +72,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testHasErrorMessage() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -93,7 +93,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testExtractErrorMessage() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -118,7 +118,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testWasRaisedInProcessInstance() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent processInstanceEvent =
           Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
@@ -141,7 +141,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testOccurredOnElement() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       final Map<String, Object> variables =
           Collections.singletonMap(
@@ -169,7 +169,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testOccurredDuringJob() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -189,7 +189,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testIsResolved() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -215,7 +215,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testIsUnresolved() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -244,7 +244,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testHasErrorTypeFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -268,7 +268,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testHasErrorMessageFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -292,7 +292,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testWasRaisedInProcessInstanceFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final ProcessInstanceEvent processInstanceEvent =
           Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
@@ -318,7 +318,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testOccurredOnElementFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
 
       final Map<String, Object> variables =
           Collections.singletonMap(
@@ -350,7 +350,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testOccurredDuringJobFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -373,7 +373,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testIsResolvedFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when
@@ -396,7 +396,7 @@ public abstract class AbstractIncidentAssertTest {
     @Test
     void testIsUnresolvedFailure() throws InterruptedException, TimeoutException {
       // given
-      Utilities.deployProcess(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       Utilities.startProcessInstance(engine, client, ProcessPackLoopingServiceTask.PROCESS_ID);
 
       // when

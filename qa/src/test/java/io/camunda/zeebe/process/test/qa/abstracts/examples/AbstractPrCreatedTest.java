@@ -63,7 +63,7 @@ public abstract class AbstractPrCreatedTest {
     client = getClient();
 
     final DeploymentEvent deploymentEvent =
-        Utilities.deployProcesses(client, RESOURCE_NAME, AUTOMATED_TESTS_RESOURCE_NAME);
+        Utilities.deployResources(client, RESOURCE_NAME, AUTOMATED_TESTS_RESOURCE_NAME);
     assertThat(deploymentEvent)
         .containsProcessesByResourceName(RESOURCE_NAME, AUTOMATED_TESTS_RESOURCE_NAME);
   }

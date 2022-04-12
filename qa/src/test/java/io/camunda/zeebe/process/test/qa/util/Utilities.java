@@ -16,7 +16,7 @@
 package io.camunda.zeebe.process.test.qa.util;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
+import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
@@ -38,16 +38,16 @@ import java.util.stream.Collectors;
 
 public class Utilities {
 
-  public static DeploymentEvent deployProcess(final ZeebeClient client, final String process) {
-    return deployProcesses(client, process);
+  public static DeploymentEvent deployResource(final ZeebeClient client, final String resource) {
+    return deployResources(client, resource);
   }
 
-  public static DeploymentEvent deployProcesses(
-      final ZeebeClient client, final String... processes) {
-    final DeployProcessCommandStep1 commandStep1 = client.newDeployCommand();
+  public static DeploymentEvent deployResources(
+      final ZeebeClient client, final String... resources) {
+    final DeployResourceCommandStep1 commandStep1 = client.newDeployResourceCommand();
 
-    DeployProcessCommandStep1.DeployProcessCommandBuilderStep2 commandStep2 = null;
-    for (final String process : processes) {
+    DeployResourceCommandStep1.DeployResourceCommandStep2 commandStep2 = null;
+    for (final String process : resources) {
       if (commandStep2 == null) {
         commandStep2 = commandStep1.addResourceFromClasspath(process);
       } else {
