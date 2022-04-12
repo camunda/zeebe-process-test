@@ -65,6 +65,8 @@ service EngineControl {
     Using this while running tests concurrently will still cause issues. This is
     because the first test will be using the engine, whilst the second test will
     reset it. Therefore, the data from the first test will get lost.
+
+    After resetting the engine still needs to be started.
    */
   rpc ResetEngine (ResetEngineRequest) returns (ResetEngineResponse);
 

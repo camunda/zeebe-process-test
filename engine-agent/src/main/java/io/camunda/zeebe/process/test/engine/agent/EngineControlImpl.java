@@ -29,12 +29,8 @@ import io.grpc.stub.StreamObserver;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class EngineControlImpl extends EngineControlImplBase {
-
-  private static final Logger LOG = LoggerFactory.getLogger(EngineControlImpl.class);
 
   private ZeebeTestEngine engine;
   private RecordStreamSourceWrapper recordStreamSource;
@@ -49,6 +45,7 @@ public final class EngineControlImpl extends EngineControlImplBase {
       final StartEngineRequest request,
       final StreamObserver<StartEngineResponse> responseObserver) {
     engine.start();
+    recordStreamSource = new RecordStreamSourceWrapper(engine.getRecordStreamSource());
 
     final StartEngineResponse response = StartEngineResponse.newBuilder().build();
     responseObserver.onNext(response);
@@ -71,8 +68,6 @@ public final class EngineControlImpl extends EngineControlImplBase {
       final StreamObserver<ResetEngineResponse> responseObserver) {
     engine.stop();
     engine = EngineFactory.create(AgentProperties.getGatewayPort());
-    recordStreamSource = new RecordStreamSourceWrapper(engine.getRecordStreamSource());
-    engine.start();
 
     final ResetEngineResponse response = ResetEngineResponse.newBuilder().build();
     responseObserver.onNext(response);
