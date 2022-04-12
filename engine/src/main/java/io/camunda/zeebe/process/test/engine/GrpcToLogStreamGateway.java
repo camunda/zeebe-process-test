@@ -24,6 +24,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CreateProcessInstance
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CreateProcessInstanceWithResultResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployProcessRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployProcessResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.Partition;
@@ -41,6 +43,7 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesReque
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesResponse;
 import io.camunda.zeebe.logstreams.log.LogStreamRecordWriter;
 import io.camunda.zeebe.msgpack.value.ValueArray;
+import io.camunda.zeebe.process.test.engine.GrpcResponseWriter.GrpcResponseMapper;
 import io.camunda.zeebe.protocol.impl.encoding.MsgPackConverter;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
 import io.camunda.zeebe.protocol.impl.record.value.deployment.DeploymentRecord;
@@ -79,7 +82,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
 
   private final LogStreamRecordWriter writer;
   private final ExecutorService executor = Executors.newSingleThreadExecutor();
-  private final Map<Long, StreamObserver<?>> responseObserverMap = new HashMap<>();
+  private final Map<Long, ResponseSender> responseSenderMap = new HashMap<>();
   private final RecordMetadata recordMetadata = new RecordMetadata();
   private final AtomicLong requestIdGenerator = new AtomicLong();
   private final int partitionId;
@@ -117,7 +120,8 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<ActivateJobsResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(responseObserver, GrpcResponseWriter::createJobBatchResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -141,7 +145,9 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<CancelProcessInstanceResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(
+                  responseObserver, GrpcResponseWriter::createCancelInstanceResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -162,7 +168,8 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<CompleteJobResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(responseObserver, GrpcResponseWriter::createCompleteJobResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -187,7 +194,9 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<CreateProcessInstanceResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(
+                  responseObserver, GrpcResponseWriter::createProcessInstanceResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -206,7 +215,9 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<CreateProcessInstanceWithResultResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(
+                  responseObserver, GrpcResponseWriter::createProcessInstanceWithResultResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -227,7 +238,8 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<DeployProcessResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(responseObserver, GrpcResponseWriter::createDeployResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -252,11 +264,43 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
   }
 
   @Override
+  public void deployResource(
+      final DeployResourceRequest request,
+      final StreamObserver<DeployResourceResponse> responseObserver) {
+    executor.submit(
+        () -> {
+          final Long requestId =
+              registerNewRequest(
+                  responseObserver, GrpcResponseWriter::createDeployResourceResponse);
+
+          prepareRecordMetadata()
+              .requestId(requestId)
+              .valueType(ValueType.DEPLOYMENT)
+              .intent(DeploymentIntent.CREATE);
+
+          final DeploymentRecord deploymentRecord = new DeploymentRecord();
+          final ValueArray<DeploymentResource> resources = deploymentRecord.resources();
+
+          request
+              .getResourcesList()
+              .forEach(
+                  (resource ->
+                      resources
+                          .add()
+                          .setResourceName(resource.getName())
+                          .setResource(resource.getContent().toByteArray())));
+
+          writeCommandWithoutKey(recordMetadata, deploymentRecord);
+        });
+  }
+
+  @Override
   public void failJob(
       final FailJobRequest request, final StreamObserver<FailJobResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(responseObserver, GrpcResponseWriter::createFailJobResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -277,7 +321,8 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final ThrowErrorRequest request, final StreamObserver<ThrowErrorResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(responseObserver, GrpcResponseWriter::createJobThrowErrorResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -299,7 +344,8 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<PublishMessageResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(responseObserver, GrpcResponseWriter::createMessageResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -328,7 +374,9 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<ResolveIncidentResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(
+                  responseObserver, GrpcResponseWriter::createResolveIncidentResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -347,7 +395,8 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<SetVariablesResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(responseObserver, GrpcResponseWriter::createSetVariablesResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -409,7 +458,9 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
       final StreamObserver<UpdateJobRetriesResponse> responseObserver) {
     executor.submit(
         () -> {
-          final Long requestId = registerNewRequest(responseObserver);
+          final Long requestId =
+              registerNewRequest(
+                  responseObserver, GrpcResponseWriter::createJobUpdateRetriesResponse);
 
           prepareRecordMetadata()
               .requestId(requestId)
@@ -437,9 +488,11 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
     return recordMetadata.reset().recordType(RecordType.COMMAND).requestStreamId(partitionId);
   }
 
-  private Long registerNewRequest(final StreamObserver<?> responseObserver) {
+  private <GrpcResponseType extends GeneratedMessageV3> Long registerNewRequest(
+      final StreamObserver<?> responseObserver,
+      final GrpcResponseMapper<GrpcResponseType> responseMapper) {
     final long currentRequestId = requestIdGenerator.incrementAndGet();
-    responseObserverMap.put(currentRequestId, responseObserver);
+    responseSenderMap.put(currentRequestId, new ResponseSender(responseObserver, responseMapper));
     return currentRequestId;
   }
 
@@ -460,26 +513,42 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
     return processInstanceCreationRecord;
   }
 
-  public void responseCallback(final Long requestId, final GeneratedMessageV3 response) {
+  public void responseCallback(final Long requestId) {
     executor.submit(
         () -> {
-          final StreamObserver<GeneratedMessageV3> streamObserver =
-              (StreamObserver<GeneratedMessageV3>) responseObserverMap.remove(requestId);
-          streamObserver.onNext(response);
-          streamObserver.onCompleted();
+          final ResponseSender responseSender = responseSenderMap.remove(requestId);
+          responseSender.sendResponse();
         });
   }
 
   public void errorCallback(final Long requestId, final Status error) {
     executor.submit(
         () -> {
-          final StreamObserver<GeneratedMessageV3> streamObserver =
-              (StreamObserver<GeneratedMessageV3>) responseObserverMap.remove(requestId);
-          streamObserver.onError(StatusProto.toStatusException(error));
+          final ResponseSender responseSender = responseSenderMap.remove(requestId);
+          responseSender.sendError(error);
         });
   }
 
   public String getAddress() {
     return "0.0.0.0:" + port;
+  }
+
+  private record ResponseSender(
+      StreamObserver<?> responseObserver,
+      GrpcResponseMapper<? extends GeneratedMessageV3> responseMapper) {
+
+    void sendResponse() {
+      final GeneratedMessageV3 response = responseMapper.apply();
+      final StreamObserver<GeneratedMessageV3> streamObserver =
+          (StreamObserver<GeneratedMessageV3>) responseObserver;
+      streamObserver.onNext(response);
+      streamObserver.onCompleted();
+    }
+
+    void sendError(final Status error) {
+      final StreamObserver<GeneratedMessageV3> streamObserver =
+          (StreamObserver<GeneratedMessageV3>) responseObserver;
+      streamObserver.onError(StatusProto.toStatusException(error));
+    }
   }
 }

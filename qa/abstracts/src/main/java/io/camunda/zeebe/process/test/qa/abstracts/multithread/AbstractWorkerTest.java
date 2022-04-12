@@ -39,7 +39,7 @@ public abstract class AbstractWorkerTest {
         .handler((client, job) -> client.newCompleteCommand(job.getKey()).send())
         .open();
 
-    Utilities.deployProcess(getClient(), ProcessPackLoopingServiceTask.RESOURCE_NAME);
+    Utilities.deployResource(getClient(), ProcessPackLoopingServiceTask.RESOURCE_NAME);
     final Map<String, Object> variables =
         Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 3);
 
