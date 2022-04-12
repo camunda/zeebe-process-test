@@ -96,6 +96,8 @@
     <plugin.version.spotless>2.22.1</plugin.version.spotless>
     <plugin.version.surefire>3.0.0-M6</plugin.version.surefire>
 
+    <skipChecks>false</skipChecks>
+
     <version.grpc>1.45.1</version.grpc>
     <version.java>17</version.java>
     <version.protobuf>3.19.4</version.protobuf>
@@ -380,24 +382,22 @@
         <version>${dependency.agrona.version}</version>
       </dependency>
 
-      <!-- Test scope-->
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>${dependency.mockito.version}</version>
-        <scope>test</scope>
       </dependency>
+
       <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>${dependency.awaitility.version}</version>
-        <scope>test</scope>
       </dependency>
+
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${dependency.commons.version}</version>
-        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -425,6 +425,8 @@
                 <sortProperties>true</sortProperties>
               </sortPom>
             </pom>
+            <applySkip>${skipChecks}</applySkip>
+            <checkSkip>${skipChecks}</checkSkip>
           </configuration>
           <dependencies>
             <dependency>
@@ -516,6 +518,7 @@
             </goals>
             <configuration>
               <failOnWarning>true</failOnWarning>
+              <skip>${skipChecks}</skip>
             </configuration>
           </execution>
         </executions>
