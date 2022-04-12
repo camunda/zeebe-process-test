@@ -135,7 +135,7 @@ class GrpcResponseWriter implements CommandResponseWriter {
   }
 
   @Deprecated(since = "8.0.0")
-  protected static DeployProcessResponse createDeployResponse() {
+  static DeployProcessResponse createDeployResponse() {
     final DeploymentRecord deployment = new DeploymentRecord();
     deployment.wrap(valueBufferView);
 
@@ -155,7 +155,7 @@ class GrpcResponseWriter implements CommandResponseWriter {
         .build();
   }
 
-  protected static GeneratedMessageV3 createDeployResourceResponse() {
+  static GeneratedMessageV3 createDeployResourceResponse() {
     final DeploymentRecord deployment = new DeploymentRecord();
     deployment.wrap(valueBufferView);
 
@@ -199,7 +199,7 @@ class GrpcResponseWriter implements CommandResponseWriter {
     return builder.build();
   }
 
-  protected static GeneratedMessageV3 createProcessInstanceResponse() {
+  static GeneratedMessageV3 createProcessInstanceResponse() {
     final ProcessInstanceCreationRecord processInstance = new ProcessInstanceCreationRecord();
     processInstance.wrap(valueBufferView);
 
@@ -211,7 +211,7 @@ class GrpcResponseWriter implements CommandResponseWriter {
         .build();
   }
 
-  protected static GeneratedMessageV3 createProcessInstanceWithResultResponse() {
+  static GeneratedMessageV3 createProcessInstanceWithResultResponse() {
     final ProcessInstanceResultRecord processInstanceResult = new ProcessInstanceResultRecord();
     processInstanceResult.wrap(valueBufferView);
 
@@ -224,29 +224,29 @@ class GrpcResponseWriter implements CommandResponseWriter {
         .build();
   }
 
-  protected static GeneratedMessageV3 createCancelInstanceResponse() {
+  static GeneratedMessageV3 createCancelInstanceResponse() {
     return CancelProcessInstanceResponse.newBuilder().build();
   }
 
-  protected static GeneratedMessageV3 createResolveIncidentResponse() {
+  static GeneratedMessageV3 createResolveIncidentResponse() {
     final IncidentRecord incident = new IncidentRecord();
     incident.wrap(valueBufferView);
 
     return ResolveIncidentResponse.newBuilder().build();
   }
 
-  protected static GeneratedMessageV3 createSetVariablesResponse() {
+  static GeneratedMessageV3 createSetVariablesResponse() {
     final VariableDocumentRecord variableDocumentRecord = new VariableDocumentRecord();
     variableDocumentRecord.wrap(valueBufferView);
 
     return SetVariablesResponse.newBuilder().setKey(key).build();
   }
 
-  protected static GeneratedMessageV3 createMessageResponse() {
+  static GeneratedMessageV3 createMessageResponse() {
     return PublishMessageResponse.newBuilder().setKey(key).build();
   }
 
-  protected static GeneratedMessageV3 createJobBatchResponse() {
+  static GeneratedMessageV3 createJobBatchResponse() {
     final JobBatchRecord jobBatch = new JobBatchRecord();
     jobBatch.wrap(valueBufferView);
 
@@ -284,23 +284,23 @@ class GrpcResponseWriter implements CommandResponseWriter {
         .build();
   }
 
-  protected static GeneratedMessageV3 createCompleteJobResponse() {
+  static GeneratedMessageV3 createCompleteJobResponse() {
     return CompleteJobResponse.newBuilder().build();
   }
 
-  protected static GeneratedMessageV3 createFailJobResponse() {
+  static GeneratedMessageV3 createFailJobResponse() {
     return FailJobResponse.newBuilder().build();
   }
 
-  protected static GeneratedMessageV3 createJobThrowErrorResponse() {
+  static GeneratedMessageV3 createJobThrowErrorResponse() {
     return ThrowErrorResponse.newBuilder().build();
   }
 
-  protected static GeneratedMessageV3 createJobUpdateRetriesResponse() {
+  static GeneratedMessageV3 createJobUpdateRetriesResponse() {
     return UpdateJobRetriesResponse.newBuilder().build();
   }
 
-  protected static GeneratedMessageV3 createJobResponse() {
+  static GeneratedMessageV3 createJobResponse() {
     return switch ((JobIntent) intent) {
       case COMPLETED -> createCompleteJobResponse();
       case FAILED -> createFailJobResponse();
