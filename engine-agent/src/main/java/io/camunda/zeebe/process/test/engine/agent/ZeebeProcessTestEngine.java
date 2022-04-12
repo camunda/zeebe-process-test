@@ -12,8 +12,12 @@ import io.camunda.zeebe.process.test.engine.EngineFactory;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ZeebeProcessTestEngine {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ZeebeProcessTestEngine.class);
 
   public static void main(final String[] args) throws IOException {
     final ZeebeTestEngine engine = EngineFactory.create(AgentProperties.getGatewayPort());
@@ -23,7 +27,10 @@ public class ZeebeProcessTestEngine {
             .addService(engineService)
             .build();
 
-    engine.start();
     server.start();
+
+    // In the testcontainer extension we are waiting for this line to be logged before continuing
+    // test execution. If this log gets changed please also change the extension!
+    LOG.info("ZeebeProcessTestEngine container has started ...");
   }
 }

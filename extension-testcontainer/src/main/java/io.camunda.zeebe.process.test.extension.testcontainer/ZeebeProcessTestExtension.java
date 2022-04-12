@@ -44,9 +44,8 @@ public class ZeebeProcessTestExtension
   private static final String KEY_ZEEBE_ENGINE = "ZEEBE_ENGINE";
 
   /**
-   * A new testcontainer container gets created and started. This container will run the test
-   * engine. After this a {@link ContainerizedEngine} is created, which allows communicating with
-   * the testcontainer.
+   * A new testcontainer container gets created. After this a {@link ContainerizedEngine} is
+   * created, which allows communicating with the testcontainer.
    *
    * <p>Even though this method is called before each test class, the test container will only get
    * created and started once! {@link EngineContainer} is a Singleton so no new object is created
@@ -70,7 +69,7 @@ public class ZeebeProcessTestExtension
   }
 
   /**
-   * Before each test the {@link ContainerizedEngine} is reset. A client to communicate with the
+   * Before each test the {@link ContainerizedEngine} is started. A client to communicate with the
    * engine will be created, together with a {@link RecordStream}. These will be injected in the
    * fields of the test class, if they are available.
    *
@@ -80,7 +79,7 @@ public class ZeebeProcessTestExtension
   public void beforeEach(final ExtensionContext extensionContext) {
     final Object engineContent = getStore(extensionContext.getParent().get()).get(KEY_ZEEBE_ENGINE);
     final ContainerizedEngine engine = (ContainerizedEngine) engineContent;
-    engine.reset();
+    engine.start();
 
     final ZeebeClient client = engine.createClient();
     final RecordStream recordStream = RecordStream.of(new RecordStreamSourceImpl(engine));
@@ -91,7 +90,9 @@ public class ZeebeProcessTestExtension
   }
 
   /**
-   * After each test the client will be closed.
+   * After each test the client will be closed. At this point we will reset the engine. This will
+   * stop the current engine and create a new one. The new engine will not be started yet as that is
+   * done in the beforeEach method.
    *
    * @param extensionContext jUnit5 extension context
    */
@@ -100,6 +101,10 @@ public class ZeebeProcessTestExtension
     final Object clientContent = getStore(extensionContext).get(KEY_ZEEBE_CLIENT);
     final ZeebeClient client = (ZeebeClient) clientContent;
     client.close();
+
+    final Object engineContent = getStore(extensionContext.getParent().get()).get(KEY_ZEEBE_ENGINE);
+    final ContainerizedEngine engine = (ContainerizedEngine) engineContent;
+    engine.reset();
   }
 
   /**
@@ -119,7 +124,7 @@ public class ZeebeProcessTestExtension
   private void injectFields(final ExtensionContext extensionContext, final Object... objects) {
     final Class<?> requiredTestClass = extensionContext.getRequiredTestClass();
     final Field[] declaredFields = requiredTestClass.getDeclaredFields();
-    for (Object object : objects) {
+    for (final Object object : objects) {
       final Optional<Field> field = getField(declaredFields, object);
       field.ifPresent(value -> injectField(extensionContext, value, object));
     }
@@ -147,7 +152,7 @@ public class ZeebeProcessTestExtension
     try {
       ReflectionUtils.makeAccessible(field);
       field.set(extensionContext.getRequiredTestInstance(), object);
-    } catch (IllegalAccessException e) {
+    } catch (final IllegalAccessException e) {
       throw new RuntimeException(e);
     }
   }
