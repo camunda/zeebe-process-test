@@ -31,13 +31,19 @@ public interface ZeebeTestEngine {
   /** Stops the test engine */
   void stop();
 
-  /** @return the {@link RecordStreamSource} of this test engine */
+  /**
+   * @return the {@link RecordStreamSource} of this test engine
+   */
   RecordStreamSource getRecordStreamSource();
 
-  /** @return a newly created {@link ZeebeClient} */
+  /**
+   * @return a newly created {@link ZeebeClient}
+   */
   ZeebeClient createClient();
 
-  /** @return the address at which the gateway is reachable */
+  /**
+   * @return the address at which the gateway is reachable
+   */
   String getGatewayAddress();
 
   /**
