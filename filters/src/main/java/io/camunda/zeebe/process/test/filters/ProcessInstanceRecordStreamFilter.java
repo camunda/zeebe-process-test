@@ -61,6 +61,12 @@ public class ProcessInstanceRecordStreamFilter {
         stream.filter(record -> record.getIntent() == intent));
   }
 
+  public ProcessInstanceRecordStreamFilter withIntents(final ProcessInstanceIntent... intents) {
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(
+            record -> Arrays.stream(intents).anyMatch(intent -> record.getIntent() == intent)));
+  }
+
   public ProcessInstanceRecordStreamFilter withElementId(final String elementId) {
     return new ProcessInstanceRecordStreamFilter(
         stream.filter(record -> record.getValue().getElementId().equals(elementId)));
