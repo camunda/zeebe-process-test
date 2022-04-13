@@ -221,6 +221,7 @@ public class Utilities {
     public static final String TOTAL_LOOPS =
         "totalLoops"; // variable name to indicate number of loops
     public static final String GATEWAY_ELEMENT_ID = "Gateway_0fhwf5d";
+    public static final String LOOP_SEQUENCE_FLOW_ID = "loopSequenceFlow";
     public static final String START_EVENT_ID = "startevent";
     public static final String END_EVENT_ID = "endevent";
   }

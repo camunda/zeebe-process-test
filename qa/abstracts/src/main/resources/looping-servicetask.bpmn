@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0vjlomv" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="1.1.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0vjlomv" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0-alpha.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="1.1.0">
   <bpmn:process id="looping-servicetask" name="looping servicetask" isExecutable="true">
     <bpmn:startEvent id="startevent" name="Start event">
       <bpmn:extensionElements>
@@ -22,22 +22,22 @@
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0gk7cr0</bpmn:incoming>
-      <bpmn:incoming>Flow_0wjr3ms</bpmn:incoming>
+      <bpmn:incoming>loopSequenceFlow</bpmn:incoming>
       <bpmn:outgoing>Flow_0cw7eu9</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:exclusiveGateway id="Gateway_0fhwf5d" default="Flow_117ogjm">
       <bpmn:incoming>Flow_0cw7eu9</bpmn:incoming>
       <bpmn:outgoing>Flow_117ogjm</bpmn:outgoing>
-      <bpmn:outgoing>Flow_0wjr3ms</bpmn:outgoing>
+      <bpmn:outgoing>loopSequenceFlow</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_117ogjm" sourceRef="Gateway_0fhwf5d" targetRef="endevent" />
-    <bpmn:sequenceFlow id="Flow_0wjr3ms" sourceRef="Gateway_0fhwf5d" targetRef="servicetask">
+    <bpmn:sequenceFlow id="loopSequenceFlow" sourceRef="Gateway_0fhwf5d" targetRef="servicetask">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= loopAmount != totalLoops</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="looping-servicetask">
-      <bpmndi:BPMNEdge id="Flow_0wjr3ms_di" bpmnElement="Flow_0wjr3ms">
+      <bpmndi:BPMNEdge id="Flow_0wjr3ms_di" bpmnElement="loopSequenceFlow">
         <di:waypoint x="410" y="142" />
         <di:waypoint x="410" y="80" />
         <di:waypoint x="300" y="80" />

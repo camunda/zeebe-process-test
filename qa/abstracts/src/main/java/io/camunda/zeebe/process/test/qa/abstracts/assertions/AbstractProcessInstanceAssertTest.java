@@ -214,6 +214,8 @@ public abstract class AbstractProcessInstanceAssertTest {
       // then
       BpmnAssert.assertThat(instanceEvent)
           .hasPassedElement(ProcessPackLoopingServiceTask.ELEMENT_ID, totalLoops);
+      BpmnAssert.assertThat(instanceEvent)
+          .hasPassedElement(ProcessPackLoopingServiceTask.LOOP_SEQUENCE_FLOW_ID, totalLoops - 1);
     }
 
     @Test
@@ -222,12 +224,13 @@ public abstract class AbstractProcessInstanceAssertTest {
       // given
       Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
       final Map<String, Object> variables =
-          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 1);
+          Collections.singletonMap(ProcessPackLoopingServiceTask.TOTAL_LOOPS, 2);
       final ProcessInstanceEvent instanceEvent =
           Utilities.startProcessInstance(
               engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
 
       // when
+      Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
       Utilities.completeTask(engine, client, ProcessPackLoopingServiceTask.ELEMENT_ID);
 
       // then
@@ -235,6 +238,10 @@ public abstract class AbstractProcessInstanceAssertTest {
           .hasPassedElementsInOrder(
               ProcessPackLoopingServiceTask.START_EVENT_ID,
               ProcessPackLoopingServiceTask.ELEMENT_ID,
+              ProcessPackLoopingServiceTask.GATEWAY_ELEMENT_ID,
+              ProcessPackLoopingServiceTask.LOOP_SEQUENCE_FLOW_ID,
+              ProcessPackLoopingServiceTask.ELEMENT_ID,
+              ProcessPackLoopingServiceTask.GATEWAY_ELEMENT_ID,
               ProcessPackLoopingServiceTask.END_EVENT_ID);
     }
 
