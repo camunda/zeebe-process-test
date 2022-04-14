@@ -214,7 +214,8 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
             .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withElementId(elementId)
-            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
+            .withIntents(
+                ProcessInstanceIntent.ELEMENT_COMPLETED, ProcessInstanceIntent.SEQUENCE_FLOW_TAKEN)
             .stream()
             .count();
 
@@ -239,7 +240,8 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
             .withProcessInstanceKey(actual)
             .withRejectionType(RejectionType.NULL_VAL)
             .withElementIdIn(elementIds)
-            .withIntent(ProcessInstanceIntent.ELEMENT_COMPLETED)
+            .withIntents(
+                ProcessInstanceIntent.ELEMENT_COMPLETED, ProcessInstanceIntent.SEQUENCE_FLOW_TAKEN)
             .stream()
             .map(Record::getValue)
             .map(ProcessInstanceRecordValue::getElementId)
