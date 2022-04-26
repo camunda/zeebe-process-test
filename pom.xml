@@ -464,6 +464,8 @@
               </configurationFile>
             </analysisConfigurationFiles>
             <oldVersion>LATEST</oldVersion>
+            <!-- Don't check compatibility against pre-releases -->
+            <versionFormat>^\d+\.\d+\.\d+$</versionFormat>
           </configuration>
           <dependencies>
             <dependency>

@@ -1,0 +1,137 @@
+{
+  "definitions": [
+    {
+      "protopath": "engine_control.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "StartEngineRequest"
+          },
+          {
+            "name": "StartEngineResponse"
+          },
+          {
+            "name": "StopEngineRequest"
+          },
+          {
+            "name": "StopEngineResponse"
+          },
+          {
+            "name": "ResetEngineRequest"
+          },
+          {
+            "name": "ResetEngineResponse"
+          },
+          {
+            "name": "IncreaseTimeRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "milliseconds",
+                "type": "int32"
+              }
+            ]
+          },
+          {
+            "name": "IncreaseTimeResponse"
+          },
+          {
+            "name": "WaitForIdleStateRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "timeout",
+                "type": "int64"
+              }
+            ]
+          },
+          {
+            "name": "WaitForIdleStateResponse"
+          },
+          {
+            "name": "WaitForBusyStateRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "timeout",
+                "type": "int64"
+              }
+            ]
+          },
+          {
+            "name": "WaitForBusyStateResponse"
+          },
+          {
+            "name": "GetRecordsRequest"
+          },
+          {
+            "name": "RecordResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "recordJson",
+                "type": "string"
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "EngineControl",
+            "rpcs": [
+              {
+                "name": "StartEngine",
+                "in_type": "StartEngineRequest",
+                "out_type": "StartEngineResponse"
+              },
+              {
+                "name": "StopEngine",
+                "in_type": "StopEngineRequest",
+                "out_type": "StopEngineResponse"
+              },
+              {
+                "name": "ResetEngine",
+                "in_type": "ResetEngineRequest",
+                "out_type": "ResetEngineResponse"
+              },
+              {
+                "name": "IncreaseTime",
+                "in_type": "IncreaseTimeRequest",
+                "out_type": "IncreaseTimeResponse"
+              },
+              {
+                "name": "WaitForIdleState",
+                "in_type": "WaitForIdleStateRequest",
+                "out_type": "WaitForIdleStateResponse"
+              },
+              {
+                "name": "WaitForBusyState",
+                "in_type": "WaitForBusyStateRequest",
+                "out_type": "WaitForBusyStateResponse"
+              },
+              {
+                "name": "GetRecords",
+                "in_type": "GetRecordsRequest",
+                "out_type": "RecordResponse",
+                "out_streamed": true
+              }
+            ]
+          }
+        ],
+        "package": {
+          "name": "engine_protocol"
+        },
+        "options": [
+          {
+            "name": "java_multiple_files",
+            "value": "false"
+          },
+          {
+            "name": "java_package",
+            "value": "io.camunda.zeebe.process.test.engine.protocol"
+          }
+        ]
+      }
+    }
+  ]
+}
