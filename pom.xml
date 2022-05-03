@@ -223,6 +223,13 @@
         <version>${dependency.zeebe.version}</version>
       </dependency>
 
+      <!-- Specify the version to avoid dependency convergence error due to https://github.com/camunda/zeebe/issues/9280 -->
+      <dependency>
+        <groupId>org.camunda.bpm.model</groupId>
+        <artifactId>camunda-dmn-model</artifactId>
+        <version>7.17.0</version>
+      </dependency>
+
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-logstreams</artifactId>
