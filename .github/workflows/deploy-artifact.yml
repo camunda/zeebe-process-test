@@ -46,7 +46,7 @@ jobs:
             secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC;
 
       - name: Set up Java environment
-        uses: actions/setup-java@v3.2.0
+        uses: actions/setup-java@v3.3.0
         with:
           distribution: temurin
           java-version: 17
