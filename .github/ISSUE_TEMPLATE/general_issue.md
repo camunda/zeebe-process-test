@@ -3,7 +3,7 @@
 name: General issue
 about: General changes to the project
 title: ''
-labels: 'Type: Maintenance'
+labels: ["Type: Maintenance", "team/process-automation"]
 assignees: ''
 
 ---
