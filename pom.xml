@@ -93,7 +93,7 @@
     <plugin.version.maven-enforcer>3.0.0</plugin.version.maven-enforcer>
     <plugin.version.os-maven>1.7.0</plugin.version.os-maven>
     <plugin.version.revapi>0.14.6</plugin.version.revapi>
-    <plugin.version.spotless>2.22.3</plugin.version.spotless>
+    <plugin.version.spotless>2.22.4</plugin.version.spotless>
     <plugin.version.surefire>3.0.0-M6</plugin.version.surefire>
 
     <skipChecks>false</skipChecks>
