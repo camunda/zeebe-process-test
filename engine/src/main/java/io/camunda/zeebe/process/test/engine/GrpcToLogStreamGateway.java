@@ -73,15 +73,11 @@ import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements AutoCloseable {
+class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
   private final LogStreamRecordWriter writer;
-  private final ExecutorService executor = Executors.newSingleThreadExecutor();
   private final Map<Long, ResponseSender> responseSenderMap = new HashMap<>();
   private final RecordMetadata recordMetadata = new RecordMetadata();
   private final AtomicLong requestIdGenerator = new AtomicLong();
@@ -118,307 +114,262 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
   public void activateJobs(
       final ActivateJobsRequest request,
       final StreamObserver<ActivateJobsResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(responseObserver, GrpcResponseWriter::createJobBatchResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createJobBatchResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.JOB_BATCH)
-              .intent(JobBatchIntent.ACTIVATE);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.JOB_BATCH)
+        .intent(JobBatchIntent.ACTIVATE);
 
-          final JobBatchRecord jobBatchRecord = new JobBatchRecord();
+    final JobBatchRecord jobBatchRecord = new JobBatchRecord();
 
-          jobBatchRecord.setType(request.getType());
-          jobBatchRecord.setWorker(request.getWorker());
-          jobBatchRecord.setTimeout(request.getTimeout());
-          jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
+    jobBatchRecord.setType(request.getType());
+    jobBatchRecord.setWorker(request.getWorker());
+    jobBatchRecord.setTimeout(request.getTimeout());
+    jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
 
-          writeCommandWithoutKey(recordMetadata, jobBatchRecord);
-        });
+    writeCommandWithoutKey(recordMetadata, jobBatchRecord);
   }
 
   @Override
   public void cancelProcessInstance(
       final CancelProcessInstanceRequest request,
       final StreamObserver<CancelProcessInstanceResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(
-                  responseObserver, GrpcResponseWriter::createCancelInstanceResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createCancelInstanceResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.PROCESS_INSTANCE)
-              .intent(ProcessInstanceIntent.CANCEL);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.PROCESS_INSTANCE)
+        .intent(ProcessInstanceIntent.CANCEL);
 
-          final ProcessInstanceRecord processInstanceRecord = new ProcessInstanceRecord();
-          processInstanceRecord.setProcessInstanceKey(request.getProcessInstanceKey());
+    final ProcessInstanceRecord processInstanceRecord = new ProcessInstanceRecord();
+    processInstanceRecord.setProcessInstanceKey(request.getProcessInstanceKey());
 
-          writeCommandWithKey(
-              request.getProcessInstanceKey(), recordMetadata, processInstanceRecord);
-        });
+    writeCommandWithKey(request.getProcessInstanceKey(), recordMetadata, processInstanceRecord);
   }
 
   @Override
   public void completeJob(
       final CompleteJobRequest request,
       final StreamObserver<CompleteJobResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(responseObserver, GrpcResponseWriter::createCompleteJobResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createCompleteJobResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.JOB)
-              .intent(JobIntent.COMPLETE);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.JOB)
+        .intent(JobIntent.COMPLETE);
 
-          final JobRecord jobRecord = new JobRecord();
+    final JobRecord jobRecord = new JobRecord();
 
-          final String variables = request.getVariables();
-          if (!variables.isEmpty()) {
-            jobRecord.setVariables(
-                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
-          }
+    final String variables = request.getVariables();
+    if (!variables.isEmpty()) {
+      jobRecord.setVariables(BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+    }
 
-          writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
-        });
+    writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
   }
 
   @Override
   public void createProcessInstance(
       final CreateProcessInstanceRequest request,
       final StreamObserver<CreateProcessInstanceResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(
-                  responseObserver, GrpcResponseWriter::createProcessInstanceResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createProcessInstanceResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.PROCESS_INSTANCE_CREATION)
-              .intent(ProcessInstanceCreationIntent.CREATE);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.PROCESS_INSTANCE_CREATION)
+        .intent(ProcessInstanceCreationIntent.CREATE);
 
-          final ProcessInstanceCreationRecord processInstanceCreationRecord =
-              createProcessInstanceCreationRecord(request);
-          writeCommandWithoutKey(recordMetadata, processInstanceCreationRecord);
-        });
+    final ProcessInstanceCreationRecord processInstanceCreationRecord =
+        createProcessInstanceCreationRecord(request);
+    writeCommandWithoutKey(recordMetadata, processInstanceCreationRecord);
   }
 
   @Override
   public void createProcessInstanceWithResult(
       final CreateProcessInstanceWithResultRequest request,
       final StreamObserver<CreateProcessInstanceWithResultResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(
-                  responseObserver, GrpcResponseWriter::createProcessInstanceWithResultResponse);
+    final Long requestId =
+        registerNewRequest(
+            responseObserver, GrpcResponseWriter::createProcessInstanceWithResultResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.PROCESS_INSTANCE_CREATION)
-              .intent(ProcessInstanceCreationIntent.CREATE_WITH_AWAITING_RESULT);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.PROCESS_INSTANCE_CREATION)
+        .intent(ProcessInstanceCreationIntent.CREATE_WITH_AWAITING_RESULT);
 
-          final ProcessInstanceCreationRecord processInstanceCreationRecord =
-              createProcessInstanceCreationRecord(request.getRequest());
-          processInstanceCreationRecord.setFetchVariables(request.getFetchVariablesList());
+    final ProcessInstanceCreationRecord processInstanceCreationRecord =
+        createProcessInstanceCreationRecord(request.getRequest());
+    processInstanceCreationRecord.setFetchVariables(request.getFetchVariablesList());
 
-          writeCommandWithoutKey(recordMetadata, processInstanceCreationRecord);
-        });
+    writeCommandWithoutKey(recordMetadata, processInstanceCreationRecord);
   }
 
   @Override
   public void deployProcess(
       final DeployProcessRequest request,
       final StreamObserver<DeployProcessResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(responseObserver, GrpcResponseWriter::createDeployResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createDeployResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.DEPLOYMENT)
-              .intent(DeploymentIntent.CREATE);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.DEPLOYMENT)
+        .intent(DeploymentIntent.CREATE);
 
-          final DeploymentRecord deploymentRecord = new DeploymentRecord();
-          final ValueArray<DeploymentResource> resources = deploymentRecord.resources();
+    final DeploymentRecord deploymentRecord = new DeploymentRecord();
+    final ValueArray<DeploymentResource> resources = deploymentRecord.resources();
 
-          request
-              .getProcessesList()
-              .forEach(
-                  (processRequestObject -> {
-                    resources
-                        .add()
-                        .setResourceName(processRequestObject.getName())
-                        .setResource(processRequestObject.getDefinition().toByteArray());
-                  }));
+    request
+        .getProcessesList()
+        .forEach(
+            (processRequestObject -> {
+              resources
+                  .add()
+                  .setResourceName(processRequestObject.getName())
+                  .setResource(processRequestObject.getDefinition().toByteArray());
+            }));
 
-          writeCommandWithoutKey(recordMetadata, deploymentRecord);
-        });
+    writeCommandWithoutKey(recordMetadata, deploymentRecord);
   }
 
   @Override
   public void deployResource(
       final DeployResourceRequest request,
       final StreamObserver<DeployResourceResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(
-                  responseObserver, GrpcResponseWriter::createDeployResourceResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createDeployResourceResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.DEPLOYMENT)
-              .intent(DeploymentIntent.CREATE);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.DEPLOYMENT)
+        .intent(DeploymentIntent.CREATE);
 
-          final DeploymentRecord deploymentRecord = new DeploymentRecord();
-          final ValueArray<DeploymentResource> resources = deploymentRecord.resources();
+    final DeploymentRecord deploymentRecord = new DeploymentRecord();
+    final ValueArray<DeploymentResource> resources = deploymentRecord.resources();
 
-          request
-              .getResourcesList()
-              .forEach(
-                  (resource ->
-                      resources
-                          .add()
-                          .setResourceName(resource.getName())
-                          .setResource(resource.getContent().toByteArray())));
+    request
+        .getResourcesList()
+        .forEach(
+            (resource ->
+                resources
+                    .add()
+                    .setResourceName(resource.getName())
+                    .setResource(resource.getContent().toByteArray())));
 
-          writeCommandWithoutKey(recordMetadata, deploymentRecord);
-        });
+    writeCommandWithoutKey(recordMetadata, deploymentRecord);
   }
 
   @Override
   public void failJob(
       final FailJobRequest request, final StreamObserver<FailJobResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(responseObserver, GrpcResponseWriter::createFailJobResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createFailJobResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.JOB)
-              .intent(JobIntent.FAIL);
+    prepareRecordMetadata().requestId(requestId).valueType(ValueType.JOB).intent(JobIntent.FAIL);
 
-          final JobRecord jobRecord = new JobRecord();
+    final JobRecord jobRecord = new JobRecord();
 
-          jobRecord.setRetries(request.getRetries());
-          jobRecord.setErrorMessage(request.getErrorMessage());
+    jobRecord.setRetries(request.getRetries());
+    jobRecord.setErrorMessage(request.getErrorMessage());
 
-          writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
-        });
+    writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
   }
 
   @Override
   public void throwError(
       final ThrowErrorRequest request, final StreamObserver<ThrowErrorResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(responseObserver, GrpcResponseWriter::createJobThrowErrorResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createJobThrowErrorResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.JOB)
-              .intent(JobIntent.THROW_ERROR);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.JOB)
+        .intent(JobIntent.THROW_ERROR);
 
-          final JobRecord jobRecord = new JobRecord();
+    final JobRecord jobRecord = new JobRecord();
 
-          jobRecord.setErrorCode(BufferUtil.wrapString(request.getErrorCode()));
-          jobRecord.setErrorMessage(request.getErrorMessage());
+    jobRecord.setErrorCode(BufferUtil.wrapString(request.getErrorCode()));
+    jobRecord.setErrorMessage(request.getErrorMessage());
 
-          writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
-        });
+    writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
   }
 
   @Override
   public void publishMessage(
       final PublishMessageRequest request,
       final StreamObserver<PublishMessageResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(responseObserver, GrpcResponseWriter::createMessageResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createMessageResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.MESSAGE)
-              .intent(MessageIntent.PUBLISH);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.MESSAGE)
+        .intent(MessageIntent.PUBLISH);
 
-          final MessageRecord messageRecord = new MessageRecord();
+    final MessageRecord messageRecord = new MessageRecord();
 
-          messageRecord.setCorrelationKey(request.getCorrelationKey());
-          messageRecord.setMessageId(request.getMessageId());
-          messageRecord.setName(request.getName());
-          messageRecord.setTimeToLive(request.getTimeToLive());
-          final String variables = request.getVariables();
-          if (!variables.isEmpty()) {
-            messageRecord.setVariables(
-                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
-          }
+    messageRecord.setCorrelationKey(request.getCorrelationKey());
+    messageRecord.setMessageId(request.getMessageId());
+    messageRecord.setName(request.getName());
+    messageRecord.setTimeToLive(request.getTimeToLive());
+    final String variables = request.getVariables();
+    if (!variables.isEmpty()) {
+      messageRecord.setVariables(
+          BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+    }
 
-          writeCommandWithoutKey(recordMetadata, messageRecord);
-        });
+    writeCommandWithoutKey(recordMetadata, messageRecord);
   }
 
   @Override
   public void resolveIncident(
       final ResolveIncidentRequest request,
       final StreamObserver<ResolveIncidentResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(
-                  responseObserver, GrpcResponseWriter::createResolveIncidentResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createResolveIncidentResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.INCIDENT)
-              .intent(IncidentIntent.RESOLVE);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.INCIDENT)
+        .intent(IncidentIntent.RESOLVE);
 
-          final IncidentRecord incidentRecord = new IncidentRecord();
+    final IncidentRecord incidentRecord = new IncidentRecord();
 
-          writeCommandWithKey(request.getIncidentKey(), recordMetadata, incidentRecord);
-        });
+    writeCommandWithKey(request.getIncidentKey(), recordMetadata, incidentRecord);
   }
 
   @Override
   public void setVariables(
       final SetVariablesRequest request,
       final StreamObserver<SetVariablesResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(responseObserver, GrpcResponseWriter::createSetVariablesResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createSetVariablesResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.VARIABLE_DOCUMENT)
-              .intent(VariableDocumentIntent.UPDATE);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.VARIABLE_DOCUMENT)
+        .intent(VariableDocumentIntent.UPDATE);
 
-          final VariableDocumentRecord variableDocumentRecord = new VariableDocumentRecord();
+    final VariableDocumentRecord variableDocumentRecord = new VariableDocumentRecord();
 
-          final String variables = request.getVariables();
-          if (!variables.isEmpty()) {
-            variableDocumentRecord.setVariables(
-                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
-          }
+    final String variables = request.getVariables();
+    if (!variables.isEmpty()) {
+      variableDocumentRecord.setVariables(
+          BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+    }
 
-          variableDocumentRecord.setScopeKey(request.getElementInstanceKey());
-          variableDocumentRecord.setUpdateSemantics(
-              request.getLocal()
-                  ? VariableDocumentUpdateSemantic.LOCAL
-                  : VariableDocumentUpdateSemantic.PROPAGATE);
+    variableDocumentRecord.setScopeKey(request.getElementInstanceKey());
+    variableDocumentRecord.setUpdateSemantics(
+        request.getLocal()
+            ? VariableDocumentUpdateSemantic.LOCAL
+            : VariableDocumentUpdateSemantic.PROPAGATE);
 
-          writeCommandWithoutKey(recordMetadata, variableDocumentRecord);
-        });
+    writeCommandWithoutKey(recordMetadata, variableDocumentRecord);
   }
 
   @Override
@@ -456,32 +407,18 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
   public void updateJobRetries(
       final UpdateJobRetriesRequest request,
       final StreamObserver<UpdateJobRetriesResponse> responseObserver) {
-    executor.submit(
-        () -> {
-          final Long requestId =
-              registerNewRequest(
-                  responseObserver, GrpcResponseWriter::createJobUpdateRetriesResponse);
+    final Long requestId =
+        registerNewRequest(responseObserver, GrpcResponseWriter::createJobUpdateRetriesResponse);
 
-          prepareRecordMetadata()
-              .requestId(requestId)
-              .valueType(ValueType.JOB)
-              .intent(JobIntent.UPDATE_RETRIES);
+    prepareRecordMetadata()
+        .requestId(requestId)
+        .valueType(ValueType.JOB)
+        .intent(JobIntent.UPDATE_RETRIES);
 
-          final JobRecord jobRecord = new JobRecord();
-          jobRecord.setRetries(request.getRetries());
+    final JobRecord jobRecord = new JobRecord();
+    jobRecord.setRetries(request.getRetries());
 
-          writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
-        });
-  }
-
-  @Override
-  public void close() {
-    try {
-      executor.shutdownNow();
-      executor.awaitTermination(60, TimeUnit.SECONDS);
-    } catch (final InterruptedException ie) {
-      // TODO handle
-    }
+    writeCommandWithKey(request.getJobKey(), recordMetadata, jobRecord);
   }
 
   private RecordMetadata prepareRecordMetadata() {
@@ -514,19 +451,13 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase implements Auto
   }
 
   public void responseCallback(final Long requestId) {
-    executor.submit(
-        () -> {
-          final ResponseSender responseSender = responseSenderMap.remove(requestId);
-          responseSender.sendResponse();
-        });
+    final ResponseSender responseSender = responseSenderMap.remove(requestId);
+    responseSender.sendResponse();
   }
 
   public void errorCallback(final Long requestId, final Status error) {
-    executor.submit(
-        () -> {
-          final ResponseSender responseSender = responseSenderMap.remove(requestId);
-          responseSender.sendError(error);
-        });
+    final ResponseSender responseSender = responseSenderMap.remove(requestId);
+    responseSender.sendError(error);
   }
 
   public String getAddress() {
