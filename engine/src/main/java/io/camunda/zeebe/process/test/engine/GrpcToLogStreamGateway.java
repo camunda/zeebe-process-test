@@ -442,16 +442,6 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     return processInstanceCreationRecord;
   }
 
-  public void responseCallback(final Long requestId) {
-    final ResponseSender responseSender = responseSenderMap.remove(requestId);
-    responseSender.sendResponse();
-  }
-
-  public void errorCallback(final Long requestId, final Status error) {
-    final ResponseSender responseSender = responseSenderMap.remove(requestId);
-    responseSender.sendError(error);
-  }
-
   public String getAddress() {
     return "0.0.0.0:" + port;
   }
