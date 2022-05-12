@@ -14,6 +14,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * This class stores gateway requests in a thread-safe manner. These requests will be accessed by
+ * the {@link GrpcResponseWriter} in order to send the responses
+ */
 class GatewayRequestStore {
 
   private final Map<Long, Request> requestMap = new ConcurrentHashMap<>();
