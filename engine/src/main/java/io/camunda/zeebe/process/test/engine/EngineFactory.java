@@ -47,14 +47,12 @@ public class EngineFactory {
         new SubscriptionCommandSenderFactory(
             logStream.newLogStreamRecordWriter().join(), partitionId);
 
+    final CommandWriter commandWriter =
+        new CommandWriter(logStream.newLogStreamRecordWriter().join());
     final GatewayRequestStore gatewayRequestStore = new GatewayRequestStore();
     final GrpcToLogStreamGateway gateway =
         new GrpcToLogStreamGateway(
-            logStream.newLogStreamRecordWriter().join(),
-            partitionId,
-            partitionCount,
-            port,
-            gatewayRequestStore);
+            commandWriter, partitionId, partitionCount, port, gatewayRequestStore);
     final Server grpcServer = ServerBuilder.forPort(port).addService(gateway).build();
 
     final GrpcResponseWriter grpcResponseWriter =

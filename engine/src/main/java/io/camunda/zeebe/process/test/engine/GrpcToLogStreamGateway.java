@@ -39,7 +39,6 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesResponse;
-import io.camunda.zeebe.logstreams.log.LogStreamRecordWriter;
 import io.camunda.zeebe.msgpack.value.ValueArray;
 import io.camunda.zeebe.protocol.impl.encoding.MsgPackConverter;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
@@ -65,19 +64,18 @@ import io.camunda.zeebe.protocol.record.intent.VariableDocumentIntent;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentUpdateSemantic;
 import io.camunda.zeebe.util.VersionUtil;
 import io.camunda.zeebe.util.buffer.BufferUtil;
-import io.camunda.zeebe.util.buffer.BufferWriter;
 import io.grpc.stub.StreamObserver;
 
 class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
-  private final LogStreamRecordWriter writer;
+  private final CommandWriter writer;
   private final int partitionId;
   private final int partitionCount;
   private final int port;
   private final GatewayRequestStore gatewayRequestStore;
 
   public GrpcToLogStreamGateway(
-      final LogStreamRecordWriter writer,
+      final CommandWriter writer,
       final int partitionId,
       final int partitionCount,
       final int port,
@@ -87,22 +85,6 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     this.partitionCount = partitionCount;
     this.port = port;
     this.gatewayRequestStore = gatewayRequestStore;
-  }
-
-  private void writeCommandWithKey(
-      final Long key, final BufferWriter bufferWriter, final RecordMetadata recordMetadata) {
-    synchronized (writer) {
-      writer.reset();
-      writer.key(key).metadataWriter(recordMetadata).valueWriter(bufferWriter).tryWrite();
-    }
-  }
-
-  private void writeCommandWithoutKey(
-      final BufferWriter bufferWriter, final RecordMetadata recordMetadata) {
-    synchronized (writer) {
-      writer.reset();
-      writer.keyNull().metadataWriter(recordMetadata).valueWriter(bufferWriter).tryWrite();
-    }
   }
 
   @Override
@@ -125,7 +107,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     jobBatchRecord.setTimeout(request.getTimeout());
     jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
 
-    writeCommandWithoutKey(jobBatchRecord, recordMetadata);
+    writer.writeCommandWithoutKey(jobBatchRecord, recordMetadata);
   }
 
   @Override
@@ -144,7 +126,8 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     final ProcessInstanceRecord processInstanceRecord = new ProcessInstanceRecord();
     processInstanceRecord.setProcessInstanceKey(request.getProcessInstanceKey());
 
-    writeCommandWithKey(request.getProcessInstanceKey(), processInstanceRecord, recordMetadata);
+    writer.writeCommandWithKey(
+        request.getProcessInstanceKey(), processInstanceRecord, recordMetadata);
   }
 
   @Override
@@ -167,7 +150,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
       jobRecord.setVariables(BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
     }
 
-    writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
+    writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
   }
 
   @Override
@@ -185,7 +168,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
     final ProcessInstanceCreationRecord processInstanceCreationRecord =
         createProcessInstanceCreationRecord(request);
-    writeCommandWithoutKey(processInstanceCreationRecord, recordMetadata);
+    writer.writeCommandWithoutKey(processInstanceCreationRecord, recordMetadata);
   }
 
   @Override
@@ -205,7 +188,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
         createProcessInstanceCreationRecord(request.getRequest());
     processInstanceCreationRecord.setFetchVariables(request.getFetchVariablesList());
 
-    writeCommandWithoutKey(processInstanceCreationRecord, recordMetadata);
+    writer.writeCommandWithoutKey(processInstanceCreationRecord, recordMetadata);
   }
 
   @Override
@@ -234,7 +217,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
                   .setResource(processRequestObject.getDefinition().toByteArray());
             }));
 
-    writeCommandWithoutKey(deploymentRecord, recordMetadata);
+    writer.writeCommandWithoutKey(deploymentRecord, recordMetadata);
   }
 
   @Override
@@ -262,7 +245,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
                     .setResourceName(resource.getName())
                     .setResource(resource.getContent().toByteArray())));
 
-    writeCommandWithoutKey(deploymentRecord, recordMetadata);
+    writer.writeCommandWithoutKey(deploymentRecord, recordMetadata);
   }
 
   @Override
@@ -282,7 +265,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     jobRecord.setRetries(request.getRetries());
     jobRecord.setErrorMessage(request.getErrorMessage());
 
-    writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
+    writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
   }
 
   @Override
@@ -302,7 +285,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     jobRecord.setErrorCode(BufferUtil.wrapString(request.getErrorCode()));
     jobRecord.setErrorMessage(request.getErrorMessage());
 
-    writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
+    writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
   }
 
   @Override
@@ -330,7 +313,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
           BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
     }
 
-    writeCommandWithoutKey(messageRecord, recordMetadata);
+    writer.writeCommandWithoutKey(messageRecord, recordMetadata);
   }
 
   @Override
@@ -348,7 +331,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
     final IncidentRecord incidentRecord = new IncidentRecord();
 
-    writeCommandWithKey(request.getIncidentKey(), incidentRecord, recordMetadata);
+    writer.writeCommandWithKey(request.getIncidentKey(), incidentRecord, recordMetadata);
   }
 
   @Override
@@ -378,7 +361,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
             ? VariableDocumentUpdateSemantic.LOCAL
             : VariableDocumentUpdateSemantic.PROPAGATE);
 
-    writeCommandWithoutKey(variableDocumentRecord, recordMetadata);
+    writer.writeCommandWithoutKey(variableDocumentRecord, recordMetadata);
   }
 
   @Override
@@ -428,7 +411,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     final JobRecord jobRecord = new JobRecord();
     jobRecord.setRetries(request.getRetries());
 
-    writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
+    writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
   }
 
   private RecordMetadata prepareRecordMetadata() {
