@@ -77,7 +77,6 @@ class InMemoryEngine implements ZeebeTestEngine {
     try {
       grpcServer.shutdownNow();
       grpcServer.awaitTermination();
-      gateway.close();
       streamProcessor.close();
       database.close();
       logStream.close();
