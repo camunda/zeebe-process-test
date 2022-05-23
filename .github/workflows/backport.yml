@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
       - name: Create backport PRs
         # Should be kept in sync with `version`
-        uses: zeebe-io/backport-action@v0.0.7
+        uses: zeebe-io/backport-action@v0.0.8
         with:
           # Required
           # Version of the backport-action
