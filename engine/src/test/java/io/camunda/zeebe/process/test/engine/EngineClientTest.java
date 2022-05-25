@@ -111,6 +111,7 @@ class EngineClientTest {
     // given
     final ZeebeClient client =
         ZeebeClient.newClientBuilder()
+            .applyEnvironmentVariableOverrides(false)
             .usePlaintext()
             .gatewayAddress(zeebeEngine.getGatewayAddress())
             .build();

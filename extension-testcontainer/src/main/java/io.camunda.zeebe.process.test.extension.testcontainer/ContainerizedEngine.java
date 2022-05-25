@@ -94,6 +94,7 @@ public class ContainerizedEngine implements ZeebeTestEngine {
   @Override
   public ZeebeClient createClient() {
     return ZeebeClient.newClientBuilder()
+        .applyEnvironmentVariableOverrides(false)
         .gatewayAddress(getGatewayAddress())
         .usePlaintext()
         .build();
