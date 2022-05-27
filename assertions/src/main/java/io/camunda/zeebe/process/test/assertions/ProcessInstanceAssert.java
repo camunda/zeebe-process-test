@@ -17,7 +17,6 @@ package io.camunda.zeebe.process.test.assertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.process.test.filters.IncidentRecordStreamFilter;
 import io.camunda.zeebe.process.test.filters.ProcessInstanceRecordStreamFilter;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -478,28 +477,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @return this ${@link ProcessInstanceAssert}
    */
   public ProcessInstanceAssert hasVariable(final String name) {
-    final Map<String, String> variables = getProcessInstanceVariables();
-    return assertVariableInMapOfVariables(name, variables);
-  }
-
-  /**
-   * Assert that the given variable name is a key in the given map of variables.
-   *
-   * <p>This assertion has been extracted from the method ${@link #hasVariable(String)} so that the
-   * method ${@link #hasVariableWithValue(String, Object)} could reuse it without having to traverse
-   * the record stream to collect the variables a second time.
-   *
-   * @param name The name of the variable
-   * @param variables The map of variables
-   * @return this ${@link ProcessInstanceAssert}
-   */
-  private ProcessInstanceAssert assertVariableInMapOfVariables(
-      final String name, final Map<String, String> variables) {
-    assertThat(variables)
-        .withFailMessage(
-            "Process with key %s does not contain variable with name `%s`. Available variables are: %s",
-            actual, name, variables.keySet())
-        .containsKey(name);
+    getVariableAssert().containsVariable(name);
     return this;
   }
 
@@ -511,18 +489,7 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @return this ${@link ProcessInstanceAssert}
    */
   public ProcessInstanceAssert hasVariableWithValue(final String name, final Object value) {
-    final ZeebeObjectMapper mapper = new ZeebeObjectMapper();
-    final String mappedValue = mapper.toJson(value);
-    final Map<String, String> variables = getProcessInstanceVariables();
-
-    assertVariableInMapOfVariables(name, variables);
-    assertThat(variables)
-        .withFailMessage(
-            "The variable '%s' does not have the expected value. The value passed in"
-                + " ('%s') is internally mapped to a JSON String that yields '%s'. However, the "
-                + "actual value (as JSON String) is '%s'.",
-            name, value, mappedValue, variables.get(name))
-        .containsEntry(name, mappedValue);
+    getVariableAssert().hasVariableWithValue(name, value);
 
     return this;
   }
@@ -545,6 +512,10 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
                 VariableRecordValue::getName,
                 VariableRecordValue::getValue,
                 (value1, value2) -> value2));
+  }
+
+  private VariablesMapAssert getVariableAssert() {
+    return new VariablesMapAssert(getProcessInstanceVariables());
   }
 
   /**
