@@ -93,7 +93,7 @@ class VariablesMapAssertTest {
 
       // when + then
       assertThatThrownBy(() -> sut.hasVariableWithValue(KEY, "someOtherValue"))
-          .isExactlyInstanceOf(AssertionError.class)
+          .isInstanceOf(AssertionError.class)
           .hasMessage(
               "The variable 'key' does not have the expected value. The value passed in ('someOtherValue') is internally mapped to a JSON String that yields '\"someOtherValue\"'. However, the actual value (as JSON String) is '\"value\"'.");
     }
