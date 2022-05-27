@@ -17,10 +17,12 @@
 package io.camunda.zeebe.process.test.assertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
-import io.camunda.zeebe.test.util.JsonUtil;
+import java.io.IOException;
 import java.util.Map;
 import org.assertj.core.api.AbstractAssert;
 
@@ -30,7 +32,12 @@ import org.assertj.core.api.AbstractAssert;
  */
 public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<String, String>> {
 
+  static final ObjectMapper JSON_MAPPER = new ObjectMapper();
   private static final ZeebeObjectMapper OBJECT_MAPPER = new ZeebeObjectMapper();
+
+  static {
+    JSON_MAPPER.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+  }
 
   public VariablesMapAssert(final Map<String, String> actual) {
     super(actual, VariablesMapAssert.class);
@@ -52,21 +59,31 @@ public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<S
   }
 
   public VariablesMapAssert hasVariableWithValue(final String name, final Object value) {
+    containsVariable(name);
+
     final String expectedValue = OBJECT_MAPPER.toJson(value);
     final String actualValue = actual.get(name);
 
-    containsVariable(name);
-
-    try {
-      JsonUtil.assertEquality(expectedValue, actualValue);
-    } catch (final AssertionError e) {
-      fail(
-          "The variable '%s' does not have the expected value. The value passed in"
-              + " ('%s') is internally mapped to a JSON String that yields '%s'. However, the "
-              + "actual value (as JSON String) is '%s'.",
-          name, value, expectedValue, actualValue);
-    }
+    assertThat(isEqual(actualValue, expectedValue))
+        .withFailMessage(
+            "The variable '%s' does not have the expected value. The value passed in"
+                + " ('%s') is internally mapped to a JSON String that yields '%s'. However, the "
+                + "actual value (as JSON String) is '%s'.",
+            name, value, expectedValue, actualValue)
+        .isTrue();
 
     return this;
+  }
+
+  private static boolean isEqual(final String actualJson, final String expectedJson) {
+    return asJsonNode(actualJson).equals(asJsonNode(expectedJson));
+  }
+
+  private static JsonNode asJsonNode(final String json) {
+    try {
+      return JSON_MAPPER.readTree(json);
+    } catch (final IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
