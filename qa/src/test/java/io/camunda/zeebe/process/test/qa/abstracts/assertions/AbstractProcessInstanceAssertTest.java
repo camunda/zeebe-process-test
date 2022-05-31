@@ -15,6 +15,7 @@
  */
 package io.camunda.zeebe.process.test.qa.abstracts.assertions;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -408,12 +408,12 @@ public abstract class AbstractProcessInstanceAssertTest {
               engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, TYPED_TEST_VARIABLES);
 
       // then
-      final SoftAssertions softly = new SoftAssertions();
-
-      TYPED_TEST_VARIABLES.forEach(
-          (key, value) -> BpmnAssert.assertThat(instanceEvent).hasVariableWithValue(key, value));
-
-      softly.assertAll();
+      assertThatNoException()
+          .isThrownBy(
+              () ->
+                  TYPED_TEST_VARIABLES.forEach(
+                      (key, value) ->
+                          BpmnAssert.assertThat(instanceEvent).hasVariableWithValue(key, value)));
     }
 
     @Test
@@ -998,8 +998,8 @@ public abstract class AbstractProcessInstanceAssertTest {
       assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).hasVariable(expectedVariable))
           .isInstanceOf(AssertionError.class)
           .hasMessage(
-              "Process with key %s does not contain variable with name `%s`. Available variables are: [%s]",
-              instanceEvent.getProcessInstanceKey(), expectedVariable, actualVariable);
+              "Unable to find variable with name `%s`. Available variables are: [%s]",
+              expectedVariable, actualVariable);
     }
 
     @Test
