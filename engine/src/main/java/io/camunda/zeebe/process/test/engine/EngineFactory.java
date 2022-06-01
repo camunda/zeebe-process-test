@@ -18,6 +18,7 @@ import io.camunda.zeebe.logstreams.log.LogStreamReader;
 import io.camunda.zeebe.logstreams.storage.LogStorage;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.db.InMemoryDbFactory;
+import io.camunda.zeebe.util.FeatureFlags;
 import io.camunda.zeebe.util.sched.Actor;
 import io.camunda.zeebe.util.sched.ActorScheduler;
 import io.camunda.zeebe.util.sched.ActorSchedulingService;
@@ -152,7 +153,8 @@ public class EngineFactory {
                     subscriptionCommandSenderFactory.createSender(),
                     new SinglePartitionDeploymentDistributor(),
                     new SinglePartitionDeploymentResponder(),
-                    jobType -> {}))
+                    jobType -> {},
+                    FeatureFlags.createDefault()))
         .actorSchedulingService(scheduler)
         .build();
   }
