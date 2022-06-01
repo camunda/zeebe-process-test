@@ -46,7 +46,7 @@
 
   <properties>
     <dependency.agrona.version>1.15.1</dependency.agrona.version>
-    <dependency.assertj.version>3.22.0</dependency.assertj.version>
+    <dependency.assertj.version>3.23.1</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
     <dependency.classgraph.version>4.8.147</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
