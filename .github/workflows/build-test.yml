@@ -107,12 +107,11 @@ jobs:
       - name: Update image tag in config
         run: |
           cd extension-testcontainer/src/main/resources
-          sed -i '/container.image.name=/ s/=.*/=${{ env.IMAGE_NAME }}/' config.properties
-          sed -i '/container.image.tag=/ s/=.*/=${{ github.sha }}/' config.properties
+          export ESCAPED_IMAGE_NAME="${IMAGE_NAME/\//\\/}"
+          echo "${ESCAPED_IMAGE_NAME}"
+          sed -i "/container.image.name=/ s/=.*/=${ESCAPED_IMAGE_NAME}/" config.properties
+          sed -i "/container.image.tag=/ s/=.*/=${{ github.sha }}/" config.properties
           cat config.properties
-        env:
-          IMAGE_NAME_KEY: container.image.name
-          IMAGE_TAG_KEY: container.image.tag
 
       - name: Downgrade Java environment
         uses: actions/setup-java@v3.3.0
