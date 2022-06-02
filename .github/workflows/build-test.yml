@@ -65,8 +65,14 @@ jobs:
     needs: code-formatting
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: "qa-tests"
-
+      IMAGE_NAME: "localhost:5000/qa-tests"
+      TC_CLOUD_TOKEN: ${{ secrets.TC_CLOUD_TOKEN }}
+      TC_CLOUD_CONCURRENCY: 4
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -85,6 +91,18 @@ jobs:
         run: |
           cd engine-agent
           docker build . -t ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Push image to local registry
+        run: |
+          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Prepare Testcontainers Cloud agent
+        if: env.TC_CLOUD_TOKEN != ''
+        run: |
+          curl -L -o agent https://app.testcontainers.cloud/download/testcontainers-cloud-agent_linux_x86-64
+          chmod +x agent
+          ./agent --private-registry-url=http://localhost:5000 '--private-registry-allowed-image-name-globs=*,*/*' &
+          ./agent wait
 
       - name: Update image tag in config
         run: |
