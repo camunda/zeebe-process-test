@@ -48,30 +48,30 @@
     <dependency.agrona.version>1.15.1</dependency.agrona.version>
     <dependency.assertj.version>3.22.0</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
-    <dependency.classgraph.version>4.8.146</dependency.classgraph.version>
+    <dependency.classgraph.version>4.8.147</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
-    <dependency.errorprone.version>2.13.1</dependency.errorprone.version>
+    <dependency.errorprone.version>2.14.0</dependency.errorprone.version>
     <dependency.feel.version>1.14.2</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>31.1-jre</dependency.guava.version>
     <dependency.immutables.version>2.9.0</dependency.immutables.version>
-    <dependency.jackson.version>2.13.2.20220328</dependency.jackson.version>
+    <dependency.jackson.version>2.13.3</dependency.jackson.version>
     <dependency.javax.version>1.3.2</dependency.javax.version>
     <dependency.jna.version>5.11.0</dependency.jna.version>
     <dependency.junit.version>5.8.2</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
-    <dependency.mockito.version>4.5.1</dependency.mockito.version>
+    <dependency.mockito.version>4.6.1</dependency.mockito.version>
     <dependency.netty.version>4.1.77.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.8.3</dependency.proto.version>
-    <dependency.protobuf.version>3.20.1</dependency.protobuf.version>
+    <dependency.protobuf.version>3.21.1</dependency.protobuf.version>
     <dependency.revapi.version>0.26.1</dependency.revapi.version>
     <dependency.scala.version>2.13.8</dependency.scala.version>
     <dependency.slf4j.version>1.7.36</dependency.slf4j.version>
     <dependency.snakeyaml.version>1.30</dependency.snakeyaml.version>
     <dependency.spring.version>5.3.20</dependency.spring.version>
-    <dependency.testcontainers.version>1.17.1</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.1.0-SNAPSHOT</dependency.zeebe.version>
+    <dependency.testcontainers.version>1.17.2</dependency.testcontainers.version>
+    <dependency.zeebe.version>8.1.0-alpha2</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
@@ -98,7 +98,7 @@
 
     <skipChecks>false</skipChecks>
 
-    <version.grpc>1.46.0</version.grpc>
+    <version.grpc>1.47.0</version.grpc>
     <version.java>17</version.java>
     <version.protobuf>3.19.4</version.protobuf>
   </properties>
