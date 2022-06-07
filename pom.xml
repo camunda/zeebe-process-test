@@ -64,7 +64,7 @@
     <dependency.netty.version>4.1.77.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.8.3</dependency.proto.version>
-    <dependency.protobuf.version>3.21.0</dependency.protobuf.version>
+    <dependency.protobuf.version>3.21.1</dependency.protobuf.version>
     <dependency.revapi.version>0.26.1</dependency.revapi.version>
     <dependency.scala.version>2.13.8</dependency.scala.version>
     <dependency.slf4j.version>1.7.36</dependency.slf4j.version>
@@ -94,11 +94,11 @@
     <plugin.version.os-maven>1.7.0</plugin.version.os-maven>
     <plugin.version.revapi>0.14.6</plugin.version.revapi>
     <plugin.version.spotless>2.22.5</plugin.version.spotless>
-    <plugin.version.surefire>3.0.0-M6</plugin.version.surefire>
+    <plugin.version.surefire>3.0.0-M7</plugin.version.surefire>
 
     <skipChecks>false</skipChecks>
 
-    <version.grpc>1.46.0</version.grpc>
+    <version.grpc>1.47.0</version.grpc>
     <version.java>17</version.java>
     <version.protobuf>3.19.4</version.protobuf>
   </properties>
