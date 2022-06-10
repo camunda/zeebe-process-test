@@ -1,0 +1,14 @@
+name: Add Labels
+
+on:
+  issues:
+    types: [ opened, transferred ]
+
+jobs:
+  add_label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: team/process-automation
