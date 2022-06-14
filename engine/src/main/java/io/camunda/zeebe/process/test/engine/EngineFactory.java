@@ -31,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 public class EngineFactory {
 
   public static ZeebeTestEngine create() {
-    return create(26500);
+    return create(26499);
   }
 
   public static ZeebeTestEngine create(final int port) {
