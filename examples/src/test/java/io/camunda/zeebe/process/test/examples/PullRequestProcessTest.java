@@ -22,32 +22,21 @@ import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.examples.Utilities.ProcessPackPRCreated;
+import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This is an abstract test class so we can test these tests with both our extensions (embedded and
- * testcontainer) without the need to duplicate our test code.
- *
- * <p>Users would not do this. They would create a regular test class and annotate this with the
- * preferred annotation to include the extension they need.
- */
-public abstract class AbstractPrCreatedTest {
+@ZeebeProcessTest
+public class PullRequestProcessTest {
 
   private ZeebeTestEngine engine;
   private ZeebeClient client;
 
   @BeforeEach
   void deployProcesses() {
-    // Normally these fields get injected by our annotation. Since we want to reuse these tests we
-    // need to use these abstract methods to obtain them, as they get injected in the extending test
-    // classes. Users would not need to do this.
-    engine = getEngine();
-    client = getClient();
-
     final DeploymentEvent deploymentEvent =
         Utilities.deployResources(
             client,
@@ -192,8 +181,4 @@ public abstract class AbstractPrCreatedTest {
   private void completeTask(final String taskId) throws InterruptedException, TimeoutException {
     Utilities.completeTask(engine, client, taskId);
   }
-
-  public abstract ZeebeClient getClient();
-
-  public abstract ZeebeTestEngine getEngine();
 }
