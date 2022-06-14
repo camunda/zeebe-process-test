@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package io.camunda.zeebe.process.test.qa.testcontainer.examples;
+package io.camunda.zeebe.process.test.examples;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
-import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.qa.abstracts.examples.AbstractPrCreatedTest;
+import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 
 @ZeebeProcessTest
-public class PrCreatedTest extends AbstractPrCreatedTest {
+class PrCreatedTest extends AbstractPrCreatedTest {
+
   private ZeebeTestEngine engine;
   private ZeebeClient client;
 
