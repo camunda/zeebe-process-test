@@ -20,21 +20,15 @@ import static java.util.Collections.singletonMap;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
-import io.camunda.zeebe.process.test.filters.RecordStream;
-import io.camunda.zeebe.process.test.filters.StreamFilter;
-import io.camunda.zeebe.protocol.record.Record;
-import io.camunda.zeebe.protocol.record.intent.JobIntent;
-import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -297,30 +291,36 @@ public class PullRequestProcessTest {
     waitForIdleState(Duration.ofSeconds(1));
   }
 
-  private void completeUserTask(final String taskId) throws InterruptedException, TimeoutException {
-    // TODO rewrite this in a way that a user would
-    final List<Record<JobRecordValue>> records =
-        StreamFilter.jobRecords(RecordStream.of(engine.getRecordStreamSource()))
-            .withElementId(taskId)
-            .withIntent(JobIntent.CREATED)
-            .stream()
-            .collect(Collectors.toList());
+  private void completeUserTask(final String elementId)
+      throws InterruptedException, TimeoutException {
+    // user tasks can be controlled similarly to service tasks. All user tasks share a common job
+    // type
+    final var activateJobsResponse =
+        client
+            .newActivateJobsCommand()
+            .jobType("io.camunda.zeebe:userTask")
+            .maxJobsToActivate(100)
+            .send()
+            .join();
 
-    StreamFilter.jobRecords(RecordStream.of(engine.getRecordStreamSource()))
-        .withElementId(taskId)
-        .withIntent(JobIntent.COMPLETED)
-        .stream()
-        .forEach(record -> records.removeIf(r -> record.getKey() == r.getKey()));
+    boolean userTaskWasCompleted = false;
 
-    if (!records.isEmpty()) {
-      final Record<JobRecordValue> lastRecord;
-      lastRecord = records.get(records.size() - 1);
-      client.newCompleteCommand(lastRecord.getKey()).send().join();
-    } else {
-      throw new IllegalStateException(
-          String.format("Tried to complete task `%s`, but it was not found", taskId));
+    for (final ActivatedJob userTask : activateJobsResponse.getJobs()) {
+      if (userTask.getElementId().equals(elementId)) {
+        // complete the user task we care about
+        client.newCompleteCommand(userTask).send().join();
+        userTaskWasCompleted = true;
+      } else {
+        // fail all other user tasks that were activated
+        // failing a task with a retry value >0 means the task can be reactivated in the future
+        client.newFailCommand(userTask).retries(Math.max(userTask.getRetries(), 1)).send().join();
+      }
     }
 
     waitForIdleState(Duration.ofSeconds(1));
+
+    if (!userTaskWasCompleted) {
+      Assertions.fail("Tried to complete task `%s`, but it was not found".formatted(elementId));
+    }
   }
 }
