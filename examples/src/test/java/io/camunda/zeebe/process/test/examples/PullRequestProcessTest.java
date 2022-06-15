@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -95,7 +96,7 @@ public class PullRequestProcessTest {
         sendMessage(PR_CREATED_MSG, "", singletonMap(PR_ID_VAR, pullRequestId));
 
     //  -> complete user task; user tasks and service tasks can be tested in similar ways
-    completeTask(REQUEST_REVIEW);
+    completeUserTask(REQUEST_REVIEW);
 
     //  -> send another message to drive the process forward
     sendMessage(REVIEW_RECEIVED_MSG, pullRequestId, singletonMap(REVIEW_RESULT_VAR, "approved"));
@@ -104,13 +105,11 @@ public class PullRequestProcessTest {
      *     tasks as part of a multi instance embedded sub process. These lines complete the called
      *     service tasks
      */
-    completeTask(AUTOMATED_TESTS_RUN_TESTS);
-    completeTask(AUTOMATED_TESTS_RUN_TESTS);
-    completeTask(AUTOMATED_TESTS_RUN_TESTS);
+    completeServiceTasks(AUTOMATED_TESTS_RUN_TESTS, 3);
 
     //  -> back on the main process, there are two more tasks to complete to reach the end
-    completeTask(MERGE_CODE);
-    completeTask(DEPLOY_SNAPSHOT);
+    completeUserTask(MERGE_CODE);
+    completeServiceTask(DEPLOY_SNAPSHOT);
 
     // Then
     BpmnAssert.assertThat(prCreatedResponse)
@@ -133,21 +132,19 @@ public class PullRequestProcessTest {
     // When
     final PublishMessageResponse prCreatedResponse =
         sendMessage(PR_CREATED_MSG, "", singletonMap(PR_ID_VAR, prId));
-    completeTask(REQUEST_REVIEW);
+    completeUserTask(REQUEST_REVIEW);
 
-    completeTask(AUTOMATED_TESTS_RUN_TESTS);
-    completeTask(AUTOMATED_TESTS_RUN_TESTS);
-    completeTask(AUTOMATED_TESTS_RUN_TESTS);
+    completeServiceTasks(AUTOMATED_TESTS_RUN_TESTS, 3);
 
     //  This is how you can manipulate the time of the engine to trigger timer events
     increaseTime(Duration.ofDays(1));
 
-    completeTask(REMIND_REVIEWER);
+    completeServiceTask(REMIND_REVIEWER);
 
     sendMessage(REVIEW_RECEIVED_MSG, prId, singletonMap(REVIEW_RESULT_VAR, "approved"));
 
-    completeTask(MERGE_CODE);
-    completeTask(DEPLOY_SNAPSHOT);
+    completeUserTask(MERGE_CODE);
+    completeServiceTask(DEPLOY_SNAPSHOT);
 
     // Then
     BpmnAssert.assertThat(prCreatedResponse)
@@ -167,22 +164,20 @@ public class PullRequestProcessTest {
     final PublishMessageResponse prCreatedResponse =
         sendMessage(PR_CREATED_MSG, "", singletonMap(PR_ID_VAR, prId));
 
-    completeTask(REQUEST_REVIEW);
+    completeUserTask(REQUEST_REVIEW);
 
-    completeTask(AUTOMATED_TESTS_RUN_TESTS);
-    completeTask(AUTOMATED_TESTS_RUN_TESTS);
-    completeTask(AUTOMATED_TESTS_RUN_TESTS);
+    completeServiceTasks(AUTOMATED_TESTS_RUN_TESTS, 3);
 
     sendMessage(REVIEW_RECEIVED_MSG, prId, singletonMap(REVIEW_RESULT_VAR, "rejected"));
 
-    completeTask(MAKE_CHANGES);
+    completeUserTask(MAKE_CHANGES);
 
-    completeTask(REQUEST_REVIEW);
+    completeUserTask(REQUEST_REVIEW);
 
     sendMessage(REVIEW_RECEIVED_MSG, prId, singletonMap(REVIEW_RESULT_VAR, "approved"));
 
-    completeTask(MERGE_CODE);
-    completeTask(DEPLOY_SNAPSHOT);
+    completeUserTask(MERGE_CODE);
+    completeServiceTask(DEPLOY_SNAPSHOT);
 
     // Then
     BpmnAssert.assertThat(prCreatedResponse)
@@ -275,8 +270,35 @@ public class PullRequestProcessTest {
     }
   }
 
-  private void completeTask(final String taskId) throws InterruptedException, TimeoutException {
-    // TODO rewrite this in a more user-understandable way
+  private void completeServiceTask(final String jobType)
+      throws InterruptedException, TimeoutException {
+    completeServiceTasks(jobType, 1);
+  }
+
+  private void completeServiceTasks(final String jobType, final int count)
+      throws InterruptedException, TimeoutException {
+
+    final var activateJobsResponse =
+        client.newActivateJobsCommand().jobType(jobType).maxJobsToActivate(count).send().join();
+
+    final int activatedJobCount = activateJobsResponse.getJobs().size();
+    if (activatedJobCount < count) {
+      Assertions.fail(
+          "Unable to activate %d jobs, because only %d were activated."
+              .formatted(count, activatedJobCount));
+    }
+
+    for (int i = 0; i < count; i++) {
+      final var job = activateJobsResponse.getJobs().get(i);
+
+      client.newCompleteCommand(job.getKey()).send().join();
+    }
+
+    waitForIdleState(Duration.ofSeconds(1));
+  }
+
+  private void completeUserTask(final String taskId) throws InterruptedException, TimeoutException {
+    // TODO rewrite this in a way that a user would
     final List<Record<JobRecordValue>> records =
         StreamFilter.jobRecords(RecordStream.of(engine.getRecordStreamSource()))
             .withElementId(taskId)
