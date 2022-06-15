@@ -86,10 +86,10 @@ public class PullRequestProcessTest {
     // When
 
     //  -> send message to create process instance
-    final PublishMessageResponse prCreatedResponse =
+    final PublishMessageResponse publishMessageResponse =
         sendMessage(PR_CREATED_MSG, "", singletonMap(PR_ID_VAR, pullRequestId));
 
-    //  -> complete user task; user tasks and service tasks can be tested in similar ways
+    //  -> complete user task
     completeUserTask(REQUEST_REVIEW);
 
     //  -> send another message to drive the process forward
@@ -106,7 +106,7 @@ public class PullRequestProcessTest {
     completeServiceTask(DEPLOY_SNAPSHOT);
 
     // Then
-    BpmnAssert.assertThat(prCreatedResponse)
+    BpmnAssert.assertThat(publishMessageResponse)
         .hasCreatedProcessInstance()
         .extractingProcessInstance()
         .hasPassedElementsInOrder(REQUEST_REVIEW, MERGE_CODE, DEPLOY_SNAPSHOT)
@@ -124,7 +124,7 @@ public class PullRequestProcessTest {
     final String prId = "123";
 
     // When
-    final PublishMessageResponse prCreatedResponse =
+    final PublishMessageResponse publishMessageResponse =
         sendMessage(PR_CREATED_MSG, "", singletonMap(PR_ID_VAR, prId));
     completeUserTask(REQUEST_REVIEW);
 
@@ -141,7 +141,7 @@ public class PullRequestProcessTest {
     completeServiceTask(DEPLOY_SNAPSHOT);
 
     // Then
-    BpmnAssert.assertThat(prCreatedResponse)
+    BpmnAssert.assertThat(publishMessageResponse)
         .hasCreatedProcessInstance()
         .extractingProcessInstance()
         .hasPassedElementsInOrder(REQUEST_REVIEW, REMIND_REVIEWER, MERGE_CODE, DEPLOY_SNAPSHOT)
@@ -155,7 +155,7 @@ public class PullRequestProcessTest {
     final String prId = "123";
 
     // When
-    final PublishMessageResponse prCreatedResponse =
+    final PublishMessageResponse publishMessageResponse =
         sendMessage(PR_CREATED_MSG, "", singletonMap(PR_ID_VAR, prId));
 
     completeUserTask(REQUEST_REVIEW);
@@ -174,7 +174,7 @@ public class PullRequestProcessTest {
     completeServiceTask(DEPLOY_SNAPSHOT);
 
     // Then
-    BpmnAssert.assertThat(prCreatedResponse)
+    BpmnAssert.assertThat(publishMessageResponse)
         .hasCreatedProcessInstance()
         .extractingProcessInstance()
         .hasPassedElementsInOrder(
@@ -293,8 +293,8 @@ public class PullRequestProcessTest {
 
   private void completeUserTask(final String elementId)
       throws InterruptedException, TimeoutException {
-    // user tasks can be controlled similarly to service tasks. All user tasks share a common job
-    // type
+    // user tasks can be controlled similarly to service tasks
+    // all user tasks share a common job type
     final var activateJobsResponse =
         client
             .newActivateJobsCommand()
