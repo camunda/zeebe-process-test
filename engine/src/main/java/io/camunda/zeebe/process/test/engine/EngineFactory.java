@@ -26,12 +26,24 @@ import io.camunda.zeebe.util.sched.clock.ActorClock;
 import io.camunda.zeebe.util.sched.clock.ControlledActorClock;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.concurrent.CompletableFuture;
 
 public class EngineFactory {
 
   public static ZeebeTestEngine create() {
-    return create(26499);
+    return create(findFreePort());
+  }
+
+  private static int findFreePort() {
+    final int freePort;
+    try (final var serverSocket = new ServerSocket(0)) {
+      freePort = serverSocket.getLocalPort();
+    } catch (final IOException e) {
+      throw new RuntimeException(e);
+    }
+    return freePort;
   }
 
   public static ZeebeTestEngine create(final int port) {
