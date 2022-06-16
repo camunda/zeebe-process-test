@@ -61,9 +61,9 @@
     <dependency.junit.version>5.8.2</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
     <dependency.mockito.version>4.6.1</dependency.mockito.version>
-    <dependency.netty.version>4.1.77.Final</dependency.netty.version>
+    <dependency.netty.version>4.1.78.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
-    <dependency.proto.version>2.8.3</dependency.proto.version>
+    <dependency.proto.version>2.9.0</dependency.proto.version>
     <dependency.protobuf.version>3.21.1</dependency.protobuf.version>
     <dependency.revapi.version>0.26.1</dependency.revapi.version>
     <dependency.scala.version>2.13.8</dependency.scala.version>
@@ -90,10 +90,10 @@
     <plugin.version.jacoco>0.8.8</plugin.version.jacoco>
     <plugin.version.javadoc>3.4.0</plugin.version.javadoc>
     <plugin.version.license>4.1</plugin.version.license>
-    <plugin.version.maven-enforcer>3.0.0</plugin.version.maven-enforcer>
+    <plugin.version.maven-enforcer>3.1.0</plugin.version.maven-enforcer>
     <plugin.version.os-maven>1.7.0</plugin.version.os-maven>
     <plugin.version.revapi>0.14.6</plugin.version.revapi>
-    <plugin.version.spotless>2.22.6</plugin.version.spotless>
+    <plugin.version.spotless>2.22.8</plugin.version.spotless>
     <plugin.version.surefire>3.0.0-M7</plugin.version.surefire>
 
     <skipChecks>false</skipChecks>
