@@ -250,7 +250,7 @@ Because of this we should wait for a busy state after increasing the engine time
 
 ## Examples
 
-For example tests the best place to look right now is the tests in the QA module.
+[Examples](examples/README.md)
 
 ## Engine lifecycle
 

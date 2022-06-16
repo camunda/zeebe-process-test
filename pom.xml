@@ -35,6 +35,7 @@
     <module>extension-testcontainer</module>
     <module>filters</module>
     <module>qa</module>
+    <module>examples</module>
   </modules>
 
   <scm>
