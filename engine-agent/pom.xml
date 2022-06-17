@@ -110,27 +110,40 @@
           <ignoreUnusedRuntime>true</ignoreUnusedRuntime>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>com.google.cloud.tools</groupId>
-        <artifactId>jib-maven-plugin</artifactId>
-        <version>3.2.1</version>
-        <configuration>
-          <to>
-            <image>camunda/zeebe-process-test-engine</image>
-            <tags>${project.version}</tags>
-          </to>
-        </configuration>
-        <executions>
-          <execution>
-            <id>build-local</id>
-            <goals>
-              <goal>dockerBuild</goal>
-            </goals>
-            <phase>verify</phase>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>localBuild</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>jib-maven-plugin</artifactId>
+            <version>3.2.1</version>
+            <configuration>
+              <to>
+                <image>camunda/zeebe-process-test-engine</image>
+                <tags>${project.version}</tags>
+              </to>
+            </configuration>
+            <executions>
+              <execution>
+                <id>build-local</id>
+                <goals>
+                  <goal>dockerBuild</goal>
+                </goals>
+                <phase>verify</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

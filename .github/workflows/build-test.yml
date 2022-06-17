@@ -49,7 +49,7 @@ jobs:
 
       - name: Build
         id: build
-        run: mvn -B -U -pl "-:zeebe-process-test-qa-testcontainers" "-Dsurefire.rerunFailingTestsCount=5" clean install
+        run: mvn -B -U -pl "-:zeebe-process-test-qa-testcontainers" -P \!localBuild "-Dsurefire.rerunFailingTestsCount=5" clean install
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v3
@@ -79,7 +79,7 @@ jobs:
           cache: maven
 
       - name: Package
-        run: mvn -B -U clean package -DskipTests
+        run: mvn -B -U -P \!localBuild clean package -DskipTests
 
       - name: Build engine docker container
         run: |
@@ -108,7 +108,7 @@ jobs:
         id: build
         run: |
           rm .mvn/jvm.config
-          mvn -B -U -pl ":zeebe-process-test-qa-testcontainers" -am "-Dsurefire.rerunFailingTestsCount=5" install -DskipChecks
+          mvn -B -U -pl ":zeebe-process-test-qa-testcontainers" -P \!localBuild -am "-Dsurefire.rerunFailingTestsCount=5" install -DskipChecks
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v3
