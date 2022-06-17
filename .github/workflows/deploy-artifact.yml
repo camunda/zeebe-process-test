@@ -54,7 +54,7 @@ jobs:
 
       - name: Build jar
         run: |
-          mvn clean package -DskipTests -P \!localBuild -pl :zeebe-process-test-engine-agent -am
+          mvn clean package -DskipTests -P !localBuild -pl :zeebe-process-test-engine-agent -am
 
         # We build a docker image with a specific tag. There are 2 possible scenarios here.
         # 1. The workflow is triggered manually or by a change on the main branch. The tag should be 'latest'.
