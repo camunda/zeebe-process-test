@@ -48,6 +48,7 @@
     <dependency.agrona.version>1.15.1</dependency.agrona.version>
     <dependency.assertj.version>3.23.1</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
+    <dependency.bytebuddy.version>1.12.0</dependency.bytebuddy.version>
     <dependency.classgraph.version>4.8.147</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.14.0</dependency.errorprone.version>
@@ -369,6 +370,11 @@
         <groupId>org.immutables</groupId>
         <artifactId>value</artifactId>
         <version>${dependency.immutables.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${dependency.bytebuddy.version}</version>
       </dependency>
       <!-- This should be able to be removed after 1.4.0-alpha2 -->
       <dependency>
