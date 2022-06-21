@@ -18,6 +18,7 @@ import io.camunda.zeebe.logstreams.log.LogStreamReader;
 import io.camunda.zeebe.logstreams.storage.LogStorage;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.db.InMemoryDbFactory;
+import io.camunda.zeebe.util.FeatureFlags;
 import io.camunda.zeebe.util.sched.Actor;
 import io.camunda.zeebe.util.sched.ActorScheduler;
 import io.camunda.zeebe.util.sched.ActorSchedulingService;
@@ -25,12 +26,24 @@ import io.camunda.zeebe.util.sched.clock.ActorClock;
 import io.camunda.zeebe.util.sched.clock.ControlledActorClock;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.concurrent.CompletableFuture;
 
 public class EngineFactory {
 
   public static ZeebeTestEngine create() {
-    return create(26500);
+    return create(findFreePort());
+  }
+
+  private static int findFreePort() {
+    final int freePort;
+    try (final var serverSocket = new ServerSocket(0)) {
+      freePort = serverSocket.getLocalPort();
+    } catch (final IOException e) {
+      throw new RuntimeException(e);
+    }
+    return freePort;
   }
 
   public static ZeebeTestEngine create(final int port) {
@@ -150,7 +163,8 @@ public class EngineFactory {
                     subscriptionCommandSenderFactory.createSender(),
                     new SinglePartitionDeploymentDistributor(),
                     new SinglePartitionDeploymentResponder(),
-                    jobType -> {}))
+                    jobType -> {},
+                    new FeatureFlags(false)))
         .actorSchedulingService(scheduler)
         .build();
   }

@@ -20,24 +20,6 @@ and provide you with a set of assertions you can use to verify your process beha
 Zeepe Process Test provides you with two dependencies. Which one you need to use is dependent on the
 Java version you are using.
 
-#### Testcontainers (JDK 8+)
-
-If you are building your project with a JDK that's lower than 17 you need to use this dependency. It
-starts a testcontainer in which a Zeebe test engine is running. The advantage of using this version
-instead of the embedded version is that your code can be implemented independently of the Java
-version that is used by the Zeebe engine. This has some downsides: Testcontainers provide some
-overhead, which means tests will be slower. There is also the extra requirement that Docker must be
-running to execute the tests.
-
-```xml
-<dependency>
-  <groupId>io.camunda</groupId>
-  <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
-  <version>X.Y.Z</version>
-  <scope>test</scope>
-</dependency>
-```
-
 #### Embedded (JDK 17+)
 
 If you are building your project with JDK 17+ you can make use of an embedded Zeebe test engine. The
@@ -51,6 +33,24 @@ or upgrade your own JDK to match Zeebe engine.
 <dependency>
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-process-test-extension</artifactId>
+  <version>X.Y.Z</version>
+  <scope>test</scope>
+</dependency>
+```
+
+#### Testcontainers (JDK 8+)
+
+If you are building your project with a JDK that's lower than 17 you need to use this dependency. It
+starts a testcontainer in which a Zeebe test engine is running. The advantage of using this version
+instead of the embedded version is that your code can be implemented independently of the Java
+version that is used by the Zeebe engine. This has some downsides: Testcontainers provide some
+overhead, which means tests will be slower. There is also the extra requirement that Docker must be
+running to execute the tests.
+
+```xml
+<dependency>
+  <groupId>io.camunda</groupId>
+  <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
   <version>X.Y.Z</version>
   <scope>test</scope>
 </dependency>
@@ -250,7 +250,7 @@ Because of this we should wait for a busy state after increasing the engine time
 
 ## Examples
 
-For example tests the best place to look right now is the tests in the QA module.
+[Examples](examples/README.md)
 
 ## Engine lifecycle
 
