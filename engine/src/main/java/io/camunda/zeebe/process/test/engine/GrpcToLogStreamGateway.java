@@ -49,6 +49,7 @@ import io.camunda.zeebe.protocol.impl.record.value.job.JobBatchRecord;
 import io.camunda.zeebe.protocol.impl.record.value.job.JobRecord;
 import io.camunda.zeebe.protocol.impl.record.value.message.MessageRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceCreationRecord;
+import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceCreationStartInstruction;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceRecord;
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentRecord;
 import io.camunda.zeebe.protocol.record.RecordType;
@@ -210,12 +211,11 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     request
         .getProcessesList()
         .forEach(
-            (processRequestObject -> {
-              resources
-                  .add()
-                  .setResourceName(processRequestObject.getName())
-                  .setResource(processRequestObject.getDefinition().toByteArray());
-            }));
+            (processRequestObject ->
+                resources
+                    .add()
+                    .setResourceName(processRequestObject.getName())
+                    .setResource(processRequestObject.getDefinition().toByteArray())));
 
     writer.writeCommandWithoutKey(deploymentRecord, recordMetadata);
   }
@@ -426,6 +426,13 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     processInstanceCreationRecord.setBpmnProcessId(request.getBpmnProcessId());
     processInstanceCreationRecord.setVersion(request.getVersion());
     processInstanceCreationRecord.setProcessDefinitionKey(request.getProcessDefinitionKey());
+
+    request.getStartInstructionsList().stream()
+        .map(
+            startInstruction ->
+                new ProcessInstanceCreationStartInstruction()
+                    .setElementId(startInstruction.getElementId()))
+        .forEach(processInstanceCreationRecord::addStartInstruction);
 
     final String variables = request.getVariables();
     if (!variables.isEmpty()) {
