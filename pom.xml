@@ -53,7 +53,7 @@
     <dependency.classgraph.version>4.8.147</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.14.0</dependency.errorprone.version>
-    <dependency.feel.version>1.14.2</dependency.feel.version>
+    <dependency.feel.version>1.15.0</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>31.1-jre</dependency.guava.version>
     <dependency.immutables.version>2.9.0</dependency.immutables.version>
