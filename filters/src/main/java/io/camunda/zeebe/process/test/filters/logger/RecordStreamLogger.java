@@ -30,6 +30,7 @@ import io.camunda.zeebe.protocol.record.value.MessageStartEventSubscriptionRecor
 import io.camunda.zeebe.protocol.record.value.MessageSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessEventRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue;
+import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue.ProcessInstanceCreationStartInstructionValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceResultRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
@@ -39,9 +40,11 @@ import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import io.camunda.zeebe.protocol.record.value.deployment.ProcessMetadataValue;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,6 +240,7 @@ public class RecordStreamLogger {
     final StringJoiner joiner = new StringJoiner(", ", "", "");
     joiner.add(String.format("(Process id: %s)", value.getBpmnProcessId()));
     joiner.add(logVariables(value.getVariables()));
+    joiner.add(logStartInstructions(value.getStartInstructions()));
     return joiner.toString();
   }
 
@@ -275,6 +279,17 @@ public class RecordStreamLogger {
     final StringJoiner joiner = new StringJoiner(", ", "[", "]");
     variables.forEach((key, value) -> joiner.add(key + " -> " + value));
     return String.format("(Variables: %s)", joiner);
+  }
+
+  private String logStartInstructions(
+      final List<ProcessInstanceCreationStartInstructionValue> startInstructions) {
+    if (startInstructions.isEmpty()) {
+      return "(default start)";
+    } else {
+      return startInstructions.stream()
+          .map(ProcessInstanceCreationStartInstructionValue::getElementId)
+          .collect(Collectors.joining(", ", "(starting before elements: ", ")"));
+    }
   }
 
   protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {
