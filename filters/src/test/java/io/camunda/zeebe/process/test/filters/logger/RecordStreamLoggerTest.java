@@ -17,8 +17,13 @@ package io.camunda.zeebe.process.test.filters.logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.camunda.zeebe.protocol.record.ImmutableRecord;
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
+import io.camunda.zeebe.protocol.record.intent.ProcessInstanceCreationIntent;
+import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceCreationRecordValue;
+import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceCreationStartInstructionValue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -83,6 +88,62 @@ class RecordStreamLoggerTest {
         .contains("booleanProperty -> true")
         .contains("complexProperty -> [Element 1, Element 2]")
         .contains("nullProperty -> null");
+  }
+
+  @Test
+  void testDefaultNoneStartEvent() {
+    final RecordStreamLogger logger = new RecordStreamLogger(null);
+
+    final String result =
+        logger.logRecord(
+            ImmutableRecord.builder()
+                .withRecordType(RecordType.EVENT)
+                .withValueType(ValueType.PROCESS_INSTANCE_CREATION)
+                .withIntent(ProcessInstanceCreationIntent.CREATED)
+                .withKey(123)
+                .withValue(
+                    ImmutableProcessInstanceCreationRecordValue.builder()
+                        .withBpmnProcessId("PROCESS")
+                        .withVersion(1)
+                        .build())
+                .build());
+
+    assertThat(result)
+        .contains(
+            "| EVENT               PROCESS_INSTANCE_CREATION          CREATED                       "
+                + "| (Process id: PROCESS), , (default start)");
+  }
+
+  @Test
+  void testCreateProcessInstanceStartingAtGivenElements() {
+    final RecordStreamLogger logger = new RecordStreamLogger(null);
+
+    final String result =
+        logger.logRecord(
+            ImmutableRecord.builder()
+                .withRecordType(RecordType.EVENT)
+                .withValueType(ValueType.PROCESS_INSTANCE_CREATION)
+                .withIntent(ProcessInstanceCreationIntent.CREATED)
+                .withKey(123)
+                .withValue(
+                    ImmutableProcessInstanceCreationRecordValue.builder()
+                        .withBpmnProcessId("PROCESS")
+                        .withVersion(1)
+                        .addStartInstruction(
+                            ImmutableProcessInstanceCreationStartInstructionValue.builder()
+                                .withElementId("USER_TASK")
+                                .build())
+                        .addStartInstruction(
+                            ImmutableProcessInstanceCreationStartInstructionValue.builder()
+                                .withElementId("SERVICE_TASK")
+                                .build())
+                        .build())
+                .build());
+
+    assertThat(result)
+        .contains(
+            "| EVENT               PROCESS_INSTANCE_CREATION          CREATED                       "
+                + "| (Process id: PROCESS), , (starting before elements: USER_TASK, SERVICE_TASK)");
   }
 
   private static Stream<Arguments> provideVariables() {
