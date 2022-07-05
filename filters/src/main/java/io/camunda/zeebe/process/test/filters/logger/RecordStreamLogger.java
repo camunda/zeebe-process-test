@@ -95,16 +95,13 @@ public class RecordStreamLogger {
 
   private void logRecords(final StringBuilder stringBuilder) {
     stringBuilder.append("The following records have been recorded during this test:");
-    recordStream
-        .records()
-        .forEach(
-            record -> {
-              stringBuilder.append(logGenericRecord(record));
-              stringBuilder.append(
-                  valueTypeLoggers.getOrDefault(record.getValueType(), var -> "").apply(record));
-            });
+    recordStream.records().forEach(record -> stringBuilder.append(logRecord(record)));
 
     LOG.info(stringBuilder.toString());
+  }
+
+  protected String logRecord(final Record<?> record) {
+    return logGenericRecord(record) + logRecordDetails(record);
   }
 
   private String logGenericRecord(final Record<?> record) {
@@ -112,6 +109,10 @@ public class RecordStreamLogger {
         + String.format("| %-20s", record.getRecordType())
         + String.format("%-35s", record.getValueType())
         + String.format("%-30s| ", record.getIntent());
+  }
+
+  private String logRecordDetails(final Record<?> record) {
+    return valueTypeLoggers.getOrDefault(record.getValueType(), var -> "").apply(record);
   }
 
   private String logJobRecordValue(final Record<?> record) {
