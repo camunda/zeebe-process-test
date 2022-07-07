@@ -123,6 +123,27 @@ class RecordStreamLoggerTest {
             "(Process id: PROCESS), (default start)"),
         Arguments.of(
             Named.of(
+                "PROCESS_INSTANCE_CREATION starting at default none start event with variables",
+                ImmutableRecord.builder()
+                    .withRecordType(RecordType.EVENT)
+                    .withValueType(ValueType.PROCESS_INSTANCE_CREATION)
+                    .withIntent(ProcessInstanceCreationIntent.CREATED)
+                    .withKey(123)
+                    .withValue(
+                        ImmutableProcessInstanceCreationRecordValue.builder()
+                            .withBpmnProcessId("PROCESS")
+                            .withVersion(1)
+                            .withVariables(
+                                new HashMap<String, Object>() {
+                                  {
+                                    put("key", "value");
+                                  }
+                                })
+                            .build())
+                    .build()),
+            "(Process id: PROCESS), (Variables: [key -> value]), (default start)"),
+        Arguments.of(
+            Named.of(
                 "PROCESS_INSTANCE_CREATEION starting at given elements",
                 ImmutableRecord.builder()
                     .withRecordType(RecordType.EVENT)
