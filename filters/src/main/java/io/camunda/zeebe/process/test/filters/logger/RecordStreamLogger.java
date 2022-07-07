@@ -239,7 +239,9 @@ public class RecordStreamLogger {
         (ProcessInstanceCreationRecordValue) record.getValue();
     final StringJoiner joiner = new StringJoiner(", ", "", "");
     joiner.add(String.format("(Process id: %s)", value.getBpmnProcessId()));
-    joiner.add(logVariables(value.getVariables()));
+    if (!value.getVariables().isEmpty()) {
+      joiner.add(logVariables(value.getVariables()));
+    }
     joiner.add(logStartInstructions(value.getStartInstructions()));
     return joiner.toString();
   }
