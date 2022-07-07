@@ -125,7 +125,9 @@ public class RecordStreamLogger {
     if (record.getRecordType().equals(RecordType.EVENT)) {
       joiner.add(String.format("(Element id: %s)", value.getElementId()));
       joiner.add(String.format("(Job type: %s)", value.getType()));
-      joiner.add(logVariables(value.getVariables()));
+      if (!value.getVariables().isEmpty()) {
+        joiner.add(logVariables(value.getVariables()));
+      }
     }
     return joiner.toString();
   }
