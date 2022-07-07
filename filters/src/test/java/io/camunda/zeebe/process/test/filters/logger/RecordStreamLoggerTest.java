@@ -21,7 +21,9 @@ import io.camunda.zeebe.protocol.record.ImmutableRecord;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
+import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceCreationIntent;
+import io.camunda.zeebe.protocol.record.value.ImmutableJobRecordValue;
 import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceCreationRecordValue;
 import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceCreationStartInstructionValue;
 import java.util.Arrays;
@@ -164,6 +166,21 @@ class RecordStreamLoggerTest {
                                     .build())
                             .build())
                     .build()),
-            "(Process id: PROCESS), (starting before elements: USER_TASK, SERVICE_TASK)"));
+            "(Process id: PROCESS), (starting before elements: USER_TASK, SERVICE_TASK)"),
+        Arguments.of(
+            Named.of(
+                "JOB with element id and type",
+                ImmutableRecord.builder()
+                    .withRecordType(RecordType.EVENT)
+                    .withValueType(ValueType.JOB)
+                    .withIntent(JobIntent.COMPLETED)
+                    .withKey(123)
+                    .withValue(
+                        ImmutableJobRecordValue.builder()
+                            .withType("task")
+                            .withElementId("serviceTask1")
+                            .build())
+                    .build()),
+            "(Element id: serviceTask1), (Job type: task)"));
   }
 }
