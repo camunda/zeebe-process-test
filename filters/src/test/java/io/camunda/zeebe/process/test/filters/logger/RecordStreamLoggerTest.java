@@ -120,7 +120,7 @@ class RecordStreamLoggerTest {
                             .withVersion(1)
                             .build())
                     .build()),
-            "(Process id: PROCESS), , (default start)"),
+            "(Process id: PROCESS), (default start)"),
         Arguments.of(
             Named.of(
                 "PROCESS_INSTANCE_CREATEION starting at given elements",
@@ -143,6 +143,6 @@ class RecordStreamLoggerTest {
                                     .build())
                             .build())
                     .build()),
-            "(Process id: PROCESS), , (starting before elements: USER_TASK, SERVICE_TASK)"));
+            "(Process id: PROCESS), (starting before elements: USER_TASK, SERVICE_TASK)"));
   }
 }
