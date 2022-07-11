@@ -40,10 +40,10 @@ jobs:
             secret/data/common/github.com/actions/camunda/zeebe-process-test REGISTRY_HUB_DOCKER_COM_PSW;
             secret/data/common/github.com/actions/camunda/zeebe-process-test ARTIFACTS_USR;
             secret/data/common/github.com/actions/camunda/zeebe-process-test ARTIFACTS_PSW;
-            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_DEPLOYMENT_USR;
-            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_DEPLOYMENT_PSW;
-            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE;
-            secret/data/common/github.com/actions/camunda-community-hub MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC;
+            secret/data/github.com/organizations/camunda MAVEN_CENTRAL_DEPLOYMENT_USR;
+            secret/data/github.com/organizations/camunda MAVEN_CENTRAL_DEPLOYMENT_PSW;
+            secret/data/github.com/organizations/camunda MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE;
+            secret/data/github.com/organizations/camunda MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC;
 
       - name: Set up Java environment
         uses: actions/setup-java@v3.0.0
