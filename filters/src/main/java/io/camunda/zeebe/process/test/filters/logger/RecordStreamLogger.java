@@ -30,6 +30,7 @@ import io.camunda.zeebe.protocol.record.value.MessageStartEventSubscriptionRecor
 import io.camunda.zeebe.protocol.record.value.MessageSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessEventRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue;
+import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue.ProcessInstanceCreationStartInstructionValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceResultRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
@@ -39,9 +40,11 @@ import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import io.camunda.zeebe.protocol.record.value.deployment.ProcessMetadataValue;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,16 +98,13 @@ public class RecordStreamLogger {
 
   private void logRecords(final StringBuilder stringBuilder) {
     stringBuilder.append("The following records have been recorded during this test:");
-    recordStream
-        .records()
-        .forEach(
-            record -> {
-              stringBuilder.append(logGenericRecord(record));
-              stringBuilder.append(
-                  valueTypeLoggers.getOrDefault(record.getValueType(), var -> "").apply(record));
-            });
+    recordStream.records().forEach(record -> stringBuilder.append(logRecord(record)));
 
     LOG.info(stringBuilder.toString());
+  }
+
+  protected String logRecord(final Record<?> record) {
+    return logGenericRecord(record) + logRecordDetails(record);
   }
 
   private String logGenericRecord(final Record<?> record) {
@@ -114,6 +114,10 @@ public class RecordStreamLogger {
         + String.format("%-30s| ", record.getIntent());
   }
 
+  private String logRecordDetails(final Record<?> record) {
+    return valueTypeLoggers.getOrDefault(record.getValueType(), var -> "").apply(record);
+  }
+
   private String logJobRecordValue(final Record<?> record) {
     final JobRecordValue value = (JobRecordValue) record.getValue();
     final StringJoiner joiner = new StringJoiner(", ", "", "");
@@ -121,7 +125,9 @@ public class RecordStreamLogger {
     if (record.getRecordType().equals(RecordType.EVENT)) {
       joiner.add(String.format("(Element id: %s)", value.getElementId()));
       joiner.add(String.format("(Job type: %s)", value.getType()));
-      joiner.add(logVariables(value.getVariables()));
+      if (!value.getVariables().isEmpty()) {
+        joiner.add(logVariables(value.getVariables()));
+      }
     }
     return joiner.toString();
   }
@@ -235,7 +241,10 @@ public class RecordStreamLogger {
         (ProcessInstanceCreationRecordValue) record.getValue();
     final StringJoiner joiner = new StringJoiner(", ", "", "");
     joiner.add(String.format("(Process id: %s)", value.getBpmnProcessId()));
-    joiner.add(logVariables(value.getVariables()));
+    if (!value.getVariables().isEmpty()) {
+      joiner.add(logVariables(value.getVariables()));
+    }
+    joiner.add(logStartInstructions(value.getStartInstructions()));
     return joiner.toString();
   }
 
@@ -274,6 +283,17 @@ public class RecordStreamLogger {
     final StringJoiner joiner = new StringJoiner(", ", "[", "]");
     variables.forEach((key, value) -> joiner.add(key + " -> " + value));
     return String.format("(Variables: %s)", joiner);
+  }
+
+  private String logStartInstructions(
+      final List<ProcessInstanceCreationStartInstructionValue> startInstructions) {
+    if (startInstructions.isEmpty()) {
+      return "(default start)";
+    } else {
+      return startInstructions.stream()
+          .map(ProcessInstanceCreationStartInstructionValue::getElementId)
+          .collect(Collectors.joining(", ", "(starting before elements: ", ")"));
+    }
   }
 
   protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {

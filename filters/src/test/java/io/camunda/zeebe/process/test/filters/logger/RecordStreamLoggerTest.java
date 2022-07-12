@@ -17,8 +17,15 @@ package io.camunda.zeebe.process.test.filters.logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.camunda.zeebe.protocol.record.ImmutableRecord;
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
+import io.camunda.zeebe.protocol.record.intent.JobIntent;
+import io.camunda.zeebe.protocol.record.intent.ProcessInstanceCreationIntent;
+import io.camunda.zeebe.protocol.record.value.ImmutableJobRecordValue;
+import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceCreationRecordValue;
+import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceCreationStartInstructionValue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +33,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -85,8 +93,94 @@ class RecordStreamLoggerTest {
         .contains("nullProperty -> null");
   }
 
+  @ParameterizedTest(name = "logged record {0} should contain {1}")
+  @MethodSource("loggedRecordContains")
+  void testLoggedRecordContains(final Record<?> typedRecord, final String expected) {
+    final RecordStreamLogger logger = new RecordStreamLogger(null);
+    final String result = logger.logRecord(typedRecord);
+    assertThat(result).contains(expected);
+  }
+
   private static Stream<Arguments> provideVariables() {
     return TYPED_TEST_VARIABLES.entrySet().stream()
         .map(entry -> Arguments.of(entry.getKey(), entry.getValue()));
+  }
+
+  private static Stream<Arguments> loggedRecordContains() {
+    return Stream.of(
+        Arguments.of(
+            Named.of(
+                "PROCESS_INSTANCE_CREATION starting at default none start event",
+                ImmutableRecord.builder()
+                    .withRecordType(RecordType.EVENT)
+                    .withValueType(ValueType.PROCESS_INSTANCE_CREATION)
+                    .withIntent(ProcessInstanceCreationIntent.CREATED)
+                    .withKey(123)
+                    .withValue(
+                        ImmutableProcessInstanceCreationRecordValue.builder()
+                            .withBpmnProcessId("PROCESS")
+                            .withVersion(1)
+                            .build())
+                    .build()),
+            "(Process id: PROCESS), (default start)"),
+        Arguments.of(
+            Named.of(
+                "PROCESS_INSTANCE_CREATION starting at default none start event with variables",
+                ImmutableRecord.builder()
+                    .withRecordType(RecordType.EVENT)
+                    .withValueType(ValueType.PROCESS_INSTANCE_CREATION)
+                    .withIntent(ProcessInstanceCreationIntent.CREATED)
+                    .withKey(123)
+                    .withValue(
+                        ImmutableProcessInstanceCreationRecordValue.builder()
+                            .withBpmnProcessId("PROCESS")
+                            .withVersion(1)
+                            .withVariables(
+                                new HashMap<String, Object>() {
+                                  {
+                                    put("key", "value");
+                                  }
+                                })
+                            .build())
+                    .build()),
+            "(Process id: PROCESS), (Variables: [key -> value]), (default start)"),
+        Arguments.of(
+            Named.of(
+                "PROCESS_INSTANCE_CREATEION starting at given elements",
+                ImmutableRecord.builder()
+                    .withRecordType(RecordType.EVENT)
+                    .withValueType(ValueType.PROCESS_INSTANCE_CREATION)
+                    .withIntent(ProcessInstanceCreationIntent.CREATED)
+                    .withKey(123)
+                    .withValue(
+                        ImmutableProcessInstanceCreationRecordValue.builder()
+                            .withBpmnProcessId("PROCESS")
+                            .withVersion(1)
+                            .addStartInstruction(
+                                ImmutableProcessInstanceCreationStartInstructionValue.builder()
+                                    .withElementId("USER_TASK")
+                                    .build())
+                            .addStartInstruction(
+                                ImmutableProcessInstanceCreationStartInstructionValue.builder()
+                                    .withElementId("SERVICE_TASK")
+                                    .build())
+                            .build())
+                    .build()),
+            "(Process id: PROCESS), (starting before elements: USER_TASK, SERVICE_TASK)"),
+        Arguments.of(
+            Named.of(
+                "JOB with element id and type",
+                ImmutableRecord.builder()
+                    .withRecordType(RecordType.EVENT)
+                    .withValueType(ValueType.JOB)
+                    .withIntent(JobIntent.COMPLETED)
+                    .withKey(123)
+                    .withValue(
+                        ImmutableJobRecordValue.builder()
+                            .withType("task")
+                            .withElementId("serviceTask1")
+                            .build())
+                    .build()),
+            "(Element id: serviceTask1), (Job type: task)"));
   }
 }
