@@ -9,5 +9,5 @@ jobs:
     steps:
       - uses: actions/add-to-project@v0.1.0
         with:
-          project-url: https://github.com/orgs/camunda/projects/18
+          project-url: https://github.com/orgs/camunda/projects/29
           github-token: ${{ secrets.PROJECT_ADMIN_TOKEN }}
