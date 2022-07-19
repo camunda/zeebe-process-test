@@ -21,7 +21,8 @@ message IncreaseTimeRequest {
   int32 milliseconds = 1;
 }
 
-message IncreaseTimeResponse {}
+message IncreaseTimeResponse {
+}
 
 message WaitForIdleStateRequest {
   // timeout (in ms). The request will be closed if an idle state has not been
@@ -44,6 +45,13 @@ message GetRecordsRequest {}
 message RecordResponse {
   // A JSON representation of a Record.
   string recordJson = 1;
+}
+
+message GetEngineTimeRequest {}
+
+message GetEngineTimeResponse {
+  // Current time in milliseconds since the epoch
+  int64 currentTime = 1;
 }
 
 service EngineControl {
@@ -97,4 +105,9 @@ service EngineControl {
    */
   rpc GetRecords (GetRecordsRequest) returns (stream RecordResponse);
 
+  /*
+    Gets the current engine time. This can be used in conjunction with
+    IncreaseTime to set a specific engine time.
+   */
+  rpc GetEngineTime (GetEngineTimeRequest) returns (GetEngineTimeResponse);
 }

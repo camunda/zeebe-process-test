@@ -841,4 +841,15 @@ class EngineClientTest {
               assertThat(processCompleted).isNotEmpty();
             });
   }
+
+  @Test
+  public void shouldQueryTheTime() throws InterruptedException {
+    long start = zeebeEngine.getEngineTime();
+    Thread.sleep(10);
+    assertThat(zeebeEngine.getEngineTime() > start).isTrue();
+
+    // Increase time in the engine and make sure time advances by a similar amount.
+    zeebeEngine.increaseTime(Duration.ofSeconds(1));
+    assertThat(zeebeEngine.getEngineTime() - start).isGreaterThan(1000);
+  }
 }

@@ -73,6 +73,19 @@
                 "type": "string"
               }
             ]
+          },
+          {
+            "name": "GetEngineTimeRequest"
+          },
+          {
+            "name": "GetEngineTimeResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "currentTime",
+                "type": "int64"
+              }
+            ]
           }
         ],
         "services": [
@@ -114,6 +127,11 @@
                 "in_type": "GetRecordsRequest",
                 "out_type": "RecordResponse",
                 "out_streamed": true
+              },
+              {
+                "name": "GetEngineTime",
+                "in_type": "GetEngineTimeRequest",
+                "out_type": "GetEngineTimeResponse"
               }
             ]
           }

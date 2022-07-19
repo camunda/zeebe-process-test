@@ -112,6 +112,11 @@ class InMemoryEngine implements ZeebeTestEngine {
   }
 
   @Override
+  public long getEngineTime() {
+    return clock.getCurrentTimeInMillis();
+  }
+
+  @Override
   public void waitForIdleState(final Duration timeout)
       throws InterruptedException, TimeoutException {
     final CompletableFuture<Void> idleState = new CompletableFuture<>();

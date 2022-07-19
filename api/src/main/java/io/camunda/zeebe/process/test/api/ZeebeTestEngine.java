@@ -87,4 +87,12 @@ public interface ZeebeTestEngine {
    * @throws TimeoutException if the engine has not reached a busy state before the timeout
    */
   void waitForBusyState(Duration timeout) throws InterruptedException, TimeoutException;
+
+  /**
+   * Gets the current engine time. Can be used in conjunction with increaseTime to set a specific
+   * time in the future.
+   *
+   * @return the current time of the engine in milliseconds since the epoch.
+   */
+  long getEngineTime();
 }
