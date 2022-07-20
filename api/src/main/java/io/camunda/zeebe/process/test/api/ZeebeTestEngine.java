@@ -94,5 +94,5 @@ public interface ZeebeTestEngine {
    *
    * @return the current time of the engine in milliseconds since the epoch.
    */
-  long getEngineTime();
+  long getTime();
 }

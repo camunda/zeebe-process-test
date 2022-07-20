@@ -47,11 +47,11 @@ message RecordResponse {
   string recordJson = 1;
 }
 
-message GetEngineTimeRequest {}
+message GetTimeRequest {}
 
-message GetEngineTimeResponse {
+message GetTimeResponse {
   // Current time in milliseconds since the epoch
-  int64 currentTime = 1;
+  int64 time = 1;
 }
 
 service EngineControl {
@@ -109,5 +109,5 @@ service EngineControl {
     Gets the current engine time. This can be used in conjunction with
     IncreaseTime to set a specific engine time.
    */
-  rpc GetEngineTime (GetEngineTimeRequest) returns (GetEngineTimeResponse);
+  rpc GetTime (GetTimeRequest) returns (GetTimeResponse);
 }

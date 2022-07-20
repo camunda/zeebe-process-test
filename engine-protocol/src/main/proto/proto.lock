@@ -75,14 +75,14 @@
             ]
           },
           {
-            "name": "GetEngineTimeRequest"
+            "name": "GetTimeRequest"
           },
           {
-            "name": "GetEngineTimeResponse",
+            "name": "GetTimeResponse",
             "fields": [
               {
                 "id": 1,
-                "name": "currentTime",
+                "name": "time",
                 "type": "int64"
               }
             ]
@@ -129,9 +129,9 @@
                 "out_streamed": true
               },
               {
-                "name": "GetEngineTime",
-                "in_type": "GetEngineTimeRequest",
-                "out_type": "GetEngineTimeResponse"
+                "name": "GetTime",
+                "in_type": "GetTimeRequest",
+                "out_type": "GetTimeResponse"
               }
             ]
           }

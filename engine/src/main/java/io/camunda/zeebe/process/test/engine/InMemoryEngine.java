@@ -112,7 +112,7 @@ class InMemoryEngine implements ZeebeTestEngine {
   }
 
   @Override
-  public long getEngineTime() {
+  public long getTime() {
     return clock.getCurrentTimeInMillis();
   }
 

@@ -19,7 +19,7 @@
       "differences": [
         {
           "code": "java.method.addedToInterface",
-          "new": "method long io.camunda.zeebe.process.test.api.ZeebeTestEngine::getEngineTime()",
+          "new": "method long io.camunda.zeebe.process.test.api.ZeebeTestEngine::getTime()",
           "justification": "As part of #446, we need a new API to access the engine's current time."
         }
       ]
