@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.assertj.core.data.Offset;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -840,5 +841,15 @@ class EngineClientTest {
 
               assertThat(processCompleted).isNotEmpty();
             });
+  }
+
+  @Test
+  public void shouldQueryTheTime() {
+    final long startTime = zeebeEngine.getTime();
+    assertThat(startTime).isCloseTo(System.currentTimeMillis(), Offset.offset(50L));
+
+    zeebeEngine.increaseTime(Duration.ofHours(1));
+    final long secondTime = zeebeEngine.getTime();
+    assertThat(secondTime).isCloseTo(System.currentTimeMillis() + 3600 * 1000, Offset.offset(50L));
   }
 }

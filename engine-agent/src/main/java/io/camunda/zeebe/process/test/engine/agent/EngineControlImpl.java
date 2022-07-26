@@ -11,6 +11,8 @@ import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.EngineFactory;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlGrpc.EngineControlImplBase;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.GetRecordsRequest;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.GetTimeRequest;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.GetTimeResponse;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.IncreaseTimeRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.IncreaseTimeResponse;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.RecordResponse;
@@ -81,6 +83,13 @@ public final class EngineControlImpl extends EngineControlImplBase {
     engine.increaseTime(Duration.ofMillis(request.getMilliseconds()));
     final IncreaseTimeResponse response = IncreaseTimeResponse.newBuilder().build();
     responseObserver.onNext(response);
+    responseObserver.onCompleted();
+  }
+
+  @Override
+  public void getTime(
+      final GetTimeRequest request, final StreamObserver<GetTimeResponse> responseObserver) {
+    responseObserver.onNext(GetTimeResponse.newBuilder().setTime(engine.getTime()).build());
     responseObserver.onCompleted();
   }
 

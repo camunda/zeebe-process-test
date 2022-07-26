@@ -24,6 +24,8 @@ import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlGrpc;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlGrpc.EngineControlBlockingStub;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.GetRecordsRequest;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.GetTimeRequest;
+import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.GetTimeResponse;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.IncreaseTimeRequest;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.RecordResponse;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlOuterClass.ResetEngineRequest;
@@ -115,6 +117,20 @@ public class ContainerizedEngine implements ZeebeTestEngine {
     stub.increaseTime(request);
 
     closeChannel(channel);
+  }
+
+  @Override
+  public long getTime() {
+    final ManagedChannel channel = getChannel();
+    try {
+      final EngineControlBlockingStub stub = getStub(channel);
+
+      final GetTimeRequest request = GetTimeRequest.newBuilder().build();
+      final GetTimeResponse response = stub.getTime(request);
+      return response.getTime();
+    } finally {
+      closeChannel(channel);
+    }
   }
 
   @Override

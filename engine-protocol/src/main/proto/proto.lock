@@ -73,6 +73,19 @@
                 "type": "string"
               }
             ]
+          },
+          {
+            "name": "GetTimeRequest"
+          },
+          {
+            "name": "GetTimeResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "time",
+                "type": "int64"
+              }
+            ]
           }
         ],
         "services": [
@@ -114,6 +127,11 @@
                 "in_type": "GetRecordsRequest",
                 "out_type": "RecordResponse",
                 "out_streamed": true
+              },
+              {
+                "name": "GetTime",
+                "in_type": "GetTimeRequest",
+                "out_type": "GetTimeResponse"
               }
             ]
           }
