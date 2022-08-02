@@ -7,8 +7,8 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
-import io.camunda.zeebe.engine.processing.streamprocessor.StreamProcessor;
 import io.camunda.zeebe.logstreams.storage.LogStorage;
+import io.camunda.zeebe.streamprocessor.StreamProcessor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
