@@ -331,6 +331,7 @@ public class RecordStreamLogger {
       final ProcessInstanceModificationActivateInstructionValue instruction) {
     final StringJoiner joiner = new StringJoiner(", ", "", "");
     joiner.add(String.format("(Target element id: %s)", instruction.getElementId()));
+    joiner.add(String.format("(Ancestor scope key: %d)", instruction.getAncestorScopeKey()));
     joiner.add(logVariableInstructions(instruction.getVariableInstructions()));
     return joiner.toString();
   }
@@ -350,6 +351,7 @@ public class RecordStreamLogger {
       final ProcessInstanceModificationVariableInstructionValue variable) {
     final StringJoiner joiner = new StringJoiner(", ", "", "");
     joiner.add(String.format("(Target element: %s", variable.getElementId()));
+
     joiner.add(logVariables(variable.getVariables()));
     return joiner.toString();
   }
