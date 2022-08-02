@@ -31,6 +31,10 @@ import io.camunda.zeebe.protocol.record.value.MessageSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessEventRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue.ProcessInstanceCreationStartInstructionValue;
+import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue;
+import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue.ProcessInstanceModificationActivateInstructionValue;
+import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue.ProcessInstanceModificationTerminateInstructionValue;
+import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue.ProcessInstanceModificationVariableInstructionValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceResultRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
@@ -89,6 +93,12 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.DECISION, record -> "");
     valueTypeLoggers.put(ValueType.DECISION_REQUIREMENTS, record -> "");
     valueTypeLoggers.put(ValueType.DECISION_EVALUATION, record -> "");
+
+    // checkpoint isn't meant to be read by the engine
+    valueTypeLoggers.put(ValueType.CHECKPOINT, record -> "");
+
+    valueTypeLoggers.put(
+        ValueType.PROCESS_INSTANCE_MODIFICATION, this::logProcessInstanceModificationRecordValue);
   }
 
   public void log() {
@@ -275,6 +285,16 @@ public class RecordStreamLogger {
     return joiner.toString();
   }
 
+  private String logProcessInstanceModificationRecordValue(final Record<?> record) {
+    final ProcessInstanceModificationRecordValue value =
+        (ProcessInstanceModificationRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(Target process instance: %d", value.getProcessInstanceKey()));
+    joiner.add(logActivateInstructions(value.getActivateInstructions()));
+    joiner.add(logTerminateInstructions(value.getTerminateInstructions()));
+    return joiner.toString();
+  }
+
   protected String logVariables(final Map<String, Object> variables) {
     if (variables.isEmpty()) {
       return "";
@@ -293,6 +313,58 @@ public class RecordStreamLogger {
       return startInstructions.stream()
           .map(ProcessInstanceCreationStartInstructionValue::getElementId)
           .collect(Collectors.joining(", ", "(starting before elements: ", ")"));
+    }
+  }
+
+  private String logActivateInstructions(
+      final List<ProcessInstanceModificationActivateInstructionValue> instructions) {
+    if (instructions.isEmpty()) {
+      return "(no activate)";
+    } else {
+      return instructions.stream()
+          .map(this::logActivateInstruction)
+          .collect(Collectors.joining(", ", "(activating elements: ", ")"));
+    }
+  }
+
+  private String logActivateInstruction(
+      final ProcessInstanceModificationActivateInstructionValue instruction) {
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(Target element id: %s)", instruction.getElementId()));
+    joiner.add(String.format("(Ancestor scope key: %d)", instruction.getAncestorScopeKey()));
+    joiner.add(logVariableInstructions(instruction.getVariableInstructions()));
+    return joiner.toString();
+  }
+
+  private String logVariableInstructions(
+      final List<ProcessInstanceModificationVariableInstructionValue> variables) {
+    if (variables.isEmpty()) {
+      return "(no variables)";
+    } else {
+      return variables.stream()
+          .map(this::logVariableInstruction)
+          .collect(Collectors.joining(", ", "(with variable instruction: ", ")"));
+    }
+  }
+
+  private String logVariableInstruction(
+      final ProcessInstanceModificationVariableInstructionValue variable) {
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(Target element: %s", variable.getElementId()));
+
+    joiner.add(logVariables(variable.getVariables()));
+    return joiner.toString();
+  }
+
+  private String logTerminateInstructions(
+      final List<ProcessInstanceModificationTerminateInstructionValue> instructions) {
+    if (instructions.isEmpty()) {
+      return "(no terminate)";
+    } else {
+      return instructions.stream()
+          .map(ProcessInstanceModificationTerminateInstructionValue::getElementInstanceKey)
+          .map(String::valueOf)
+          .collect(Collectors.joining(", ", "(terminating elements: ", ")"));
     }
   }
 

@@ -9,7 +9,8 @@ package io.camunda.zeebe.process.test.engine;
 
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.engine.processing.EngineProcessors;
-import io.camunda.zeebe.engine.processing.streamprocessor.StreamProcessor;
+import io.camunda.zeebe.engine.processing.deployment.distribute.DeploymentDistributionCommandSender;
+import io.camunda.zeebe.engine.processing.message.command.SubscriptionCommandSender;
 import io.camunda.zeebe.engine.state.ZbColumnFamilies;
 import io.camunda.zeebe.engine.state.appliers.EventAppliers;
 import io.camunda.zeebe.logstreams.log.LogStream;
@@ -23,6 +24,7 @@ import io.camunda.zeebe.scheduler.ActorScheduler;
 import io.camunda.zeebe.scheduler.ActorSchedulingService;
 import io.camunda.zeebe.scheduler.clock.ActorClock;
 import io.camunda.zeebe.scheduler.clock.ControlledActorClock;
+import io.camunda.zeebe.streamprocessor.StreamProcessor;
 import io.camunda.zeebe.util.FeatureFlags;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -56,12 +58,9 @@ public class EngineFactory {
     final InMemoryLogStorage logStorage = new InMemoryLogStorage();
     final LogStream logStream = createLogStream(logStorage, scheduler, partitionId);
 
-    final SubscriptionCommandSenderFactory subscriptionCommandSenderFactory =
-        new SubscriptionCommandSenderFactory(
-            logStream.newLogStreamRecordWriter().join(), partitionId);
-
     final CommandWriter commandWriter =
         new CommandWriter(logStream.newLogStreamRecordWriter().join());
+    final CommandSender commandSender = new CommandSender(commandWriter);
     final GatewayRequestStore gatewayRequestStore = new GatewayRequestStore();
     final GrpcToLogStreamGateway gateway =
         new GrpcToLogStreamGateway(
@@ -75,12 +74,7 @@ public class EngineFactory {
 
     final StreamProcessor streamProcessor =
         createStreamProcessor(
-            logStream,
-            zeebeDb,
-            scheduler,
-            grpcResponseWriter,
-            partitionCount,
-            subscriptionCommandSenderFactory);
+            logStream, zeebeDb, scheduler, grpcResponseWriter, partitionCount, commandSender);
 
     final EngineStateMonitor engineStateMonitor =
         new EngineStateMonitor(logStorage, streamProcessor);
@@ -149,7 +143,7 @@ public class EngineFactory {
       final ActorSchedulingService scheduler,
       final GrpcResponseWriter grpcResponseWriter,
       final int partitionCount,
-      final SubscriptionCommandSenderFactory subscriptionCommandSenderFactory) {
+      final CommandSender commandSender) {
     return StreamProcessor.builder()
         .logStream(logStream)
         .zeebeDb(database)
@@ -160,11 +154,11 @@ public class EngineFactory {
                 EngineProcessors.createEngineProcessors(
                     context,
                     partitionCount,
-                    subscriptionCommandSenderFactory.createSender(),
-                    new SinglePartitionDeploymentDistributor(),
-                    new SinglePartitionDeploymentResponder(),
+                    new SubscriptionCommandSender(context.getPartitionId(), commandSender),
+                    new DeploymentDistributionCommandSender(
+                        context.getPartitionId(), commandSender),
                     jobType -> {},
-                    new FeatureFlags(false)))
+                    FeatureFlags.createDefault()))
         .actorSchedulingService(scheduler)
         .build();
   }
