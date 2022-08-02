@@ -9,6 +9,7 @@ package io.camunda.zeebe.process.test.engine;
 
 import io.camunda.zeebe.engine.transport.InterPartitionCommandSender;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
+import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
 import io.camunda.zeebe.protocol.record.intent.Intent;
 import io.camunda.zeebe.util.buffer.BufferWriter;
@@ -26,7 +27,8 @@ final class CommandSender implements InterPartitionCommandSender {
       final ValueType valueType,
       final Intent intent,
       final BufferWriter command) {
-    final RecordMetadata metadata = new RecordMetadata().intent(intent).valueType(valueType);
+    final RecordMetadata metadata =
+        new RecordMetadata().recordType(RecordType.COMMAND).intent(intent).valueType(valueType);
     writer.writeCommandWithoutKey(command, metadata);
   }
 
@@ -37,7 +39,8 @@ final class CommandSender implements InterPartitionCommandSender {
       final Intent intent,
       final Long recordKey,
       final BufferWriter command) {
-    final RecordMetadata metadata = new RecordMetadata().intent(intent).valueType(valueType);
+    final RecordMetadata metadata =
+        new RecordMetadata().recordType(RecordType.COMMAND).intent(intent).valueType(valueType);
     writer.writeCommandWithKey(recordKey, command, metadata);
   }
 }

@@ -26,6 +26,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceRequest
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.Partition;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.PublishMessageRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.PublishMessageResponse;
@@ -50,6 +52,10 @@ import io.camunda.zeebe.protocol.impl.record.value.job.JobRecord;
 import io.camunda.zeebe.protocol.impl.record.value.message.MessageRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceCreationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceCreationStartInstruction;
+import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationActivateInstruction;
+import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationRecord;
+import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationTerminateInstruction;
+import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationVariableInstruction;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceRecord;
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentRecord;
 import io.camunda.zeebe.protocol.record.RecordType;
@@ -61,6 +67,7 @@ import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.intent.MessageIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceCreationIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
+import io.camunda.zeebe.protocol.record.intent.ProcessInstanceModificationIntent;
 import io.camunda.zeebe.protocol.record.intent.VariableDocumentIntent;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentUpdateSemantic;
 import io.camunda.zeebe.util.VersionUtil;
@@ -412,6 +419,55 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     jobRecord.setRetries(request.getRetries());
 
     writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
+  }
+
+  @Override
+  public void modifyProcessInstance(
+      final ModifyProcessInstanceRequest request,
+      final StreamObserver<ModifyProcessInstanceResponse> responseObserver) {
+    final var requestId =
+        gatewayRequestStore.registerNewRequest(request.getClass(), responseObserver);
+
+    final var recordMetadata =
+        prepareRecordMetadata()
+            .requestId(requestId)
+            .valueType(ValueType.PROCESS_INSTANCE_MODIFICATION)
+            .intent(ProcessInstanceModificationIntent.MODIFY);
+
+    final ProcessInstanceModificationRecord record =
+        createProcessInstanceModificationRecord(request);
+
+    writer.writeCommandWithKey(request.getProcessInstanceKey(), record, recordMetadata);
+  }
+
+  private ProcessInstanceModificationRecord createProcessInstanceModificationRecord(
+      final ModifyProcessInstanceRequest request) {
+    final var record = new ProcessInstanceModificationRecord();
+    record.setProcessInstanceKey(request.getProcessInstanceKey());
+    for (final var activate : request.getActivateInstructionsList()) {
+      final var instruction =
+          new ProcessInstanceModificationActivateInstruction()
+              .setElementId(activate.getElementId())
+              .setAncestorScopeKey(activate.getAncestorElementInstanceKey());
+      for (final var variable : activate.getVariableInstructionsList()) {
+        instruction.addVariableInstruction(
+            new ProcessInstanceModificationVariableInstruction()
+                .setElementId(variable.getScopeId())
+                .setVariables(
+                    BufferUtil.wrapArray(
+                        MsgPackConverter.convertToMsgPack(variable.getVariables()))));
+      }
+
+      record.addActivateInstruction(instruction);
+    }
+
+    for (final var terminate : request.getTerminateInstructionsList()) {
+      final var instruction =
+          new ProcessInstanceModificationTerminateInstruction()
+              .setElementInstanceKey(terminate.getElementInstanceKey());
+      record.addTerminateInstruction(instruction);
+    }
+    return record;
   }
 
   private RecordMetadata prepareRecordMetadata() {
