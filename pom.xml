@@ -416,6 +416,16 @@
     </dependencies>
   </dependencyManagement>
 
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>camunda-nexus</id>
+      <url>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</url>
+    </repository>
+  </repositories>
+
   <build>
     <pluginManagement>
       <plugins>
