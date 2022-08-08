@@ -8,11 +8,11 @@
 package io.camunda.zeebe.process.test.engine;
 
 import io.camunda.zeebe.db.ZeebeDb;
+import io.camunda.zeebe.engine.Engine;
 import io.camunda.zeebe.engine.processing.EngineProcessors;
 import io.camunda.zeebe.engine.processing.deployment.distribute.DeploymentDistributionCommandSender;
 import io.camunda.zeebe.engine.processing.message.command.SubscriptionCommandSender;
 import io.camunda.zeebe.engine.state.ZbColumnFamilies;
-import io.camunda.zeebe.engine.state.appliers.EventAppliers;
 import io.camunda.zeebe.logstreams.log.LogStream;
 import io.camunda.zeebe.logstreams.log.LogStreamBuilder;
 import io.camunda.zeebe.logstreams.log.LogStreamReader;
@@ -147,18 +147,18 @@ public class EngineFactory {
     return StreamProcessor.builder()
         .logStream(logStream)
         .zeebeDb(database)
-        .eventApplierFactory(EventAppliers::new)
         .commandResponseWriter(grpcResponseWriter)
-        .streamProcessorFactory(
-            context ->
-                EngineProcessors.createEngineProcessors(
-                    context,
-                    partitionCount,
-                    new SubscriptionCommandSender(context.getPartitionId(), commandSender),
-                    new DeploymentDistributionCommandSender(
-                        context.getPartitionId(), commandSender),
-                    jobType -> {},
-                    FeatureFlags.createDefault()))
+        .recordProcessor(
+            new Engine(
+                context ->
+                    EngineProcessors.createEngineProcessors(
+                        context,
+                        partitionCount,
+                        new SubscriptionCommandSender(context.getPartitionId(), commandSender),
+                        new DeploymentDistributionCommandSender(
+                            context.getPartitionId(), commandSender),
+                        jobType -> {},
+                        FeatureFlags.createDefault())))
         .actorSchedulingService(scheduler)
         .build();
   }
