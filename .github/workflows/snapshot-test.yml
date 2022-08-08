@@ -2,7 +2,7 @@ name: Zeebe SNAPSHOT test
 on:
   workflow_call: { }
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "0 3 * * 1-5"
 jobs:
   test-against-zeebe-snapshot:
     name: Run tests against Zeebe SNAPSHOT version
