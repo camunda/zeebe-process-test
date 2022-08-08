@@ -49,10 +49,10 @@
     <dependency.agrona.version>1.16.0</dependency.agrona.version>
     <dependency.assertj.version>3.23.1</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
-    <dependency.bytebuddy.version>1.12.12</dependency.bytebuddy.version>
+    <dependency.bytebuddy.version>1.12.13</dependency.bytebuddy.version>
     <dependency.classgraph.version>4.8.149</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
-    <dependency.errorprone.version>2.14.0</dependency.errorprone.version>
+    <dependency.errorprone.version>2.15.0</dependency.errorprone.version>
     <dependency.feel.version>1.15.1</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>31.1-jre</dependency.guava.version>
@@ -100,7 +100,7 @@
 
     <skipChecks>false</skipChecks>
 
-    <version.grpc>1.48.0</version.grpc>
+    <version.grpc>1.48.1</version.grpc>
     <version.java>17</version.java>
     <version.protobuf>3.19.4</version.protobuf>
   </properties>
