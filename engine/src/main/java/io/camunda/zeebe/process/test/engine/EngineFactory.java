@@ -13,6 +13,7 @@ import io.camunda.zeebe.engine.processing.EngineProcessors;
 import io.camunda.zeebe.engine.processing.deployment.distribute.DeploymentDistributionCommandSender;
 import io.camunda.zeebe.engine.processing.message.command.SubscriptionCommandSender;
 import io.camunda.zeebe.engine.state.ZbColumnFamilies;
+import io.camunda.zeebe.engine.state.appliers.EventAppliers;
 import io.camunda.zeebe.logstreams.log.LogStream;
 import io.camunda.zeebe.logstreams.log.LogStreamBuilder;
 import io.camunda.zeebe.logstreams.log.LogStreamReader;
@@ -148,6 +149,7 @@ public class EngineFactory {
         .logStream(logStream)
         .zeebeDb(database)
         .commandResponseWriter(grpcResponseWriter)
+        .eventApplierFactory(EventAppliers::new)
         .recordProcessor(
             new Engine(
                 context ->
