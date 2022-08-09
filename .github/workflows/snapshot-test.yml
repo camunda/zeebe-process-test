@@ -25,6 +25,8 @@ jobs:
           CURRENT_ZEEBE_VERSION=$(mvn help:evaluate -Dexpression=dependency.zeebe.version -DforceStdout -q)
           if grep -q "alpha" <<< "$CURRENT_ZEEBE_VERSION"; then
             NEW_ZEEBE_VERSION=$(echo $CURRENT_ZEEBE_VERSION | sed "s/alpha.*/SNAPSHOT/")
+          elif grep -q "SNAPSHOT" <<< "$CURRENT_ZEEBE_VERSION"; then
+            NEW_ZEEBE_VERSION=$CURRENT_ZEEBE_VERSION
           else
             NEW_ZEEBE_VERSION=echo $(echo $CURRENT_ZEEBE_VERSION | awk -F. '/[0-9]+\./{$2++;print}' OFS=.)-SNAPSHOT
           fi
