@@ -7,7 +7,7 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
-import io.camunda.zeebe.engine.transport.InterPartitionCommandSender;
+import io.camunda.zeebe.engine.api.InterPartitionCommandSender;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
