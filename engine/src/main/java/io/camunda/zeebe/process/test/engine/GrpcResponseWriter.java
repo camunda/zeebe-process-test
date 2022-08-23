@@ -9,7 +9,7 @@ package io.camunda.zeebe.process.test.engine;
 
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.rpc.Status;
-import io.camunda.zeebe.engine.processing.streamprocessor.writers.CommandResponseWriter;
+import io.camunda.zeebe.engine.api.CommandResponseWriter;
 import io.camunda.zeebe.process.test.engine.GatewayRequestStore.Request;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.RejectionType;

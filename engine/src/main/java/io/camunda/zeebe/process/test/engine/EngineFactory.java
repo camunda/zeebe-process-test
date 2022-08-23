@@ -31,6 +31,7 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class EngineFactory {
@@ -150,17 +151,18 @@ public class EngineFactory {
         .zeebeDb(database)
         .commandResponseWriter(grpcResponseWriter)
         .eventApplierFactory(EventAppliers::new)
-        .recordProcessor(
-            new Engine(
-                context ->
-                    EngineProcessors.createEngineProcessors(
-                        context,
-                        partitionCount,
-                        new SubscriptionCommandSender(context.getPartitionId(), commandSender),
-                        new DeploymentDistributionCommandSender(
-                            context.getPartitionId(), commandSender),
-                        jobType -> {},
-                        FeatureFlags.createDefault())))
+        .recordProcessors(
+            List.of(
+                new Engine(
+                    context ->
+                        EngineProcessors.createEngineProcessors(
+                            context,
+                            partitionCount,
+                            new SubscriptionCommandSender(context.getPartitionId(), commandSender),
+                            new DeploymentDistributionCommandSender(
+                                context.getPartitionId(), commandSender),
+                            jobType -> {},
+                            FeatureFlags.createDefault()))))
         .actorSchedulingService(scheduler)
         .build();
   }
