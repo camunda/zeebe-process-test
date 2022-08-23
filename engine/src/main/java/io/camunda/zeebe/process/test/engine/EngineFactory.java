@@ -151,6 +151,7 @@ public class EngineFactory {
         .zeebeDb(database)
         .commandResponseWriter(grpcResponseWriter)
         .eventApplierFactory(EventAppliers::new)
+        .partitionCommandSender(commandSender)
         .recordProcessors(
             List.of(
                 new Engine(
