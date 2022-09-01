@@ -10,7 +10,7 @@
 
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-process-test-root</artifactId>
-  <version>8.0.6-SNAPSHOT</version>
+  <version>8.0.6</version>
   <packaging>pom</packaging>
 
   <name>Zeebe Process Test Root</name>
@@ -101,43 +101,43 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-api</artifactId>
-        <version>8.0.6-SNAPSHOT</version>
+        <version>8.0.6</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-assertions</artifactId>
-        <version>8.0.6-SNAPSHOT</version>
+        <version>8.0.6</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine</artifactId>
-        <version>8.0.6-SNAPSHOT</version>
+        <version>8.0.6</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension</artifactId>
-        <version>8.0.6-SNAPSHOT</version>
+        <version>8.0.6</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
-        <version>8.0.6-SNAPSHOT</version>
+        <version>8.0.6</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-filters</artifactId>
-        <version>8.0.6-SNAPSHOT</version>
+        <version>8.0.6</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine-protocol</artifactId>
-        <version>8.0.6-SNAPSHOT</version>
+        <version>8.0.6</version>
       </dependency>
 
       <dependency>
