@@ -56,6 +56,8 @@ running to execute the tests.
 </dependency>
 ```
 
+Using Maven profiles you can also [switch the test dependencies based on the available Java version](https://github.com/camunda-community-hub/camunda-8-process-solution-template/commit/128be0ead988404c5c746ae96b47fe1138bf2a83).
+
 ### Spring support
 
 If you use the Spring framework or Spring Boot and you want to write tests, please use `spring-zeebe-test` as a wrapper around this library. This will hook everything into the Spring lifecycle. See [Spring Zeebe: Writing test cases](https://github.com/camunda-community-hub/spring-zeebe#writing-test-cases) for details.
