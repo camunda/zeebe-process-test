@@ -31,6 +31,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceRespons
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse.Builder;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ProcessMetadata;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.PublishMessageRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.PublishMessageResponse;
@@ -81,7 +83,8 @@ class GrpcResponseMapper {
           Map.entry(PublishMessageRequest.class, this::createMessageResponse),
           Map.entry(ResolveIncidentRequest.class, this::createResolveIncidentResponse),
           Map.entry(SetVariablesRequest.class, this::createSetVariablesResponse),
-          Map.entry(UpdateJobRetriesRequest.class, this::createJobUpdateRetriesResponse));
+          Map.entry(UpdateJobRetriesRequest.class, this::createJobUpdateRetriesResponse),
+          Map.entry(ModifyProcessInstanceRequest.class, this::createModifyProcessInstanceResponse));
 
   GeneratedMessageV3 map(
       final Class<? extends GeneratedMessageV3> requestType,
@@ -190,6 +193,10 @@ class GrpcResponseMapper {
 
   private GeneratedMessageV3 createCancelInstanceResponse() {
     return CancelProcessInstanceResponse.newBuilder().build();
+  }
+
+  private GeneratedMessageV3 createModifyProcessInstanceResponse() {
+    return ModifyProcessInstanceResponse.newBuilder().build();
   }
 
   private GeneratedMessageV3 createResolveIncidentResponse() {
