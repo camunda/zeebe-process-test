@@ -54,7 +54,6 @@ import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstan
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentRecord;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.Intent;
-import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -269,17 +268,6 @@ class GrpcResponseMapper {
 
   private GeneratedMessageV3 createJobUpdateRetriesResponse() {
     return UpdateJobRetriesResponse.newBuilder().build();
-  }
-
-  private GeneratedMessageV3 createJobResponse() {
-    return switch ((JobIntent) intent) {
-      case COMPLETED -> createCompleteJobResponse();
-      case FAILED -> createFailJobResponse();
-      case ERROR_THROWN -> createJobThrowErrorResponse();
-      case RETRIES_UPDATED -> createJobUpdateRetriesResponse();
-      default -> throw new UnsupportedOperationException(
-          String.format("Job command '%s' is not supported", intent));
-    };
   }
 
   Status createRejectionResponse(
