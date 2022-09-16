@@ -42,6 +42,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.awaitility.Awaitility;
@@ -330,6 +331,78 @@ class EngineClientTest {
                       .findFirst();
               assertThat(first).isNotEmpty();
             });
+  }
+
+  @Test
+  void shouldModifyProcessInstance() throws InterruptedException, TimeoutException {
+    // given
+    zeebeClient
+        .newDeployResourceCommand()
+        .addProcessModel(
+            Bpmn.createExecutableProcess("simpleProcess")
+                .startEvent()
+                .serviceTask("task1", task -> task.zeebeJobType("task1"))
+                .serviceTask("task2", task -> task.zeebeJobType("task2"))
+                .endEvent()
+                .done(),
+            "simpleProcess.bpmn")
+        .send()
+        .join();
+
+    final ProcessInstanceEvent processInstance =
+        zeebeClient
+            .newCreateInstanceCommand()
+            .bpmnProcessId("simpleProcess")
+            .latestVersion()
+            .send()
+            .join();
+
+    zeebeEngine.waitForIdleState(Duration.ofSeconds(1));
+
+    final long task1Key =
+        StreamSupport.stream(
+                RecordStream.of(zeebeEngine.getRecordStreamSource())
+                    .processInstanceRecords()
+                    .spliterator(),
+                false)
+            .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_ACTIVATED)
+            .filter(r -> r.getValue().getElementId().equals("task1"))
+            .findFirst()
+            .get()
+            .getKey();
+
+    // when
+    zeebeClient
+        .newModifyProcessInstanceCommand(processInstance.getProcessInstanceKey())
+        .terminateElement(task1Key)
+        .and()
+        .activateElement("task2")
+        .withVariables(Map.of("variable", " value"))
+        .send()
+        .join();
+    zeebeEngine.waitForIdleState(Duration.ofSeconds(1));
+
+    // then
+    assertThat(
+            StreamSupport.stream(
+                    RecordStream.of(zeebeEngine.getRecordStreamSource())
+                        .processInstanceRecords()
+                        .spliterator(),
+                    false)
+                .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED)
+                .filter(r -> r.getValue().getElementId().equals("task1"))
+                .findFirst())
+        .isNotEmpty();
+    assertThat(
+            StreamSupport.stream(
+                    RecordStream.of(zeebeEngine.getRecordStreamSource())
+                        .processInstanceRecords()
+                        .spliterator(),
+                    false)
+                .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_ACTIVATED)
+                .filter(r -> r.getValue().getElementId().equals("task2"))
+                .findFirst())
+        .isNotEmpty();
   }
 
   @Test

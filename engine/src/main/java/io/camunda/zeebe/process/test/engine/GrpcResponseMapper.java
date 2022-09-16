@@ -31,6 +31,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceRespons
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse.Builder;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ProcessMetadata;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.PublishMessageRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.PublishMessageResponse;
@@ -52,7 +54,6 @@ import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstan
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentRecord;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.Intent;
-import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -81,7 +82,8 @@ class GrpcResponseMapper {
           Map.entry(PublishMessageRequest.class, this::createMessageResponse),
           Map.entry(ResolveIncidentRequest.class, this::createResolveIncidentResponse),
           Map.entry(SetVariablesRequest.class, this::createSetVariablesResponse),
-          Map.entry(UpdateJobRetriesRequest.class, this::createJobUpdateRetriesResponse));
+          Map.entry(UpdateJobRetriesRequest.class, this::createJobUpdateRetriesResponse),
+          Map.entry(ModifyProcessInstanceRequest.class, this::createModifyProcessInstanceResponse));
 
   GeneratedMessageV3 map(
       final Class<? extends GeneratedMessageV3> requestType,
@@ -192,6 +194,10 @@ class GrpcResponseMapper {
     return CancelProcessInstanceResponse.newBuilder().build();
   }
 
+  private GeneratedMessageV3 createModifyProcessInstanceResponse() {
+    return ModifyProcessInstanceResponse.newBuilder().build();
+  }
+
   private GeneratedMessageV3 createResolveIncidentResponse() {
     final IncidentRecord incident = new IncidentRecord();
     incident.wrap(valueBufferView);
@@ -262,17 +268,6 @@ class GrpcResponseMapper {
 
   private GeneratedMessageV3 createJobUpdateRetriesResponse() {
     return UpdateJobRetriesResponse.newBuilder().build();
-  }
-
-  private GeneratedMessageV3 createJobResponse() {
-    return switch ((JobIntent) intent) {
-      case COMPLETED -> createCompleteJobResponse();
-      case FAILED -> createFailJobResponse();
-      case ERROR_THROWN -> createJobThrowErrorResponse();
-      case RETRIES_UPDATED -> createJobUpdateRetriesResponse();
-      default -> throw new UnsupportedOperationException(
-          String.format("Job command '%s' is not supported", intent));
-    };
   }
 
   Status createRejectionResponse(

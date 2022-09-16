@@ -289,7 +289,7 @@ public class RecordStreamLogger {
     final ProcessInstanceModificationRecordValue value =
         (ProcessInstanceModificationRecordValue) record.getValue();
     final StringJoiner joiner = new StringJoiner(", ", "", "");
-    joiner.add(String.format("(Target process instance: %d", value.getProcessInstanceKey()));
+    joiner.add(String.format("(Target process instance: %d)", value.getProcessInstanceKey()));
     joiner.add(logActivateInstructions(value.getActivateInstructions()));
     joiner.add(logTerminateInstructions(value.getTerminateInstructions()));
     return joiner.toString();
