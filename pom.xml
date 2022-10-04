@@ -53,7 +53,7 @@
     <dependency.classgraph.version>4.8.149</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.15.0</dependency.errorprone.version>
-    <dependency.feel.version>1.15.1</dependency.feel.version>
+    <dependency.feel.version>1.15.2</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>31.1-jre</dependency.guava.version>
     <dependency.immutables.version>2.9.2</dependency.immutables.version>
@@ -68,12 +68,12 @@
     <dependency.proto.version>2.9.2</dependency.proto.version>
     <dependency.protobuf.version>3.21.6</dependency.protobuf.version>
     <dependency.revapi.version>0.27.0</dependency.revapi.version>
-    <dependency.scala.version>2.13.8</dependency.scala.version>
+    <dependency.scala.version>2.13.9</dependency.scala.version>
     <dependency.slf4j.version>2.0.1</dependency.slf4j.version>
     <dependency.snakeyaml.version>1.32</dependency.snakeyaml.version>
     <dependency.spring.version>5.3.23</dependency.spring.version>
     <dependency.testcontainers.version>1.17.3</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.1.0-SNAPSHOT</dependency.zeebe.version>
+    <dependency.zeebe.version>8.1.0</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
