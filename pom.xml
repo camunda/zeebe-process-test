@@ -63,12 +63,12 @@
     <dependency.junit.version>5.9.1</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
     <dependency.mockito.version>4.8.0</dependency.mockito.version>
-    <dependency.netty.version>4.1.82.Final</dependency.netty.version>
+    <dependency.netty.version>4.1.84.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.9.6</dependency.proto.version>
     <dependency.protobuf.version>3.21.7</dependency.protobuf.version>
     <dependency.revapi.version>0.27.0</dependency.revapi.version>
-    <dependency.scala.version>2.13.9</dependency.scala.version>
+    <dependency.scala.version>2.13.10</dependency.scala.version>
     <dependency.slf4j.version>2.0.3</dependency.slf4j.version>
     <dependency.snakeyaml.version>1.33</dependency.snakeyaml.version>
     <dependency.spring.version>5.3.23</dependency.spring.version>
