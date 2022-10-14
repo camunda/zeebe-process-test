@@ -119,7 +119,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - code-formatting
-      - build-and-test-embedded
+      - build-and-test
       - build-and-test-testcontainers
     steps:
       - run: exit 0
