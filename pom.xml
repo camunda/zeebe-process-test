@@ -229,7 +229,7 @@
       <dependency>
         <groupId>org.camunda.bpm.model</groupId>
         <artifactId>camunda-dmn-model</artifactId>
-        <version>7.17.0</version>
+        <version>7.18.0</version>
       </dependency>
 
       <dependency>
