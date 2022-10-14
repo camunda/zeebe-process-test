@@ -49,7 +49,7 @@
     <dependency.agrona.version>1.17.1</dependency.agrona.version>
     <dependency.assertj.version>3.23.1</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
-    <dependency.bytebuddy.version>1.12.17</dependency.bytebuddy.version>
+    <dependency.bytebuddy.version>1.12.18</dependency.bytebuddy.version>
     <dependency.classgraph.version>4.8.149</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.15.0</dependency.errorprone.version>
@@ -63,7 +63,7 @@
     <dependency.junit.version>5.9.1</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
     <dependency.mockito.version>4.8.0</dependency.mockito.version>
-    <dependency.netty.version>4.1.82.Final</dependency.netty.version>
+    <dependency.netty.version>4.1.84.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.9.6</dependency.proto.version>
     <dependency.protobuf.version>3.21.7</dependency.protobuf.version>
@@ -100,7 +100,7 @@
 
     <skipChecks>false</skipChecks>
 
-    <version.grpc>1.49.2</version.grpc>
+    <version.grpc>1.50.0</version.grpc>
     <version.java>17</version.java>
     <version.protobuf>3.19.4</version.protobuf>
   </properties>
