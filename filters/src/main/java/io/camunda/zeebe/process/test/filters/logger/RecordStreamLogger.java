@@ -22,6 +22,7 @@ import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
 import io.camunda.zeebe.protocol.record.value.DeploymentRecordValue;
 import io.camunda.zeebe.protocol.record.value.ErrorRecordValue;
+import io.camunda.zeebe.protocol.record.value.EscalationRecordValue;
 import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
 import io.camunda.zeebe.protocol.record.value.JobBatchRecordValue;
 import io.camunda.zeebe.protocol.record.value.JobRecordValue;
@@ -83,6 +84,7 @@ public class RecordStreamLogger {
         ValueType.PROCESS_INSTANCE_RESULT, this::logProcessInstanceResultRecordValue);
     valueTypeLoggers.put(ValueType.PROCESS, this::logProcessRecordValue);
     valueTypeLoggers.put(ValueType.PROCESS_EVENT, this::logProcessEventRecordValue);
+    valueTypeLoggers.put(ValueType.ESCALATION, this::logEscalationRecordValue);
 
     // These records don't have any interesting extra information for the user to log
     valueTypeLoggers.put(ValueType.DEPLOYMENT_DISTRIBUTION, record -> "");
@@ -282,6 +284,16 @@ public class RecordStreamLogger {
     final StringJoiner joiner = new StringJoiner(", ", "", "");
     joiner.add(String.format("(Target element id: %s)", value.getTargetElementId()));
     joiner.add(logVariables(value.getVariables()));
+    return joiner.toString();
+  }
+
+  private String logEscalationRecordValue(final Record<?> record) {
+    final EscalationRecordValue value = (EscalationRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(Process id: %s)", value.getProcessInstanceKey()));
+    joiner.add(String.format("(Escalation code: %s)", value.getEscalationCode()));
+    joiner.add(String.format("(Throw element id: %s)", value.getThrowElementId()));
+    joiner.add(String.format("(Catch element id: %s)", value.getCatchElementId()));
     return joiner.toString();
   }
 
