@@ -7,11 +7,11 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
-import io.camunda.zeebe.engine.api.InterPartitionCommandSender;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
 import io.camunda.zeebe.protocol.record.intent.Intent;
+import io.camunda.zeebe.stream.api.InterPartitionCommandSender;
 import io.camunda.zeebe.util.buffer.BufferWriter;
 
 final class CommandSender implements InterPartitionCommandSender {

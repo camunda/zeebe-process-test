@@ -9,13 +9,13 @@ package io.camunda.zeebe.process.test.engine;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.db.ZeebeDb;
-import io.camunda.zeebe.engine.state.ZbColumnFamilies;
 import io.camunda.zeebe.logstreams.log.LogStream;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
+import io.camunda.zeebe.protocol.ZbColumnFamilies;
 import io.camunda.zeebe.scheduler.ActorScheduler;
 import io.camunda.zeebe.scheduler.clock.ControlledActorClock;
-import io.camunda.zeebe.streamprocessor.StreamProcessor;
+import io.camunda.zeebe.stream.impl.StreamProcessor;
 import io.grpc.Server;
 import java.io.IOException;
 import java.time.Duration;
