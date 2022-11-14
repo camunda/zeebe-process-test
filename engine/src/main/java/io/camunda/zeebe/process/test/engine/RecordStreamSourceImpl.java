@@ -7,7 +7,6 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
-import io.camunda.zeebe.engine.processing.streamprocessor.TypedEventRegistry;
 import io.camunda.zeebe.logstreams.log.LogStreamReader;
 import io.camunda.zeebe.logstreams.log.LoggedEvent;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
@@ -15,6 +14,7 @@ import io.camunda.zeebe.protocol.impl.record.CopiedRecord;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
 import io.camunda.zeebe.protocol.impl.record.UnifiedRecordValue;
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.stream.impl.TypedEventRegistry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

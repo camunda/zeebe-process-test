@@ -12,20 +12,19 @@ import io.camunda.zeebe.engine.Engine;
 import io.camunda.zeebe.engine.processing.EngineProcessors;
 import io.camunda.zeebe.engine.processing.deployment.distribute.DeploymentDistributionCommandSender;
 import io.camunda.zeebe.engine.processing.message.command.SubscriptionCommandSender;
-import io.camunda.zeebe.engine.state.ZbColumnFamilies;
-import io.camunda.zeebe.engine.state.appliers.EventAppliers;
 import io.camunda.zeebe.logstreams.log.LogStream;
 import io.camunda.zeebe.logstreams.log.LogStreamBuilder;
 import io.camunda.zeebe.logstreams.log.LogStreamReader;
 import io.camunda.zeebe.logstreams.storage.LogStorage;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.db.InMemoryDbFactory;
+import io.camunda.zeebe.protocol.ZbColumnFamilies;
 import io.camunda.zeebe.scheduler.Actor;
 import io.camunda.zeebe.scheduler.ActorScheduler;
 import io.camunda.zeebe.scheduler.ActorSchedulingService;
 import io.camunda.zeebe.scheduler.clock.ActorClock;
 import io.camunda.zeebe.scheduler.clock.ControlledActorClock;
-import io.camunda.zeebe.streamprocessor.StreamProcessor;
+import io.camunda.zeebe.stream.impl.StreamProcessor;
 import io.camunda.zeebe.util.FeatureFlags;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -150,7 +149,6 @@ public class EngineFactory {
         .logStream(logStream)
         .zeebeDb(database)
         .commandResponseWriter(grpcResponseWriter)
-        .eventApplierFactory(EventAppliers::new)
         .partitionCommandSender(commandSender)
         .recordProcessors(
             List.of(

@@ -9,12 +9,12 @@ package io.camunda.zeebe.process.test.engine;
 
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.rpc.Status;
-import io.camunda.zeebe.engine.api.CommandResponseWriter;
 import io.camunda.zeebe.process.test.engine.GatewayRequestStore.Request;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.ValueType;
 import io.camunda.zeebe.protocol.record.intent.Intent;
+import io.camunda.zeebe.stream.api.CommandResponseWriter;
 import io.camunda.zeebe.util.buffer.BufferUtil;
 import io.camunda.zeebe.util.buffer.BufferWriter;
 import io.grpc.protobuf.StatusProto;
