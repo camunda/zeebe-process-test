@@ -51,7 +51,7 @@
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
     <dependency.bytebuddy.version>1.12.18</dependency.bytebuddy.version>
     <dependency.camundamodel.version>7.18.0</dependency.camundamodel.version>
-    <dependency.classgraph.version>4.8.149</dependency.classgraph.version>
+    <dependency.classgraph.version>4.8.150</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.16</dependency.errorprone.version>
     <dependency.feel.version>1.15.2</dependency.feel.version>
@@ -63,7 +63,7 @@
     <dependency.jna.version>5.12.1</dependency.jna.version>
     <dependency.junit.version>5.9.1</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
-    <dependency.mockito.version>4.8.1</dependency.mockito.version>
+    <dependency.mockito.version>4.9.0</dependency.mockito.version>
     <dependency.netty.version>4.1.85.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.10.0</dependency.proto.version>
