@@ -70,7 +70,7 @@
     <dependency.protobuf.version>3.21.9</dependency.protobuf.version>
     <dependency.revapi.version>0.27.0</dependency.revapi.version>
     <dependency.scala.version>2.13.10</dependency.scala.version>
-    <dependency.slf4j.version>2.0.4</dependency.slf4j.version>
+    <dependency.slf4j.version>2.0.5</dependency.slf4j.version>
     <dependency.snakeyaml.version>1.33</dependency.snakeyaml.version>
     <dependency.testcontainers.version>1.17.6</dependency.testcontainers.version>
     <dependency.zeebe.version>8.2.0-SNAPSHOT</dependency.zeebe.version>
@@ -95,7 +95,7 @@
     <plugin.version.maven-enforcer>3.1.0</plugin.version.maven-enforcer>
     <plugin.version.os-maven>1.7.1</plugin.version.os-maven>
     <plugin.version.revapi>0.14.7</plugin.version.revapi>
-    <plugin.version.spotless>2.27.2</plugin.version.spotless>
+    <plugin.version.spotless>2.28.0</plugin.version.spotless>
     <plugin.version.surefire>3.0.0-M7</plugin.version.surefire>
 
     <skipChecks>false</skipChecks>
