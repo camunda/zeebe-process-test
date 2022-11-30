@@ -8,29 +8,28 @@
 
 package io.camunda.zeebe.process.test.engine;
 
-import io.camunda.zeebe.logstreams.log.LogStreamRecordWriter;
+import io.camunda.zeebe.logstreams.log.LogAppendEntry;
+import io.camunda.zeebe.logstreams.log.LogStreamWriter;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
 import io.camunda.zeebe.util.buffer.BufferWriter;
 
 /**
- * This record is responsible for writing the commands to the {@link LogStreamRecordWriter} in a
+ * This record is responsible for writing the commands to the {@link LogStreamWriter} in a
  * thread-safe way.
  */
-record CommandWriter(LogStreamRecordWriter writer) {
+record CommandWriter(LogStreamWriter writer) {
 
   void writeCommandWithKey(
       final Long key, final BufferWriter bufferWriter, final RecordMetadata recordMetadata) {
     synchronized (writer) {
-      writer.reset();
-      writer.key(key).metadataWriter(recordMetadata).valueWriter(bufferWriter).tryWrite();
+      writer.tryWrite(LogAppendEntry.of(key, recordMetadata, bufferWriter));
     }
   }
 
   void writeCommandWithoutKey(
       final BufferWriter bufferWriter, final RecordMetadata recordMetadata) {
     synchronized (writer) {
-      writer.reset();
-      writer.keyNull().metadataWriter(recordMetadata).valueWriter(bufferWriter).tryWrite();
+      writer.tryWrite(LogAppendEntry.of(recordMetadata, bufferWriter));
     }
   }
 }
