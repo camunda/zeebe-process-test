@@ -59,7 +59,8 @@ public class EngineFactory {
     final InMemoryLogStorage logStorage = new InMemoryLogStorage();
     final LogStream logStream = createLogStream(logStorage, scheduler, partitionId);
 
-    final CommandWriter commandWriter = new CommandWriter(logStream.newLogStreamWriter().join());
+    final CommandWriter commandWriter =
+        new CommandWriter(logStream.newLogStreamRecordWriter().join());
     final CommandSender commandSender = new CommandSender(commandWriter);
     final GatewayRequestStore gatewayRequestStore = new GatewayRequestStore();
     final GrpcToLogStreamGateway gateway =
