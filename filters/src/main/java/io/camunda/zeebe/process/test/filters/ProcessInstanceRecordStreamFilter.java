@@ -20,6 +20,7 @@ import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
+import io.camunda.zeebe.protocol.record.value.BpmnEventType;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -54,6 +55,16 @@ public class ProcessInstanceRecordStreamFilter {
       final BpmnElementType bpmnElementType) {
     return new ProcessInstanceRecordStreamFilter(
         stream.filter(record -> record.getValue().getBpmnElementType() != bpmnElementType));
+  }
+
+  public ProcessInstanceRecordStreamFilter withBpmnEventType(final BpmnEventType bpmnEventType) {
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getValue().getBpmnEventType() == bpmnEventType));
+  }
+
+  public ProcessInstanceRecordStreamFilter withoutBpmnEventType(final BpmnEventType bpmnEventType) {
+    return new ProcessInstanceRecordStreamFilter(
+        stream.filter(record -> record.getValue().getBpmnEventType() != bpmnEventType));
   }
 
   public ProcessInstanceRecordStreamFilter withIntent(final ProcessInstanceIntent intent) {

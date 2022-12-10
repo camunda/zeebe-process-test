@@ -163,6 +163,7 @@ public class RecordStreamLogger {
     final StringJoiner joiner = new StringJoiner(", ", "", "");
     joiner.add(String.format("(Element id: %s)", value.getElementId()));
     joiner.add(String.format("(Element type: %s)", value.getBpmnElementType()));
+    joiner.add(String.format("(Event type: %s)", value.getBpmnEventType()));
     joiner.add(String.format("(Process id: %s)", value.getBpmnProcessId()));
     return joiner.toString();
   }
