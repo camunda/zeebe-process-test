@@ -39,6 +39,7 @@ import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordV
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceResultRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
+import io.camunda.zeebe.protocol.record.value.SignalSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
@@ -101,6 +102,8 @@ public class RecordStreamLogger {
 
     valueTypeLoggers.put(
         ValueType.PROCESS_INSTANCE_MODIFICATION, this::logProcessInstanceModificationRecordValue);
+
+    valueTypeLoggers.put(ValueType.SIGNAL_SUBSCRIPTION, this::logSignalSubscriptionRecordValue);
   }
 
   public void log() {
@@ -378,6 +381,16 @@ public class RecordStreamLogger {
           .map(String::valueOf)
           .collect(Collectors.joining(", ", "(terminating elements: ", ")"));
     }
+  }
+
+  private String logSignalSubscriptionRecordValue(final Record<?> record) {
+    final SignalSubscriptionRecordValue value = (SignalSubscriptionRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(Process id: %s)", value.getBpmnProcessId()));
+    joiner.add(String.format("(Catch event id: %s)", value.getCatchEventId()));
+    joiner.add(String.format("(Signal name: %s)", value.getSignalName()));
+    joiner.add(String.format("(Catch event instance key: %s)", value.getCatchEventInstanceKey()));
+    return joiner.toString();
   }
 
   protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {

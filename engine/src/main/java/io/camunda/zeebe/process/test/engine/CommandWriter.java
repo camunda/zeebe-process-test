@@ -11,7 +11,7 @@ package io.camunda.zeebe.process.test.engine;
 import io.camunda.zeebe.logstreams.log.LogAppendEntry;
 import io.camunda.zeebe.logstreams.log.LogStreamWriter;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
-import io.camunda.zeebe.util.buffer.BufferWriter;
+import io.camunda.zeebe.protocol.impl.record.UnifiedRecordValue;
 
 /**
  * This record is responsible for writing the commands to the {@link LogStreamWriter} in a
@@ -20,16 +20,16 @@ import io.camunda.zeebe.util.buffer.BufferWriter;
 record CommandWriter(LogStreamWriter writer) {
 
   void writeCommandWithKey(
-      final Long key, final BufferWriter bufferWriter, final RecordMetadata recordMetadata) {
+      final Long key, final UnifiedRecordValue command, final RecordMetadata recordMetadata) {
     synchronized (writer) {
-      writer.tryWrite(LogAppendEntry.of(key, recordMetadata, bufferWriter));
+      writer.tryWrite(LogAppendEntry.of(key, recordMetadata, command));
     }
   }
 
   void writeCommandWithoutKey(
-      final BufferWriter bufferWriter, final RecordMetadata recordMetadata) {
+      final UnifiedRecordValue command, final RecordMetadata recordMetadata) {
     synchronized (writer) {
-      writer.tryWrite(LogAppendEntry.of(recordMetadata, bufferWriter));
+      writer.tryWrite(LogAppendEntry.of(recordMetadata, command));
     }
   }
 }
