@@ -34,6 +34,7 @@ import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.TimerIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
+import io.camunda.zeebe.protocol.record.value.BpmnEventType;
 import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
@@ -328,6 +329,7 @@ class EngineClientTest {
                           false)
                       .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED)
                       .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
                       .findFirst();
               assertThat(first).isNotEmpty();
             });
@@ -699,6 +701,7 @@ class EngineClientTest {
                                     r ->
                                         r.getValue().getBpmnElementType()
                                             == BpmnElementType.BOUNDARY_EVENT)
+                                .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.ERROR)
                                 .findFirst();
 
                         assertThat(boundaryEvent).isNotEmpty();
@@ -800,6 +803,7 @@ class EngineClientTest {
                           false)
                       .filter(r -> r.getRecordType() == RecordType.EVENT)
                       .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
                       .limit(4)
                       .collect(Collectors.toList());
 
@@ -822,6 +826,8 @@ class EngineClientTest {
                   .isEqualTo(processInstance.getVersion());
               assertThat(processInstanceRecord.getBpmnElementType())
                   .isEqualTo(BpmnElementType.PROCESS);
+              assertThat(processInstanceRecord.getBpmnEventType())
+                  .isEqualTo(BpmnEventType.UNSPECIFIED);
             });
   }
 
@@ -853,6 +859,7 @@ class EngineClientTest {
               final Optional<Record<ProcessInstanceRecordValue>> processRecords =
                   StreamSupport.stream(recordStream.processInstanceRecords().spliterator(), false)
                       .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
                       .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
                       .findFirst();
 
@@ -908,6 +915,7 @@ class EngineClientTest {
                               .spliterator(),
                           false)
                       .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
                       .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
                       .findFirst();
 
