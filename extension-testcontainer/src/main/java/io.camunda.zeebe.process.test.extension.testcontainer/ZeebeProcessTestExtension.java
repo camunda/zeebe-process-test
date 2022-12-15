@@ -123,14 +123,15 @@ public class ZeebeProcessTestExtension
 
   private void injectFields(final ExtensionContext extensionContext, final Object... objects) {
     final Class<?> requiredTestClass = extensionContext.getRequiredTestClass();
-    final Field[] declaredFields = requiredTestClass.getDeclaredFields();
     for (final Object object : objects) {
-      final Optional<Field> field = getField(declaredFields, object);
+      final Optional<Field> field = getField(requiredTestClass, object);
       field.ifPresent(value -> injectField(extensionContext, value, object));
     }
   }
 
-  private Optional<Field> getField(final Field[] declaredFields, final Object object) {
+  private Optional<Field> getField(final Class<?> requiredTestClass, final Object object) {
+    final Field[] declaredFields = requiredTestClass.getDeclaredFields();
+
     final List<Field> fields =
         Arrays.stream(declaredFields)
             .filter(field -> field.getType().isInstance(object))
@@ -143,8 +144,12 @@ public class ZeebeProcessTestExtension
                   + "found %s. Please make sure at most one field of type %s has been declared in the"
                   + " test class.",
               object.getClass().getSimpleName(), fields.size(), object.getClass().getSimpleName()));
+    } else if (fields.size() == 0) {
+      final Class<?> superclass = requiredTestClass.getSuperclass();
+      return superclass == null ? Optional.empty() : getField(superclass, object);
+    } else {
+      return Optional.of(fields.get(0));
     }
-    return fields.size() == 0 ? Optional.empty() : Optional.of(fields.get(0));
   }
 
   private void injectField(
