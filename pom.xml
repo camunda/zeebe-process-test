@@ -57,7 +57,7 @@
     <dependency.feel.version>1.15.3</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>31.1-jre</dependency.guava.version>
-    <dependency.immutables.version>2.9.2</dependency.immutables.version>
+    <dependency.immutables.version>2.9.3</dependency.immutables.version>
     <dependency.jackson.version>2.14.1</dependency.jackson.version>
     <dependency.javax.version>1.3.2</dependency.javax.version>
     <dependency.jna.version>5.12.1</dependency.jna.version>
@@ -100,7 +100,7 @@
 
     <skipChecks>false</skipChecks>
 
-    <version.grpc>1.51.0</version.grpc>
+    <version.grpc>1.51.1</version.grpc>
     <version.java>17</version.java>
     <version.protobuf>3.19.4</version.protobuf>
   </properties>
