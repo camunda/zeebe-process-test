@@ -9,6 +9,7 @@ package io.camunda.zeebe.process.test.engine;
 
 import io.camunda.zeebe.logstreams.storage.LogStorage;
 import io.camunda.zeebe.logstreams.storage.LogStorageReader;
+import io.camunda.zeebe.util.buffer.BufferWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,6 +32,17 @@ class InMemoryLogStorage implements LogStorage {
   @Override
   public LogStorageReader newReader() {
     return new ListLogStorageReader();
+  }
+
+  @Override
+  public void append(
+      final long lowestPosition,
+      final long highestPosition,
+      final BufferWriter bufferWriter,
+      final AppendListener listener) {
+    final var buffer = ByteBuffer.allocate(bufferWriter.getLength());
+    bufferWriter.write(new UnsafeBuffer(buffer), 0);
+    append(lowestPosition, highestPosition, buffer, listener);
   }
 
   @Override
