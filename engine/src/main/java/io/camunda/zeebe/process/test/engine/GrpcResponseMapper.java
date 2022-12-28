@@ -29,8 +29,14 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployProcessResponse
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse.Builder;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluateDecisionRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluateDecisionResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluatedDecision;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluatedDecisionInput;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluatedDecisionOutput;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.MatchedDecisionRule;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ProcessMetadata;
@@ -45,6 +51,7 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ThrowErrorResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesResponse;
 import io.camunda.zeebe.protocol.impl.encoding.MsgPackConverter;
+import io.camunda.zeebe.protocol.impl.record.value.decision.DecisionEvaluationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.deployment.DeploymentRecord;
 import io.camunda.zeebe.protocol.impl.record.value.incident.IncidentRecord;
 import io.camunda.zeebe.protocol.impl.record.value.job.JobBatchRecord;
@@ -55,6 +62,7 @@ import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentReco
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.Intent;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
@@ -75,6 +83,7 @@ class GrpcResponseMapper {
           Map.entry(
               CreateProcessInstanceWithResultRequest.class,
               this::createProcessInstanceWithResultResponse),
+          Map.entry(EvaluateDecisionRequest.class, this::evaluateDecisionResponse),
           Map.entry(DeployProcessRequest.class, this::createDeployResponse),
           Map.entry(DeployResourceRequest.class, this::createDeployResourceResponse),
           Map.entry(FailJobRequest.class, this::createFailJobResponse),
@@ -163,6 +172,74 @@ class GrpcResponseMapper {
         .forEach(metadata -> builder.addDeploymentsBuilder().setDecisionRequirements(metadata));
 
     return builder.build();
+  }
+
+  private GeneratedMessageV3 evaluateDecisionResponse() {
+    final DecisionEvaluationRecord evaluationRecord = new DecisionEvaluationRecord();
+    evaluationRecord.wrap(valueBufferView);
+
+    final List<EvaluatedDecision> evaluatedDecisions =
+        evaluationRecord.evaluatedDecisions().stream()
+            .map(
+                evaluatedDecision ->
+                    EvaluatedDecision.newBuilder()
+                        .setDecisionId(evaluatedDecision.getDecisionId())
+                        .setDecisionKey(evaluatedDecision.getDecisionKey())
+                        .setDecisionName(evaluatedDecision.getDecisionName())
+                        .setDecisionVersion(evaluatedDecision.getDecisionVersion())
+                        .setDecisionType(evaluatedDecision.getDecisionType())
+                        .setDecisionOutput(evaluatedDecision.getDecisionOutput())
+                        // map evaluated decision inputs
+                        .addAllEvaluatedInputs(
+                            evaluatedDecision.evaluatedInputs().stream()
+                                .map(
+                                    evaluatedInput ->
+                                        EvaluatedDecisionInput.newBuilder()
+                                            .setInputValue(evaluatedInput.getInputValue())
+                                            .setInputName(evaluatedInput.getInputName())
+                                            .setInputId(evaluatedInput.getInputId())
+                                            .build())
+                                .collect(Collectors.toList()))
+                        // map matched decision rules
+                        .addAllMatchedRules(
+                            evaluatedDecision.matchedRules().stream()
+                                .map(
+                                    matchedRule ->
+                                        MatchedDecisionRule.newBuilder()
+                                            .setRuleIndex(matchedRule.getRuleIndex())
+                                            .setRuleId(matchedRule.getRuleId())
+                                            // map evaluated decision outputs
+                                            .addAllEvaluatedOutputs(
+                                                matchedRule.evaluatedOutputs().stream()
+                                                    .map(
+                                                        evaluatedOutput ->
+                                                            EvaluatedDecisionOutput.newBuilder()
+                                                                .setOutputValue(
+                                                                    evaluatedOutput
+                                                                        .getOutputValue())
+                                                                .setOutputName(
+                                                                    evaluatedOutput.getOutputName())
+                                                                .setOutputId(
+                                                                    evaluatedOutput.getOutputId())
+                                                                .build())
+                                                    .collect(Collectors.toList()))
+                                            .build())
+                                .collect(Collectors.toList()))
+                        .build())
+            .collect(Collectors.toList());
+
+    return EvaluateDecisionResponse.newBuilder()
+        .setDecisionId(evaluationRecord.getDecisionId())
+        .setDecisionKey(evaluationRecord.getDecisionKey())
+        .setDecisionName(evaluationRecord.getDecisionName())
+        .setDecisionVersion(evaluationRecord.getDecisionVersion())
+        .setDecisionRequirementsId(evaluationRecord.getDecisionRequirementsId())
+        .setDecisionRequirementsKey(evaluationRecord.getDecisionRequirementsKey())
+        .setDecisionOutput(evaluationRecord.getDecisionOutput())
+        .setFailedDecisionId(evaluationRecord.getFailedDecisionId())
+        .setFailureMessage(evaluationRecord.getEvaluationFailureMessage())
+        .addAllEvaluatedDecisions(evaluatedDecisions)
+        .build();
   }
 
   private GeneratedMessageV3 createProcessInstanceResponse() {
