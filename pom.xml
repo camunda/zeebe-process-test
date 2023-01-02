@@ -53,7 +53,7 @@
     <dependency.camundamodel.version>7.18.0</dependency.camundamodel.version>
     <dependency.classgraph.version>4.8.153</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
-    <dependency.errorprone.version>2.16</dependency.errorprone.version>
+    <dependency.errorprone.version>2.17.0</dependency.errorprone.version>
     <dependency.feel.version>1.15.3</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>31.1-jre</dependency.guava.version>
