@@ -47,7 +47,7 @@
 
   <properties>
     <dependency.agrona.version>1.17.1</dependency.agrona.version>
-    <dependency.assertj.version>3.24.0</dependency.assertj.version>
+    <dependency.assertj.version>3.24.1</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
     <dependency.bytebuddy.version>1.12.21</dependency.bytebuddy.version>
     <dependency.camundamodel.version>7.18.0</dependency.camundamodel.version>
