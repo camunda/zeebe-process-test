@@ -2,7 +2,7 @@
 
 # Zeebe Process Test
 
-This project allows you to unit test your Camunda Cloud BPMN processes. It will start a Zeebe test engine
+This project allows you to unit test your Camunda Platform 8 BPMN processes. It will start a Zeebe test engine
 and provide you with a set of assertions you can use to verify your process behaves as expected.
 
 ## Prerequisites

@@ -15,7 +15,7 @@ _All lines under and including the cut-off marker will be removed from the merge
 
 Please check the items that apply, before requesting a review.
 
-You can find more details about these items in our wiki page about [Pull Requests and Code Reviews](https://github.com/camunda-cloud/zeebe/wiki/Pull-Requests-and-Code-Reviews).
+You can find more details about these items in our wiki page about [Pull Requests and Code Reviews](https://github.com/camunda/zeebe/wiki/Pull-Requests-and-Code-Reviews).
 
 * [ ] I've reviewed my own code
 * [ ] I've written a clear changelist description
