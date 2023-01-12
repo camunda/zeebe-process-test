@@ -139,7 +139,7 @@
       <id>oss-maven-central</id>
       <properties>
         <serverId>central</serverId>
-        <nexusUrl>${central.nexusUrl}</nexusUrl>
+        <nexusUrl>oss.sonatype.org</nexusUrl>
         <central.staging.deploy.id>${serverId}</central.staging.deploy.id>
         <central.staging.deploy.url>${nexusUrl}</central.staging.deploy.url>
       </properties>
@@ -154,7 +154,7 @@
               <!-- the execution default-deploy (defined in camunda-release-parent) deploys into camunda nexus -->
               <!-- add additional execution to deploy to maven central -->
               <execution>
-                <id>default-deploy</id>
+                <id>deploy-to-maven-central</id>
                 <phase>deploy</phase>
                 <goals>
                   <goal>deploy</goal>
@@ -174,16 +174,6 @@
           </plugin>
         </plugins>
       </build>
-      <distributionManagement>
-        <snapshotRepository>
-          <id>${central.staging.deploy.id}</id>
-          <url>${central.staging.deploy.url}/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-          <id>${central.staging.deploy.id}</id>
-          <url>${central.staging.deploy.url}/service/local/staging/deploy/maven2/</url>
-        </repository>
-      </distributionManagement>
     </profile>
   </profiles>
 

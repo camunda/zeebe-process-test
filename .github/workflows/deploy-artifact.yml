@@ -11,12 +11,9 @@ on:
   release:
     types: [published]
 jobs:
-  test:
-    uses: ./.github/workflows/build-test.yml
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [test]
 
     env:
       OWNER: "camunda"
