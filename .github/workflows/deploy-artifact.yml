@@ -125,7 +125,7 @@ jobs:
         # main branch.
       - name: Build and deploy to Maven
         id: release
-        uses: camunda-community-hub/community-action-maven-release@v1
+        uses: camunda-community-hub/community-action-maven-release@v1.0.13
         with:
           release-version: ${{ github.event.release.tag_name }}
           release-profile: community-action-maven-release

@@ -4,8 +4,9 @@
 
   <parent>
     <groupId>org.camunda.community</groupId>
-    <artifactId>community-hub-release-parent</artifactId>
+    <artifactId>community-hub-release-parent-custom</artifactId>
     <version>1.3.1</version>
+    <relativePath>./community-release/pom.xml</relativePath>
   </parent>
 
   <groupId>io.camunda</groupId>
