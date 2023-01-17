@@ -60,7 +60,7 @@
     <dependency.immutables.version>2.9.3</dependency.immutables.version>
     <dependency.jackson.version>2.14.1</dependency.jackson.version>
     <dependency.javax.version>1.3.2</dependency.javax.version>
-    <dependency.jna.version>5.12.1</dependency.jna.version>
+    <dependency.jna.version>5.13.0</dependency.jna.version>
     <dependency.junit.version>5.9.2</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
     <dependency.mockito.version>4.11.0</dependency.mockito.version>
@@ -95,12 +95,12 @@
     <plugin.version.maven-enforcer>3.1.0</plugin.version.maven-enforcer>
     <plugin.version.os-maven>1.7.1</plugin.version.os-maven>
     <plugin.version.revapi>0.15.0</plugin.version.revapi>
-    <plugin.version.spotless>2.29.0</plugin.version.spotless>
+    <plugin.version.spotless>2.30.0</plugin.version.spotless>
     <plugin.version.surefire>3.0.0-M8</plugin.version.surefire>
 
     <skipChecks>false</skipChecks>
 
-    <version.grpc>1.52.0</version.grpc>
+    <version.grpc>1.52.1</version.grpc>
     <version.java>17</version.java>
     <version.protobuf>3.19.4</version.protobuf>
   </properties>
