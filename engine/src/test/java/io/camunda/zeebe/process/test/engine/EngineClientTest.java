@@ -17,6 +17,7 @@ import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.BrokerInfo;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
+import io.camunda.zeebe.client.api.response.EvaluateDecisionResponse;
 import io.camunda.zeebe.client.api.response.PartitionBrokerHealth;
 import io.camunda.zeebe.client.api.response.PartitionBrokerRole;
 import io.camunda.zeebe.client.api.response.PartitionInfo;
@@ -54,6 +55,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(PrintRecordStreamExtension.class)
 class EngineClientTest {
+
+  private static final String DMN_RESOURCE = "dmn/drg-force-user.dmn";
 
   private ZeebeTestEngine zeebeEngine;
   private ZeebeClient zeebeClient;
@@ -475,6 +478,69 @@ class EngineClientTest {
         .isEqualTo(deployment.getProcesses().get(0).getProcessDefinitionKey());
     assertThat(processInstanceResult.getVersion()).isEqualTo(1);
     assertThat(processInstanceResult.getVariablesAsMap()).containsEntry("test", 1);
+  }
+
+  @Test
+  void shouldEvaluateDecisionByDecisionId() {
+    // given
+    zeebeClient.newDeployResourceCommand().addResourceFromClasspath(DMN_RESOURCE).send().join();
+    final String decisionId = "jedi_or_sith";
+
+    // when
+    final EvaluateDecisionResponse response =
+        zeebeClient
+            .newEvaluateDecisionCommand()
+            .decisionId(decisionId)
+            .variables(Map.of("lightsaberColor", "blue"))
+            .send()
+            .join();
+
+    // then
+    assertThat(response.getFailedDecisionId())
+        .describedAs("Expect that a successful result has no failed decision")
+        .isEmpty();
+    assertThat(response.getFailureMessage())
+        .describedAs("Expect that a successful result has no failure message")
+        .isEmpty();
+    assertThat(response.getDecisionId()).isEqualTo(decisionId);
+    assertThat(response.getDecisionVersion()).isOne();
+    assertThat(response.getDecisionName()).isEqualTo("Jedi or Sith");
+    assertThat(response.getDecisionOutput()).isEqualTo("\"Jedi\"");
+  }
+
+  @Test
+  void shouldEvaluateDecisionByDecisionKey() {
+    // given
+    final DeploymentEvent deploymentEvent =
+        zeebeClient.newDeployResourceCommand().addResourceFromClasspath(DMN_RESOURCE).send().join();
+    final String decisionId = "jedi_or_sith";
+    final long decisionKey =
+        deploymentEvent.getDecisions().stream()
+            .filter(decision -> decision.getDmnDecisionId().equals(decisionId))
+            .findFirst()
+            .get()
+            .getDecisionKey();
+
+    // when
+    final EvaluateDecisionResponse response =
+        zeebeClient
+            .newEvaluateDecisionCommand()
+            .decisionKey(decisionKey)
+            .variables(Map.of("lightsaberColor", "blue"))
+            .send()
+            .join();
+
+    // then
+    assertThat(response.getFailedDecisionId())
+        .describedAs("Expect that a successful result has no failed decision")
+        .isEmpty();
+    assertThat(response.getFailureMessage())
+        .describedAs("Expect that a successful result has no failure message")
+        .isEmpty();
+    assertThat(response.getDecisionId()).isEqualTo(decisionId);
+    assertThat(response.getDecisionVersion()).isOne();
+    assertThat(response.getDecisionName()).isEqualTo("Jedi or Sith");
+    assertThat(response.getDecisionOutput()).isEqualTo("\"Jedi\"");
   }
 
   @Test
