@@ -24,6 +24,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployProcessRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployProcessResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.DeployResourceResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluateDecisionRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluateDecisionResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceRequest;
@@ -44,6 +46,7 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesRespo
 import io.camunda.zeebe.msgpack.value.ValueArray;
 import io.camunda.zeebe.protocol.impl.encoding.MsgPackConverter;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
+import io.camunda.zeebe.protocol.impl.record.value.decision.DecisionEvaluationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.deployment.DeploymentRecord;
 import io.camunda.zeebe.protocol.impl.record.value.deployment.DeploymentResource;
 import io.camunda.zeebe.protocol.impl.record.value.incident.IncidentRecord;
@@ -60,6 +63,7 @@ import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstan
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentRecord;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
+import io.camunda.zeebe.protocol.record.intent.DecisionEvaluationIntent;
 import io.camunda.zeebe.protocol.record.intent.DeploymentIntent;
 import io.camunda.zeebe.protocol.record.intent.IncidentIntent;
 import io.camunda.zeebe.protocol.record.intent.JobBatchIntent;
@@ -197,6 +201,25 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     processInstanceCreationRecord.setFetchVariables(request.getFetchVariablesList());
 
     writer.writeCommandWithoutKey(processInstanceCreationRecord, recordMetadata);
+  }
+
+  @Override
+  public void evaluateDecision(
+      final EvaluateDecisionRequest request,
+      final StreamObserver<EvaluateDecisionResponse> responseObserver) {
+    final Long requestId =
+        gatewayRequestStore.registerNewRequest(request.getClass(), responseObserver);
+
+    final RecordMetadata recordMetadata =
+        prepareRecordMetadata()
+            .requestId(requestId)
+            .valueType(ValueType.DECISION_EVALUATION)
+            .intent(DecisionEvaluationIntent.EVALUATE);
+
+    final DecisionEvaluationRecord decisionEvaluationRecord =
+        createDecisionEvaluationRecord(request);
+
+    writer.writeCommandWithoutKey(decisionEvaluationRecord, recordMetadata);
   }
 
   @Override
@@ -496,6 +519,24 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
           BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
     }
     return processInstanceCreationRecord;
+  }
+
+  private DecisionEvaluationRecord createDecisionEvaluationRecord(
+      final EvaluateDecisionRequest request) {
+    final DecisionEvaluationRecord record = new DecisionEvaluationRecord();
+
+    if (request.getDecisionKey() > 0) {
+      record.setDecisionKey(request.getDecisionKey());
+    } else {
+      record.setDecisionId(request.getDecisionId());
+    }
+
+    final String variables = request.getVariables();
+    if (!variables.isEmpty()) {
+      record.setVariables(BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+    }
+
+    return record;
   }
 
   public String getAddress() {
