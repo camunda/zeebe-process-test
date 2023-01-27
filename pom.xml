@@ -95,7 +95,7 @@
     <plugin.version.maven-enforcer>3.1.0</plugin.version.maven-enforcer>
     <plugin.version.os-maven>1.7.1</plugin.version.os-maven>
     <plugin.version.revapi>0.15.0</plugin.version.revapi>
-    <plugin.version.spotless>2.30.0</plugin.version.spotless>
+    <plugin.version.spotless>2.31.0</plugin.version.spotless>
     <plugin.version.surefire>3.0.0-M8</plugin.version.surefire>
 
     <skipChecks>false</skipChecks>
