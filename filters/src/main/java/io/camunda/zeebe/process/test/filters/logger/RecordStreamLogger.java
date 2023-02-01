@@ -39,6 +39,7 @@ import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordV
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceResultRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
+import io.camunda.zeebe.protocol.record.value.ResourceDeletionRecordValue;
 import io.camunda.zeebe.protocol.record.value.SignalRecordValue;
 import io.camunda.zeebe.protocol.record.value.SignalSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
@@ -106,6 +107,8 @@ public class RecordStreamLogger {
 
     valueTypeLoggers.put(ValueType.SIGNAL_SUBSCRIPTION, this::logSignalSubscriptionRecordValue);
     valueTypeLoggers.put(ValueType.SIGNAL, this::logSignalRecordValue);
+
+    valueTypeLoggers.put(ValueType.RESOURCE_DELETION, this::logResourceDeletionRecordValue);
   }
 
   public void log() {
@@ -402,6 +405,11 @@ public class RecordStreamLogger {
     joiner.add(String.format("(Signal name: %s)", value.getSignalName()));
     joiner.add(logVariables(value.getVariables()));
     return joiner.toString();
+  }
+
+  private String logResourceDeletionRecordValue(final Record<?> record) {
+    final ResourceDeletionRecordValue value = (ResourceDeletionRecordValue) record.getValue();
+    return String.format("(Resource key: %d", value.getResourceKey());
   }
 
   protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {
