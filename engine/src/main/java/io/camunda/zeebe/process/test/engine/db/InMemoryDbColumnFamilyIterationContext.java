@@ -31,7 +31,7 @@ final class InMemoryDbColumnFamilyIterationContext {
     this.columnFamilyPrefix = columnFamilyPrefix;
   }
 
-  void withPrefixKey(final DbKey key, final Consumer<Bytes> prefixKeyConsumer) {
+  void withPrefixKey(final DbKey prefix, final Consumer<Bytes> prefixKeyConsumer) {
     if (prefixKeyBuffers.peek() == null) {
       throw new IllegalStateException(
           "Currently nested prefix iterations of this depth are not supported! This will cause unexpected behavior.");
@@ -40,8 +40,8 @@ final class InMemoryDbColumnFamilyIterationContext {
     final ExpandableArrayBuffer prefixKeyBuffer = prefixKeyBuffers.remove();
     try {
       prefixKeyBuffer.putLong(0, columnFamilyPrefix, ZeebeDbConstants.ZB_DB_BYTE_ORDER);
-      key.write(prefixKeyBuffer, Long.BYTES);
-      final int prefixLength = Long.BYTES + key.getLength();
+      prefix.write(prefixKeyBuffer, Long.BYTES);
+      final int prefixLength = Long.BYTES + prefix.getLength();
       prefixKeyConsumer.accept(Bytes.fromByteArray(prefixKeyBuffer.byteArray(), prefixLength));
     } finally {
       prefixKeyBuffers.add(prefixKeyBuffer);
