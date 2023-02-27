@@ -117,6 +117,11 @@ final class InMemoryDbColumnFamily<
   }
 
   @Override
+  public void whileTrue(
+      final KeyType startAtKey, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+  }
+
+  @Override
   public void whileTrue(final KeyValuePairVisitor<KeyType, ValueType> visitor) {
     whileTrue(context, visitor);
   }
