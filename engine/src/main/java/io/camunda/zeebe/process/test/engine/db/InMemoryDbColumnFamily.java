@@ -123,7 +123,7 @@ final class InMemoryDbColumnFamily<
 
   @Override
   public void whileTrue(final KeyValuePairVisitor<KeyType, ValueType> visitor) {
-    whileTrue(context, visitor);
+    whileEqualPrefix(context, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
   }
 
   @Override
@@ -199,11 +199,6 @@ final class InMemoryDbColumnFamily<
   private void forEach(
       final TransactionContext context, final BiConsumer<KeyType, ValueType> consumer) {
     whileEqualPrefix(context, keyInstance, valueInstance, consumer);
-  }
-
-  private void whileTrue(
-      final TransactionContext context, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
-    whileEqualPrefix(context, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
   }
 
   private void whileEqualPrefix(
