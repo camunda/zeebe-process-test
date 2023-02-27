@@ -9,11 +9,13 @@ package io.camunda.zeebe.process.test.engine.db;
 
 import io.camunda.zeebe.db.DbKey;
 import io.camunda.zeebe.db.impl.ZeebeDbConstants;
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.Consumer;
 import org.agrona.ExpandableArrayBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
 
 /**
  * This class allows iterating over a subset of keys in the database. The subset is identified by a
@@ -46,5 +48,14 @@ final class InMemoryDbColumnFamilyIterationContext {
     } finally {
       prefixKeyBuffers.add(prefixKeyBuffer);
     }
+  }
+
+  public ByteBuffer keyWithColumnFamily(final DbKey key) {
+    final var bytes = ByteBuffer.allocate(Long.BYTES + key.getLength());
+    final var buffer = new UnsafeBuffer(bytes);
+
+    buffer.putLong(0, columnFamilyPrefix, ZeebeDbConstants.ZB_DB_BYTE_ORDER);
+    key.write(buffer, Long.BYTES);
+    return bytes;
   }
 }
