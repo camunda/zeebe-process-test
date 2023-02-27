@@ -14,6 +14,7 @@ import io.camunda.zeebe.db.KeyValuePairVisitor;
 import io.camunda.zeebe.db.TransactionContext;
 import io.camunda.zeebe.db.ZeebeDbInconsistentException;
 import io.camunda.zeebe.util.buffer.BufferUtil;
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -119,6 +120,7 @@ final class InMemoryDbColumnFamily<
   @Override
   public void whileTrue(
       final KeyType startAtKey, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    whileEqualPrefix(context, startAtKey, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
   }
 
   @Override
@@ -216,16 +218,28 @@ final class InMemoryDbColumnFamily<
       final KeyType keyInstance,
       final ValueType valueInstance,
       final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    whileEqualPrefix(context, prefix, prefix, keyInstance, valueInstance, visitor);
+  }
+
+  private void whileEqualPrefix(
+      final TransactionContext context,
+      final DbKey startAt,
+      final DbKey prefix,
+      final KeyType keyInstance,
+      final ValueType valueInstance,
+      final KeyValuePairVisitor<KeyType, ValueType> visitor) {
     iterationContext.withPrefixKey(
         prefix,
         prefixKey ->
             ensureInOpenTransaction(
                 context,
                 state -> {
-                  final byte[] prefixKeyBytes = prefixKey.toBytes();
+                  final ByteBuffer startAtKey = iterationContext.keyWithColumnFamily(startAt);
+                  final byte[] startAtKeyBytes = startAtKey.array();
                   final Iterator<Map.Entry<Bytes, Bytes>> iterator =
-                      state.newIterator().seek(prefixKeyBytes, prefixKeyBytes.length).iterate();
+                      state.newIterator().seek(startAtKeyBytes, startAtKeyBytes.length).iterate();
 
+                  final byte[] prefixKeyBytes = prefixKey.toBytes();
                   while (iterator.hasNext()) {
                     final Map.Entry<Bytes, Bytes> entry = iterator.next();
 
