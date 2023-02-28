@@ -20,6 +20,7 @@ import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
+import io.camunda.zeebe.protocol.record.value.CommandDistributionRecordValue;
 import io.camunda.zeebe.protocol.record.value.DeploymentRecordValue;
 import io.camunda.zeebe.protocol.record.value.ErrorRecordValue;
 import io.camunda.zeebe.protocol.record.value.EscalationRecordValue;
@@ -109,6 +110,8 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.SIGNAL, this::logSignalRecordValue);
 
     valueTypeLoggers.put(ValueType.RESOURCE_DELETION, this::logResourceDeletionRecordValue);
+
+    valueTypeLoggers.put(ValueType.COMMAND_DISTRIBUTION, this::logCommandDistributionRecordValue);
   }
 
   public void log() {
@@ -410,6 +413,14 @@ public class RecordStreamLogger {
   private String logResourceDeletionRecordValue(final Record<?> record) {
     final ResourceDeletionRecordValue value = (ResourceDeletionRecordValue) record.getValue();
     return String.format("(Resource key: %d", value.getResourceKey());
+  }
+
+  private String logCommandDistributionRecordValue(final Record<?> record) {
+    final CommandDistributionRecordValue value = (CommandDistributionRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(To partition id: %d)", value.getPartitionId()));
+    joiner.add(String.format("(Value type: %s)", value.getValueType()));
+    return joiner.toString();
   }
 
   protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {
