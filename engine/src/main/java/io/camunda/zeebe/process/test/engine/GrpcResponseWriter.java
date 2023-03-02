@@ -95,13 +95,13 @@ class GrpcResponseWriter implements CommandResponseWriter {
   }
 
   @Override
-  public boolean tryWriteResponse(final int requestStreamId, final long requestId) {
+  public void tryWriteResponse(final int requestStreamId, final long requestId) {
     if (rejectionType != RejectionType.NULL_VAL) {
       final Status rejectionResponse =
           responseMapper.createRejectionResponse(rejectionType, intent, rejectionReason);
       final Request request = gatewayRequestStore.removeRequest(requestId);
       sendError(request, rejectionResponse);
-      return true;
+      return;
     }
 
     try {
@@ -109,7 +109,6 @@ class GrpcResponseWriter implements CommandResponseWriter {
       final GeneratedMessageV3 response =
           responseMapper.map(request.requestType(), valueBufferView, key, intent);
       sendResponse(request, response);
-      return true;
     } catch (final Exception e) {
       throw new RuntimeException(e);
     }
