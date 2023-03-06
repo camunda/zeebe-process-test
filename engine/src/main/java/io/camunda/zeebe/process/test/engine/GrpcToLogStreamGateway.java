@@ -11,6 +11,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayGrpc;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ActivateJobsRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ActivateJobsResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.BroadcastSignalRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.BroadcastSignalResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.BrokerInfo;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CancelProcessInstanceRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CancelProcessInstanceResponse;
@@ -63,6 +65,7 @@ import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstan
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationVariableInstruction;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceRecord;
 import io.camunda.zeebe.protocol.impl.record.value.resource.ResourceDeletionRecord;
+import io.camunda.zeebe.protocol.impl.record.value.signal.SignalRecord;
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentRecord;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
@@ -76,6 +79,7 @@ import io.camunda.zeebe.protocol.record.intent.ProcessInstanceCreationIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceModificationIntent;
 import io.camunda.zeebe.protocol.record.intent.ResourceDeletionIntent;
+import io.camunda.zeebe.protocol.record.intent.SignalIntent;
 import io.camunda.zeebe.protocol.record.intent.VariableDocumentIntent;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentUpdateSemantic;
 import io.camunda.zeebe.util.VersionUtil;
@@ -479,6 +483,24 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
             .requestId(requestId)
             .valueType(ValueType.RESOURCE_DELETION)
             .intent(ResourceDeletionIntent.DELETE));
+  }
+
+  @Override
+  public void broadcastSignal(
+      final BroadcastSignalRequest request,
+      final StreamObserver<BroadcastSignalResponse> responseObserver) {
+    final var requestId =
+        gatewayRequestStore.registerNewRequest(request.getClass(), responseObserver);
+
+    writer.writeCommandWithoutKey(
+        new SignalRecord()
+            .setSignalName(request.getSignalName())
+            .setVariables(
+                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(request.getVariables()))),
+        prepareRecordMetadata()
+            .requestId(requestId)
+            .valueType(ValueType.SIGNAL)
+            .intent(SignalIntent.BROADCAST));
   }
 
   private ProcessInstanceModificationRecord createProcessInstanceModificationRecord(
