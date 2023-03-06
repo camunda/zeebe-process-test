@@ -159,7 +159,6 @@ public class EngineFactory {
                             new SubscriptionCommandSender(context.getPartitionId(), commandSender),
                             new DeploymentDistributionCommandSender(
                                 context.getPartitionId(), commandSender),
-                            jobType -> {},
                             FeatureFlags.createDefault()))))
         .actorSchedulingService(scheduler)
         .build();
