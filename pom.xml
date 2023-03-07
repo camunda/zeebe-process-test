@@ -48,6 +48,7 @@
     <dependency.agrona.version>1.15.0</dependency.agrona.version>
     <dependency.assertj.version>3.22.0</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
+    <dependency.camundamodel.version>7.16.0</dependency.camundamodel.version>
     <dependency.classgraph.version>4.8.143</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.11.0</dependency.errorprone.version>
@@ -70,7 +71,7 @@
     <dependency.snakeyaml.version>1.30</dependency.snakeyaml.version>
     <dependency.spring.version>5.3.17</dependency.spring.version>
     <dependency.testcontainers.version>1.16.3</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.0.11</dependency.zeebe.version>
+    <dependency.zeebe.version>8.0.12</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
@@ -208,6 +209,13 @@
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-workflow-engine</artifactId>
         <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <!-- Specify the version to avoid dependency convergence error due to https://github.com/camunda/zeebe/issues/9280 -->
+      <dependency>
+        <groupId>org.camunda.bpm.model</groupId>
+        <artifactId>camunda-dmn-model</artifactId>
+        <version>${dependency.camundamodel.version}</version>
       </dependency>
 
       <dependency>
