@@ -14,9 +14,9 @@ import io.camunda.zeebe.db.KeyValuePairVisitor;
 import io.camunda.zeebe.db.TransactionContext;
 import io.camunda.zeebe.db.ZeebeDbInconsistentException;
 import io.camunda.zeebe.util.buffer.BufferUtil;
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
@@ -228,16 +228,20 @@ final class InMemoryDbColumnFamily<
       final KeyType keyInstance,
       final ValueType valueInstance,
       final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    final var seekTarget = Objects.requireNonNullElse(startAt, prefix);
+    Objects.requireNonNull(prefix);
+    Objects.requireNonNull(visitor);
+
     iterationContext.withPrefixKey(
         prefix,
         prefixKey ->
             ensureInOpenTransaction(
                 context,
                 state -> {
-                  final ByteBuffer startAtKey = iterationContext.keyWithColumnFamily(startAt);
-                  final byte[] startAtKeyBytes = startAtKey.array();
+                  final var seekTargetBuffer = iterationContext.keyWithColumnFamily(seekTarget);
+                  final byte[] seekTargetBytes = seekTargetBuffer.array();
                   final Iterator<Map.Entry<Bytes, Bytes>> iterator =
-                      state.newIterator().seek(startAtKeyBytes, startAtKeyBytes.length).iterate();
+                      state.newIterator().seek(seekTargetBytes, seekTargetBytes.length).iterate();
 
                   final byte[] prefixKeyBytes = prefixKey.toBytes();
                   while (iterator.hasNext()) {
