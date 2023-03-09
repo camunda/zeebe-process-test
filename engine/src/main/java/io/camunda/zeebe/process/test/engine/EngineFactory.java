@@ -9,8 +9,8 @@ package io.camunda.zeebe.process.test.engine;
 
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.engine.Engine;
+import io.camunda.zeebe.engine.EngineConfiguration;
 import io.camunda.zeebe.engine.processing.EngineProcessors;
-import io.camunda.zeebe.engine.processing.deployment.distribute.DeploymentDistributionCommandSender;
 import io.camunda.zeebe.engine.processing.message.command.SubscriptionCommandSender;
 import io.camunda.zeebe.logstreams.log.LogStream;
 import io.camunda.zeebe.logstreams.log.LogStreamBuilder;
@@ -157,9 +157,9 @@ public class EngineFactory {
                             context,
                             partitionCount,
                             new SubscriptionCommandSender(context.getPartitionId(), commandSender),
-                            new DeploymentDistributionCommandSender(
-                                context.getPartitionId(), commandSender),
-                            FeatureFlags.createDefault()))))
+                            commandSender,
+                            FeatureFlags.createDefault()),
+                    new EngineConfiguration())))
         .actorSchedulingService(scheduler)
         .build();
   }
