@@ -16,6 +16,7 @@ import io.camunda.zeebe.db.ZeebeDbInconsistentException;
 import io.camunda.zeebe.util.buffer.BufferUtil;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
@@ -117,8 +118,14 @@ final class InMemoryDbColumnFamily<
   }
 
   @Override
+  public void whileTrue(
+      final KeyType startAtKey, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    whileEqualPrefix(context, startAtKey, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
+  }
+
+  @Override
   public void whileTrue(final KeyValuePairVisitor<KeyType, ValueType> visitor) {
-    whileTrue(context, visitor);
+    whileEqualPrefix(context, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
   }
 
   @Override
@@ -196,11 +203,6 @@ final class InMemoryDbColumnFamily<
     whileEqualPrefix(context, keyInstance, valueInstance, consumer);
   }
 
-  private void whileTrue(
-      final TransactionContext context, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
-    whileEqualPrefix(context, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
-  }
-
   private void whileEqualPrefix(
       final TransactionContext context,
       final KeyType keyInstance,
@@ -216,16 +218,32 @@ final class InMemoryDbColumnFamily<
       final KeyType keyInstance,
       final ValueType valueInstance,
       final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    whileEqualPrefix(context, prefix, prefix, keyInstance, valueInstance, visitor);
+  }
+
+  private void whileEqualPrefix(
+      final TransactionContext context,
+      final DbKey startAt,
+      final DbKey prefix,
+      final KeyType keyInstance,
+      final ValueType valueInstance,
+      final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    final var seekTarget = Objects.requireNonNullElse(startAt, prefix);
+    Objects.requireNonNull(prefix);
+    Objects.requireNonNull(visitor);
+
     iterationContext.withPrefixKey(
         prefix,
         prefixKey ->
             ensureInOpenTransaction(
                 context,
                 state -> {
-                  final byte[] prefixKeyBytes = prefixKey.toBytes();
+                  final var seekTargetBuffer = iterationContext.keyWithColumnFamily(seekTarget);
+                  final byte[] seekTargetBytes = seekTargetBuffer.array();
                   final Iterator<Map.Entry<Bytes, Bytes>> iterator =
-                      state.newIterator().seek(prefixKeyBytes, prefixKeyBytes.length).iterate();
+                      state.newIterator().seek(seekTargetBytes, seekTargetBytes.length).iterate();
 
+                  final byte[] prefixKeyBytes = prefixKey.toBytes();
                   while (iterator.hasNext()) {
                     final Map.Entry<Bytes, Bytes> entry = iterator.next();
 

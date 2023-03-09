@@ -9,11 +9,13 @@ package io.camunda.zeebe.process.test.engine.db;
 
 import io.camunda.zeebe.db.DbKey;
 import io.camunda.zeebe.db.impl.ZeebeDbConstants;
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.Consumer;
 import org.agrona.ExpandableArrayBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
 
 /**
  * This class allows iterating over a subset of keys in the database. The subset is identified by a
@@ -31,7 +33,7 @@ final class InMemoryDbColumnFamilyIterationContext {
     this.columnFamilyPrefix = columnFamilyPrefix;
   }
 
-  void withPrefixKey(final DbKey key, final Consumer<Bytes> prefixKeyConsumer) {
+  void withPrefixKey(final DbKey prefix, final Consumer<Bytes> prefixKeyConsumer) {
     if (prefixKeyBuffers.peek() == null) {
       throw new IllegalStateException(
           "Currently nested prefix iterations of this depth are not supported! This will cause unexpected behavior.");
@@ -40,11 +42,20 @@ final class InMemoryDbColumnFamilyIterationContext {
     final ExpandableArrayBuffer prefixKeyBuffer = prefixKeyBuffers.remove();
     try {
       prefixKeyBuffer.putLong(0, columnFamilyPrefix, ZeebeDbConstants.ZB_DB_BYTE_ORDER);
-      key.write(prefixKeyBuffer, Long.BYTES);
-      final int prefixLength = Long.BYTES + key.getLength();
+      prefix.write(prefixKeyBuffer, Long.BYTES);
+      final int prefixLength = Long.BYTES + prefix.getLength();
       prefixKeyConsumer.accept(Bytes.fromByteArray(prefixKeyBuffer.byteArray(), prefixLength));
     } finally {
       prefixKeyBuffers.add(prefixKeyBuffer);
     }
+  }
+
+  public ByteBuffer keyWithColumnFamily(final DbKey key) {
+    final var bytes = ByteBuffer.allocate(Long.BYTES + key.getLength());
+    final var buffer = new UnsafeBuffer(bytes);
+
+    buffer.putLong(0, columnFamilyPrefix, ZeebeDbConstants.ZB_DB_BYTE_ORDER);
+    key.write(buffer, Long.BYTES);
+    return bytes;
   }
 }
