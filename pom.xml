@@ -67,7 +67,7 @@
     <dependency.netty.version>4.1.90.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.14.0</dependency.proto.version>
-    <dependency.protobuf.version>3.21.12</dependency.protobuf.version>
+    <dependency.protobuf.version>3.22.2</dependency.protobuf.version>
     <dependency.revapi.version>0.28.0</dependency.revapi.version>
     <dependency.scala.version>2.13.10</dependency.scala.version>
     <dependency.slf4j.version>2.0.7</dependency.slf4j.version>
