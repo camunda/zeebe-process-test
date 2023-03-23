@@ -71,7 +71,7 @@
     <dependency.revapi.version>0.28.0</dependency.revapi.version>
     <dependency.scala.version>2.13.10</dependency.scala.version>
     <dependency.slf4j.version>2.0.7</dependency.slf4j.version>
-    <dependency.snakeyaml.version>1.33</dependency.snakeyaml.version>
+    <dependency.snakeyaml.version>2.0</dependency.snakeyaml.version>
     <dependency.spring.version>6.0.7</dependency.spring.version>
     <dependency.testcontainers.version>1.17.6</dependency.testcontainers.version>
     <dependency.zeebe.version>8.2.0-SNAPSHOT</dependency.zeebe.version>
