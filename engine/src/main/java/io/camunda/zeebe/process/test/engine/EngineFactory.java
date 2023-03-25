@@ -12,6 +12,7 @@ import io.camunda.zeebe.engine.Engine;
 import io.camunda.zeebe.engine.EngineConfiguration;
 import io.camunda.zeebe.engine.processing.EngineProcessors;
 import io.camunda.zeebe.engine.processing.message.command.SubscriptionCommandSender;
+import io.camunda.zeebe.engine.processing.streamprocessor.JobStreamer;
 import io.camunda.zeebe.logstreams.log.LogStream;
 import io.camunda.zeebe.logstreams.log.LogStreamBuilder;
 import io.camunda.zeebe.logstreams.log.LogStreamReader;
@@ -158,7 +159,8 @@ public class EngineFactory {
                             partitionCount,
                             new SubscriptionCommandSender(context.getPartitionId(), commandSender),
                             commandSender,
-                            FeatureFlags.createDefault()),
+                            FeatureFlags.createDefault(),
+                            JobStreamer.noop()),
                     new EngineConfiguration())))
         .actorSchedulingService(scheduler)
         .build();
