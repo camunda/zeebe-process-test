@@ -597,7 +597,11 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    * @return this {@link ProcessInstanceAssert}
    */
   public ProcessInstanceAssert hasCalledProcess(final String processId) {
-    final boolean hasCalledProcess = getCalledProcessRecords().stream().findAny().isPresent();
+    final boolean hasCalledProcess = getCalledProcessRecords()
+        .withProcessInstanceKey(processId)
+        .stream()
+        .findAny()
+        .isPresent();
 
     assertThat(hasCalledProcess)
         .withFailMessage("No process with id `%s` was called from this process", processId)
