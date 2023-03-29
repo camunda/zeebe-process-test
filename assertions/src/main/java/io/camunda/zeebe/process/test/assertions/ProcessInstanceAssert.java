@@ -579,8 +579,8 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
    *
    * @return {@link ProcessInstanceAssert} for the called process
    */
-  public ProcessInstanceAssert extractingLatestCalledProcess(final String processId) {
-    hasCalledProcess(processId);
+  public ProcessInstanceAssert extractingLatestCalledProcess() {
+    hasCalledProcess();
 
     final Record<ProcessInstanceRecordValue> latestCalledProcessRecord =
         getCalledProcessRecords().stream()
@@ -591,17 +591,46 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
   }
 
   /**
-   * Asserts whether this process has called another process
+   * Extracts the latest called process with a provided processId. This will result in a failed
+   * assertion when the process has not been called.
    *
    * @param processId The id of the process that should be called
+   * @return {@link ProcessInstanceAssert} for the called process
+   */
+  public ProcessInstanceAssert extractingLatestCalledProcess(final String processId) {
+    hasCalledProcess(processId);
+
+    final Record<ProcessInstanceRecordValue> latestCalledProcessRecord =
+        getCalledProcessRecords().withBpmnProcessId(processId).stream()
+            .reduce((first, second) -> second)
+            .orElseThrow(NoSuchElementException::new);
+
+    return new ProcessInstanceAssert(latestCalledProcessRecord.getKey(), recordStream);
+  }
+
+  /**
+   * Asserts whether this process has called another process
+   *
+   * @return this {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert hasCalledProcess() {
+    final boolean hasCalledProcess = getCalledProcessRecords().stream().findAny().isPresent();
+
+    assertThat(hasCalledProcess)
+        .withFailMessage("No process with was called from this process")
+        .isTrue();
+    return this;
+  }
+
+  /**
+   * Asserts whether this process has called another specific process
+   *
+   * @param processId The id of the process that should have been called
    * @return this {@link ProcessInstanceAssert}
    */
   public ProcessInstanceAssert hasCalledProcess(final String processId) {
-    final boolean hasCalledProcess = getCalledProcessRecords()
-        .withProcessInstanceKey(processId)
-        .stream()
-        .findAny()
-        .isPresent();
+    final boolean hasCalledProcess =
+        getCalledProcessRecords().withBpmnProcessId(processId).stream().findAny().isPresent();
 
     assertThat(hasCalledProcess)
         .withFailMessage("No process with id `%s` was called from this process", processId)
