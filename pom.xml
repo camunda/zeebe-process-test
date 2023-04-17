@@ -74,7 +74,7 @@
     <dependency.snakeyaml.version>2.0</dependency.snakeyaml.version>
     <dependency.spring.version>6.0.7</dependency.spring.version>
     <dependency.testcontainers.version>1.18.0</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.2.1</dependency.zeebe.version>
+    <dependency.zeebe.version>8.2.2</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
@@ -424,10 +424,26 @@
 
   <repositories>
     <repository>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>zeebe</id>
+      <name>Zeebe Repository</name>
+      <url>https://artifacts.camunda.com/artifactory/zeebe-io/</url>
+    </repository>
+
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-      <id>camunda-nexus</id>
+      <id>zeebe-snapshots</id>
+      <name>Zeebe Snapshot Repository</name>
       <url>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</url>
     </repository>
   </repositories>
