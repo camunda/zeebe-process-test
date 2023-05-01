@@ -112,6 +112,7 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.RESOURCE_DELETION, this::logResourceDeletionRecordValue);
 
     valueTypeLoggers.put(ValueType.COMMAND_DISTRIBUTION, this::logCommandDistributionRecordValue);
+    valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_BATCH, record -> "");
   }
 
   public void log() {
