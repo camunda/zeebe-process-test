@@ -141,6 +141,14 @@ final class InMemoryDbColumnFamily<
   }
 
   @Override
+  public void whileEqualPrefix(
+      final DbKey keyPrefix,
+      final KeyType startAtKey,
+      final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    whileEqualPrefix(context, startAtKey, keyPrefix, keyInstance, valueInstance, visitor);
+  }
+
+  @Override
   public void deleteExisting(final KeyType key) {
     ensureInOpenTransaction(
         context,
