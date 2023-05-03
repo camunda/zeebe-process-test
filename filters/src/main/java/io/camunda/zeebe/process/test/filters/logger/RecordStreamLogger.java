@@ -99,6 +99,7 @@ public class RecordStreamLogger {
 
     valueTypeLoggers.put(
         ValueType.PROCESS_INSTANCE_MODIFICATION, this::logProcessInstanceModificationRecordValue);
+    valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_BATCH, record -> "");
   }
 
   public void log() {
