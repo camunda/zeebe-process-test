@@ -51,7 +51,7 @@
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
     <dependency.bytebuddy.version>1.14.4</dependency.bytebuddy.version>
     <dependency.camundamodel.version>7.19.0</dependency.camundamodel.version>
-    <dependency.classgraph.version>4.8.158</dependency.classgraph.version>
+    <dependency.classgraph.version>4.8.160</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
     <dependency.errorprone.version>2.19.1</dependency.errorprone.version>
     <dependency.feel.version>1.16.0</dependency.feel.version>
