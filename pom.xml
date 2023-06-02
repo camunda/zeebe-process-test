@@ -49,7 +49,7 @@
     <dependency.agrona.version>1.18.1</dependency.agrona.version>
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
-    <dependency.bytebuddy.version>1.14.4</dependency.bytebuddy.version>
+    <dependency.bytebuddy.version>1.14.5</dependency.bytebuddy.version>
     <dependency.camundamodel.version>7.19.0</dependency.camundamodel.version>
     <dependency.classgraph.version>4.8.160</dependency.classgraph.version>
     <dependency.commons.version>3.12.0</dependency.commons.version>
