@@ -24,6 +24,7 @@ import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.IncidentIntent;
+import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
@@ -602,6 +603,31 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
     assertThat(hasCalledProcess)
         .withFailMessage("No process with id `%s` was called from this process", processId)
         .isTrue();
+    return this;
+  }
+
+  /**
+   * Asserts whether this process has thrown an error for this element
+   *
+   * @param elementId The id of the element that should have thrown error
+   * @return this {@link ProcessInstanceAssert}
+   */
+  public ProcessInstanceAssert hasProcessInstanceThrownError(final String elementId) {
+
+    final long count =
+        StreamFilter.jobRecords(recordStream)
+            .withIntent(JobIntent.ERROR_THROWN)
+            .withElementId(elementId)
+            .stream()
+            .filter(r -> r.getValue().getProcessInstanceKey() == actual)
+            .count();
+
+    assertThat(count)
+        .withFailMessage(
+            "Expected element with id %s to have thrown %s error(s), but was %s",
+            elementId, 1, count)
+        .isEqualTo(1);
+
     return this;
   }
 
