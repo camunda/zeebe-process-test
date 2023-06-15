@@ -97,7 +97,7 @@ public abstract class AbstractProcessInstanceAssertTest {
       BpmnAssert.assertThat(instanceEvent)
           .hasCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_ONE)
           .hasCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_TWO)
-          // Specifically, the process in scope, the main process, has not made the call to the sub-process of the sub-process
+          // Specifically, the process in scope, the parent process, has not made the call to the child process of the call activity
           .hasNotCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_THREE)
           // The subprocess however, has called it's sub-process.
           .extractingLatestCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_TWO)
