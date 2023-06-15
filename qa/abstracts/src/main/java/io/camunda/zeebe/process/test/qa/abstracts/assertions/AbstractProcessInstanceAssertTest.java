@@ -814,7 +814,7 @@ public abstract class AbstractProcessInstanceAssertTest {
     }
 
     @Test
-    void testExtractingLatestCalledSubprocessFailAnyProcess() throws InterruptedException, TimeoutException {
+    void testExtractingLatestCalledProcessFailAnyProcess() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployResources(
           client,
