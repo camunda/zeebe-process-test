@@ -820,7 +820,28 @@ public abstract class AbstractProcessInstanceAssertTest {
       // then
       assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).hasNotCalledProcess())
           .isInstanceOf(AssertionError.class)
-          .hasMessage("A process was called from this process");
+          .hasMessage("A process was called from this process, distinct called processes are: [start-end]");
+    }
+
+    @Test
+    void testHasNotCalledProcessFailMultipleProcesses() throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackMultipleCallActivity.RESOURCE_NAME,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_ONE,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_TWO,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_THREE);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMultipleCallActivity.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).hasNotCalledProcess())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("A process was called from this process, distinct called processes are: [call-activity, alternate-start-end]");
     }
 
     @Test

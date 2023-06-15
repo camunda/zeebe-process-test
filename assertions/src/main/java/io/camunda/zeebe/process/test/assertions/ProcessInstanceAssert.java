@@ -634,7 +634,9 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
     final boolean hasCalledProcess = getCalledProcessRecords().stream().findAny().isPresent();
 
     assertThat(hasCalledProcess)
-        .withFailMessage("A process was called from this process")
+        .withFailMessage("A process was called from this process, distinct called processes are: %s",
+            getCalledProcessRecords().stream().map(
+                x -> x.getValue().getBpmnProcessId()).distinct().collect(Collectors.toList()).toString())
         .isFalse();
     return this;
   }
