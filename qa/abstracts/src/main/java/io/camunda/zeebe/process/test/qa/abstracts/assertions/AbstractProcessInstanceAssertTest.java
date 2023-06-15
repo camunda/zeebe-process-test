@@ -99,7 +99,7 @@ public abstract class AbstractProcessInstanceAssertTest {
           .hasCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_TWO)
           // Specifically, the process in scope, the parent process, has not made the call to the child process of the call activity
           .hasNotCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_THREE)
-          // The subprocess however, has called it's sub-process.
+          // The child process however, has called it's own child process.
           .extractingLatestCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_TWO)
           .hasCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_THREE)
           // And the subprocess of the subprocess has not called any process.
