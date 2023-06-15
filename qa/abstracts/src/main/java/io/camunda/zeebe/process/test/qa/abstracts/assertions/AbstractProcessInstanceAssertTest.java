@@ -126,7 +126,7 @@ public abstract class AbstractProcessInstanceAssertTest {
           .hasNotCalledProcess("NonCalledProcessID")
           .hasCalledProcess()
           .extractingLatestCalledProcess()
-          // Specifically, while the main process has called a process, the called process has not.
+          // Specifically, while the parent process has called a process, the called process has not.
           .hasNotCalledProcess()
           .hasNotCalledProcess("NonCalledProcessID");
     }
