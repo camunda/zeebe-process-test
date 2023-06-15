@@ -828,7 +828,7 @@ public abstract class AbstractProcessInstanceAssertTest {
 
       // then
       assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent)
-          // We use a process that has called a subprocess, to make sure a subprocess doesn't
+          // We use a process that has a call activity, to make sure the child process doesn't
           // extract itself because of a reference to the parent process.
           .extractingLatestCalledProcess().extractingLatestCalledProcess())
           .isInstanceOf(AssertionError.class)
@@ -838,7 +838,7 @@ public abstract class AbstractProcessInstanceAssertTest {
 
 
     @Test
-    void testExtractingLatestCalledSubprocessFailSpecificProcess() throws InterruptedException, TimeoutException {
+    void testExtractingLatestCalledProcessFailSpecificProcess() throws InterruptedException, TimeoutException {
       // given
       Utilities.deployResources(
           client,
