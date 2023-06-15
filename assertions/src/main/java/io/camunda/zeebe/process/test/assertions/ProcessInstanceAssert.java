@@ -575,9 +575,8 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
 
   /**
    * Extracts the latest called process. This will result in a failed assertion when no process has
-   * been called.
-   * When a multi-instance loop is in your process, you might get an empty process,
-   * as the multi-instance loop makes the processes it needs + one empty process.
+   * been called. When a multi-instance loop is in your process, you might get an empty process, as
+   * the multi-instance loop makes the processes it needs + one empty process.
    *
    * @return {@link ProcessInstanceAssert} for the called process
    */
@@ -594,9 +593,9 @@ public class ProcessInstanceAssert extends AbstractAssert<ProcessInstanceAssert,
 
   /**
    * Extracts the latest called process with a provided processId. This will result in a failed
-   * assertion when the process has not been called.
-   * When a multi-instance loop is in your process, you might get an empty process,
-   * as the multi-instance loop makes the processes it needs + one empty process.
+   * assertion when the process has not been called. When a multi-instance loop is in your process,
+   * you might get an empty process, as the multi-instance loop makes the processes it needs + one
+   * empty process.
    *
    * @param processId The id of the process that should be called
    * @return {@link ProcessInstanceAssert} for the called process

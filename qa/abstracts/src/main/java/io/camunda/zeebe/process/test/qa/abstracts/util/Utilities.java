@@ -244,12 +244,14 @@ public class Utilities {
     public static final String RESOURCE_NAME = "timer-start-event-daily.bpmn";
     public static final String TIMER_ID = "timer";
   }
+
   public static final class ProcessPackMultipleCallActivity {
 
     public static final String RESOURCE_NAME = "multiple-call-activity.bpmn";
     public static final String PROCESS_ID = "multiple-call-activity";
     public static final String CALL_ACTIVITY_ID_ONE = "callactivityOne";
-    public static final String CALLED_RESOURCE_NAME_ONE = ProcessPackAlternateStartEndEvent.RESOURCE_NAME;
+    public static final String CALLED_RESOURCE_NAME_ONE =
+        ProcessPackAlternateStartEndEvent.RESOURCE_NAME;
     public static final String CALLED_PROCESS_ID_ONE = ProcessPackAlternateStartEndEvent.PROCESS_ID;
     public static final String CALL_ACTIVITY_ID_TWO = "callactivityTwo";
     public static final String CALLED_RESOURCE_NAME_TWO = ProcessPackCallActivity.RESOURCE_NAME;
@@ -257,6 +259,7 @@ public class Utilities {
     public static final String CALLED_RESOURCE_NAME_THREE = ProcessPackStartEndEvent.RESOURCE_NAME;
     public static final String CALLED_PROCESS_ID_THREE = ProcessPackStartEndEvent.PROCESS_ID;
   }
+
   public static final class ProcessPackCallActivity {
 
     public static final String RESOURCE_NAME = "call-activity.bpmn";
@@ -271,6 +274,7 @@ public class Utilities {
     public static final String RESOURCE_NAME = "start-end.bpmn";
     public static final String PROCESS_ID = "start-end";
   }
+
   public static final class ProcessPackAlternateStartEndEvent {
 
     public static final String RESOURCE_NAME = "alternate-start-end.bpmn";
