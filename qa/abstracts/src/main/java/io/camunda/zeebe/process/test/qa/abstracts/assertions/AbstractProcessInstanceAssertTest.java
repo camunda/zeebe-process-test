@@ -844,7 +844,7 @@ public abstract class AbstractProcessInstanceAssertTest {
       assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).hasNotCalledProcess())
           .isInstanceOf(AssertionError.class)
           .hasMessage(
-              "A process was called from this process, distinct called processes are: [call-activity, alternate-start-end]");
+              "A process was called from this process, distinct called processes are: [alternate-start-end, call-activity]");
     }
 
     @Test
