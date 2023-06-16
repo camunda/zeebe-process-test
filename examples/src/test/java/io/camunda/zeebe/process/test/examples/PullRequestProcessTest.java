@@ -113,7 +113,7 @@ public class PullRequestProcessTest {
         .hasNotPassedElement(REMIND_REVIEWER)
         .hasNotPassedElement(MAKE_CHANGES)
         .hasVariableWithValue(REVIEW_RESULT_VAR, "approved")
-        .extractingLatestCalledProcess(AUTOMATED_TESTS_PROCESS_ID)
+        .extractingLatestCalledProcess()
         .hasPassedElement(AUTOMATED_TESTS_RUN_TESTS, 3)
         .isCompleted();
   }
