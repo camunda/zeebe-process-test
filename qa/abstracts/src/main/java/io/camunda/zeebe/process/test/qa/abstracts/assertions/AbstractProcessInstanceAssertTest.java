@@ -26,8 +26,10 @@ import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.IncidentAssert;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
+import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackCallActivity;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackLoopingServiceTask;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMessageEvent;
+import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMultipleCallActivity;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMultipleTasks;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
 import java.time.Duration;
@@ -74,6 +76,107 @@ public abstract class AbstractProcessInstanceAssertTest {
 
       // then
       BpmnAssert.assertThat(instanceEvent).isStarted();
+    }
+
+    @Test
+    void testHasCalledProcess() throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackMultipleCallActivity.RESOURCE_NAME,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_ONE,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_TWO,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_THREE);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMultipleCallActivity.PROCESS_ID);
+
+      // then
+      BpmnAssert.assertThat(instanceEvent)
+          .hasCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_ONE)
+          .hasCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_TWO)
+          // Specifically, the process in scope, the parent process, has not made the call to the
+          // child process of the call activity
+          .hasNotCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_THREE)
+          // The child process however, has called it's own child process.
+          .extractingLatestCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_TWO)
+          .hasCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_THREE)
+          // And the nested child process has not called any process.
+          .extractingLatestCalledProcess()
+          .hasNotCalledProcess();
+    }
+
+    @Test
+    void testHasNotCalledProcess() throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackCallActivity.RESOURCE_NAME,
+          ProcessPackCallActivity.CALLED_RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
+
+      // then
+      BpmnAssert.assertThat(instanceEvent)
+          .hasCalledProcess(ProcessPackCallActivity.CALLED_PROCESS_ID)
+          .hasNotCalledProcess("NonCalledProcessID")
+          .hasCalledProcess()
+          .extractingLatestCalledProcess()
+          // Specifically, while the parent process has called a process, the called process has
+          // not.
+          .hasNotCalledProcess()
+          .hasNotCalledProcess("NonCalledProcessID");
+    }
+
+    @Test
+    void testExtractingLastCalledSpecificProcess() throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackMultipleCallActivity.RESOURCE_NAME,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_ONE,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_TWO,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_THREE);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMultipleCallActivity.PROCESS_ID);
+
+      // then
+      // Show the correct process is extracted by checking it's called processes,
+      // as we can't check processId.
+      BpmnAssert.assertThat(instanceEvent)
+          .extractingLatestCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_TWO)
+          .hasCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_THREE);
+      BpmnAssert.assertThat(instanceEvent)
+          .extractingLatestCalledProcess(ProcessPackMultipleCallActivity.CALLED_PROCESS_ID_ONE)
+          .hasNotCalledProcess();
+    }
+
+    @Test
+    void testExtractingLastCalledProcess() throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackMultipleCallActivity.RESOURCE_NAME,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_ONE,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_TWO,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_THREE);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMultipleCallActivity.PROCESS_ID);
+
+      // then
+      // Show the correct process is extracted by checking it's called processes,
+      // as we can't check processId. The last called process has no call activities.
+      BpmnAssert.assertThat(instanceEvent).extractingLatestCalledProcess().hasNotCalledProcess();
     }
 
     @Test
@@ -634,6 +737,162 @@ public abstract class AbstractProcessInstanceAssertTest {
           .isInstanceOf(AssertionError.class)
           .hasMessage(
               "Process with key %s was not terminated", instanceEvent.getProcessInstanceKey());
+    }
+
+    @Test
+    void testHasCalledProcessFailNoProcessCalled() throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackCallActivity.RESOURCE_NAME,
+          ProcessPackCallActivity.CALLED_RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(
+              () ->
+                  BpmnAssert.assertThat(instanceEvent)
+                      .extractingLatestCalledProcess()
+                      .hasCalledProcess())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No process was called from this process");
+    }
+
+    @Test
+    void testHasCalledProcessFailSpecificProcessCalled()
+        throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackCallActivity.RESOURCE_NAME,
+          ProcessPackCallActivity.CALLED_RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(
+              () -> BpmnAssert.assertThat(instanceEvent).hasCalledProcess("NonCalledProcessID"))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No process with id `NonCalledProcessID` was called from this process");
+    }
+
+    @Test
+    void testHasNotCalledProcessFailSpecificProcess()
+        throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackCallActivity.RESOURCE_NAME,
+          ProcessPackCallActivity.CALLED_RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(
+              () ->
+                  BpmnAssert.assertThat(instanceEvent)
+                      .hasNotCalledProcess(ProcessPackCallActivity.CALLED_PROCESS_ID))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "A process with id `%s` was called from this process",
+              ProcessPackCallActivity.CALLED_PROCESS_ID);
+    }
+
+    @Test
+    void testHasNotCalledProcessFailAnyProcess() throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackCallActivity.RESOURCE_NAME,
+          ProcessPackCallActivity.CALLED_RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).hasNotCalledProcess())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "A process was called from this process, distinct called processes are: [start-end]");
+    }
+
+    @Test
+    void testHasNotCalledProcessFailMultipleProcesses()
+        throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackMultipleCallActivity.RESOURCE_NAME,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_ONE,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_TWO,
+          ProcessPackMultipleCallActivity.CALLED_RESOURCE_NAME_THREE);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackMultipleCallActivity.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(() -> BpmnAssert.assertThat(instanceEvent).hasNotCalledProcess())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "A process was called from this process, distinct called processes are: [alternate-start-end, call-activity]");
+    }
+
+    @Test
+    void testExtractingLatestCalledProcessFailAnyProcess()
+        throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackCallActivity.RESOURCE_NAME,
+          ProcessPackCallActivity.CALLED_RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(
+              () ->
+                  BpmnAssert.assertThat(instanceEvent)
+                      // We use a process that has a call activity, to make sure the child process
+                      // doesn't
+                      // extract itself because of a reference to the parent process.
+                      .extractingLatestCalledProcess()
+                      .extractingLatestCalledProcess())
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No process was called from this process");
+    }
+
+    @Test
+    void testExtractingLatestCalledProcessFailSpecificProcess()
+        throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResources(
+          client,
+          ProcessPackCallActivity.RESOURCE_NAME,
+          ProcessPackCallActivity.CALLED_RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(engine, client, ProcessPackCallActivity.PROCESS_ID);
+
+      // then
+      assertThatThrownBy(
+              () ->
+                  BpmnAssert.assertThat(instanceEvent)
+                      .extractingLatestCalledProcess("NonCalledProcessId"))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage("No process with id `NonCalledProcessId` was called from this process");
     }
 
     @Test
