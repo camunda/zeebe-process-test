@@ -57,4 +57,8 @@ public class StreamFilter {
   public static TimerRecordStreamFilter timerRecords(final RecordStream recordStream) {
     return new TimerRecordStreamFilter(recordStream.timerRecords());
   }
+
+  public static DeploymentRecordStreamFilter deploymentRecords(final RecordStream recordStream) {
+    return new DeploymentRecordStreamFilter(recordStream.deploymentRecords());
+  }
 }

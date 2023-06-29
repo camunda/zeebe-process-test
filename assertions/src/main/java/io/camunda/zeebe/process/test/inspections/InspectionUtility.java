@@ -33,4 +33,8 @@ public class InspectionUtility {
     return new ProcessInstanceInspections(
         StreamFilter.processInstance(BpmnAssert.getRecordStream()));
   }
+
+  public static DeploymentInspections findProcessDefinitions() {
+    return new DeploymentInspections(StreamFilter.deploymentRecords(BpmnAssert.getRecordStream()));
+  }
 }
