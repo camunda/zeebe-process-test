@@ -17,8 +17,8 @@
 package io.camunda.zeebe.process.test.inspections;
 
 import io.camunda.zeebe.model.bpmn.Bpmn;
-import io.camunda.zeebe.process.test.filters.DeploymentRecordStreamFilter;
-import io.camunda.zeebe.protocol.record.value.deployment.DeploymentResource;
+import io.camunda.zeebe.process.test.filters.ProcessDefinitionRecordStreamFilter;
+import io.camunda.zeebe.protocol.record.value.deployment.Process;
 import java.io.ByteArrayInputStream;
 import java.util.HashSet;
 import java.util.List;
@@ -33,11 +33,12 @@ import org.camunda.bpm.model.xml.instance.DomElement;
  * Inspections for deployment events. This is useful to find technical identifiers for
  * human-readable element names.
  */
-public class DeploymentInspections {
-  private final DeploymentRecordStreamFilter deploymentRecordStreamFilter;
+public class ProcessDefinitionInspections {
+  private final ProcessDefinitionRecordStreamFilter processDefinitionRecordStreamFilter;
 
-  public DeploymentInspections(final DeploymentRecordStreamFilter deploymentRecordStreamFilter) {
-    this.deploymentRecordStreamFilter = deploymentRecordStreamFilter;
+  public ProcessDefinitionInspections(
+      final ProcessDefinitionRecordStreamFilter deploymentRecordStreamFilter) {
+    this.processDefinitionRecordStreamFilter = deploymentRecordStreamFilter;
   }
 
   /**
@@ -50,7 +51,7 @@ public class DeploymentInspections {
    * @return the id of the found BPMN element
    */
   public String findBpmnElementId(String elementName) {
-    return findElementId(deploymentRecordStreamFilter.getBpmnDeploymentResources(), elementName);
+    return findElementId(processDefinitionRecordStreamFilter.getProcessDefinitions(), elementName);
   }
 
   /**
@@ -65,17 +66,19 @@ public class DeploymentInspections {
    */
   public String findBpmnElementId(String bpmnProcessId, String elementName) {
     return findElementId(
-        deploymentRecordStreamFilter.withBpmnProcessId(bpmnProcessId).getBpmnDeploymentResources(),
+        processDefinitionRecordStreamFilter
+            .withBpmnProcessId(bpmnProcessId)
+            .getProcessDefinitions(),
         elementName);
   }
 
-  private String findElementId(Stream<DeploymentResource> stream, String elementName) {
+  private String findElementId(Stream<Process> stream, String elementName) {
     List<String> potentialElementIds =
         stream
             .map(
-                deploymentResource ->
+                processResource ->
                     Bpmn.readModelFromStream(
-                        new ByteArrayInputStream(deploymentResource.getResource())))
+                        new ByteArrayInputStream(processResource.getResource())))
             .flatMap(
                 bpmnModelInstance ->
                     getChildElements(bpmnModelInstance.getDocument().getRootElement()).stream())
