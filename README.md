@@ -261,7 +261,7 @@ Find BPMN element id by its name (also works for processes):
 ```java
 String elementId = InspectionUtility
   .findProcessDefinitions()
-  .findBpmnElementId("<element name>");
+  .getBpmnElementId("<element name>");
 ```
 
 Find BPMN element id in defined BPMN process by its name:
@@ -269,7 +269,7 @@ Find BPMN element id in defined BPMN process by its name:
 ```java
 String elementId = InspectionUtility
   .findProcessDefinitions()
-  .findBpmnElementId("<bpmn process id>","<element name>");
+  .getBpmnElementId("<bpmn process id>","<element name>");
 ```
 
 ## Examples

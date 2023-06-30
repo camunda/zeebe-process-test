@@ -50,8 +50,9 @@ public class ProcessDefinitionInspections {
    * @param elementName the name of the BPMN element
    * @return the id of the found BPMN element
    */
-  public String findBpmnElementId(String elementName) {
-    return findElementId(processDefinitionRecordStreamFilter.getProcessDefinitions(), elementName);
+  public String getBpmnElementId(String elementName) {
+    return getBpmnElementId(
+        processDefinitionRecordStreamFilter.getProcessDefinitions(), elementName);
   }
 
   /**
@@ -64,15 +65,15 @@ public class ProcessDefinitionInspections {
    * @param elementName the name of the BPMN element
    * @return the id of the found BPMN in the given process
    */
-  public String findBpmnElementId(String bpmnProcessId, String elementName) {
-    return findElementId(
+  public String getBpmnElementId(String bpmnProcessId, String elementName) {
+    return getBpmnElementId(
         processDefinitionRecordStreamFilter
             .withBpmnProcessId(bpmnProcessId)
             .getProcessDefinitions(),
         elementName);
   }
 
-  private String findElementId(Stream<Process> stream, String elementName) {
+  private String getBpmnElementId(Stream<Process> stream, String elementName) {
     List<String> potentialElementIds =
         stream
             .map(
