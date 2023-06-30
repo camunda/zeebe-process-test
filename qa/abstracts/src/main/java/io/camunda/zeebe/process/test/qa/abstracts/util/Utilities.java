@@ -280,4 +280,16 @@ public class Utilities {
     public static final String RESOURCE_NAME = "alternate-start-end.bpmn";
     public static final String PROCESS_ID = "alternate-start-end";
   }
+
+  public static final class ProcessPackNamedElements {
+    public static final String RESOURCE_NAME = "named-elements.bpmn";
+    public static final String PROCESS_ID = "NamedProcess";
+    public static final String START_EVENT_NAME = "Process started";
+    public static final String START_EVENT_ID = "ProcessStartedStartEvent";
+
+    public static final String TASK_NAME = "Do something";
+
+    public static final String END_EVENT_NAME = "Process complete";
+    public static final String END_EVENT_ID = "ProcessCompleteEndEvent";
+  }
 }
