@@ -267,7 +267,7 @@ String elementId = InspectionUtility
 Find BPMN element id in defined BPMN process by its name:
 
 ```java
-String elementId=InspectionUtility
+String elementId = InspectionUtility
   .findProcessDefinitions()
   .findBpmnElementId("<bpmn process id>","<element name>");
 ```
