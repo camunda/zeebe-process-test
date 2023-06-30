@@ -234,6 +234,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.camunda.bpm.model</groupId>
+        <artifactId>camunda-xml-model</artifactId>
+        <version>${dependency.camundamodel.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-logstreams</artifactId>
         <version>${dependency.zeebe.version}</version>

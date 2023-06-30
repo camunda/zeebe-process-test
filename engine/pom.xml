@@ -116,6 +116,16 @@
       <artifactId>grpc-stub</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.camunda.bpm.model</groupId>
+      <artifactId>camunda-xml-model</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>zeebe-bpmn-model</artifactId>
+    </dependency>
+
     <!-- Test Scope -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -156,12 +166,6 @@
     <dependency>
       <groupId>io.camunda</groupId>
       <artifactId>zeebe-process-test-filters</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>zeebe-bpmn-model</artifactId>
       <scope>test</scope>
     </dependency>
 
