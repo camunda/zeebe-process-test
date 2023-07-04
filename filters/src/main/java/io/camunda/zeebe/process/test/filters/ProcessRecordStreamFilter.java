@@ -17,20 +17,20 @@
 package io.camunda.zeebe.process.test.filters;
 
 import io.camunda.zeebe.protocol.record.Record;
+import io.camunda.zeebe.protocol.record.intent.ProcessIntent;
 import io.camunda.zeebe.protocol.record.value.deployment.Process;
 import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class ProcessDefinitionRecordStreamFilter {
-  private static final String BPMN_FILE_SUFFIX = ".bpmn";
+public class ProcessRecordStreamFilter {
   private final Stream<Record<Process>> stream;
 
-  public ProcessDefinitionRecordStreamFilter(final Iterable<Record<Process>> records) {
+  public ProcessRecordStreamFilter(final Iterable<Record<Process>> records) {
     stream = StreamSupport.stream(records.spliterator(), false);
   }
 
-  public ProcessDefinitionRecordStreamFilter(final Stream<Record<Process>> stream) {
+  public ProcessRecordStreamFilter(final Stream<Record<Process>> stream) {
     this.stream = stream;
   }
 
@@ -39,10 +39,15 @@ public class ProcessDefinitionRecordStreamFilter {
     return stream.map(Record::getValue);
   }
 
-  public ProcessDefinitionRecordStreamFilter withBpmnProcessId(String bpmnProcessId) {
-    return new ProcessDefinitionRecordStreamFilter(
+  public ProcessRecordStreamFilter withBpmnProcessId(String bpmnProcessId) {
+    return new ProcessRecordStreamFilter(
         stream.filter(
             record -> Objects.equals(record.getValue().getBpmnProcessId(), bpmnProcessId)));
+  }
+
+  public ProcessRecordStreamFilter withIntent(final ProcessIntent intent) {
+    return new ProcessRecordStreamFilter(
+        stream.filter(record -> record.getIntent().equals(intent)));
   }
 
   public Stream<Record<Process>> stream() {

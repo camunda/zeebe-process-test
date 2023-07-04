@@ -26,7 +26,7 @@ import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackNamedElements;
 import org.junit.jupiter.api.Test;
 
-public abstract class AbstractProcessDefinitionInspectionsTest {
+public abstract class AbstractProcessInspectionsTest {
   @Test
   void testFindStartEventIdByName() {
     // given
@@ -34,7 +34,7 @@ public abstract class AbstractProcessDefinitionInspectionsTest {
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     // when
     String startEventId =
-        InspectionUtility.findProcessDefinitions()
+        InspectionUtility.findProcesses()
             .getBpmnElementId(ProcessPackNamedElements.START_EVENT_NAME);
     // then
     assertThat(startEventId).isEqualTo(ProcessPackNamedElements.START_EVENT_ID);
@@ -47,7 +47,7 @@ public abstract class AbstractProcessDefinitionInspectionsTest {
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     // when
     String endEventId =
-        InspectionUtility.findProcessDefinitions()
+        InspectionUtility.findProcesses()
             .getBpmnElementId(
                 ProcessPackNamedElements.PROCESS_ID, ProcessPackNamedElements.END_EVENT_NAME);
     // then
@@ -61,7 +61,7 @@ public abstract class AbstractProcessDefinitionInspectionsTest {
     // when, then
     assertThatThrownBy(
             () ->
-                InspectionUtility.findProcessDefinitions()
+                InspectionUtility.findProcesses()
                     .getBpmnElementId(ProcessPackNamedElements.TASK_NAME))
         .isInstanceOf(AssertionError.class);
   }

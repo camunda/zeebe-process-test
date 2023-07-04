@@ -17,7 +17,7 @@
 package io.camunda.zeebe.process.test.inspections;
 
 import io.camunda.zeebe.model.bpmn.Bpmn;
-import io.camunda.zeebe.process.test.filters.ProcessDefinitionRecordStreamFilter;
+import io.camunda.zeebe.process.test.filters.ProcessRecordStreamFilter;
 import io.camunda.zeebe.protocol.record.value.deployment.Process;
 import java.io.ByteArrayInputStream;
 import java.util.HashSet;
@@ -33,11 +33,10 @@ import org.camunda.bpm.model.xml.instance.DomElement;
  * Inspections for deployment events. This is useful to find technical identifiers for
  * human-readable element names.
  */
-public class ProcessDefinitionInspections {
-  private final ProcessDefinitionRecordStreamFilter processDefinitionRecordStreamFilter;
+public class ProcessInspections {
+  private final ProcessRecordStreamFilter processDefinitionRecordStreamFilter;
 
-  public ProcessDefinitionInspections(
-      final ProcessDefinitionRecordStreamFilter deploymentRecordStreamFilter) {
+  public ProcessInspections(final ProcessRecordStreamFilter deploymentRecordStreamFilter) {
     this.processDefinitionRecordStreamFilter = deploymentRecordStreamFilter;
   }
 

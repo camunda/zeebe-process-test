@@ -58,8 +58,7 @@ public class StreamFilter {
     return new TimerRecordStreamFilter(recordStream.timerRecords());
   }
 
-  public static ProcessDefinitionRecordStreamFilter processDefinitionRecords(
-      final RecordStream recordStream) {
-    return new ProcessDefinitionRecordStreamFilter(recordStream.processRecords());
+  public static ProcessRecordStreamFilter processRecords(final RecordStream recordStream) {
+    return new ProcessRecordStreamFilter(recordStream.processRecords());
   }
 }
