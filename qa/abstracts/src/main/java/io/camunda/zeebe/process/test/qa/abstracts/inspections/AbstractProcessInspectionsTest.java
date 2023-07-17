@@ -31,6 +31,7 @@ public abstract class AbstractProcessInspectionsTest {
   void testFindStartEventIdByName() {
     // given
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
+    Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME_V2);
     // when
     String startEventId =
         InspectionUtility.findProcesses()
@@ -43,6 +44,7 @@ public abstract class AbstractProcessInspectionsTest {
   void testFindEndEventIdByBpmnProcessIdAndName() {
     // given
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
+    Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME_V2);
     // when
     String endEventId =
         InspectionUtility.findProcesses()
@@ -56,6 +58,7 @@ public abstract class AbstractProcessInspectionsTest {
   void testThrowIfNameIsNotUnique() {
     // given
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
+    Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME_V2);
     // when, then
     assertThatThrownBy(
             () ->

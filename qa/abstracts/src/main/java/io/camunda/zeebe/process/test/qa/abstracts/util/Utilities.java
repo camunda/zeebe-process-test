@@ -283,6 +283,7 @@ public class Utilities {
 
   public static final class ProcessPackNamedElements {
     public static final String RESOURCE_NAME = "named-elements.bpmn";
+    public static final String RESOURCE_NAME_V2 = "named-elements-v2.bpmn";
     public static final String PROCESS_ID = "NamedProcess";
     public static final String START_EVENT_NAME = "Process started";
     public static final String START_EVENT_ID = "ProcessStartedStartEvent";
