@@ -259,17 +259,15 @@ There are entrypoints for starting inspections on process engine data
 Find BPMN element id by its name (also works for processes):
 
 ```java
-String elementId = InspectionUtility
-  .findProcessDefinitions()
-  .getBpmnElementId("<element name>");
+import static io.camunda.zeebe.process.test.inspections.ProcessDefinitionInspectionUtility.getBpmnElementId;
+String elementId = getBpmnElementId("<element name>");
 ```
 
 Find BPMN element id in defined BPMN process by its name:
 
 ```java
-String elementId = InspectionUtility
-  .findProcessDefinitions()
-  .getBpmnElementId("<bpmn process id>","<element name>");
+import static io.camunda.zeebe.process.test.inspections.ProcessDefinitionInspectionUtility.getBpmnElementId;
+String elementId = getBpmnElementId("<bpmn process id>","<element name>");
 ```
 
 ## Examples
