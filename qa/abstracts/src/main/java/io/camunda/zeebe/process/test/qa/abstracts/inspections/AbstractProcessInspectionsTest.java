@@ -16,12 +16,13 @@
 
 package io.camunda.zeebe.process.test.qa.abstracts.inspections;
 
+import static io.camunda.zeebe.process.test.inspections.ProcessDefinitionInspectionUtility.getBpmnElementId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
-import io.camunda.zeebe.process.test.inspections.InspectionUtility;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackNamedElements;
 import org.junit.jupiter.api.Test;
@@ -33,9 +34,7 @@ public abstract class AbstractProcessInspectionsTest {
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME_V2);
     // when
-    String startEventId =
-        InspectionUtility.findProcesses()
-            .getBpmnElementId(ProcessPackNamedElements.START_EVENT_NAME);
+    String startEventId = getBpmnElementId(ProcessPackNamedElements.START_EVENT_NAME);
     // then
     assertThat(startEventId).isEqualTo(ProcessPackNamedElements.START_EVENT_ID);
   }
@@ -47,9 +46,19 @@ public abstract class AbstractProcessInspectionsTest {
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME_V2);
     // when
     String endEventId =
-        InspectionUtility.findProcesses()
-            .getBpmnElementId(
-                ProcessPackNamedElements.PROCESS_ID, ProcessPackNamedElements.END_EVENT_NAME);
+        getBpmnElementId(
+            ProcessPackNamedElements.PROCESS_ID, ProcessPackNamedElements.END_EVENT_NAME);
+    // then
+    assertThat(endEventId).isEqualTo(ProcessPackNamedElements.END_EVENT_ID);
+  }
+
+  @Test
+  void testFindEndEventIdByDeploymentAndName() {
+    // given
+    DeploymentEvent deployment =
+        Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
+    // when
+    String endEventId = getBpmnElementId(deployment, ProcessPackNamedElements.END_EVENT_NAME);
     // then
     assertThat(endEventId).isEqualTo(ProcessPackNamedElements.END_EVENT_ID);
   }
@@ -60,10 +69,7 @@ public abstract class AbstractProcessInspectionsTest {
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME_V2);
     // when, then
-    assertThatThrownBy(
-            () ->
-                InspectionUtility.findProcesses()
-                    .getBpmnElementId(ProcessPackNamedElements.TASK_NAME))
+    assertThatThrownBy(() -> getBpmnElementId(ProcessPackNamedElements.TASK_NAME))
         .isInstanceOf(AssertionError.class);
   }
 

@@ -16,8 +16,10 @@
 
 package io.camunda.zeebe.process.test.inspections;
 
+import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.model.bpmn.Bpmn;
-import io.camunda.zeebe.process.test.filters.ProcessRecordStreamFilter;
+import io.camunda.zeebe.process.test.assertions.BpmnAssert;
+import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.value.deployment.Process;
 import java.io.ByteArrayInputStream;
 import java.util.HashSet;
@@ -29,29 +31,20 @@ import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.camunda.bpm.model.xml.instance.DomElement;
 
-/**
- * Inspections for deployment events. This is useful to find technical identifiers for
- * human-readable element names.
- */
-public class ProcessInspections {
-  private final ProcessRecordStreamFilter processDefinitionRecordStreamFilter;
-
-  public ProcessInspections(final ProcessRecordStreamFilter deploymentRecordStreamFilter) {
-    this.processDefinitionRecordStreamFilter = deploymentRecordStreamFilter;
-  }
-
+public class ProcessDefinitionInspectionUtility {
   /**
    * Finds the BPMN element id by its name.
    *
    * <p>Keeps the test human-readable when asserting on bpmn elements. Asserts that there is only
    * one element for the given name to prevent mistakes.
    *
-   * @param elementName the name of the BPMN element
+   * @param bpmnElementName the name of the BPMN element
    * @return the id of the found BPMN element
    */
-  public String getBpmnElementId(String elementName) {
+  public static String getBpmnElementId(String bpmnElementName) {
     return getBpmnElementId(
-        processDefinitionRecordStreamFilter.getProcessDefinitions(), elementName);
+        StreamFilter.processRecords(BpmnAssert.getRecordStream()).getProcessDefinitions(),
+        bpmnElementName);
   }
 
   /**
@@ -61,18 +54,36 @@ public class ProcessInspections {
    * one element for the given name to prevent mistakes.
    *
    * @param bpmnProcessId the id of the deployed process
-   * @param elementName the name of the BPMN element
+   * @param bpmnElementName the name of the BPMN element
    * @return the id of the found BPMN in the given process
    */
-  public String getBpmnElementId(String bpmnProcessId, String elementName) {
+  public static String getBpmnElementId(String bpmnProcessId, String bpmnElementName) {
     return getBpmnElementId(
-        processDefinitionRecordStreamFilter
+        StreamFilter.processRecords(BpmnAssert.getRecordStream())
             .withBpmnProcessId(bpmnProcessId)
             .getProcessDefinitions(),
-        elementName);
+        bpmnElementName);
   }
 
-  private String getBpmnElementId(Stream<Process> stream, String elementName) {
+  /**
+   * Finds the BPMN element id by its name inside the referenced deployment.
+   *
+   * <p>Keeps the test human-readable when asserting on bpmn elements. Asserts that there is only
+   * one element for the given name to prevent mistakes.
+   *
+   * @param deployment
+   * @param bpmnElementName
+   * @return
+   */
+  public static String getBpmnElementId(DeploymentEvent deployment, String bpmnElementName) {
+    return getBpmnElementId(
+        StreamFilter.processRecords(BpmnAssert.getRecordStream())
+            .withDeployment(deployment)
+            .getProcessDefinitions(),
+        bpmnElementName);
+  }
+
+  private static String getBpmnElementId(Stream<Process> stream, String bpmnElementName) {
     List<String> potentialElementIds =
         stream
             .map(
@@ -81,8 +92,9 @@ public class ProcessInspections {
                         new ByteArrayInputStream(processResource.getResource())))
             .flatMap(
                 bpmnModelInstance ->
-                    getChildElements(bpmnModelInstance.getDocument().getRootElement()).stream())
-            .filter(element -> Objects.equals(element.getAttribute("name"), elementName))
+                    getChildElementsFlattened(bpmnModelInstance.getDocument().getRootElement())
+                        .stream())
+            .filter(element -> Objects.equals(element.getAttribute("name"), bpmnElementName))
             .map(element -> element.getAttribute("id"))
             .distinct()
             .collect(Collectors.toList());
@@ -90,10 +102,10 @@ public class ProcessInspections {
     return potentialElementIds.get(0);
   }
 
-  private static Set<DomElement> getChildElements(DomElement parent) {
+  private static Set<DomElement> getChildElementsFlattened(DomElement parent) {
     Set<DomElement> elements = new HashSet<>();
     elements.add(parent);
-    parent.getChildElements().forEach(child -> elements.addAll(getChildElements(child)));
+    parent.getChildElements().forEach(child -> elements.addAll(getChildElementsFlattened(child)));
     return elements;
   }
 }
