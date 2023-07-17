@@ -250,6 +250,28 @@ something, without explicitly triggering it yourself. An example of this would b
 timer event. We can increase the time of the engine, but we cannot trigger the timer explicitly.
 Because of this we should wait for a busy state after increasing the engine time.
 
+### Inspections
+
+There are entrypoints for starting inspections on process engine data
+
+#### Deployment Inspections
+
+Find BPMN element id by its name (also works for processes):
+
+```java
+String elementId = InspectionUtility
+  .findProcessDefinitions()
+  .getBpmnElementId("<element name>");
+```
+
+Find BPMN element id in defined BPMN process by its name:
+
+```java
+String elementId = InspectionUtility
+  .findProcessDefinitions()
+  .getBpmnElementId("<bpmn process id>","<element name>");
+```
+
 ## Examples
 
 [Examples](examples/README.md)
