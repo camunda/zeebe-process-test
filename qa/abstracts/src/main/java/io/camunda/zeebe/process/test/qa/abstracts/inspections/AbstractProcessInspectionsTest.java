@@ -31,7 +31,6 @@ public abstract class AbstractProcessInspectionsTest {
   void testFindStartEventIdByName() {
     // given
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
-    Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     // when
     String startEventId =
         InspectionUtility.findProcesses()
@@ -43,7 +42,6 @@ public abstract class AbstractProcessInspectionsTest {
   @Test
   void testFindEndEventIdByBpmnProcessIdAndName() {
     // given
-    Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     // when
     String endEventId =
