@@ -25,27 +25,33 @@ import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackNamedElements;
+import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractProcessInspectionsTest {
   @Test
-  void testFindStartEventIdByName() {
+  void testFindStartEventIdByName() throws InterruptedException, TimeoutException {
     // given
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME_V2);
+    getEngine().waitForIdleState(Duration.ofSeconds(1));
+
     // when
-    String startEventId = getBpmnElementId(ProcessPackNamedElements.START_EVENT_NAME);
+    final String startEventId = getBpmnElementId(ProcessPackNamedElements.START_EVENT_NAME);
     // then
     assertThat(startEventId).isEqualTo(ProcessPackNamedElements.START_EVENT_ID);
   }
 
   @Test
-  void testFindEndEventIdByBpmnProcessIdAndName() {
+  void testFindEndEventIdByBpmnProcessIdAndName() throws InterruptedException, TimeoutException {
     // given
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME_V2);
+    getEngine().waitForIdleState(Duration.ofSeconds(1));
+
     // when
-    String endEventId =
+    final String endEventId =
         getBpmnElementId(
             ProcessPackNamedElements.PROCESS_ID, ProcessPackNamedElements.END_EVENT_NAME);
     // then
@@ -53,21 +59,25 @@ public abstract class AbstractProcessInspectionsTest {
   }
 
   @Test
-  void testFindEndEventIdByDeploymentAndName() {
+  void testFindEndEventIdByDeploymentAndName() throws InterruptedException, TimeoutException {
     // given
-    DeploymentEvent deployment =
+    final DeploymentEvent deployment =
         Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
+    getEngine().waitForIdleState(Duration.ofSeconds(1));
+
     // when
-    String endEventId = getBpmnElementId(deployment, ProcessPackNamedElements.END_EVENT_NAME);
+    final String endEventId = getBpmnElementId(deployment, ProcessPackNamedElements.END_EVENT_NAME);
     // then
     assertThat(endEventId).isEqualTo(ProcessPackNamedElements.END_EVENT_ID);
   }
 
   @Test
-  void testThrowIfNameIsNotUnique() {
+  void testThrowIfNameIsNotUnique() throws InterruptedException, TimeoutException {
     // given
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME);
     Utilities.deployResource(getClient(), ProcessPackNamedElements.RESOURCE_NAME_V2);
+    getEngine().waitForIdleState(Duration.ofSeconds(1));
+
     // when, then
     assertThatThrownBy(() -> getBpmnElementId(ProcessPackNamedElements.TASK_NAME))
         .isInstanceOf(AssertionError.class);
