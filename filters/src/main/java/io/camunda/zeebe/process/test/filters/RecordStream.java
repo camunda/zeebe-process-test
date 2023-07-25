@@ -25,6 +25,7 @@ import io.camunda.zeebe.protocol.record.value.DeploymentRecordValue;
 import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
 import io.camunda.zeebe.protocol.record.value.JobBatchRecordValue;
 import io.camunda.zeebe.protocol.record.value.JobRecordValue;
+import io.camunda.zeebe.protocol.record.value.MessageBatchRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageStartEventSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageSubscriptionRecordValue;
@@ -103,6 +104,10 @@ public class RecordStream {
 
   public Iterable<Record<MessageRecordValue>> messageRecords() {
     return recordsOfValueType(ValueType.MESSAGE);
+  }
+
+  public Iterable<Record<MessageBatchRecordValue>> messageBatchRecords() {
+    return recordsOfValueType(ValueType.MESSAGE_BATCH);
   }
 
   public Iterable<Record<MessageSubscriptionRecordValue>> messageSubscriptionRecords() {
