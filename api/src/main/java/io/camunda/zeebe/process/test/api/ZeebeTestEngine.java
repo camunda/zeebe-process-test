@@ -15,6 +15,7 @@
  */
 package io.camunda.zeebe.process.test.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
@@ -87,4 +88,9 @@ public interface ZeebeTestEngine {
    * @throws TimeoutException if the engine has not reached a busy state before the timeout
    */
   void waitForBusyState(Duration timeout) throws InterruptedException, TimeoutException;
+
+  /**
+   * @return a newly created {@link ZeebeClient} with custom mapper
+   */
+  ZeebeClient createClientWithCustomMapper(ObjectMapper customObjectMapper);
 }

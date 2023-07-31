@@ -7,7 +7,9 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.logstreams.log.LogStream;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
@@ -139,5 +141,15 @@ public class InMemoryEngine implements ZeebeTestEngine {
       // Do nothing. ExecutionExceptions won't appear. The function only completes the future, which
       // in itself does not throw any exceptions.
     }
+  }
+
+  @Override
+  public ZeebeClient createClientWithCustomMapper(final ObjectMapper objectMapper) {
+    return ZeebeClient.newClientBuilder()
+        .withJsonMapper(new ZeebeObjectMapper(objectMapper))
+        .applyEnvironmentVariableOverrides(false)
+        .gatewayAddress(getGatewayAddress())
+        .usePlaintext()
+        .build();
   }
 }

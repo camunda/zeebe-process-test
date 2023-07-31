@@ -15,6 +15,7 @@
  */
 package io.camunda.zeebe.process.test.extension.testcontainer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -42,6 +43,8 @@ public class ZeebeProcessTestExtension
   private static final Logger LOG = LoggerFactory.getLogger(ZeebeProcessTestExtension.class);
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
   private static final String KEY_ZEEBE_ENGINE = "ZEEBE_ENGINE";
+
+  private final ObjectMapper objectMapperInstance = new ObjectMapper();
 
   /**
    * A new testcontainer container gets created. After this a {@link ContainerizedEngine} is
@@ -78,10 +81,14 @@ public class ZeebeProcessTestExtension
   @Override
   public void beforeEach(final ExtensionContext extensionContext) {
     final Object engineContent = getStore(extensionContext.getParent().get()).get(KEY_ZEEBE_ENGINE);
+    final ObjectMapper customObjectMapper = getCustomMapper(extensionContext);
     final ContainerizedEngine engine = (ContainerizedEngine) engineContent;
     engine.start();
 
-    final ZeebeClient client = engine.createClient();
+    final ZeebeClient client =
+        customObjectMapper != null
+            ? engine.createClientWithCustomMapper(customObjectMapper)
+            : engine.createClient();
     final RecordStream recordStream = RecordStream.of(new RecordStreamSourceImpl(engine));
     BpmnAssert.initRecordStream(recordStream);
 
@@ -164,5 +171,26 @@ public class ZeebeProcessTestExtension
 
   private ExtensionContext.Store getStore(final ExtensionContext context) {
     return context.getStore(ExtensionContext.Namespace.create(getClass(), context.getUniqueId()));
+  }
+
+  /**
+   * Get a custom object mapper from the test context
+   *
+   * @param context jUnit5 extension context
+   * @return the custom object mapper, or null if no object mapper are in the context
+   */
+  private ObjectMapper getCustomMapper(final ExtensionContext context) {
+    final Optional<Field> customMapperOpt =
+        getField(context.getRequiredTestClass(), objectMapperInstance);
+    if (!customMapperOpt.isPresent()) {
+      return null;
+    }
+    final Field customMapper = customMapperOpt.get();
+    ReflectionUtils.makeAccessible(customMapper);
+    try {
+      return (ObjectMapper) customMapper.get(context.getRequiredTestInstance());
+    } catch (final IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -7,6 +7,7 @@
  */
 package io.camunda.zeebe.process.test.extension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
@@ -16,7 +17,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -36,6 +36,8 @@ public class ZeebeProcessTestExtension
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
   private static final String KEY_ZEEBE_ENGINE = "ZEEBE_ENGINE";
 
+  private final ObjectMapper objectMapperInstance = new ObjectMapper();
+
   /**
    * Before each test a new test engine gets created and started. A client to communicate with the
    * engine will also be created. Together with a {@link RecordStream} these will be injected in the
@@ -47,7 +49,11 @@ public class ZeebeProcessTestExtension
   public void beforeEach(final ExtensionContext extensionContext) {
     final ZeebeTestEngine engine = EngineFactory.create();
     engine.start();
-    final ZeebeClient client = engine.createClient();
+    final ObjectMapper customObjectMapper = getCustomMapper(extensionContext);
+    final ZeebeClient client =
+        customObjectMapper != null
+            ? engine.createClientWithCustomMapper(customObjectMapper)
+            : engine.createClient();
     final RecordStream recordStream = RecordStream.of(engine.getRecordStreamSource());
 
     try {
@@ -109,9 +115,7 @@ public class ZeebeProcessTestExtension
     final Field[] declaredFields = requiredTestClass.getDeclaredFields();
 
     final List<Field> fields =
-        Arrays.stream(declaredFields)
-            .filter(field -> field.getType().isInstance(object))
-            .collect(Collectors.toList());
+        Arrays.stream(declaredFields).filter(field -> field.getType().isInstance(object)).toList();
 
     if (fields.size() > 1) {
       throw new IllegalStateException(
@@ -140,5 +144,25 @@ public class ZeebeProcessTestExtension
 
   private ExtensionContext.Store getStore(final ExtensionContext context) {
     return context.getStore(ExtensionContext.Namespace.create(getClass(), context.getUniqueId()));
+  }
+
+  /**
+   * Get a custom object mapper from the test context
+   *
+   * @param context jUnit5 extension context
+   * @return the custom object mapper, or null if no object mapper are in the context
+   */
+  private ObjectMapper getCustomMapper(final ExtensionContext context) {
+    final var customMapperOpt = getField(context.getRequiredTestClass(), objectMapperInstance);
+    if (customMapperOpt.isEmpty()) {
+      return null;
+    }
+    final var customMapper = customMapperOpt.get();
+    ReflectionUtils.makeAccessible(customMapper);
+    try {
+      return (ObjectMapper) customMapper.get(context.getRequiredTestInstance());
+    } catch (final IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
