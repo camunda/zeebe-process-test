@@ -215,6 +215,25 @@ IncidentAssert assertions = BpmnAssert.assertThat(activatedJob)
   .extractingLatestIncident();
 ```
 
+### Custom Mapper
+
+Users can now provide their own `ObjectMapper` to the `Zeebe Client`
+
+```java
+@ZeebeProcessTest
+class DeploymentAssertTest {
+  ...
+  private ObjectMapper mapper = setupMapper();
+
+
+  private ObjectMapper setupMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    .... // custom configuration
+    return objectMapper;
+  }
+}
+```
+
 ### Waiting for idle and busy state
 
 #### Wait for idle state
