@@ -10,5 +10,19 @@
         ]
       }
     }
+  },
+  {
+    "extension": "revapi.differences",
+    "id": "differences",
+    "configuration": {
+      "differences": [
+        {
+          "ignore": true,
+          "code": "java.method.addedToInterface",
+          "new": "method io.camunda.zeebe.client.ZeebeClient io.camunda.zeebe.process.test.api.ZeebeTestEngine::createClientWithCustomMapper(com.fasterxml.jackson.databind.ObjectMapper)",
+          "justification": ""
+        }
+      ]
+    }
   }
 ]
