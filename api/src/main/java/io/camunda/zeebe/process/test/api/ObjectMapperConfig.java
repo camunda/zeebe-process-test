@@ -18,9 +18,7 @@ package io.camunda.zeebe.process.test.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Shared custom {@link ObjectMapper} configured by the user
- */
+/** Shared custom {@link ObjectMapper} configured by the user */
 public abstract class ObjectMapperConfig {
 
   private static ObjectMapper objectMapper;

@@ -193,8 +193,9 @@ public class ZeebeProcessTestExtension
   }
 
   /**
-   * Create a {@link ZeebeClient}. If a custom {@link ObjectMapper} is provided it is initialized into
-   * the {@link ObjectMapperConfig} and it is configured into the client
+   * Create a {@link ZeebeClient}. If a custom {@link ObjectMapper} is provided it is initialized
+   * into the {@link ObjectMapperConfig} and it is configured into the client
+   *
    * @param objectMapper an {@link Optional} of {@link ObjectMapper}
    * @param engine the used engine
    * @return a zeebe client
