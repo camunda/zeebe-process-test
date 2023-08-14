@@ -18,11 +18,10 @@ package io.camunda.zeebe.process.test.assertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
-import java.io.IOException;
+import io.camunda.zeebe.process.test.api.ObjectMapperConfig;
 import java.util.Map;
 import org.assertj.core.api.AbstractAssert;
 
@@ -32,11 +31,13 @@ import org.assertj.core.api.AbstractAssert;
  */
 public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<String, String>> {
 
-  static final ObjectMapper JSON_MAPPER = new ObjectMapper();
-  private static final ZeebeObjectMapper OBJECT_MAPPER = new ZeebeObjectMapper();
+  private static ZeebeObjectMapper OBJECT_MAPPER = new ZeebeObjectMapper();
 
   static {
-    JSON_MAPPER.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+    final ObjectMapper customMapper = ObjectMapperConfig.getObjectMapper();
+    if (customMapper != null) {
+      OBJECT_MAPPER = new ZeebeObjectMapper(customMapper);
+    }
   }
 
   public VariablesMapAssert(final Map<String, String> actual) {
@@ -80,10 +81,6 @@ public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<S
   }
 
   private static JsonNode asJsonNode(final String json) {
-    try {
-      return JSON_MAPPER.readTree(json);
-    } catch (final IOException e) {
-      throw new RuntimeException(e);
-    }
+    return OBJECT_MAPPER.fromJson(json, JsonNode.class);
   }
 }

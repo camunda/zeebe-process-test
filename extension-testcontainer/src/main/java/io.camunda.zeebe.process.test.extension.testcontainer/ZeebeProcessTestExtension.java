@@ -85,10 +85,7 @@ public class ZeebeProcessTestExtension
     final ContainerizedEngine engine = (ContainerizedEngine) engineContent;
     engine.start();
 
-    final ZeebeClient client =
-        customObjectMapper.isPresent()
-            ? engine.createClient(customObjectMapper.get())
-            : engine.createClient();
+    final ZeebeClient client = createClient(customObjectMapper, engine);
     final RecordStream recordStream = RecordStream.of(new RecordStreamSourceImpl(engine));
     BpmnAssert.initRecordStream(recordStream);
 
@@ -177,7 +174,8 @@ public class ZeebeProcessTestExtension
    * Get a custom object mapper from the test context
    *
    * @param context jUnit5 extension context
-   * @return {@link Optional} of {@link ObjectMapper}, or Optional.empty() if no object mapper are in the context
+   * @return {@link Optional} of {@link ObjectMapper}, or Optional.empty() if no object mapper are
+   *     in the context
    */
   private Optional<ObjectMapper> getCustomMapper(final ExtensionContext context) {
     final Optional<Field> customMapperOpt =
@@ -192,5 +190,22 @@ public class ZeebeProcessTestExtension
     } catch (final IllegalAccessException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Create a {@link ZeebeClient}. If a custom {@link ObjectMapper} is provided it is initialized into
+   * the {@link ObjectMapperConfig} and it is configured into the client
+   * @param objectMapper an {@link Optional} of {@link ObjectMapper}
+   * @param engine the used engine
+   * @return a zeebe client
+   */
+  private ZeebeClient createClient(
+      final Optional<ObjectMapper> objectMapper, final ContainerizedEngine engine) {
+    if (objectMapper.isPresent()) {
+      final ObjectMapper customObjectMapper = objectMapper.get();
+      ObjectMapperConfig.initialize(customObjectMapper);
+      return engine.createClient(customObjectMapper);
+    }
+    return engine.createClient();
   }
 }
