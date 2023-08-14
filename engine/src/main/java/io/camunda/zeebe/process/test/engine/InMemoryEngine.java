@@ -104,6 +104,16 @@ public class InMemoryEngine implements ZeebeTestEngine {
   }
 
   @Override
+  public ZeebeClient createClient(final ObjectMapper objectMapper) {
+    return ZeebeClient.newClientBuilder()
+        .withJsonMapper(new ZeebeObjectMapper(objectMapper))
+        .applyEnvironmentVariableOverrides(false)
+        .gatewayAddress(getGatewayAddress())
+        .usePlaintext()
+        .build();
+  }
+
+  @Override
   public String getGatewayAddress() {
     return gateway.getAddress();
   }
@@ -141,15 +151,5 @@ public class InMemoryEngine implements ZeebeTestEngine {
       // Do nothing. ExecutionExceptions won't appear. The function only completes the future, which
       // in itself does not throw any exceptions.
     }
-  }
-
-  @Override
-  public ZeebeClient createClientWithCustomMapper(final ObjectMapper objectMapper) {
-    return ZeebeClient.newClientBuilder()
-        .withJsonMapper(new ZeebeObjectMapper(objectMapper))
-        .applyEnvironmentVariableOverrides(false)
-        .gatewayAddress(getGatewayAddress())
-        .usePlaintext()
-        .build();
   }
 }

@@ -87,7 +87,7 @@ public class ZeebeProcessTestExtension
 
     final ZeebeClient client =
         customObjectMapper != null
-            ? engine.createClientWithCustomMapper(customObjectMapper)
+            ? engine.createClient(customObjectMapper)
             : engine.createClient();
     final RecordStream recordStream = RecordStream.of(new RecordStreamSourceImpl(engine));
     BpmnAssert.initRecordStream(recordStream);

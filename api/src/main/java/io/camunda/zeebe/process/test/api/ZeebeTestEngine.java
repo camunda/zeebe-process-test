@@ -43,6 +43,11 @@ public interface ZeebeTestEngine {
   ZeebeClient createClient();
 
   /**
+   * @return a newly created {@link ZeebeClient} with custom mapper
+   */
+  ZeebeClient createClient(ObjectMapper customObjectMapper);
+
+  /**
    * @return the address at which the gateway is reachable
    */
   String getGatewayAddress();
@@ -88,9 +93,4 @@ public interface ZeebeTestEngine {
    * @throws TimeoutException if the engine has not reached a busy state before the timeout
    */
   void waitForBusyState(Duration timeout) throws InterruptedException, TimeoutException;
-
-  /**
-   * @return a newly created {@link ZeebeClient} with custom mapper
-   */
-  ZeebeClient createClientWithCustomMapper(ObjectMapper customObjectMapper);
 }

@@ -52,7 +52,7 @@ public class ZeebeProcessTestExtension
     final ObjectMapper customObjectMapper = getCustomMapper(extensionContext);
     final ZeebeClient client =
         customObjectMapper != null
-            ? engine.createClientWithCustomMapper(customObjectMapper)
+            ? engine.createClient(customObjectMapper)
             : engine.createClient();
     final RecordStream recordStream = RecordStream.of(engine.getRecordStreamSource());
 

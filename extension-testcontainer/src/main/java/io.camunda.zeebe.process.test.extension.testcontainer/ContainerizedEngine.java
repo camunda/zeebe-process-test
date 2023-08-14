@@ -102,6 +102,16 @@ public class ContainerizedEngine implements ZeebeTestEngine {
   }
 
   @Override
+  public ZeebeClient createClient(final ObjectMapper objectMapper) {
+    return ZeebeClient.newClientBuilder()
+        .withJsonMapper(new ZeebeObjectMapper(objectMapper))
+        .applyEnvironmentVariableOverrides(false)
+        .gatewayAddress(getGatewayAddress())
+        .usePlaintext()
+        .build();
+  }
+
+  @Override
   public String getGatewayAddress() {
     return host + ":" + channelPort;
   }
@@ -149,16 +159,6 @@ public class ContainerizedEngine implements ZeebeTestEngine {
     } finally {
       closeChannel(channel);
     }
-  }
-
-  @Override
-  public ZeebeClient createClientWithCustomMapper(final ObjectMapper objectMapper) {
-    return ZeebeClient.newClientBuilder()
-        .withJsonMapper(new ZeebeObjectMapper(objectMapper))
-        .applyEnvironmentVariableOverrides(false)
-        .gatewayAddress(getGatewayAddress())
-        .usePlaintext()
-        .build();
   }
 
   /**
