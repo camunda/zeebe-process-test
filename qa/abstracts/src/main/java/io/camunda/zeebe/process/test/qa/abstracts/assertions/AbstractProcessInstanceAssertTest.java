@@ -20,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
@@ -33,6 +36,7 @@ import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMult
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMultipleTasks;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1433,6 +1437,49 @@ public abstract class AbstractProcessInstanceAssertTest {
       // then
       BpmnAssert.assertThat(instanceEvent)
           .hasVariableWithValue(ProcessPackLoopingServiceTask.TOTAL_LOOPS, "3");
+    }
+  }
+
+  @Nested
+  class CustomMapperTests {
+
+    private ZeebeClient client;
+    private ZeebeTestEngine engine;
+
+    private final ObjectMapper objectMapper = configureObjectMapper();
+
+    @Test
+    public void shouldDeserializeDateVariables() throws InterruptedException, TimeoutException {
+      final Map<String, Object> variables = new HashMap<>();
+      variables.put("stringProperty", "stringValue");
+      variables.put("numberProperty", 123);
+      variables.put("booleanProperty", true);
+      variables.put("complexProperty", Arrays.asList("Element 1", "Element 2"));
+      variables.put("nullProperty", null);
+      variables.put("javaDate", LocalDateTime.of(2023, 8, 14, 16, 0, 0));
+      variables.put("stringDate", "\"2023-08-14T16:00:00\"");
+      // given
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
+
+      // then
+      assertThatNoException()
+          .isThrownBy(
+              () ->
+                  variables.forEach(
+                      (key, value) ->
+                          BpmnAssert.assertThat(instanceEvent).hasVariableWithValue(key, value)));
+    }
+
+    private ObjectMapper configureObjectMapper() {
+      final ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.registerModule(new JavaTimeModule());
+      objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+      return objectMapper;
     }
   }
 }
