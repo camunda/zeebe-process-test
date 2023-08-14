@@ -81,13 +81,13 @@ public class ZeebeProcessTestExtension
   @Override
   public void beforeEach(final ExtensionContext extensionContext) {
     final Object engineContent = getStore(extensionContext.getParent().get()).get(KEY_ZEEBE_ENGINE);
-    final ObjectMapper customObjectMapper = getCustomMapper(extensionContext);
+    final Optional<ObjectMapper> customObjectMapper = getCustomMapper(extensionContext);
     final ContainerizedEngine engine = (ContainerizedEngine) engineContent;
     engine.start();
 
     final ZeebeClient client =
-        customObjectMapper != null
-            ? engine.createClient(customObjectMapper)
+        customObjectMapper.isPresent()
+            ? engine.createClient(customObjectMapper.get())
             : engine.createClient();
     final RecordStream recordStream = RecordStream.of(new RecordStreamSourceImpl(engine));
     BpmnAssert.initRecordStream(recordStream);
@@ -177,18 +177,18 @@ public class ZeebeProcessTestExtension
    * Get a custom object mapper from the test context
    *
    * @param context jUnit5 extension context
-   * @return the custom object mapper, or null if no object mapper are in the context
+   * @return {@link Optional} of {@link ObjectMapper}, or Optional.empty() if no object mapper are in the context
    */
-  private ObjectMapper getCustomMapper(final ExtensionContext context) {
+  private Optional<ObjectMapper> getCustomMapper(final ExtensionContext context) {
     final Optional<Field> customMapperOpt =
         getField(context.getRequiredTestClass(), objectMapperInstance);
     if (!customMapperOpt.isPresent()) {
-      return null;
+      return Optional.empty();
     }
     final Field customMapper = customMapperOpt.get();
     ReflectionUtils.makeAccessible(customMapper);
     try {
-      return (ObjectMapper) customMapper.get(context.getRequiredTestInstance());
+      return Optional.of((ObjectMapper) customMapper.get(context.getRequiredTestInstance()));
     } catch (final IllegalAccessException e) {
       throw new RuntimeException(e);
     }

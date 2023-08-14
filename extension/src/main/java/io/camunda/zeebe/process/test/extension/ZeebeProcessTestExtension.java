@@ -49,10 +49,10 @@ public class ZeebeProcessTestExtension
   public void beforeEach(final ExtensionContext extensionContext) {
     final ZeebeTestEngine engine = EngineFactory.create();
     engine.start();
-    final ObjectMapper customObjectMapper = getCustomMapper(extensionContext);
+    final var customObjectMapper = getCustomMapper(extensionContext);
     final ZeebeClient client =
-        customObjectMapper != null
-            ? engine.createClient(customObjectMapper)
+        customObjectMapper.isPresent()
+            ? engine.createClient(customObjectMapper.get())
             : engine.createClient();
     final RecordStream recordStream = RecordStream.of(engine.getRecordStreamSource());
 
@@ -150,17 +150,17 @@ public class ZeebeProcessTestExtension
    * Get a custom object mapper from the test context
    *
    * @param context jUnit5 extension context
-   * @return the custom object mapper, or null if no object mapper are in the context
+   * @return {@link Optional} of {@link ObjectMapper}, or Optional.empty() if no object mapper are in the context
    */
-  private ObjectMapper getCustomMapper(final ExtensionContext context) {
+  private Optional<ObjectMapper> getCustomMapper(final ExtensionContext context) {
     final var customMapperOpt = getField(context.getRequiredTestClass(), objectMapperInstance);
     if (customMapperOpt.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
     final var customMapper = customMapperOpt.get();
     ReflectionUtils.makeAccessible(customMapper);
     try {
-      return (ObjectMapper) customMapper.get(context.getRequiredTestInstance());
+      return Optional.of((ObjectMapper) customMapper.get(context.getRequiredTestInstance()));
     } catch (final IllegalAccessException e) {
       throw new RuntimeException(e);
     }
