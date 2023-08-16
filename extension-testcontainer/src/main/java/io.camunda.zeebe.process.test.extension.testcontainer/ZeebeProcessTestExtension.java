@@ -82,10 +82,10 @@ public class ZeebeProcessTestExtension
   @Override
   public void beforeEach(final ExtensionContext extensionContext) {
     final Object engineContent = getStore(extensionContext.getParent().get()).get(KEY_ZEEBE_ENGINE);
-    final ObjectMapper objectMapper = getCustomMapper(extensionContext);
     final ContainerizedEngine engine = (ContainerizedEngine) engineContent;
     engine.start();
 
+    final ObjectMapper objectMapper = getCustomMapper(extensionContext);
     final ZeebeClient client = engine.createClient(objectMapper);
     final RecordStream recordStream = RecordStream.of(new RecordStreamSourceImpl(engine));
     BpmnAssert.initRecordStream(recordStream);
@@ -168,7 +168,12 @@ public class ZeebeProcessTestExtension
   }
 
   private ExtensionContext.Store getStore(final ExtensionContext context) {
-    return context.getStore(ExtensionContext.Namespace.create(getClass(), context.getUniqueId()));
+    final String testClassName = context.getRequiredTestClass().getName();
+    final String storeName =
+        testClassName.contains("$")
+            ? testClassName.substring(0, testClassName.indexOf("$"))
+            : testClassName;
+    return context.getStore(ExtensionContext.Namespace.create(getClass(), storeName));
   }
 
   /**
