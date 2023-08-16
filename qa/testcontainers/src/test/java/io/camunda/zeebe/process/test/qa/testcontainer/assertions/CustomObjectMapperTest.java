@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package io.camunda.zeebe.process.test.extension.testcontainer;
+package io.camunda.zeebe.process.test.qa.testcontainer.assertions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
+import io.camunda.zeebe.process.test.qa.abstracts.assertions.AbstractCustomObjectMapperTest;
 
-public class ObjectMapperConfig extends io.camunda.zeebe.process.test.api.ObjectMapperConfig {
-
-  protected ObjectMapperConfig(final ObjectMapper mapper) {
-    super(mapper);
-  }
-
-  public static void initialize(final ObjectMapper objectMapper) {
-    new ObjectMapperConfig(objectMapper);
-  }
+@ZeebeProcessTest
+public class CustomObjectMapperTest extends AbstractCustomObjectMapperTest {
 }
