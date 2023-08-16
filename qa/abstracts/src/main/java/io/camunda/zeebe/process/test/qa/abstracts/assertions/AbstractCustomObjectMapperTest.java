@@ -29,49 +29,60 @@ import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackLoopingServiceTask;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.concurrent.TimeoutException;
-import org.junit.jupiter.api.Test;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public abstract class AbstractCustomObjectMapperTest {
 
-  private ZeebeClient client;
-  private ZeebeTestEngine engine;
-
-  private final ObjectMapper objectMapper = configureObjectMapper();
-
-  @Test
-  public void shouldDeserializeDateVariables() throws InterruptedException, TimeoutException {
-    final Map<String, Object> variables = new HashMap<>();
-    variables.put("stringProperty", "stringValue");
-    variables.put("numberProperty", 123);
-    variables.put("booleanProperty", true);
-    variables.put("complexProperty", Arrays.asList("Element 1", "Element 2"));
-    variables.put("nullProperty", null);
-    variables.put("javaDate", LocalDateTime.of(2023, 8, 14, 16, 0, 0));
-    variables.put("stringDate", "\"2023-08-14T16:00:00\"");
-    // given
-    Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
-
-    // when
-    final ProcessInstanceEvent instanceEvent =
-        Utilities.startProcessInstance(
-            engine, client, ProcessPackLoopingServiceTask.PROCESS_ID, variables);
-
-    // then
-    assertThatNoException()
-        .isThrownBy(
-            () ->
-                variables.forEach(
-                    (key, value) ->
-                        BpmnAssert.assertThat(instanceEvent).hasVariableWithValue(key, value)));
+  private static Stream<Arguments> provideVariables() {
+    return Stream.of(
+        Arguments.of("stringProperty", "stringValue"),
+        Arguments.of("booleanProperty", true),
+        Arguments.of("complexProperty", Arrays.asList("Element 1", "Element 2")),
+        Arguments.of("nullProperty", null),
+        Arguments.of("javaDate", LocalDateTime.of(2023, 8, 14, 16, 0, 0)),
+        Arguments.of("stringDate", "\"2023-08-14T16:00:00\""));
   }
 
-  private ObjectMapper configureObjectMapper() {
-    final ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
-    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    return objectMapper;
+  @Nested
+  class HappyPathTests {
+
+    private ZeebeClient client;
+    private ZeebeTestEngine engine;
+
+    private final ObjectMapper objectMapper = configureObjectMapper();
+
+    @ParameterizedTest
+    @MethodSource(
+        "io.camunda.zeebe.process.test.qa.abstracts.assertions.AbstractCustomObjectMapperTest#provideVariables")
+    public void shouldDeserializeDateVariables(final String key, final Object value)
+        throws InterruptedException, TimeoutException {
+      // given
+      Utilities.deployResource(client, ProcessPackLoopingServiceTask.RESOURCE_NAME);
+
+      // when
+      final ProcessInstanceEvent instanceEvent =
+          Utilities.startProcessInstance(
+              engine,
+              client,
+              ProcessPackLoopingServiceTask.PROCESS_ID,
+              Collections.singletonMap(key, value));
+
+      // then
+      assertThatNoException()
+          .isThrownBy(() -> BpmnAssert.assertThat(instanceEvent).hasVariableWithValue(key, value));
+    }
+
+    private ObjectMapper configureObjectMapper() {
+      final ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.registerModule(new JavaTimeModule());
+      objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+      return objectMapper;
+    }
   }
 }

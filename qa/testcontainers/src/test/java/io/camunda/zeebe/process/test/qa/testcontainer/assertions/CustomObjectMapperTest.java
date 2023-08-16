@@ -20,5 +20,4 @@ import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.abstracts.assertions.AbstractCustomObjectMapperTest;
 
 @ZeebeProcessTest
-public class CustomObjectMapperTest extends AbstractCustomObjectMapperTest {
-}
+class CustomObjectMapperTest extends AbstractCustomObjectMapperTest {}
