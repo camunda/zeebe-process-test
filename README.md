@@ -68,7 +68,7 @@ Annotate your test class with the `@ZeebeProcessTest` annotation. This annotatio
 
 1. It will manage the [lifecycle](#engine-lifecycle) of the testcontainer / embedded test engine
 2. It will create a client which can be used to interact with the engine.
-   1. A custom `ObjectMapper` can be provided to the client by simply create and configure an
+   1. A [custom ObjectMapper](#custom-mapper) can be provided to the client by simply create and configure an
       instance of it in the test class.
 3. It will (optionally) inject 3 fields in your test class:
    1. `ZeebeTestEngine` - This is the engine that will run your process. It will provide some basic functionality
@@ -223,14 +223,15 @@ A custom `ObjectMapper` can be provided to the `Zeebe Client`
 
 ```java
 @ZeebeProcessTest
-class DeploymentAssertTest {
-  ...
+class MyProcessTest {
+  private ZeebeTestEngine engine;
+  private ZeebeClient client;
   private ObjectMapper mapper = setupMapper();
 
 
   private ObjectMapper setupMapper() {
     ObjectMapper objectMapper = new ObjectMapper();
-    .... // custom configuration
+    // custom configuration
     return objectMapper;
   }
 }
