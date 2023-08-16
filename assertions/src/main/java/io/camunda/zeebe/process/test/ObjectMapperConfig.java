@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-package io.camunda.zeebe.process.test.api;
+package io.camunda.zeebe.process.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 
 /** Shared custom {@link ObjectMapper} configured by the user */
-public abstract class ObjectMapperConfig {
+public class ObjectMapperConfig {
 
-  private static ObjectMapper objectMapper;
+  private static ZeebeObjectMapper objectMapper = new ZeebeObjectMapper();
 
-  protected ObjectMapperConfig(final ObjectMapper mapper) {
-    objectMapper = mapper;
+  private ObjectMapperConfig(final ObjectMapper mapper) {
+    objectMapper = new ZeebeObjectMapper(mapper);
   }
 
   /**
    * @return the configured {@link ObjectMapper}.
    */
-  public static ObjectMapper getObjectMapper() {
+  public static ZeebeObjectMapper getObjectMapper() {
     return objectMapper;
+  }
+
+  public static void initializeCustomMapper(final ObjectMapper objectMapper) {
+    new ObjectMapperConfig(objectMapper);
   }
 }

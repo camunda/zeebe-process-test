@@ -19,9 +19,8 @@ package io.camunda.zeebe.process.test.assertions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
-import io.camunda.zeebe.process.test.api.ObjectMapperConfig;
+import io.camunda.zeebe.process.test.ObjectMapperConfig;
 import java.util.Map;
 import org.assertj.core.api.AbstractAssert;
 
@@ -31,14 +30,7 @@ import org.assertj.core.api.AbstractAssert;
  */
 public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<String, String>> {
 
-  private static ZeebeObjectMapper OBJECT_MAPPER = new ZeebeObjectMapper();
-
-  static {
-    final ObjectMapper customMapper = ObjectMapperConfig.getObjectMapper();
-    if (customMapper != null) {
-      OBJECT_MAPPER = new ZeebeObjectMapper(customMapper);
-    }
-  }
+  private static final ZeebeObjectMapper OBJECT_MAPPER = ObjectMapperConfig.getObjectMapper();
 
   public VariablesMapAssert(final Map<String, String> actual) {
     super(actual, VariablesMapAssert.class);

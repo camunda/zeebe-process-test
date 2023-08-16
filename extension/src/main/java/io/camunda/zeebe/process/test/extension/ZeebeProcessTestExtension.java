@@ -9,10 +9,10 @@ package io.camunda.zeebe.process.test.extension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.process.test.ObjectMapperConfig;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.engine.EngineFactory;
-import io.camunda.zeebe.process.test.engine.ObjectMapperConfig;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public class ZeebeProcessTestExtension
     final ZeebeTestEngine engine = EngineFactory.create();
     engine.start();
     final var objectMapper = getCustomMapper(extensionContext);
-    final ZeebeClient client = createClient(objectMapper, engine);
+    final ZeebeClient client = engine.createClient(objectMapper);
     final RecordStream recordStream = RecordStream.of(engine.getRecordStreamSource());
 
     try {
@@ -145,41 +145,25 @@ public class ZeebeProcessTestExtension
   }
 
   /**
-   * Get a custom object mapper from the test context
+   * Get a custom object mapper from the test context or a default one if it is not provided
    *
    * @param context jUnit5 extension context
-   * @return {@link Optional} of {@link ObjectMapper}, or Optional.empty() if no object mapper are
-   *     in the context
+   * @return the custom {@link ObjectMapper} if provided, a new one if not
    */
-  private Optional<ObjectMapper> getCustomMapper(final ExtensionContext context) {
+  private ObjectMapper getCustomMapper(final ExtensionContext context) {
     final var customMapperOpt = getField(context.getRequiredTestClass(), objectMapperInstance);
     if (customMapperOpt.isEmpty()) {
-      return Optional.empty();
+      return new ObjectMapper();
     }
     final var customMapper = customMapperOpt.get();
     ReflectionUtils.makeAccessible(customMapper);
     try {
-      return Optional.of((ObjectMapper) customMapper.get(context.getRequiredTestInstance()));
+      final ObjectMapper customObjectMapper =
+          (ObjectMapper) customMapper.get(context.getRequiredTestInstance());
+      ObjectMapperConfig.initializeCustomMapper(customObjectMapper);
+      return customObjectMapper;
     } catch (final IllegalAccessException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  /**
-   * Create a {@link ZeebeClient}. If a custom {@link ObjectMapper} is provided it is initialized
-   * into the {@link ObjectMapperConfig} and it is configured into the client
-   *
-   * @param objectMapper an {@link Optional} of {@link ObjectMapper}
-   * @param engine the used engine
-   * @return a zeebe client
-   */
-  private ZeebeClient createClient(
-      final Optional<ObjectMapper> objectMapper, final ZeebeTestEngine engine) {
-    if (objectMapper.isPresent()) {
-      final ObjectMapper customObjectMapper = objectMapper.get();
-      ObjectMapperConfig.initialize(customObjectMapper);
-      return engine.createClient(customObjectMapper);
-    }
-    return engine.createClient();
   }
 }
