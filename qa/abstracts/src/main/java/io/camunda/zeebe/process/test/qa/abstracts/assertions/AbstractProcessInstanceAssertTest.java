@@ -20,9 +20,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
@@ -36,7 +33,6 @@ import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMult
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMultipleTasks;
 import io.camunda.zeebe.protocol.record.value.ErrorType;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
