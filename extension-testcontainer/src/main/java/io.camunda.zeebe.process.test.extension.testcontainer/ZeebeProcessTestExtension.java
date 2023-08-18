@@ -45,8 +45,6 @@ public class ZeebeProcessTestExtension
   private static final String KEY_ZEEBE_CLIENT = "ZEEBE_CLIENT";
   private static final String KEY_ZEEBE_ENGINE = "ZEEBE_ENGINE";
 
-  private final ObjectMapper objectMapperInstance = new ObjectMapper();
-
   /**
    * A new testcontainer container gets created. After this a {@link ContainerizedEngine} is
    * created, which allows communicating with the testcontainer.
@@ -85,7 +83,8 @@ public class ZeebeProcessTestExtension
     final ContainerizedEngine engine = (ContainerizedEngine) engineContent;
     engine.start();
 
-    final ObjectMapper objectMapper = getCustomMapper(extensionContext);
+    final ObjectMapper objectMapper = getObjectMapper(extensionContext);
+    ObjectMapperConfig.initObjectMapper(objectMapper);
     final ZeebeClient client = engine.createClient(objectMapper);
     final RecordStream recordStream = RecordStream.of(new RecordStreamSourceImpl(engine));
     BpmnAssert.initRecordStream(recordStream);
@@ -129,17 +128,17 @@ public class ZeebeProcessTestExtension
   private void injectFields(final ExtensionContext extensionContext, final Object... objects) {
     final Class<?> requiredTestClass = extensionContext.getRequiredTestClass();
     for (final Object object : objects) {
-      final Optional<Field> field = getField(requiredTestClass, object);
+      final Optional<Field> field = getField(requiredTestClass, object.getClass());
       field.ifPresent(value -> injectField(extensionContext, value, object));
     }
   }
 
-  private Optional<Field> getField(final Class<?> requiredTestClass, final Object object) {
+  private Optional<Field> getField(final Class<?> requiredTestClass, final Class<?> clazz) {
     final Field[] declaredFields = requiredTestClass.getDeclaredFields();
 
     final List<Field> fields =
         Arrays.stream(declaredFields)
-            .filter(field -> field.getType().isInstance(object))
+            .filter(field -> field.getType().isAssignableFrom(clazz))
             .collect(Collectors.toList());
 
     if (fields.size() > 1) {
@@ -148,10 +147,10 @@ public class ZeebeProcessTestExtension
               "Expected at most one field of type %s, but "
                   + "found %s. Please make sure at most one field of type %s has been declared in the"
                   + " test class.",
-              object.getClass().getSimpleName(), fields.size(), object.getClass().getSimpleName()));
+              clazz.getSimpleName(), fields.size(), clazz.getSimpleName()));
     } else if (fields.size() == 0) {
       final Class<?> superclass = requiredTestClass.getSuperclass();
-      return superclass == null ? Optional.empty() : getField(superclass, object);
+      return superclass == null ? Optional.empty() : getField(superclass, clazz);
     } else {
       return Optional.of(fields.get(0));
     }
@@ -182,19 +181,18 @@ public class ZeebeProcessTestExtension
    * @param context jUnit5 extension context
    * @return the custom {@link ObjectMapper} if provided, a new one if not
    */
-  private ObjectMapper getCustomMapper(final ExtensionContext context) {
+  private ObjectMapper getObjectMapper(final ExtensionContext context) {
     final Optional<Field> customMapperOpt =
-        getField(context.getRequiredTestClass(), objectMapperInstance);
+        getField(context.getRequiredTestClass(), ObjectMapper.class);
+
     if (!customMapperOpt.isPresent()) {
       return new ObjectMapper();
     }
+
     final Field customMapper = customMapperOpt.get();
     ReflectionUtils.makeAccessible(customMapper);
     try {
-      final ObjectMapper customObjectMapper =
-          (ObjectMapper) customMapper.get(context.getRequiredTestInstance());
-      ObjectMapperConfig.initializeCustomMapper(customObjectMapper);
-      return customObjectMapper;
+      return (ObjectMapper) customMapper.get(context.getRequiredTestInstance());
     } catch (final IllegalAccessException e) {
       throw new RuntimeException(e);
     }

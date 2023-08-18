@@ -22,20 +22,20 @@ import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 /** Shared custom {@link ObjectMapper} configured by the user */
 public class ObjectMapperConfig {
 
-  private static ZeebeObjectMapper objectMapper = new ZeebeObjectMapper();
+  private static final ThreadLocal<ZeebeObjectMapper> objectMapper = new ThreadLocal<>();
 
-  private ObjectMapperConfig(final ObjectMapper mapper) {
-    objectMapper = new ZeebeObjectMapper(mapper);
+  static {
+    objectMapper.set(new ZeebeObjectMapper());
   }
 
   /**
    * @return the configured {@link ObjectMapper}.
    */
   public static ZeebeObjectMapper getObjectMapper() {
-    return objectMapper;
+    return ObjectMapperConfig.objectMapper.get();
   }
 
-  public static void initializeCustomMapper(final ObjectMapper objectMapper) {
-    new ObjectMapperConfig(objectMapper);
+  public static void initObjectMapper(final ObjectMapper objectMapper) {
+    ObjectMapperConfig.objectMapper.set(new ZeebeObjectMapper(objectMapper));
   }
 }

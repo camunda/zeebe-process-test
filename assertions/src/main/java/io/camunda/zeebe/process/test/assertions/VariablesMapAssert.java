@@ -30,7 +30,7 @@ import org.assertj.core.api.AbstractAssert;
  */
 public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<String, String>> {
 
-  private static final ZeebeObjectMapper OBJECT_MAPPER = ObjectMapperConfig.getObjectMapper();
+  private final ZeebeObjectMapper objectMapper = ObjectMapperConfig.getObjectMapper();
 
   public VariablesMapAssert(final Map<String, String> actual) {
     super(actual, VariablesMapAssert.class);
@@ -54,7 +54,7 @@ public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<S
   public VariablesMapAssert hasVariableWithValue(final String name, final Object value) {
     containsVariable(name);
 
-    final String expectedValue = OBJECT_MAPPER.toJson(value);
+    final String expectedValue = objectMapper.toJson(value);
     final String actualValue = actual.get(name);
 
     assertThat(isEqual(actualValue, expectedValue))
@@ -68,11 +68,11 @@ public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<S
     return this;
   }
 
-  private static boolean isEqual(final String actualJson, final String expectedJson) {
+  private boolean isEqual(final String actualJson, final String expectedJson) {
     return asJsonNode(actualJson).equals(asJsonNode(expectedJson));
   }
 
-  private static JsonNode asJsonNode(final String json) {
-    return OBJECT_MAPPER.fromJson(json, JsonNode.class);
+  private JsonNode asJsonNode(final String json) {
+    return objectMapper.fromJson(json, JsonNode.class);
   }
 }
