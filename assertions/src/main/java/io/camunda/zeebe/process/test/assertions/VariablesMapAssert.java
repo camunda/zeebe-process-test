@@ -18,11 +18,9 @@ package io.camunda.zeebe.process.test.assertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
-import java.io.IOException;
+import io.camunda.zeebe.process.test.ObjectMapperConfig;
 import java.util.Map;
 import org.assertj.core.api.AbstractAssert;
 
@@ -32,12 +30,7 @@ import org.assertj.core.api.AbstractAssert;
  */
 public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<String, String>> {
 
-  static final ObjectMapper JSON_MAPPER = new ObjectMapper();
-  private static final ZeebeObjectMapper OBJECT_MAPPER = new ZeebeObjectMapper();
-
-  static {
-    JSON_MAPPER.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-  }
+  private final ZeebeObjectMapper objectMapper = ObjectMapperConfig.getObjectMapper();
 
   public VariablesMapAssert(final Map<String, String> actual) {
     super(actual, VariablesMapAssert.class);
@@ -61,7 +54,7 @@ public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<S
   public VariablesMapAssert hasVariableWithValue(final String name, final Object value) {
     containsVariable(name);
 
-    final String expectedValue = OBJECT_MAPPER.toJson(value);
+    final String expectedValue = objectMapper.toJson(value);
     final String actualValue = actual.get(name);
 
     assertThat(isEqual(actualValue, expectedValue))
@@ -75,15 +68,11 @@ public class VariablesMapAssert extends AbstractAssert<VariablesMapAssert, Map<S
     return this;
   }
 
-  private static boolean isEqual(final String actualJson, final String expectedJson) {
+  private boolean isEqual(final String actualJson, final String expectedJson) {
     return asJsonNode(actualJson).equals(asJsonNode(expectedJson));
   }
 
-  private static JsonNode asJsonNode(final String json) {
-    try {
-      return JSON_MAPPER.readTree(json);
-    } catch (final IOException e) {
-      throw new RuntimeException(e);
-    }
+  private JsonNode asJsonNode(final String json) {
+    return objectMapper.fromJson(json, JsonNode.class);
   }
 }

@@ -7,7 +7,9 @@
  */
 package io.camunda.zeebe.process.test.extension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.process.test.ObjectMapperConfig;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.engine.EngineFactory;
@@ -16,7 +18,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -47,7 +48,9 @@ public class ZeebeProcessTestExtension
   public void beforeEach(final ExtensionContext extensionContext) {
     final ZeebeTestEngine engine = EngineFactory.create();
     engine.start();
-    final ZeebeClient client = engine.createClient();
+    final var objectMapper = getObjectMapper(extensionContext);
+    ObjectMapperConfig.initObjectMapper(objectMapper);
+    final ZeebeClient client = engine.createClient(objectMapper);
     final RecordStream recordStream = RecordStream.of(engine.getRecordStreamSource());
 
     try {
@@ -100,18 +103,18 @@ public class ZeebeProcessTestExtension
   private void injectFields(final ExtensionContext extensionContext, final Object... objects) {
     final Class<?> requiredTestClass = extensionContext.getRequiredTestClass();
     for (final Object object : objects) {
-      final Optional<Field> field = getField(requiredTestClass, object);
+      final Optional<Field> field = getField(requiredTestClass, object.getClass());
       field.ifPresent(value -> injectField(extensionContext, value, object));
     }
   }
 
-  private Optional<Field> getField(final Class<?> requiredTestClass, final Object object) {
+  private Optional<Field> getField(final Class<?> requiredTestClass, final Class<?> clazz) {
     final Field[] declaredFields = requiredTestClass.getDeclaredFields();
 
     final List<Field> fields =
         Arrays.stream(declaredFields)
-            .filter(field -> field.getType().isInstance(object))
-            .collect(Collectors.toList());
+            .filter(field -> field.getType().isAssignableFrom(clazz))
+            .toList();
 
     if (fields.size() > 1) {
       throw new IllegalStateException(
@@ -119,10 +122,10 @@ public class ZeebeProcessTestExtension
               "Expected at most one field of type %s, but "
                   + "found %s. Please make sure at most one field of type %s has been declared in the"
                   + " test class.",
-              object.getClass().getSimpleName(), fields.size(), object.getClass().getSimpleName()));
+              clazz.getSimpleName(), fields.size(), clazz.getSimpleName()));
     } else if (fields.size() == 0) {
       final Class<?> superclass = requiredTestClass.getSuperclass();
-      return superclass == null ? Optional.empty() : getField(superclass, object);
+      return superclass == null ? Optional.empty() : getField(superclass, clazz);
     } else {
       return Optional.of(fields.get(0));
     }
@@ -140,5 +143,27 @@ public class ZeebeProcessTestExtension
 
   private ExtensionContext.Store getStore(final ExtensionContext context) {
     return context.getStore(ExtensionContext.Namespace.create(getClass(), context.getUniqueId()));
+  }
+
+  /**
+   * Get a custom object mapper from the test context or a default one if it is not provided
+   *
+   * @param context jUnit5 extension context
+   * @return the custom {@link ObjectMapper} if provided, a new one if not
+   */
+  private ObjectMapper getObjectMapper(final ExtensionContext context) {
+    final var customMapperOpt = getField(context.getRequiredTestClass(), ObjectMapper.class);
+
+    if (customMapperOpt.isEmpty()) {
+      return new ObjectMapper();
+    }
+
+    final var customMapper = customMapperOpt.get();
+    ReflectionUtils.makeAccessible(customMapper);
+    try {
+      return (ObjectMapper) customMapper.get(context.getRequiredTestInstance());
+    } catch (final IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

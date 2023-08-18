@@ -15,6 +15,7 @@
  */
 package io.camunda.zeebe.process.test.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
@@ -40,6 +41,11 @@ public interface ZeebeTestEngine {
    * @return a newly created {@link ZeebeClient}
    */
   ZeebeClient createClient();
+
+  /**
+   * @return a newly created {@link ZeebeClient} with custom mapper
+   */
+  ZeebeClient createClient(ObjectMapper customObjectMapper);
 
   /**
    * @return the address at which the gateway is reachable

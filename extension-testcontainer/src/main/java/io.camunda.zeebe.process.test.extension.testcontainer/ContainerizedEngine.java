@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlGrpc;
@@ -94,6 +95,16 @@ public class ContainerizedEngine implements ZeebeTestEngine {
   @Override
   public ZeebeClient createClient() {
     return ZeebeClient.newClientBuilder()
+        .applyEnvironmentVariableOverrides(false)
+        .gatewayAddress(getGatewayAddress())
+        .usePlaintext()
+        .build();
+  }
+
+  @Override
+  public ZeebeClient createClient(final ObjectMapper objectMapper) {
+    return ZeebeClient.newClientBuilder()
+        .withJsonMapper(new ZeebeObjectMapper(objectMapper))
         .applyEnvironmentVariableOverrides(false)
         .gatewayAddress(getGatewayAddress())
         .usePlaintext()
