@@ -22,4 +22,9 @@ public class InMemoryDbFactory<ColumnFamilyTpe extends Enum<ColumnFamilyTpe>>
   public ZeebeDb<ColumnFamilyTpe> createDb(final File pathName) {
     return new InMemoryDb<>();
   }
+
+  @Override
+  public ZeebeDb<ColumnFamilyTpe> openSnapshotOnlyDb(final File path) {
+    throw new UnsupportedOperationException("Snapshots are not supported with in-memory databases");
+  }
 }
