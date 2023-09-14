@@ -264,6 +264,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
     jobRecord.setRetries(request.getRetries());
     jobRecord.setErrorMessage(request.getErrorMessage());
+    jobRecord.setRetryBackoff(request.getRetryBackOff());
 
     writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
   }
