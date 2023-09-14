@@ -72,7 +72,7 @@
     <dependency.scala.version>2.13.12</dependency.scala.version>
     <dependency.slf4j.version>2.0.9</dependency.slf4j.version>
     <dependency.snakeyaml.version>2.2</dependency.snakeyaml.version>
-    <dependency.spring.version>6.0.11</dependency.spring.version>
+    <dependency.spring.version>6.0.12</dependency.spring.version>
     <dependency.testcontainers.version>1.19.0</dependency.testcontainers.version>
     <dependency.zeebe.version>8.3.0-SNAPSHOT</dependency.zeebe.version>
 
