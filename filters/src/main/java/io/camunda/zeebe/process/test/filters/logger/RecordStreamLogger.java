@@ -47,6 +47,7 @@ import io.camunda.zeebe.protocol.record.value.SignalSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
+import io.camunda.zeebe.protocol.record.value.deployment.FormMetadataValue;
 import io.camunda.zeebe.protocol.record.value.deployment.ProcessMetadataValue;
 import java.util.Date;
 import java.util.HashMap;
@@ -115,6 +116,7 @@ public class RecordStreamLogger {
 
     valueTypeLoggers.put(ValueType.COMMAND_DISTRIBUTION, this::logCommandDistributionRecordValue);
     valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_BATCH, record -> "");
+    valueTypeLoggers.put(ValueType.FORM, this::logFormRecordValue);
   }
 
   public void log() {
@@ -431,6 +433,11 @@ public class RecordStreamLogger {
     joiner.add(String.format("(To partition id: %d)", value.getPartitionId()));
     joiner.add(String.format("(Value type: %s)", value.getValueType()));
     return joiner.toString();
+  }
+
+  private String logFormRecordValue(final Record<?> record) {
+    final FormMetadataValue value = (FormMetadataValue) record.getValue();
+    return String.format("(Form: %s)", value.getResourceName());
   }
 
   protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {
