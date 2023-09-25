@@ -18,6 +18,7 @@ import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.BrokerInfo;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.EvaluateDecisionResponse;
+import io.camunda.zeebe.client.api.response.Form;
 import io.camunda.zeebe.client.api.response.PartitionBrokerHealth;
 import io.camunda.zeebe.client.api.response.PartitionBrokerRole;
 import io.camunda.zeebe.client.api.response.PartitionInfo;
@@ -987,5 +988,29 @@ class EngineClientTest {
 
               assertThat(processCompleted).isNotEmpty();
             });
+  }
+
+  @Test
+  void shouldDeployForm() {
+    // given
+
+    // when
+    final DeploymentEvent deployment =
+        zeebeClient
+            .newDeployResourceCommand()
+            .addResourceFromClasspath("form/test-form-1.form")
+            .send()
+            .join();
+
+    // then
+    assertThat(deployment.getKey()).isPositive();
+    assertThat(deployment.getForm()).isNotEmpty();
+
+    final Form form = deployment.getForm().get(0);
+
+    assertThat(form.getVersion()).isEqualTo(1);
+    assertThat(form.getResourceName()).isEqualTo("form/test-form-1.form");
+    assertThat(form.getFormKey()).isPositive();
+    assertThat(form.getFormId()).isEqualTo("Form_0w7r08e");
   }
 }
