@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
+import io.camunda.zeebe.client.api.response.Form;
 import io.camunda.zeebe.client.api.response.Process;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import java.util.List;
@@ -117,5 +118,49 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
         .hasSize(1);
 
     return new ProcessAssert(matchingProcesses.get(0), recordStream);
+  }
+
+  /**
+   * Extracts the form with the given form ID
+   *
+   * @param formId form ID to look up
+   * @return this {@link JobAssert}
+   */
+  public FormAssert extractingFormByFormId(final String formId) {
+    assertThat(formId).describedAs("Parameter 'formId'").isNotEmpty();
+
+    final List<Form> matchingForm =
+        actual.getForm().stream().filter(form -> form.getFormId().equals(formId)).collect(toList());
+
+    assertThat(matchingForm)
+        .withFailMessage(
+            "Expected to find one form for formId '%s' but found %d: %s",
+            formId, matchingForm.size(), matchingForm)
+        .hasSize(1);
+
+    return new FormAssert(matchingForm.get(0), recordStream);
+  }
+
+  /**
+   * Extracts the form with the given resource name
+   *
+   * @param resourceName resource name to look up
+   * @return this {@link JobAssert}
+   */
+  public FormAssert extractingFormByResourceName(final String resourceName) {
+    assertThat(resourceName).describedAs("Parameter 'resourceName'").isNotEmpty();
+
+    final List<Form> matchingForm =
+        actual.getForm().stream()
+            .filter(form -> form.getResourceName().equals(resourceName))
+            .collect(toList());
+
+    assertThat(matchingForm)
+        .withFailMessage(
+            "Expected to find one form for resource name '%s' but found %d: %s",
+            resourceName, matchingForm.size(), matchingForm)
+        .hasSize(1);
+
+    return new FormAssert(matchingForm.get(0), recordStream);
   }
 }
