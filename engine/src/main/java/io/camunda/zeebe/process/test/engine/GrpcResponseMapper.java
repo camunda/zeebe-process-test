@@ -36,6 +36,7 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluatedDecisionInpu
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluatedDecisionOutput;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FormMetadata;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.MatchedDecisionRule;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceResponse;
@@ -170,6 +171,17 @@ class GrpcResponseMapper {
                     .setResourceName(metadata.getResourceName())
                     .build())
         .forEach(metadata -> builder.addDeploymentsBuilder().setDecisionRequirements(metadata));
+
+    deployment.formMetadata().stream()
+        .map(
+            metadata ->
+                FormMetadata.newBuilder()
+                    .setFormId(metadata.getFormId())
+                    .setVersion(metadata.getVersion())
+                    .setFormKey(metadata.getFormKey())
+                    .setResourceName(metadata.getResourceName())
+                    .setTenantId(metadata.getTenantId()))
+        .forEach(metadata -> builder.addDeploymentsBuilder().setForm(metadata));
 
     return builder.build();
   }
