@@ -217,6 +217,16 @@ IncidentAssert assertions = BpmnAssert.assertThat(activatedJob)
   .extractingLatestIncident();
 ```
 
+#### Form Assertions
+
+```java
+DeploymentEvent event = client.newDeployCommand()
+  .addResourceFromClasspath("my-form.form")
+  .send()
+  .join();
+FormAssert assertions =  BpmnAssert.assertThat(event).extractingFormByFormId("<form id>");
+```
+
 ### Custom Mapper
 
 A custom `ObjectMapper` can be provided to the `Zeebe Client`
