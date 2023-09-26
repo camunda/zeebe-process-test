@@ -19,7 +19,6 @@ package io.camunda.zeebe.process.test.assertions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.api.response.Form;
-import io.camunda.zeebe.process.test.filters.RecordStream;
 import org.assertj.core.api.AbstractAssert;
 
 /**
@@ -33,16 +32,13 @@ import org.assertj.core.api.AbstractAssert;
  *
  * final FormAssert formAssert =
  *         assertThat(deploymentEvent)
- *             .extractingProcessByBpmnProcessId(PROCESS_ID);
+ *             .extractingFormByFormId(FORM_ID);
  * }</pre>
  */
 public class FormAssert extends AbstractAssert<FormAssert, Form> {
 
-  private final RecordStream recordStream;
-
-  protected FormAssert(final Form form, final RecordStream recordStream) {
+  protected FormAssert(final Form form) {
     super(form, FormAssert.class);
-    this.recordStream = recordStream;
   }
 
   public FormAssert hasFormId(final String expectedFormId) {

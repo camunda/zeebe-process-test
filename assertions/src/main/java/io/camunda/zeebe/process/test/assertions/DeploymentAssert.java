@@ -78,7 +78,7 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
    * Extracts the process with the given BPMN process ID
    *
    * @param bpmnProcessId BPMN process ID to look up
-   * @return this {@link JobAssert}
+   * @return this {@link ProcessAssert}
    */
   public ProcessAssert extractingProcessByBpmnProcessId(final String bpmnProcessId) {
     assertThat(bpmnProcessId).describedAs("Parameter 'bpmnProcessId'").isNotEmpty();
@@ -101,7 +101,7 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
    * Extracts the process with the given resource name
    *
    * @param resourceName resource name to look up
-   * @return this {@link JobAssert}
+   * @return this {@link ProcessAssert}
    */
   public ProcessAssert extractingProcessByResourceName(final String resourceName) {
     assertThat(resourceName).describedAs("Parameter 'resourceName'").isNotEmpty();
@@ -124,7 +124,7 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
    * Extracts the form with the given form ID
    *
    * @param formId form ID to look up
-   * @return this {@link JobAssert}
+   * @return this {@link FormAssert}
    */
   public FormAssert extractingFormByFormId(final String formId) {
     assertThat(formId).describedAs("Parameter 'formId'").isNotEmpty();
@@ -138,14 +138,14 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
             formId, matchingForm.size(), matchingForm)
         .hasSize(1);
 
-    return new FormAssert(matchingForm.get(0), recordStream);
+    return new FormAssert(matchingForm.get(0));
   }
 
   /**
    * Extracts the form with the given resource name
    *
    * @param resourceName resource name to look up
-   * @return this {@link JobAssert}
+   * @return this {@link FormAssert}
    */
   public FormAssert extractingFormByResourceName(final String resourceName) {
     assertThat(resourceName).describedAs("Parameter 'resourceName'").isNotEmpty();
@@ -161,6 +161,6 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
             resourceName, matchingForm.size(), matchingForm)
         .hasSize(1);
 
-    return new FormAssert(matchingForm.get(0), recordStream);
+    return new FormAssert(matchingForm.get(0));
   }
 }
