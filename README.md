@@ -302,6 +302,22 @@ import static io.camunda.zeebe.process.test.inspections.ProcessDefinitionInspect
 String elementId = getBpmnElementId("<bpmn process id>","<element name>");
 ```
 
+#### Form Inspections
+
+Verify if a form is created
+
+```java
+import static io.camunda.zeebe.process.test.inspections.FormInspectionsUtility.isFormCreated;
+boolean isCreated = isFormCreated("<form id>");
+```
+
+Find latest version of a form:
+
+```java
+import static io.camunda.zeebe.process.test.inspections.FormInspectionsUtility.findLatestFormById;
+Optional<FormMetadataValue> latestForm = findLatestFormById("<form id>");
+```
+
 ## Examples
 
 [Examples](examples/README.md)
