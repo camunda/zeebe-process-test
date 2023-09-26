@@ -61,4 +61,8 @@ public class StreamFilter {
   public static ProcessRecordStreamFilter processRecords(final RecordStream recordStream) {
     return new ProcessRecordStreamFilter(recordStream.processRecords());
   }
+
+  public static FormStreamFilter forms(final RecordStream recordStream) {
+    return new FormStreamFilter(recordStream.forms());
+  }
 }

@@ -34,6 +34,7 @@ import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordVa
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
+import io.camunda.zeebe.protocol.record.value.deployment.FormMetadataValue;
 import io.camunda.zeebe.protocol.record.value.deployment.Process;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -122,6 +123,10 @@ public class RecordStream {
   public Iterable<Record<ProcessMessageSubscriptionRecordValue>>
       processMessageSubscriptionRecords() {
     return recordsOfValueType(ValueType.PROCESS_MESSAGE_SUBSCRIPTION);
+  }
+
+  public Iterable<Record<FormMetadataValue>> forms() {
+    return recordsOfValueType(ValueType.FORM);
   }
 
   public void print(final boolean compact) {
