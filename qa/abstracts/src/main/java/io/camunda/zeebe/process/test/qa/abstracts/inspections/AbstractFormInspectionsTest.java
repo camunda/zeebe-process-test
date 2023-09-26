@@ -24,7 +24,9 @@ import io.camunda.zeebe.process.test.inspections.FormInspectionsUtility;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.FormPack;
 import io.camunda.zeebe.protocol.record.value.deployment.FormMetadataValue;
+import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractFormInspectionsTest {
@@ -33,9 +35,10 @@ public abstract class AbstractFormInspectionsTest {
   private ZeebeTestEngine engine;
 
   @Test
-  void shouldReturnTrueIfFormIsCreated() {
+  void shouldReturnTrueIfFormIsCreated() throws InterruptedException, TimeoutException {
     // given
     Utilities.deployResource(client, FormPack.RESOURCE_NAME);
+    engine.waitForIdleState(Duration.ofSeconds(1));
 
     // when
     final boolean isCreated = FormInspectionsUtility.isFormCreated(FormPack.FORM_ID);
@@ -45,19 +48,21 @@ public abstract class AbstractFormInspectionsTest {
   }
 
   @Test
-  void shouldReturnFalseIfFormIsNotCreated() {
+  void shouldReturnFalseIfFormIsNotCreated() throws InterruptedException, TimeoutException {
     // when
     final boolean isCreated = FormInspectionsUtility.isFormCreated("wrongFormId");
+    engine.waitForIdleState(Duration.ofSeconds(1));
 
     // then
     assertThat(isCreated).isFalse();
   }
 
   @Test
-  void shouldFindTheLatestVersion() {
+  void shouldFindTheLatestVersion() throws InterruptedException, TimeoutException {
     // given
     Utilities.deployResource(client, FormPack.RESOURCE_NAME);
     Utilities.deployResources(client, FormPack.FORM_V2_RESOURCE_NAME);
+    engine.waitForIdleState(Duration.ofSeconds(1));
 
     // when
     final Optional<FormMetadataValue> latestForm =
