@@ -293,4 +293,10 @@ public class Utilities {
     public static final String END_EVENT_NAME = "Process complete";
     public static final String END_EVENT_ID = "ProcessCompleteEndEvent";
   }
+
+  public static final class FormPack {
+    public static final String RESOURCE_NAME = "test-form.form";
+    public static final String FORM_V2_RESOURCE_NAME = "test-form-v2.form";
+    public static final String FORM_ID = "Form_0w7r08e";
+  }
 }

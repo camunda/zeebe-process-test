@@ -217,6 +217,16 @@ IncidentAssert assertions = BpmnAssert.assertThat(activatedJob)
   .extractingLatestIncident();
 ```
 
+#### Form Assertions
+
+```java
+DeploymentEvent event = client.newDeployCommand()
+  .addResourceFromClasspath("my-form.form")
+  .send()
+  .join();
+FormAssert assertions =  BpmnAssert.assertThat(event).extractingFormByFormId("<form id>");
+```
+
 ### Custom Mapper
 
 A custom `ObjectMapper` can be provided to the `Zeebe Client`
@@ -290,6 +300,15 @@ Find BPMN element id in defined BPMN process by its name:
 ```java
 import static io.camunda.zeebe.process.test.inspections.ProcessDefinitionInspectionUtility.getBpmnElementId;
 String elementId = getBpmnElementId("<bpmn process id>","<element name>");
+```
+
+#### Form Inspections
+
+Find latest version of a form:
+
+```java
+import static io.camunda.zeebe.process.test.inspections.FormInspectionsUtility.findLatestFormById;
+Optional<FormMetadataValue> latestForm = findLatestFormById("<form id>");
 ```
 
 ## Examples
