@@ -25,6 +25,8 @@ import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.FormAssert;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.FormPack;
+import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -79,6 +81,21 @@ public class AbstractFormAssertTest {
 
       // then
       formAssert.hasResourceName(FormPack.RESOURCE_NAME);
+    }
+
+    @Test
+    void shouldFindDeployedForm() throws InterruptedException, TimeoutException {
+      // given
+      final DeploymentEvent deploymentEvent =
+          Utilities.deployResource(client, FormPack.RESOURCE_NAME);
+      engine.waitForIdleState(Duration.ofSeconds(1));
+
+      // when
+      final FormAssert formAssert =
+          BpmnAssert.assertThat(deploymentEvent).extractingFormByFormId(FormPack.FORM_ID);
+
+      // then
+      formAssert.isFormCreated(FormPack.FORM_ID);
     }
   }
 
@@ -139,6 +156,25 @@ public class AbstractFormAssertTest {
           .hasMessage(
               "Expected resource name to be '%s' but was '%s' instead.",
               WRONG_VALUE, FormPack.RESOURCE_NAME);
+    }
+
+    @Test
+    void shouldNotFoundCreatedForm() throws InterruptedException, TimeoutException {
+      // given
+      final DeploymentEvent deploymentEvent =
+          Utilities.deployResource(client, FormPack.RESOURCE_NAME);
+
+      // when
+      final FormAssert formAssert =
+          BpmnAssert.assertThat(deploymentEvent).extractingFormByFormId(FormPack.FORM_ID);
+
+      // then
+      assertThatThrownBy(() -> formAssert.isFormCreated(WRONG_VALUE))
+          .isInstanceOf(AssertionError.class)
+          .hasMessage(
+              "Expected to find a form with id to be '%s', but no form with the provided id was found.",
+              WRONG_VALUE);
+      ;
     }
   }
 }

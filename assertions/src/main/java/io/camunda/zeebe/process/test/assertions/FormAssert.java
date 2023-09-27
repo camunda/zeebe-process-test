@@ -19,6 +19,9 @@ package io.camunda.zeebe.process.test.assertions;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.api.response.Form;
+import io.camunda.zeebe.process.test.filters.RecordStream;
+import io.camunda.zeebe.process.test.filters.StreamFilter;
+import io.camunda.zeebe.protocol.record.Record;
 import org.assertj.core.api.AbstractAssert;
 
 /**
@@ -37,8 +40,11 @@ import org.assertj.core.api.AbstractAssert;
  */
 public class FormAssert extends AbstractAssert<FormAssert, Form> {
 
-  protected FormAssert(final Form form) {
+  private final RecordStream recordStream;
+
+  protected FormAssert(final Form form, final RecordStream recordStream) {
     super(form, FormAssert.class);
+    this.recordStream = recordStream;
   }
 
   public FormAssert hasFormId(final String expectedFormId) {
@@ -99,6 +105,29 @@ public class FormAssert extends AbstractAssert<FormAssert, Form> {
             "Expected resource name to be '%s' but was '%s' instead.",
             expectedResourceName, actualResourceName)
         .isEqualTo(expectedResourceName);
+
+    return this;
+  }
+
+  /**
+   * Finds if a form is created.
+   *
+   * @param formId the id of the form
+   * @return this {@link FormAssert}
+   */
+  public FormAssert isFormCreated(final String formId) {
+    assertThat(formId).isNotEmpty();
+
+    final boolean isCreated =
+        StreamFilter.forms(recordStream).stream()
+            .map(Record::getValue)
+            .anyMatch(form -> formId.equals(form.getFormId()));
+
+    assertThat(isCreated)
+        .withFailMessage(
+            "Expected to find a form with id to be '%s', but no form with the provided id was found.",
+            formId)
+        .isTrue();
 
     return this;
   }

@@ -35,29 +35,6 @@ public abstract class AbstractFormInspectionsTest {
   private ZeebeTestEngine engine;
 
   @Test
-  void shouldReturnTrueIfFormIsCreated() throws InterruptedException, TimeoutException {
-    // given
-    Utilities.deployResource(client, FormPack.RESOURCE_NAME);
-    engine.waitForIdleState(Duration.ofSeconds(1));
-
-    // when
-    final boolean isCreated = FormInspectionsUtility.isFormCreated(FormPack.FORM_ID);
-
-    // then
-    assertThat(isCreated).isTrue();
-  }
-
-  @Test
-  void shouldReturnFalseIfFormIsNotCreated() throws InterruptedException, TimeoutException {
-    // when
-    final boolean isCreated = FormInspectionsUtility.isFormCreated("wrongFormId");
-    engine.waitForIdleState(Duration.ofSeconds(1));
-
-    // then
-    assertThat(isCreated).isFalse();
-  }
-
-  @Test
   void shouldFindTheLatestVersion() throws InterruptedException, TimeoutException {
     // given
     Utilities.deployResource(client, FormPack.RESOURCE_NAME);

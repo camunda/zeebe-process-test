@@ -304,13 +304,6 @@ String elementId = getBpmnElementId("<bpmn process id>","<element name>");
 
 #### Form Inspections
 
-Verify if a form is created
-
-```java
-import static io.camunda.zeebe.process.test.inspections.FormInspectionsUtility.isFormCreated;
-boolean isCreated = isFormCreated("<form id>");
-```
-
 Find latest version of a form:
 
 ```java

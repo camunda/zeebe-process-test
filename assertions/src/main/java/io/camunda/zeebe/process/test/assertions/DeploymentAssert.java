@@ -138,7 +138,7 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
             formId, matchingForm.size(), matchingForm)
         .hasSize(1);
 
-    return new FormAssert(matchingForm.get(0));
+    return new FormAssert(matchingForm.get(0), recordStream);
   }
 
   /**
@@ -161,6 +161,6 @@ public class DeploymentAssert extends AbstractAssert<DeploymentAssert, Deploymen
             resourceName, matchingForm.size(), matchingForm)
         .hasSize(1);
 
-    return new FormAssert(matchingForm.get(0));
+    return new FormAssert(matchingForm.get(0), recordStream);
   }
 }

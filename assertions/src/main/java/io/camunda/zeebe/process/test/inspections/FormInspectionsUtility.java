@@ -27,16 +27,6 @@ import java.util.stream.Stream;
 public class FormInspectionsUtility {
 
   /**
-   * Finds if a form is created.
-   *
-   * @param formId the id of the form
-   * @return true if the id of the form is found in the stream, false otherwise
-   */
-  public static boolean isFormCreated(final String formId) {
-    return getForms().anyMatch(form -> formId.equals(form.getFormId()));
-  }
-
-  /**
    * Find the latest version of a form
    *
    * @param formId the id of the form
