@@ -21,7 +21,6 @@ jobs:
     env:
       OWNER: "camunda"
       IMAGE_NAME: "zeebe-process-test-engine"
-      TAG: "latest"
 
     steps:
       - name: Checkout
@@ -57,12 +56,14 @@ jobs:
           mvn clean package -DskipTests -P !localBuild -pl :zeebe-process-test-engine-agent -am
 
         # We build a docker image with a specific tag. There are 2 possible scenarios here.
-        # 1. The workflow is triggered manually or by a change on the main branch. The tag should be 'latest'.
+        # 1. The workflow is triggered manually or by a change on the main branch. The tag should be equal to the project.version.
         # 2. The workflow is triggered by a new release. The tag should be the version of the release.
       - name: Build Docker image
         run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
+          if ! [ -z "${{ github.event.release.tag_name }}" ]; then
             TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           fi
           cd engine-agent
           docker build . -t $IMAGE_NAME:$TAG
@@ -70,8 +71,10 @@ jobs:
         # We push the docker image to dockerhub
       - name: Push Docker image
         run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
+          if ! [ -z "${{ github.event.release.tag_name }}" ]; then
             TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           fi
           echo '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_PSW }}' | docker login -u '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_USR }}' --password-stdin
           echo $IMAGE_NAME
@@ -80,18 +83,6 @@ jobs:
           echo $IMAGE_ID
           docker tag $IMAGE_NAME:$TAG $IMAGE_ID:$TAG
           docker push $IMAGE_ID:$TAG
-
-        # In extension-testcontainer we have a config file which contains the image tag. This is managed by maven and
-        # maven will set this to the project version upon packaging the application (e.g. 1.4.0, 1.4.0-alpha1, etc.).
-        # In the case this workflow is triggered by a change on the main branch we want this tag to be set to latest.
-        # Maven would set it to a SNAPSHOT version in this case. Therefore, we need to manually set this tag to latest
-        # in this step. This replaces the other value (${project.version}), so it doesn't get replaced by maven anymore.
-      - name: Update tag in config
-        if: github.ref == 'refs/head/main'
-        run: |
-          cd extension-testcontainer/src/main/resources
-          sed -i '/container.image.tag=/ s:=.*:='$TAG':' config.properties
-          cat config.properties
 
       - name: Import GPG key
         id: import_gpg
