@@ -84,18 +84,6 @@ jobs:
           docker tag $IMAGE_NAME:$TAG $IMAGE_ID:$TAG
           docker push $IMAGE_ID:$TAG
 
-        # In extension-testcontainer we have a config file which contains the image tag. This is managed by maven and
-        # maven will set this to the project version upon packaging the application (e.g. 1.4.0, 1.4.0-alpha1, etc.).
-        # In the case this workflow is triggered by a change on the main branch we want this tag to be set to latest.
-        # Maven would set it to a SNAPSHOT version in this case. Therefore, we need to manually set this tag to latest
-        # in this step. This replaces the other value (${project.version}), so it doesn't get replaced by maven anymore.
-      - name: Update tag in config
-        if: github.ref == 'refs/head/main'
-        run: |
-          cd extension-testcontainer/src/main/resources
-          sed -i '/container.image.tag=/ s:=.*:='$TAG':' config.properties
-          cat config.properties
-
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
