@@ -21,7 +21,6 @@ jobs:
     env:
       OWNER: "camunda"
       IMAGE_NAME: "zeebe-process-test-engine"
-      TAG: "latest"
 
     steps:
       - name: Checkout
@@ -57,12 +56,14 @@ jobs:
           mvn clean package -DskipTests -P !localBuild -pl :zeebe-process-test-engine-agent -am
 
         # We build a docker image with a specific tag. There are 2 possible scenarios here.
-        # 1. The workflow is triggered manually or by a change on the main branch. The tag should be 'latest'.
+        # 1. The workflow is triggered manually or by a change on the main branch. The tag should be equal to the project.version.
         # 2. The workflow is triggered by a new release. The tag should be the version of the release.
       - name: Build Docker image
         run: |
           if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
             TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           fi
           cd engine-agent
           docker build . -t $IMAGE_NAME:$TAG
@@ -72,6 +73,8 @@ jobs:
         run: |
           if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
             TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           fi
           echo '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_PSW }}' | docker login -u '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_USR }}' --password-stdin
           echo $IMAGE_NAME
