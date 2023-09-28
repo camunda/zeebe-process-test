@@ -60,7 +60,7 @@ jobs:
         # 2. The workflow is triggered by a new release. The tag should be the version of the release.
       - name: Build Docker image
         run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
+          if ! [ -z "${{ github.event.release.tag_name }}" ]; then
             TAG="${{ github.event.release.tag_name }}"
           else
             TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
@@ -71,7 +71,7 @@ jobs:
         # We push the docker image to dockerhub
       - name: Push Docker image
         run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ] && ! grep -q "$TAG" <<< "SNAPSHOT"; then
+          if ! [ -z "${{ github.event.release.tag_name }}" ]; then
             TAG="${{ github.event.release.tag_name }}"
           else
             TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
