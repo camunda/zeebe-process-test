@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -195,6 +196,16 @@ final class InMemoryDbColumnFamily<
     return isEmpty.get();
   }
 
+  @Override
+  public long count() {
+    return countEachInPrefix(DbNullKey.INSTANCE);
+  }
+
+  @Override
+  public long countEqualPrefix(final DbKey prefix) {
+    return countEachInPrefix(prefix);
+  }
+
   private DirectBuffer getValue(final InMemoryDbState state, final DbKey key) {
     final FullyQualifiedKey fullyQualifiedKey = new FullyQualifiedKey(columnFamily, key);
     final byte[] value = state.get(fullyQualifiedKey);
@@ -227,6 +238,39 @@ final class InMemoryDbColumnFamily<
       final ValueType valueInstance,
       final KeyValuePairVisitor<KeyType, ValueType> visitor) {
     whileEqualPrefix(context, prefix, prefix, keyInstance, valueInstance, visitor);
+  }
+
+  private long countEachInPrefix(final DbKey prefix) {
+    final var seekTarget = Objects.requireNonNull(prefix);
+
+    final var count = new AtomicLong(0);
+
+    iterationContext.withPrefixKey(
+        prefix,
+        prefixKey ->
+            ensureInOpenTransaction(
+                context,
+                state -> {
+                  final var seekTargetBuffer = iterationContext.keyWithColumnFamily(seekTarget);
+                  final byte[] seekTargetBytes = seekTargetBuffer.array();
+                  final Iterator<Map.Entry<Bytes, Bytes>> iterator =
+                      state.newIterator().seek(seekTargetBytes, seekTargetBytes.length).iterate();
+
+                  final byte[] prefixKeyBytes = prefixKey.toBytes();
+                  while (iterator.hasNext()) {
+                    final Map.Entry<Bytes, Bytes> entry = iterator.next();
+
+                    final byte[] keyBytes = entry.getKey().toBytes();
+                    if (!BufferUtil.startsWith(
+                        prefixKeyBytes, 0, prefixKeyBytes.length, keyBytes, 0, keyBytes.length)) {
+                      break;
+                    }
+
+                    count.getAndIncrement();
+                  }
+                }));
+
+    return count.get();
   }
 
   private void whileEqualPrefix(
