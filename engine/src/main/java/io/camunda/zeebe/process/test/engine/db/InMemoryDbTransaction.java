@@ -100,6 +100,7 @@ final class InMemoryDbTransaction implements ZeebeDbTransaction, InMemoryDbState
     final TreeMap<Bytes, Bytes> snapshot = new TreeMap<>();
     snapshot.putAll(database);
     snapshot.putAll(transactionCache);
+    deletedKeys.forEach(snapshot::remove);
 
     return new InMemoryDbIterator(snapshot);
   }
