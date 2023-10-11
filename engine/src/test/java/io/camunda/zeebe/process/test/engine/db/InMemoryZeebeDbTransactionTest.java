@@ -8,6 +8,7 @@
 package io.camunda.zeebe.process.test.engine.db;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.camunda.zeebe.db.ColumnFamily;
 import io.camunda.zeebe.db.TransactionContext;
@@ -490,6 +491,25 @@ public final class InMemoryZeebeDbTransactionTest {
     // then
     assertThat(oneColumnFamily.exists(oneKey)).isTrue();
     assertThat(oneColumnFamily.get(oneKey).getValue()).isEqualTo(-2);
+  }
+
+  @Test
+  void shouldNotIterateOverDeletionsInTransaction() throws Exception {
+    // given
+    oneKey.wrapLong(1);
+    oneValue.wrapLong(-1L);
+    oneColumnFamily.insert(oneKey, oneValue);
+    transactionContext.getCurrentTransaction().commit();
+
+    // when - then
+    transactionContext.runInTransaction(
+        () -> {
+          oneColumnFamily.deleteExisting(oneKey);
+          oneColumnFamily.forEach(
+              (key, value) -> {
+                fail("Should not iterate over deleted keys");
+              });
+        });
   }
 
   private enum ColumnFamilies {
