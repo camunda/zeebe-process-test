@@ -1,4 +1,4 @@
-FROM openjdk:17-alpine
+FROM openjdk:21-alpine
 
 COPY target/*-jar-with-dependencies.jar /zeebe-process-test-engine.jar
 

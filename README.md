@@ -7,7 +7,7 @@ and provide you with a set of assertions you can use to verify your process beha
 
 ## Prerequisites
 
-* Java 17+ when running with an embedded engine (`zeebe-process-test-extension`)
+* Java 21+ when running with an embedded engine (`zeebe-process-test-extension`)
 * Java 8+ and Docker when running using testcontainers (`zeebe-process-test-extension-testcontainer`)
 * JUnit 5
 
@@ -20,9 +20,9 @@ and provide you with a set of assertions you can use to verify your process beha
 Zeepe Process Test provides you with two dependencies. Which one you need to use is dependent on the
 Java version you are using.
 
-#### Embedded (JDK 17+)
+#### Embedded (JDK 21+)
 
-If you are building your project with JDK 17+ you can make use of an embedded Zeebe test engine. The
+If you are building your project with JDK 21+ you can make use of an embedded Zeebe test engine. The
 advantage of using this instead of the testcontainer version is that this is the faster solution.
 This also does not require Docker to be running. There is also a downside to this solution. The JDK
 requirement is bound to the Java version of the Zeebe engine. Whenever this Java version changes,
@@ -40,7 +40,7 @@ or upgrade your own JDK to match Zeebe engine.
 
 #### Testcontainers (JDK 8+)
 
-If you are building your project with a JDK that's lower than 17 you need to use this dependency. It
+If you are building your project with a JDK that's lower than 21 you need to use this dependency. It
 starts a testcontainer in which a Zeebe test engine is running. The advantage of using this version
 instead of the embedded version is that your code can be implemented independently of the Java
 version that is used by the Zeebe engine. This has some downsides: Testcontainers provide some
@@ -82,7 +82,7 @@ Annotate your test class with the `@ZeebeProcessTest` annotation. This annotatio
 Example:
 
 ```java
-// When using the embedded test engine (Java 17+)
+// When using the embedded test engine (Java 21+)
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 
 // When using testcontainers (Java 8+)
