@@ -111,7 +111,7 @@ jobs:
         id: build
         run: |
           rm .mvn/jvm.config
-          mvn -B -U -pl ":zeebe-process-test-qa-testcontainers" -P !localBuild -am "-Dsurefire.rerunFailingTestsCount=5" install -DskipChecks
+          mvn clean -B -U -pl ":zeebe-process-test-qa-testcontainers" -P !localBuild -am "-Dsurefire.rerunFailingTestsCount=5" install -DskipChecks
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v3
