@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * This annotation can be used to test BPMN processes. It will run an in memory Zeebe engine. To use
- * this annotation Java 17 or higher is required.
+ * this annotation Java 21 or higher is required.
  *
  * <p>Annotating test classes with this annotation will do a couple of things:
  *
@@ -45,7 +45,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *   <li>After each test stop the Zeebe test engine
  * </ul>
  *
- * @since Java 17
+ * @since Java 21
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

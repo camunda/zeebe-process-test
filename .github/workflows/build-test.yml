@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
           cache: maven
 
       - name: Check format
@@ -47,7 +47,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
           cache: maven
 
       - name: Build
@@ -78,7 +78,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
           cache: maven
 
       - name: Package
@@ -111,7 +111,7 @@ jobs:
         id: build
         run: |
           rm .mvn/jvm.config
-          mvn -B -U -pl ":zeebe-process-test-qa-testcontainers" -P !localBuild -am "-Dsurefire.rerunFailingTestsCount=5" install -DskipChecks
+          mvn clean -B -U -pl ":zeebe-process-test-qa-testcontainers" -P !localBuild -am "-Dsurefire.rerunFailingTestsCount=5" install -DskipChecks
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v3
