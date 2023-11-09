@@ -1033,7 +1033,7 @@ class EngineClientTest {
         zeebeClient
             .newBroadcastSignalCommand()
             .signalName("signal")
-            .variable("foo", "bar")
+            .variables(Map.of("foo", "bar"))
             .send()
             .join();
 
