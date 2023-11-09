@@ -493,11 +493,15 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     final var requestId =
         gatewayRequestStore.registerNewRequest(request.getClass(), responseObserver);
 
+    final SignalRecord command = new SignalRecord().setSignalName(request.getSignalName());
+
+    if (!request.getVariables().isEmpty()) {
+      command.setVariables(
+          BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(request.getVariables())));
+    }
+
     writer.writeCommandWithoutKey(
-        new SignalRecord()
-            .setSignalName(request.getSignalName())
-            .setVariables(
-                BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(request.getVariables()))),
+        command,
         prepareRecordMetadata()
             .requestId(requestId)
             .valueType(ValueType.SIGNAL)
