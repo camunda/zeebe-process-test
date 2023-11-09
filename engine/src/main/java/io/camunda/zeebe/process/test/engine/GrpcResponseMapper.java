@@ -14,6 +14,8 @@ import com.google.rpc.Status;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ActivateJobsRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ActivateJobsResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ActivatedJob;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.BroadcastSignalRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.BroadcastSignalResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CancelProcessInstanceRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CancelProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.CompleteJobRequest;
@@ -58,6 +60,7 @@ import io.camunda.zeebe.protocol.impl.record.value.job.JobBatchRecord;
 import io.camunda.zeebe.protocol.impl.record.value.job.JobRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceCreationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceResultRecord;
+import io.camunda.zeebe.protocol.impl.record.value.signal.SignalRecord;
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentRecord;
 import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.intent.Intent;
@@ -92,7 +95,8 @@ class GrpcResponseMapper {
           Map.entry(ResolveIncidentRequest.class, this::createResolveIncidentResponse),
           Map.entry(SetVariablesRequest.class, this::createSetVariablesResponse),
           Map.entry(UpdateJobRetriesRequest.class, this::createJobUpdateRetriesResponse),
-          Map.entry(ModifyProcessInstanceRequest.class, this::createModifyProcessInstanceResponse));
+          Map.entry(ModifyProcessInstanceRequest.class, this::createModifyProcessInstanceResponse),
+          Map.entry(BroadcastSignalRequest.class, this::createBroadcastSignalResponse));
 
   GeneratedMessageV3 map(
       final Class<? extends GeneratedMessageV3> requestType,
@@ -273,6 +277,13 @@ class GrpcResponseMapper {
 
   private GeneratedMessageV3 createModifyProcessInstanceResponse() {
     return ModifyProcessInstanceResponse.newBuilder().build();
+  }
+
+  private GeneratedMessageV3 createBroadcastSignalResponse() {
+    final SignalRecord signal = new SignalRecord();
+    signal.wrap(valueBufferView);
+
+    return BroadcastSignalResponse.newBuilder().setKey(key).build();
   }
 
   private GeneratedMessageV3 createResolveIncidentResponse() {
