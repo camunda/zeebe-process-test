@@ -79,7 +79,7 @@
     <dependency.junit.version>5.10.1</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
     <dependency.mockito.version>4.11.0</dependency.mockito.version>
-    <dependency.netty.version>4.1.100.Final</dependency.netty.version>
+    <dependency.netty.version>4.1.101.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.28.0</dependency.proto.version>
     <dependency.protobuf.version>3.25.0</dependency.protobuf.version>
