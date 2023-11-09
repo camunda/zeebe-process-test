@@ -15,6 +15,7 @@ import io.camunda.zeebe.client.api.ZeebeFuture;
 import io.camunda.zeebe.client.api.command.ClientException;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.client.api.response.BroadcastSignalResponse;
 import io.camunda.zeebe.client.api.response.BrokerInfo;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.EvaluateDecisionResponse;
@@ -987,5 +988,56 @@ class EngineClientTest {
 
               assertThat(processCompleted).isNotEmpty();
             });
+  }
+
+  @Test
+  void shouldBroadcastSignal() {
+    // given
+    zeebeClient
+        .newDeployResourceCommand()
+        .addProcessModel(
+            Bpmn.createExecutableProcess("simpleProcess")
+                .startEvent()
+                .signal("signal")
+                .endEvent()
+                .done(),
+            "simpleProcess.bpmn")
+        .send()
+        .join();
+
+    // when
+    final BroadcastSignalResponse response =
+        zeebeClient.newBroadcastSignalCommand().signalName("signal").send().join();
+
+    // then
+    assertThat(response.getKey()).isPositive();
+  }
+
+  @Test
+  void shouldBroadcastSignalWithVariables() {
+    // given
+    zeebeClient
+        .newDeployResourceCommand()
+        .addProcessModel(
+            Bpmn.createExecutableProcess("simpleProcess")
+                .startEvent()
+                .signal("signal")
+                .endEvent()
+                .done(),
+            "simpleProcess.bpmn")
+        .send()
+        .join();
+
+    // when
+    final BroadcastSignalResponse response =
+        zeebeClient
+            .newBroadcastSignalCommand()
+            .signalName("signal")
+            .variable("foo", "bar")
+            .send()
+            .join();
+
+    // then
+    assertThat(response.getKey()).isPositive();
   }
 }
