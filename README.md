@@ -7,7 +7,7 @@ and provide you with a set of assertions you can use to verify your process beha
 
 ## Prerequisites
 
-* Java 21+ when running with an embedded engine (`zeebe-process-test-extension`)
+* Java 21+ (17+ for >=`8.3`) when running with an embedded engine (`zeebe-process-test-extension`)
 * Java 8+ and Docker when running using testcontainers (`zeebe-process-test-extension-testcontainer`)
 * JUnit 5
 
