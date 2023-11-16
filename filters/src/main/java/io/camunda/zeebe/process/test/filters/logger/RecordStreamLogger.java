@@ -45,6 +45,7 @@ import io.camunda.zeebe.protocol.record.value.ResourceDeletionRecordValue;
 import io.camunda.zeebe.protocol.record.value.SignalRecordValue;
 import io.camunda.zeebe.protocol.record.value.SignalSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
+import io.camunda.zeebe.protocol.record.value.UserTaskRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import io.camunda.zeebe.protocol.record.value.deployment.FormMetadataValue;
@@ -117,6 +118,7 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.COMMAND_DISTRIBUTION, this::logCommandDistributionRecordValue);
     valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_BATCH, record -> "");
     valueTypeLoggers.put(ValueType.FORM, this::logFormRecordValue);
+    valueTypeLoggers.put(ValueType.USER_TASK, this::logUserTaskRecordValue);
   }
 
   public void log() {
@@ -438,6 +440,16 @@ public class RecordStreamLogger {
   private String logFormRecordValue(final Record<?> record) {
     final FormMetadataValue value = (FormMetadataValue) record.getValue();
     return String.format("(Form: %s)", value.getResourceName());
+  }
+
+  private String logUserTaskRecordValue(final Record<?> record) {
+    final UserTaskRecordValue value = (UserTaskRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    // These fields are empty for commands
+    if (record.getRecordType().equals(RecordType.EVENT)) {
+      joiner.add(String.format("(Element id: %s)", value.getElementId()));
+    }
+    return joiner.toString();
   }
 
   protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {
