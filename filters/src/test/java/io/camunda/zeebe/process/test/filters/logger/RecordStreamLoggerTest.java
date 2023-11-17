@@ -23,9 +23,12 @@ import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
 import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceCreationIntent;
+import io.camunda.zeebe.protocol.record.intent.ProcessInstanceMigrationIntent;
 import io.camunda.zeebe.protocol.record.value.ImmutableJobRecordValue;
 import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceCreationRecordValue;
 import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceCreationStartInstructionValue;
+import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceMigrationMappingInstructionValue;
+import io.camunda.zeebe.protocol.record.value.ImmutableProcessInstanceMigrationRecordValue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -181,6 +184,31 @@ class RecordStreamLoggerTest {
                             .withElementId("serviceTask1")
                             .build())
                     .build()),
-            "(Element id: serviceTask1), (Job type: task)"));
+            "(Element id: serviceTask1), (Job type: task)"),
+        Arguments.of(
+            Named.of(
+                "Process instance migration with mapping instructions",
+                ImmutableRecord.builder()
+                    .withRecordType(RecordType.EVENT)
+                    .withValueType(ValueType.PROCESS_INSTANCE_MIGRATION)
+                    .withIntent(ProcessInstanceMigrationIntent.MIGRATED)
+                    .withKey(123)
+                    .withValue(
+                        ImmutableProcessInstanceMigrationRecordValue.builder()
+                            .withProcessInstanceKey(123)
+                            .withTargetProcessDefinitionKey(456)
+                            .addMappingInstruction(
+                                ImmutableProcessInstanceMigrationMappingInstructionValue.builder()
+                                    .withSourceElementId("A")
+                                    .withTargetElementId("A")
+                                    .build())
+                            .addMappingInstruction(
+                                ImmutableProcessInstanceMigrationMappingInstructionValue.builder()
+                                    .withSourceElementId("B")
+                                    .withTargetElementId("C")
+                                    .build())
+                            .build())
+                    .build()),
+            "(Process instance key: 123), (Target process definition key: 456), (Mapping instructions: A -> A, B -> C)"));
   }
 }
