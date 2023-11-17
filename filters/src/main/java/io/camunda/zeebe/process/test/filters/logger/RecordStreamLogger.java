@@ -34,6 +34,7 @@ import io.camunda.zeebe.protocol.record.value.MessageSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessEventRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue.ProcessInstanceCreationStartInstructionValue;
+import io.camunda.zeebe.protocol.record.value.ProcessInstanceMigrationRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue.ProcessInstanceModificationActivateInstructionValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue.ProcessInstanceModificationTerminateInstructionValue;
@@ -119,6 +120,8 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_BATCH, record -> "");
     valueTypeLoggers.put(ValueType.FORM, this::logFormRecordValue);
     valueTypeLoggers.put(ValueType.USER_TASK, this::logUserTaskRecordValue);
+    valueTypeLoggers.put(
+        ValueType.PROCESS_INSTANCE_MIGRATION, this::logProcessInstanceMigrationRecordValue);
   }
 
   public void log() {
@@ -448,6 +451,26 @@ public class RecordStreamLogger {
     // These fields are empty for commands
     if (record.getRecordType().equals(RecordType.EVENT)) {
       joiner.add(String.format("(Element id: %s)", value.getElementId()));
+    }
+    return joiner.toString();
+  }
+
+  private String logProcessInstanceMigrationRecordValue(final Record<?> record) {
+    final ProcessInstanceMigrationRecordValue value =
+        (ProcessInstanceMigrationRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    // These fields are empty for commands
+    if (record.getRecordType().equals(RecordType.EVENT)) {
+      joiner.add(String.format("(Process instance key: %d)", value.getProcessInstanceKey()));
+      joiner.add(
+          String.format(
+              "(Target process definition key: %d)", value.getTargetProcessDefinitionKey()));
+      joiner.add(
+          String.format(
+              "(Mapping instructions: %s)",
+              value.getMappingInstructions().stream()
+                  .map(i -> i.getSourceElementId() + " -> " + i.getTargetElementId())
+                  .collect(Collectors.joining(", "))));
     }
     return joiner.toString();
   }
