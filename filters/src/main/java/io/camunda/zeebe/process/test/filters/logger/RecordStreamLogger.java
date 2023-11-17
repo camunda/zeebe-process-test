@@ -34,6 +34,7 @@ import io.camunda.zeebe.protocol.record.value.MessageSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessEventRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceCreationRecordValue.ProcessInstanceCreationStartInstructionValue;
+import io.camunda.zeebe.protocol.record.value.ProcessInstanceMigrationRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue.ProcessInstanceModificationActivateInstructionValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceModificationRecordValue.ProcessInstanceModificationTerminateInstructionValue;
@@ -45,6 +46,7 @@ import io.camunda.zeebe.protocol.record.value.ResourceDeletionRecordValue;
 import io.camunda.zeebe.protocol.record.value.SignalRecordValue;
 import io.camunda.zeebe.protocol.record.value.SignalSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
+import io.camunda.zeebe.protocol.record.value.UserTaskRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
 import io.camunda.zeebe.protocol.record.value.deployment.FormMetadataValue;
@@ -117,6 +119,9 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.COMMAND_DISTRIBUTION, this::logCommandDistributionRecordValue);
     valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_BATCH, record -> "");
     valueTypeLoggers.put(ValueType.FORM, this::logFormRecordValue);
+    valueTypeLoggers.put(ValueType.USER_TASK, this::logUserTaskRecordValue);
+    valueTypeLoggers.put(
+        ValueType.PROCESS_INSTANCE_MIGRATION, this::logProcessInstanceMigrationRecordValue);
   }
 
   public void log() {
@@ -438,6 +443,36 @@ public class RecordStreamLogger {
   private String logFormRecordValue(final Record<?> record) {
     final FormMetadataValue value = (FormMetadataValue) record.getValue();
     return String.format("(Form: %s)", value.getResourceName());
+  }
+
+  private String logUserTaskRecordValue(final Record<?> record) {
+    final UserTaskRecordValue value = (UserTaskRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    // These fields are empty for commands
+    if (record.getRecordType().equals(RecordType.EVENT)) {
+      joiner.add(String.format("(Element id: %s)", value.getElementId()));
+    }
+    return joiner.toString();
+  }
+
+  private String logProcessInstanceMigrationRecordValue(final Record<?> record) {
+    final ProcessInstanceMigrationRecordValue value =
+        (ProcessInstanceMigrationRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    // These fields are empty for commands
+    if (record.getRecordType().equals(RecordType.EVENT)) {
+      joiner.add(String.format("(Process instance key: %d)", value.getProcessInstanceKey()));
+      joiner.add(
+          String.format(
+              "(Target process definition key: %d)", value.getTargetProcessDefinitionKey()));
+      joiner.add(
+          String.format(
+              "(Mapping instructions: %s)",
+              value.getMappingInstructions().stream()
+                  .map(i -> i.getSourceElementId() + " -> " + i.getTargetElementId())
+                  .collect(Collectors.joining(", "))));
+    }
+    return joiner.toString();
   }
 
   protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {
