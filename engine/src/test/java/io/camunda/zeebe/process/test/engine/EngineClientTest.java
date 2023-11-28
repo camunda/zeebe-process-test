@@ -869,7 +869,7 @@ class EngineClientTest {
                       .newActivateJobsCommand()
                       .jobType("jobType")
                       .maxJobsToActivate(32)
-                      .timeout(Duration.ofMinutes(1))
+                      .timeout(Duration.ofMinutes(10))
                       .workerName("yolo")
                       .fetchVariables(List.of("test"))
                       .send()
@@ -880,12 +880,16 @@ class EngineClientTest {
               final ActivatedJob job = jobs.get(0);
 
               // when - then
-              zeebeClient.newCOmmand(job.getKey()).retries(3).send().join();
+              zeebeClient
+                  .newUpdateTimeoutCommand(job.getKey())
+                  .timeout(Duration.ofMinutes(11))
+                  .send()
+                  .join();
 
               Awaitility.await()
                   .untilAsserted(
                       () -> {
-                        final Optional<Record<JobRecordValue>> deadlineUpdated =
+                        final Optional<Record<JobRecordValue>> timeoutUpdated =
                             StreamSupport.stream(
                                     RecordStream.of(zeebeEngine.getRecordStreamSource())
                                         .jobRecords()
@@ -894,7 +898,9 @@ class EngineClientTest {
                                 .filter(r -> r.getKey() == job.getKey())
                                 .filter(r -> r.getIntent() == JobIntent.TIMEOUT_UPDATED)
                                 .findFirst();
-                        assertThat(deadlineUpdated).isNotEmpty();
+                        assertThat(timeoutUpdated).isNotEmpty();
+                        assertThat(timeoutUpdated.get().getValue().getDeadline())
+                            .isGreaterThan(job.getDeadline());
                       });
             });
   }
