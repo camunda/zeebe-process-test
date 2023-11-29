@@ -53,6 +53,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ThrowErrorRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ThrowErrorResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobTimeoutRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobTimeoutResponse;
 import io.camunda.zeebe.protocol.impl.encoding.MsgPackConverter;
 import io.camunda.zeebe.protocol.impl.record.value.decision.DecisionEvaluationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.deployment.DeploymentRecord;
@@ -96,6 +98,7 @@ class GrpcResponseMapper {
           Map.entry(ResolveIncidentRequest.class, this::createResolveIncidentResponse),
           Map.entry(SetVariablesRequest.class, this::createSetVariablesResponse),
           Map.entry(UpdateJobRetriesRequest.class, this::createJobUpdateRetriesResponse),
+          Map.entry(UpdateJobTimeoutRequest.class, this::createJobUpdateTimeOutResponse),
           Map.entry(ModifyProcessInstanceRequest.class, this::createModifyProcessInstanceResponse),
           Map.entry(BroadcastSignalRequest.class, this::createBroadcastSignalResponse));
 
@@ -368,6 +371,10 @@ class GrpcResponseMapper {
 
   private GeneratedMessageV3 createJobUpdateRetriesResponse() {
     return UpdateJobRetriesResponse.newBuilder().build();
+  }
+
+  private GeneratedMessageV3 createJobUpdateTimeOutResponse() {
+    return UpdateJobTimeoutResponse.newBuilder().build();
   }
 
   Status createRejectionResponse(

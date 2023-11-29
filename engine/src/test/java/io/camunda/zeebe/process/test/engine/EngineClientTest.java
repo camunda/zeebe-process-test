@@ -839,6 +839,73 @@ class EngineClientTest {
   }
 
   @Test
+  void shouldUpdateDeadlineOnJob() {
+    // given
+    zeebeClient
+        .newDeployCommand()
+        .addProcessModel(
+            Bpmn.createExecutableProcess("simpleProcess")
+                .startEvent()
+                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .endEvent()
+                .done(),
+            "simpleProcess.bpmn")
+        .send()
+        .join();
+
+    zeebeClient
+        .newCreateInstanceCommand()
+        .bpmnProcessId("simpleProcess")
+        .latestVersion()
+        .variables(Map.of("test", 1))
+        .send()
+        .join();
+
+    Awaitility.await()
+        .untilAsserted(
+            () -> {
+              final ActivateJobsResponse activateJobsResponse =
+                  zeebeClient
+                      .newActivateJobsCommand()
+                      .jobType("jobType")
+                      .maxJobsToActivate(32)
+                      .timeout(Duration.ofMinutes(10))
+                      .workerName("yolo")
+                      .fetchVariables(List.of("test"))
+                      .send()
+                      .join();
+
+              final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
+              assertThat(jobs).isNotEmpty();
+              final ActivatedJob job = jobs.get(0);
+
+              // when - then
+              zeebeClient
+                  .newUpdateTimeoutCommand(job.getKey())
+                  .timeout(Duration.ofMinutes(11))
+                  .send()
+                  .join();
+
+              Awaitility.await()
+                  .untilAsserted(
+                      () -> {
+                        final Optional<Record<JobRecordValue>> timeoutUpdated =
+                            StreamSupport.stream(
+                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
+                                        .jobRecords()
+                                        .spliterator(),
+                                    false)
+                                .filter(r -> r.getKey() == job.getKey())
+                                .filter(r -> r.getIntent() == JobIntent.TIMEOUT_UPDATED)
+                                .findFirst();
+                        assertThat(timeoutUpdated).isNotEmpty();
+                        assertThat(timeoutUpdated.get().getValue().getDeadline())
+                            .isGreaterThan(job.getDeadline());
+                      });
+            });
+  }
+
+  @Test
   void shouldReadProcessInstanceRecords() {
     // given
     zeebeClient
