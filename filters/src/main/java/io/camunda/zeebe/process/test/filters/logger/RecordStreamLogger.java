@@ -21,6 +21,7 @@ import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
 import io.camunda.zeebe.protocol.record.value.CommandDistributionRecordValue;
+import io.camunda.zeebe.protocol.record.value.CompensationSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.DeploymentRecordValue;
 import io.camunda.zeebe.protocol.record.value.ErrorRecordValue;
 import io.camunda.zeebe.protocol.record.value.EscalationRecordValue;
@@ -122,6 +123,8 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.USER_TASK, this::logUserTaskRecordValue);
     valueTypeLoggers.put(
         ValueType.PROCESS_INSTANCE_MIGRATION, this::logProcessInstanceMigrationRecordValue);
+    valueTypeLoggers.put(
+        ValueType.COMPENSATION_SUBSCRIPTION, this::logCompensationSubscriptionRecordValue);
   }
 
   public void log() {
@@ -472,6 +475,16 @@ public class RecordStreamLogger {
                   .map(i -> i.getSourceElementId() + " -> " + i.getTargetElementId())
                   .collect(Collectors.joining(", "))));
     }
+    return joiner.toString();
+  }
+
+  private String logCompensationSubscriptionRecordValue(final Record<?> record) {
+    final CompensationSubscriptionRecordValue value =
+        (CompensationSubscriptionRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(Process instance key: %d)", value.getProcessInstanceKey()));
+    joiner.add(String.format("(Process definition key: %d)", value.getProcessDefinitionKey()));
+    joiner.add(String.format("(Compensable activity id: %s)", value.getCompensableActivityId()));
     return joiner.toString();
   }
 
