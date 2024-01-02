@@ -22,6 +22,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class GrpcToLogStreamGatewayTest {
 
+  static final List<String> UNSUPPORTED_METHODS = List.of("streamActivatedJobs");
+
   static final List<String> IGNORED_METHODS =
       List.of(
           "bindService",
@@ -50,6 +52,7 @@ class GrpcToLogStreamGatewayTest {
     return Arrays.stream(GatewayImplBase.class.getMethods())
         .map(Method::getName)
         .filter(name -> !IGNORED_METHODS.contains(name))
+        .filter(name -> !UNSUPPORTED_METHODS.contains(name))
         .map(Arguments::of);
   }
 }
