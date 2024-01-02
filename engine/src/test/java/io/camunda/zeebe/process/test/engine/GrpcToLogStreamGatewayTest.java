@@ -44,7 +44,13 @@ class GrpcToLogStreamGatewayTest {
             .findAny();
 
     assertThat(optionalMethod)
-        .describedAs("Expected method %s to be implemented", methodName)
+        .describedAs(
+            """
+            Expected method %s to be implemented. \
+            When this test fails, it's likely a new RPC that ZPT should support. \
+            Please check whether it should be supported by ZPT. \
+            If it should be suported, add a test case to EngineClientTest.java""",
+            methodName)
         .isPresent();
   }
 
