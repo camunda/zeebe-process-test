@@ -413,6 +413,65 @@ class EngineClientTest {
   }
 
   @Test
+  void shouldMigrateProcessInstance() throws InterruptedException, TimeoutException {
+    // given
+    final DeploymentEvent deployment =
+        zeebeClient
+            .newDeployResourceCommand()
+            .addProcessModel(
+                Bpmn.createExecutableProcess("sourceProcess")
+                    .startEvent()
+                    .serviceTask("A", b -> b.zeebeJobType("a"))
+                    .endEvent()
+                    .done(),
+                "sourceProcess.bpmn")
+            .addProcessModel(
+                Bpmn.createExecutableProcess("targetProcess")
+                    .startEvent()
+                    .serviceTask("B", b -> b.zeebeJobTypeExpression("b"))
+                    .endEvent()
+                    .done(),
+                "targetProcess.bpmn")
+            .send()
+            .join();
+
+    final long processInstanceKey =
+        zeebeClient
+            .newCreateInstanceCommand()
+            .bpmnProcessId("sourceProcess")
+            .latestVersion()
+            .send()
+            .join()
+            .getProcessInstanceKey();
+
+    zeebeEngine.waitForIdleState(Duration.ofSeconds(1));
+
+    final long targetProcessDefinitionKey =
+        deployment.getProcesses().stream()
+            .filter(p -> p.getBpmnProcessId().equals("targetProcess"))
+            .findFirst()
+            .orElseThrow()
+            .getProcessDefinitionKey();
+    zeebeClient
+        .newMigrateProcessInstanceCommand(processInstanceKey)
+        .migrationPlan(targetProcessDefinitionKey)
+        .addMappingInstruction("A", "B")
+        .send()
+        .join();
+
+    assertThat(
+            StreamSupport.stream(
+                    RecordStream.of(zeebeEngine.getRecordStreamSource())
+                        .processInstanceRecords()
+                        .spliterator(),
+                    false)
+                .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_MIGRATED)
+                .filter(r -> r.getValue().getElementId().equals("B"))
+                .findFirst())
+        .isNotEmpty();
+  }
+
+  @Test
   void shouldUpdateVariablesOnProcessInstance() {
     // given
     zeebeClient
