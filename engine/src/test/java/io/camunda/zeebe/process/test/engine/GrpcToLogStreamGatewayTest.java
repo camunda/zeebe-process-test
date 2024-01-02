@@ -22,7 +22,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class GrpcToLogStreamGatewayTest {
 
-  static final List<String> IGNORED_METHODS = List.of("bindService");
+  static final List<String> IGNORED_METHODS =
+      List.of(
+          "bindService",
+          "equals",
+          "getClass",
+          "hashCode",
+          "notify",
+          "notifyAll",
+          "toString",
+          "wait");
 
   @ParameterizedTest(name = "{0}")
   @MethodSource("provideMethods")
@@ -38,7 +47,7 @@ class GrpcToLogStreamGatewayTest {
   }
 
   static Stream<Arguments> provideMethods() {
-    return Arrays.stream(GatewayImplBase.class.getDeclaredMethods())
+    return Arrays.stream(GatewayImplBase.class.getMethods())
         .map(Method::getName)
         .filter(name -> !IGNORED_METHODS.contains(name))
         .map(Arguments::of);
