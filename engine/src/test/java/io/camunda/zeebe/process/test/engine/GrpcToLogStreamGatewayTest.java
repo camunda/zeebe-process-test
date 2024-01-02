@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc.GatewayImplBase;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,6 +21,19 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class GrpcToLogStreamGatewayTest {
+
+  static final List<String> UNSUPPORTED_METHODS = List.of("streamActivatedJobs");
+
+  static final List<String> IGNORED_METHODS =
+      List.of(
+          "bindService",
+          "equals",
+          "getClass",
+          "hashCode",
+          "notify",
+          "notifyAll",
+          "toString",
+          "wait");
 
   @ParameterizedTest(name = "{0}")
   @MethodSource("provideMethods")
@@ -30,13 +44,21 @@ class GrpcToLogStreamGatewayTest {
             .findAny();
 
     assertThat(optionalMethod)
-        .describedAs("Expected method %s to be implemented", methodName)
+        .describedAs(
+            """
+            Expected method %s to be implemented. \
+            When this test fails, it's likely a new RPC that ZPT should support. \
+            Please check whether it should be supported by ZPT. \
+            If it should be suported, add a test case to EngineClientTest.java""",
+            methodName)
         .isPresent();
   }
 
-  private static Stream<Arguments> provideMethods() {
-    return Arrays.stream(GatewayImplBase.class.getDeclaredMethods())
-        .filter(method -> !method.getName().equals("bindService"))
-        .map(method -> Arguments.of(method.getName()));
+  static Stream<Arguments> provideMethods() {
+    return Arrays.stream(GatewayImplBase.class.getMethods())
+        .map(Method::getName)
+        .filter(name -> !IGNORED_METHODS.contains(name))
+        .filter(name -> !UNSUPPORTED_METHODS.contains(name))
+        .map(Arguments::of);
   }
 }
