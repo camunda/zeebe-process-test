@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc.GatewayImplBase;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,6 +21,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class GrpcToLogStreamGatewayTest {
+
+  static final List<String> IGNORED_METHODS = List.of("bindService");
 
   @ParameterizedTest(name = "{0}")
   @MethodSource("provideMethods")
@@ -37,7 +40,7 @@ class GrpcToLogStreamGatewayTest {
   static Stream<Arguments> provideMethods() {
     return Arrays.stream(GatewayImplBase.class.getDeclaredMethods())
         .map(Method::getName)
-        .filter(name -> !name.equals("bindService"))
+        .filter(name -> !IGNORED_METHODS.contains(name))
         .map(Arguments::of);
   }
 }
