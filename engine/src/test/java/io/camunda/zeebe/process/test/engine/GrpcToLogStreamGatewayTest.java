@@ -34,9 +34,10 @@ class GrpcToLogStreamGatewayTest {
         .isPresent();
   }
 
-  private static Stream<Arguments> provideMethods() {
+  static Stream<Arguments> provideMethods() {
     return Arrays.stream(GatewayImplBase.class.getDeclaredMethods())
-        .filter(method -> !method.getName().equals("bindService"))
-        .map(method -> Arguments.of(method.getName()));
+        .map(Method::getName)
+        .filter(name -> !name.equals("bindService"))
+        .map(Arguments::of);
   }
 }
