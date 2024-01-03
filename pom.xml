@@ -89,7 +89,7 @@
     <dependency.snakeyaml.version>2.2</dependency.snakeyaml.version>
     <dependency.spring.version>6.0.12</dependency.spring.version>
     <dependency.testcontainers.version>1.19.0</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.3.4</dependency.zeebe.version>
+    <dependency.zeebe.version>8.3.5</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
@@ -714,6 +714,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-help-plugin</artifactId>
         <version>${plugin.version.maven-help}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <configuration>
+          <stagingProgressTimeoutMinutes>40</stagingProgressTimeoutMinutes>
+        </configuration>
       </plugin>
 
     </plugins>
