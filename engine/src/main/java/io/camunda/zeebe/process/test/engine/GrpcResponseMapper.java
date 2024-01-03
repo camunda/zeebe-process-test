@@ -341,27 +341,26 @@ class GrpcResponseMapper {
     return ActivateJobsResponse.newBuilder()
         .addAllJobs(
             jobsWithKeys.entrySet().stream()
-                .map(
-                    (entry) -> {
-                      final JobRecord job = entry.getValue();
-                      return ActivatedJob.newBuilder()
-                          .setKey(entry.getKey())
-                          .setType(job.getType())
-                          .setRetries(job.getRetries())
-                          .setWorker(job.getWorker())
-                          .setDeadline(job.getDeadline())
-                          .setProcessDefinitionKey(job.getProcessDefinitionKey())
-                          .setBpmnProcessId(job.getBpmnProcessId())
-                          .setProcessDefinitionVersion(job.getProcessDefinitionVersion())
-                          .setProcessInstanceKey(job.getProcessInstanceKey())
-                          .setElementId(job.getElementId())
-                          .setElementInstanceKey(job.getElementInstanceKey())
-                          .setCustomHeaders(
-                              MsgPackConverter.convertToJson(job.getCustomHeadersBuffer()))
-                          .setVariables(MsgPackConverter.convertToJson(job.getVariablesBuffer()))
-                          .build();
-                    })
+                .map((entry) -> mapToActivatedJob(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList()))
+        .build();
+  }
+
+  static ActivatedJob mapToActivatedJob(final long key, final JobRecord job) {
+    return ActivatedJob.newBuilder()
+        .setKey(key)
+        .setType(job.getType())
+        .setRetries(job.getRetries())
+        .setWorker(job.getWorker())
+        .setDeadline(job.getDeadline())
+        .setProcessDefinitionKey(job.getProcessDefinitionKey())
+        .setBpmnProcessId(job.getBpmnProcessId())
+        .setProcessDefinitionVersion(job.getProcessDefinitionVersion())
+        .setProcessInstanceKey(job.getProcessInstanceKey())
+        .setElementId(job.getElementId())
+        .setElementInstanceKey(job.getElementInstanceKey())
+        .setCustomHeaders(MsgPackConverter.convertToJson(job.getCustomHeadersBuffer()))
+        .setVariables(MsgPackConverter.convertToJson(job.getVariablesBuffer()))
         .build();
   }
 
