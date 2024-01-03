@@ -10,6 +10,7 @@ package io.camunda.zeebe.process.test.engine;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.ZeebeFuture;
 import io.camunda.zeebe.client.api.command.ClientException;
@@ -30,6 +31,7 @@ import io.camunda.zeebe.client.api.response.SetVariablesResponse;
 import io.camunda.zeebe.client.api.response.Topology;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
+import io.camunda.zeebe.process.test.filters.JobRecordStreamFilter;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
@@ -43,9 +45,12 @@ import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
 import io.camunda.zeebe.util.VersionUtil;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -1190,5 +1195,126 @@ class EngineClientTest {
 
     // then
     assertThat(response.getKey()).isPositive();
+  }
+
+  @Test
+  void shouldStreamJobs() {
+    // given
+    final var jobs = new CopyOnWriteArrayList<ActivatedJob>();
+    final var deployment = deploySingleTaskProcess();
+
+    // when
+    final var stream =
+        zeebeClient
+            .newStreamJobsCommand()
+            .jobType("jobType")
+            .consumer(jobs::add)
+            .fetchVariables(List.of("test"))
+            .workerName("worker")
+            .timeout(Duration.ofMinutes(1))
+            .send();
+
+    // then - since streams cannot receive jobs created before they are registered, and registration
+    // is asynchronous, we just create some jobs until we receive at least one
+    try {
+      Awaitility.await("until we've received some jobs")
+          .untilAsserted(
+              () -> {
+                createSingleTaskInstance(Map.of("test", 1));
+                assertThat(jobs).isNotEmpty();
+              });
+
+      assertThat(jobs)
+          .allSatisfy(
+              job -> {
+                assertThat(job.getBpmnProcessId()).isEqualTo("simpleProcess");
+                assertThat(job.getProcessDefinitionKey())
+                    .isEqualTo(deployment.getProcesses().get(0).getProcessDefinitionKey());
+                assertThat(job.getRetries()).isEqualTo(3);
+                assertThat(job.getType()).isEqualTo("jobType");
+                assertThat(job.getWorker()).isEqualTo("worker");
+              });
+    } finally {
+      stream.cancel(true);
+    }
+  }
+
+  @Test
+  void shouldYieldJobIfBlocked() {
+    // given
+    final var deployment = deploySingleTaskProcess();
+    final var latch = new CountDownLatch(1);
+    final var recordStream = RecordStream.of(zeebeEngine.getRecordStreamSource());
+    // we create a large variable to trigger back pressure on the client side, otherwise it would
+    // take tens of thousands of them to reach the hardcoded 32KB threshold
+    final var variables = Map.<String, Object>of("foo", "x".repeat(1024 * 1024));
+
+    // when
+    final var stream =
+        zeebeClient
+            .newStreamJobsCommand()
+            .jobType("jobType")
+            .consumer(job -> Uninterruptibles.awaitUninterruptibly(latch))
+            .fetchVariables(List.of("foo"))
+            .workerName("worker")
+            .timeout(Duration.ofMinutes(1))
+            .send();
+
+    // then - since streams cannot receive jobs created before they are registered, and registration
+    // is asynchronous, we just create some jobs until at least one job is yielded
+    final Map<Long, Record<JobRecordValue>> yieldedJobs = new HashMap<>();
+    try {
+      Awaitility.await("until some jobs are yielded")
+          .pollInSameThread()
+          .pollInterval(Duration.ofMillis(50))
+          .untilAsserted(
+              () -> {
+                createSingleTaskInstance(variables);
+                new JobRecordStreamFilter(recordStream.jobRecords())
+                    .withIntent(JobIntent.YIELDED).stream()
+                        .forEach(job -> yieldedJobs.put(job.getKey(), job));
+                assertThat(yieldedJobs).isNotEmpty();
+              });
+      latch.countDown();
+
+      // since we're not exactly tracking which jobs are yielded, we can only do a coarse validation
+      // that the right job was yielded
+      assertThat(yieldedJobs)
+          .allSatisfy(
+              (key, job) -> {
+                assertThat(job.getIntent()).isEqualTo(JobIntent.YIELDED);
+                assertThat(job.getValue().getBpmnProcessId()).isEqualTo("simpleProcess");
+                assertThat(job.getValue().getProcessDefinitionKey())
+                    .isEqualTo(deployment.getProcesses().get(0).getProcessDefinitionKey());
+                assertThat(job.getValue().getRetries()).isEqualTo(3);
+                assertThat(job.getValue().getType()).isEqualTo("jobType");
+              });
+    } finally {
+      stream.cancel(true);
+    }
+  }
+
+  private ProcessInstanceEvent createSingleTaskInstance(final Map<String, Object> variables) {
+    return zeebeClient
+        .newCreateInstanceCommand()
+        .bpmnProcessId("simpleProcess")
+        .latestVersion()
+        .variables(variables)
+        .send()
+        .join();
+  }
+
+  private DeploymentEvent deploySingleTaskProcess() {
+    return zeebeClient
+        .newDeployResourceCommand()
+        .addProcessModel(
+            Bpmn.createExecutableProcess("simpleProcess")
+                .startEvent()
+                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .endEvent()
+                .done(),
+            "simpleProcess.bpmn")
+        .send()
+        .join();
   }
 }
