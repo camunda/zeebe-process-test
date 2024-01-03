@@ -89,7 +89,7 @@
     <dependency.snakeyaml.version>2.2</dependency.snakeyaml.version>
     <dependency.spring.version>6.0.12</dependency.spring.version>
     <dependency.testcontainers.version>1.19.0</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.3.4</dependency.zeebe.version>
+    <dependency.zeebe.version>8.3.5</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
