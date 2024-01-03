@@ -40,6 +40,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FormMetadata;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.MatchedDecisionRule;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.MigrateProcessInstanceRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.MigrateProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ProcessMetadata;
@@ -100,6 +102,8 @@ class GrpcResponseMapper {
           Map.entry(UpdateJobRetriesRequest.class, this::createJobUpdateRetriesResponse),
           Map.entry(UpdateJobTimeoutRequest.class, this::createJobUpdateTimeOutResponse),
           Map.entry(ModifyProcessInstanceRequest.class, this::createModifyProcessInstanceResponse),
+          Map.entry(
+              MigrateProcessInstanceRequest.class, this::createMigrateProcessInstanceResponse),
           Map.entry(BroadcastSignalRequest.class, this::createBroadcastSignalResponse));
 
   GeneratedMessageV3 map(
@@ -292,6 +296,10 @@ class GrpcResponseMapper {
 
   private GeneratedMessageV3 createModifyProcessInstanceResponse() {
     return ModifyProcessInstanceResponse.newBuilder().build();
+  }
+
+  private GeneratedMessageV3 createMigrateProcessInstanceResponse() {
+    return MigrateProcessInstanceResponse.getDefaultInstance();
   }
 
   private GeneratedMessageV3 createBroadcastSignalResponse() {

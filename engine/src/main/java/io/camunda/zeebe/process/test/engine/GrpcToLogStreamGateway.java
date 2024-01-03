@@ -32,6 +32,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluateDecisionReque
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.EvaluateDecisionResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.FailJobResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.MigrateProcessInstanceRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.MigrateProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ModifyProcessInstanceResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.Partition;
@@ -61,6 +63,8 @@ import io.camunda.zeebe.protocol.impl.record.value.job.JobRecord;
 import io.camunda.zeebe.protocol.impl.record.value.message.MessageRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceCreationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceCreationStartInstruction;
+import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceMigrationMappingInstruction;
+import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceMigrationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationActivateInstruction;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationTerminateInstruction;
@@ -79,6 +83,7 @@ import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.intent.MessageIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceCreationIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
+import io.camunda.zeebe.protocol.record.intent.ProcessInstanceMigrationIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceModificationIntent;
 import io.camunda.zeebe.protocol.record.intent.ResourceDeletionIntent;
 import io.camunda.zeebe.protocol.record.intent.SignalIntent;
@@ -472,6 +477,35 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
         createProcessInstanceModificationRecord(request);
 
     writer.writeCommandWithKey(request.getProcessInstanceKey(), record, recordMetadata);
+  }
+
+  @Override
+  public void migrateProcessInstance(
+      final MigrateProcessInstanceRequest request,
+      final StreamObserver<MigrateProcessInstanceResponse> responseObserver) {
+    final var requestId =
+        gatewayRequestStore.registerNewRequest(request.getClass(), responseObserver);
+
+    final var command =
+        new ProcessInstanceMigrationRecord()
+            .setProcessInstanceKey(request.getProcessInstanceKey())
+            .setTargetProcessDefinitionKey(
+                request.getMigrationPlan().getTargetProcessDefinitionKey());
+
+    request.getMigrationPlan().getMappingInstructionsList().stream()
+        .map(
+            instruction ->
+                new ProcessInstanceMigrationMappingInstruction()
+                    .setSourceElementId(instruction.getSourceElementId())
+                    .setTargetElementId(instruction.getTargetElementId()))
+        .forEach(command::addMappingInstruction);
+
+    writer.writeCommandWithoutKey(
+        command,
+        prepareRecordMetadata()
+            .requestId(requestId)
+            .valueType(ValueType.PROCESS_INSTANCE_MIGRATION)
+            .intent(ProcessInstanceMigrationIntent.MIGRATE));
   }
 
   @Override
