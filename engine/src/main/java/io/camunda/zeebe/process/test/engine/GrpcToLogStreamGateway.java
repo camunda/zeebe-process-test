@@ -7,10 +7,14 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
+import static io.camunda.zeebe.util.buffer.BufferUtil.wrapString;
+
+import com.google.common.util.concurrent.MoreExecutors;
 import io.camunda.zeebe.gateway.protocol.GatewayGrpc;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ActivateJobsRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ActivateJobsResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ActivatedJob;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.BroadcastSignalRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.BroadcastSignalResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.BrokerInfo;
@@ -43,6 +47,7 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ResolveIncidentReques
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ResolveIncidentResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.SetVariablesRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.SetVariablesResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.StreamActivatedJobsRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ThrowErrorRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ThrowErrorResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyRequest;
@@ -51,7 +56,10 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesReque
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobTimeoutRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobTimeoutResponse;
+import io.camunda.zeebe.msgpack.value.StringValue;
 import io.camunda.zeebe.msgpack.value.ValueArray;
+import io.camunda.zeebe.process.test.engine.InMemoryJobStreamer.JobConsumer;
+import io.camunda.zeebe.process.test.engine.InMemoryJobStreamer.PushStatus;
 import io.camunda.zeebe.protocol.impl.encoding.MsgPackConverter;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
 import io.camunda.zeebe.protocol.impl.record.value.decision.DecisionEvaluationRecord;
@@ -73,6 +81,7 @@ import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstan
 import io.camunda.zeebe.protocol.impl.record.value.resource.ResourceDeletionRecord;
 import io.camunda.zeebe.protocol.impl.record.value.signal.SignalRecord;
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentRecord;
+import io.camunda.zeebe.protocol.impl.stream.job.JobActivationPropertiesImpl;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
 import io.camunda.zeebe.protocol.record.intent.DecisionEvaluationIntent;
@@ -91,7 +100,13 @@ import io.camunda.zeebe.protocol.record.intent.VariableDocumentIntent;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentUpdateSemantic;
 import io.camunda.zeebe.util.VersionUtil;
 import io.camunda.zeebe.util.buffer.BufferUtil;
+import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
+import org.agrona.DirectBuffer;
 
 class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
@@ -100,18 +115,21 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
   private final int partitionCount;
   private final int port;
   private final GatewayRequestStore gatewayRequestStore;
+  private final InMemoryJobStreamer jobStreamer;
 
   public GrpcToLogStreamGateway(
       final CommandWriter writer,
       final int partitionId,
       final int partitionCount,
       final int port,
-      final GatewayRequestStore gatewayRequestStore) {
+      final GatewayRequestStore gatewayRequestStore,
+      final InMemoryJobStreamer jobStreamer) {
     this.writer = writer;
     this.partitionId = partitionId;
     this.partitionCount = partitionCount;
     this.port = port;
     this.gatewayRequestStore = gatewayRequestStore;
+    this.jobStreamer = jobStreamer;
   }
 
   @Override
@@ -135,6 +153,26 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
 
     writer.writeCommandWithoutKey(jobBatchRecord, recordMetadata);
+  }
+
+  @Override
+  public void streamActivatedJobs(
+      final StreamActivatedJobsRequest request,
+      final StreamObserver<ActivatedJob> responseObserver) {
+    final var jobActivationProperties = new JobActivationPropertiesImpl();
+    final var worker = wrapString(request.getWorker());
+    final var jobType = wrapString(request.getType());
+    final var serverObserver = (ServerCallStreamObserver<ActivatedJob>) responseObserver;
+    final var consumer = new GrpcJobConsumer(jobType, serverObserver);
+    jobActivationProperties
+        .setWorker(worker, 0, worker.capacity())
+        .setTimeout(request.getTimeout())
+        .setFetchVariables(request.getFetchVariableList().stream().map(StringValue::new).toList())
+        .setTenantIds(request.getTenantIdsList());
+
+    jobStreamer.addStream(jobType, jobActivationProperties, consumer);
+    serverObserver.setOnCloseHandler(consumer::close);
+    serverObserver.setOnCancelHandler(consumer::close);
   }
 
   @Override
@@ -641,5 +679,47 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
   public String getAddress() {
     return "0.0.0.0:" + port;
+  }
+
+  private final class GrpcJobConsumer implements JobConsumer, AutoCloseable {
+    private final DirectBuffer jobType;
+    private final ServerCallStreamObserver<ActivatedJob> observer;
+    private final Executor executor;
+
+    private GrpcJobConsumer(
+        final DirectBuffer jobType, final ServerCallStreamObserver<ActivatedJob> observer) {
+      this.jobType = jobType;
+      this.observer = observer;
+      executor = MoreExecutors.newSequentialExecutor(ForkJoinPool.commonPool());
+    }
+
+    @Override
+    public CompletionStage<PushStatus> consumeJob(
+        final io.camunda.zeebe.protocol.impl.stream.job.ActivatedJob job) {
+      return CompletableFuture.supplyAsync(() -> forwardJob(job), executor);
+    }
+
+    @Override
+    public void close() {
+      executor.execute(() -> jobStreamer.removeStream(jobType, this));
+    }
+
+    private PushStatus forwardJob(
+        final io.camunda.zeebe.protocol.impl.stream.job.ActivatedJob job) {
+      if (!observer.isReady()) {
+        return PushStatus.BLOCKED;
+      }
+
+      try {
+        final var activatedJob =
+            GrpcResponseMapper.mapToActivatedJob(job.jobKey(), job.jobRecord());
+        observer.onNext(activatedJob);
+        return PushStatus.PUSHED;
+      } catch (final Exception e) {
+        observer.onError(e);
+        close();
+        throw e;
+      }
+    }
   }
 }
