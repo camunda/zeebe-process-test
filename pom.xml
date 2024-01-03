@@ -716,6 +716,14 @@
         <version>${plugin.version.maven-help}</version>
       </plugin>
 
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <configuration>
+          <stagingProgressTimeoutMinutes>40</stagingProgressTimeoutMinutes>
+        </configuration>
+      </plugin>
+
     </plugins>
     <extensions>
       <extension>
