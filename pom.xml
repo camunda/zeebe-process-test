@@ -238,6 +238,18 @@
 
       <dependency>
         <groupId>io.camunda</groupId>
+        <artifactId>zeebe-scheduler</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-stream-platform</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
         <artifactId>zeebe-util</artifactId>
         <version>${dependency.zeebe.version}</version>
       </dependency>
