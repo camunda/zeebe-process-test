@@ -63,9 +63,10 @@ public class EngineFactory {
     final CommandWriter commandWriter = new CommandWriter(logStream.newLogStreamWriter().join());
     final CommandSender commandSender = new CommandSender(commandWriter);
     final GatewayRequestStore gatewayRequestStore = new GatewayRequestStore();
+    final InMemoryJobStreamer jobStreamer = new InMemoryJobStreamer(commandWriter);
     final GrpcToLogStreamGateway gateway =
         new GrpcToLogStreamGateway(
-            commandWriter, partitionId, partitionCount, port, gatewayRequestStore);
+            commandWriter, partitionId, partitionCount, port, gatewayRequestStore, jobStreamer);
     final Server grpcServer = ServerBuilder.forPort(port).addService(gateway).build();
 
     final GrpcResponseWriter grpcResponseWriter =
@@ -75,7 +76,13 @@ public class EngineFactory {
 
     final StreamProcessor streamProcessor =
         createStreamProcessor(
-            logStream, zeebeDb, scheduler, grpcResponseWriter, partitionCount, commandSender);
+            logStream,
+            zeebeDb,
+            scheduler,
+            grpcResponseWriter,
+            partitionCount,
+            commandSender,
+            jobStreamer);
 
     final EngineStateMonitor engineStateMonitor =
         new EngineStateMonitor(logStorage, streamProcessor);
@@ -144,7 +151,8 @@ public class EngineFactory {
       final ActorSchedulingService scheduler,
       final GrpcResponseWriter grpcResponseWriter,
       final int partitionCount,
-      final CommandSender commandSender) {
+      final CommandSender commandSender,
+      final JobStreamer jobStreamer) {
     return StreamProcessor.builder()
         .logStream(logStream)
         .zeebeDb(database)
@@ -160,7 +168,7 @@ public class EngineFactory {
                             new SubscriptionCommandSender(context.getPartitionId(), commandSender),
                             commandSender,
                             FeatureFlags.createDefault(),
-                            JobStreamer.noop()),
+                            jobStreamer),
                     new EngineConfiguration())))
         .actorSchedulingService(scheduler)
         .build();
