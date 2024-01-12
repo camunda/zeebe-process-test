@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0flsp50" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.2.0">
+  <bpmn:process id="Process_Timer_Test_01" name="Timer Test 01" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_Main">
+      <bpmn:outgoing>Flow_0yjny2b</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0yjny2b" sourceRef="StartEvent_Main" targetRef="Gateway_SplitParallel" />
+    <bpmn:parallelGateway id="Gateway_SplitParallel">
+      <bpmn:incoming>Flow_0yjny2b</bpmn:incoming>
+      <bpmn:outgoing>Flow_13nx8ki</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0f4xha0</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_13nx8ki" sourceRef="Gateway_SplitParallel" targetRef="TimerEvent_Wait30d" />
+    <bpmn:sequenceFlow id="Flow_0f4xha0" sourceRef="Gateway_SplitParallel" targetRef="Activity_InvokeDummyWorker" />
+    <bpmn:serviceTask id="Activity_InvokeDummyWorker" name="Log Work">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="SimpleLog01" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0f4xha0</bpmn:incoming>
+      <bpmn:outgoing>Flow_1avqbu0</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1avqbu0" sourceRef="Activity_InvokeDummyWorker" targetRef="TimerEvent_Wait1s" />
+    <bpmn:intermediateCatchEvent id="TimerEvent_Wait1s" name="Wait 1s">
+      <bpmn:incoming>Flow_1avqbu0</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cajt90</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_10j57n3">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="TimerEvent_Wait30d" name="Wait 30 D">
+      <bpmn:incoming>Flow_13nx8ki</bpmn:incoming>
+      <bpmn:outgoing>Flow_0udkjtd</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1vhwggd">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P30D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_0udkjtd" sourceRef="TimerEvent_Wait30d" targetRef="EndEvent_SlowFlow" />
+    <bpmn:sequenceFlow id="Flow_0cajt90" sourceRef="TimerEvent_Wait1s" targetRef="EndEvent_FastFlow" />
+    <bpmn:endEvent id="EndEvent_FastFlow">
+      <bpmn:incoming>Flow_0cajt90</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_1aip36j" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_SlowFlow">
+      <bpmn:incoming>Flow_0udkjtd</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_1ek7ect" />
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_Timer_Test_01">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_Main">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_002rc7z_di" bpmnElement="Gateway_SplitParallel">
+        <dc:Bounds x="265" y="92" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1aem1ta_di" bpmnElement="Activity_InvokeDummyWorker">
+        <dc:Bounds x="380" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0igsi80_di" bpmnElement="TimerEvent_Wait1s">
+        <dc:Bounds x="552" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="552" y="142" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ie1wv2_di" bpmnElement="TimerEvent_Wait30d">
+        <dc:Bounds x="412" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="407" y="265" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0yr1y45_di" bpmnElement="EndEvent_FastFlow">
+        <dc:Bounds x="662" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1bifv72_di" bpmnElement="EndEvent_SlowFlow">
+        <dc:Bounds x="552" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0yjny2b_di" bpmnElement="Flow_0yjny2b">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="265" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13nx8ki_di" bpmnElement="Flow_13nx8ki">
+        <di:waypoint x="290" y="142" />
+        <di:waypoint x="290" y="240" />
+        <di:waypoint x="412" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0f4xha0_di" bpmnElement="Flow_0f4xha0">
+        <di:waypoint x="315" y="117" />
+        <di:waypoint x="380" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1avqbu0_di" bpmnElement="Flow_1avqbu0">
+        <di:waypoint x="480" y="117" />
+        <di:waypoint x="552" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cajt90_di" bpmnElement="Flow_0cajt90">
+        <di:waypoint x="588" y="117" />
+        <di:waypoint x="662" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0udkjtd_di" bpmnElement="Flow_0udkjtd">
+        <di:waypoint x="448" y="240" />
+        <di:waypoint x="552" y="240" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
