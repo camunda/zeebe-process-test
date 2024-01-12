@@ -7,6 +7,7 @@
  */
 package io.camunda.zeebe.process.test.engine.db;
 
+import com.google.common.primitives.UnsignedBytes;
 import io.camunda.zeebe.db.DbValue;
 import java.util.Arrays;
 import org.agrona.ExpandableArrayBuffer;
@@ -21,6 +22,11 @@ final class Bytes implements Comparable<Bytes> {
   }
 
   @Override
+  public int hashCode() {
+    return Arrays.hashCode(byteArray);
+  }
+
+  @Override
   public boolean equals(final Object o) {
     if (this == o) {
       return true;
@@ -32,11 +38,6 @@ final class Bytes implements Comparable<Bytes> {
     final Bytes bytes = (Bytes) o;
 
     return Arrays.equals(byteArray, bytes.byteArray);
-  }
-
-  @Override
-  public int hashCode() {
-    return Arrays.hashCode(byteArray);
   }
 
   @Override
@@ -56,9 +57,10 @@ final class Bytes implements Comparable<Bytes> {
       final byte ourByte = byteArray[i];
       final byte otherByte = otherByteArray[i];
 
-      if (ourByte < otherByte) {
+      final int compared = UnsignedBytes.compare(ourByte, otherByte);
+      if (compared < 0) {
         return SMALLER;
-      } else if (ourByte > otherByte) {
+      } else if (compared > 0) {
         return BIGGER;
       } // else { // = equals -> continue }
     }
