@@ -7,7 +7,6 @@
  */
 package io.camunda.zeebe.process.test.engine.db;
 
-import com.google.common.primitives.UnsignedBytes;
 import io.camunda.zeebe.db.DbValue;
 import java.util.Arrays;
 import org.agrona.ExpandableArrayBuffer;
@@ -42,35 +41,7 @@ final class Bytes implements Comparable<Bytes> {
 
   @Override
   public int compareTo(final Bytes other) {
-
-    final int EQUAL = 0;
-    final int SMALLER = -1;
-    final int BIGGER = 1;
-
-    final byte[] otherByteArray = other.byteArray;
-
-    for (int i = 0; i < byteArray.length; i++) {
-      if (i >= otherByteArray.length) {
-        return BIGGER;
-      }
-
-      final byte ourByte = byteArray[i];
-      final byte otherByte = otherByteArray[i];
-
-      final int compared = UnsignedBytes.compare(ourByte, otherByte);
-      if (compared < 0) {
-        return SMALLER;
-      } else if (compared > 0) {
-        return BIGGER;
-      } // else { // = equals -> continue }
-    }
-
-    if (byteArray.length == otherByteArray.length) {
-      return EQUAL;
-    } else {
-      // the other must be a longer array then
-      return SMALLER;
-    }
+    return Arrays.compareUnsigned(byteArray, other.byteArray);
   }
 
   byte[] toBytes() {
