@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 public class BytesTest {
 
   @Test
-  public void compareDifferentSizeSmaller() {
+  public void shouldYieldShorterByteArrayAsSmaller() {
     // given
     final byte[] shorterArray = new byte[10];
     final byte[] longerArray = new byte[11];
@@ -32,7 +32,7 @@ public class BytesTest {
   }
 
   @Test
-  public void compareDifferentSizeBigger() {
+  public void shouldYieldLongerByteArrayAsBigger() {
     // given
     final byte[] shorterArray = new byte[10];
     final byte[] longerArray = new byte[11];
@@ -46,7 +46,7 @@ public class BytesTest {
   }
 
   @Test
-  public void compareEqual() {
+  public void shouldCompareEqualArraysAsZero() {
     // given
     final OffsetDateTime date =
         OffsetDateTime.of(2023, 10, 5, 15, 50, 0, 0, ZoneOffset.of("+02:00"));
@@ -72,7 +72,7 @@ public class BytesTest {
   }
 
   @Test
-  public void compareLaterDateWithEarlierDate() {
+  public void shouldCompareLaterDateAsPositiveNumber() {
     // given
     // 2023.10.10 15:50:00 This date will look as follows when converted to bytes array:
     // [0, 0, 1, -117, 25...]
@@ -106,7 +106,7 @@ public class BytesTest {
   }
 
   @Test
-  public void compareEarlierDateWithLaterDate() {
+  public void shouldCompareEarlierDateAsNegativeNumber() {
     // given
     // 2023.10.10 15:50:00 This date will look as follows when converted to bytes array:
     // [0, 0, 1, -117, 25...]
