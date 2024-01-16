@@ -11,12 +11,40 @@ package io.camunda.zeebe.process.test.engine.db;
 import io.camunda.zeebe.db.impl.ZeebeDbConstants;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
 import org.agrona.ExpandableArrayBuffer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class BytesTest {
+
+  @Test
+  public void compareDifferentSizeSmaller() {
+    // given
+    final byte[] shorterArray = new byte[10];
+    final byte[] longerArray = new byte[11];
+
+    // when
+    final int result =
+        Bytes.fromByteArray(shorterArray).compareTo(Bytes.fromByteArray(longerArray));
+
+    // then
+    Assertions.assertTrue(result < 0);
+  }
+
+  @Test
+  public void compareDifferentSizeBigger() {
+    // given
+    final byte[] shorterArray = new byte[10];
+    final byte[] longerArray = new byte[11];
+
+    // when
+    final int result =
+        Bytes.fromByteArray(longerArray).compareTo(Bytes.fromByteArray(shorterArray));
+
+    // then
+    Assertions.assertTrue(result > 0);
+  }
+
   @Test
   public void compareEqual() {
     // given
@@ -33,8 +61,11 @@ public class BytesTest {
     sameDateKeyBuffer.putLong(
         0, sameDate.toInstant().toEpochMilli(), ZeebeDbConstants.ZB_DB_BYTE_ORDER);
 
+    final Bytes dateBytes = Bytes.fromExpandableArrayBuffer(dateKeyBuffer);
+    final Bytes sameDateBytes = Bytes.fromExpandableArrayBuffer(sameDateKeyBuffer);
+
     // when
-    final int result = date.compareTo(sameDate);
+    final int result = dateBytes.compareTo(sameDateBytes);
 
     // then
     Assertions.assertEquals(0, result);
@@ -64,9 +95,6 @@ public class BytesTest {
     final Bytes erlierDateBytes = Bytes.fromExpandableArrayBuffer(earlierDateKeyBuffer);
     final Bytes laterDateBytes = Bytes.fromExpandableArrayBuffer(laterDateKeyBuffer);
 
-    System.out.println(Arrays.toString(erlierDateBytes.toBytes()));
-    System.out.println(Arrays.toString(laterDateBytes.toBytes()));
-
     // when
     final int result = laterDateBytes.compareTo(erlierDateBytes);
 
@@ -74,7 +102,7 @@ public class BytesTest {
     // The result should be positive as 2023.11.5 15:50:00 comes after 2023.10.10 15:50:00
     // The comparison should return 1 despite the fact that later date contains -97
     // when represented as bytes array
-    Assertions.assertEquals(1, result);
+    Assertions.assertTrue(result > 0);
   }
 
   @Test
@@ -108,6 +136,6 @@ public class BytesTest {
     // The result should be negative as 2023.10.10 15:50:00 comes before 2023.11.5 15:50:00
     // The comparison should return 1 despite the fact that later date contains -97
     // when represented as bytes array
-    Assertions.assertEquals(-1, result);
+    Assertions.assertTrue(result < 0);
   }
 }
