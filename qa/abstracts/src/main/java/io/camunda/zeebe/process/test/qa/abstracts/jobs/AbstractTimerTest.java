@@ -33,10 +33,13 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public abstract class AbstractTimerTest {
 
@@ -47,104 +50,28 @@ public abstract class AbstractTimerTest {
   private ZeebeTestEngine engine;
   private RecordStream recordStream;
 
+  private static Stream<Arguments> dates() {
+    return Stream.of(
+        Arguments.of(OffsetDateTime.of(2023, 10, 5, 15, 50, 0, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2023, 10, 31, 0, 0, 0, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2023, 10, 31, 23, 0, 0, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2023, 10, 31, 23, 59, 0, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2023, 10, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2023, 12, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"))));
+  }
+
   @BeforeEach
   void deployProcesses() {
     final DeploymentEvent deploymentEvent = Utilities.deployResource(client, RESOURCE);
     BpmnAssert.assertThat(deploymentEvent).containsProcessesByResourceName(RESOURCE);
   }
 
-  @Test
-  void testDateContainingNegativeByte() throws Exception {
+  @ParameterizedTest
+  @MethodSource("dates")
+  void shouldCompareTimersDueDatesCorrectlyForDifferentNowDates(final OffsetDateTime nowDate)
+      throws Exception {
 
-    final OffsetDateTime darkDay =
-        OffsetDateTime.of(2023, 10, 5, 15, 50, 0, 0, ZoneOffset.of("+02:00"));
-
-    Utilities.increaseTime(engine, Duration.between(OffsetDateTime.now(), darkDay));
-
-    client.newCreateInstanceCommand().bpmnProcessId(PROCESS_ID).latestVersion().send().join();
-
-    final ActivateJobsResponse response = Utilities.activateSingleJob(client, "SimpleLog01");
-    final long key = response.getJobs().get(0).getKey();
-
-    client.newCompleteCommand(key).send().join();
-
-    waitForProcessInstanceCompleted();
-  }
-
-  @Test
-  void testLastDayOfTheMonth() throws Exception {
-    final OffsetDateTime heyDay =
-        OffsetDateTime.of(2023, 10, 31, 0, 0, 0, 0, ZoneOffset.of("+02:00"));
-
-    Utilities.increaseTime(engine, Duration.between(OffsetDateTime.now(), heyDay));
-
-    client.newCreateInstanceCommand().bpmnProcessId(PROCESS_ID).latestVersion().send().join();
-
-    final ActivateJobsResponse response = Utilities.activateSingleJob(client, "SimpleLog01");
-    final long key = response.getJobs().get(0).getKey();
-
-    client.newCompleteCommand(key).send().join();
-
-    waitForProcessInstanceCompleted();
-  }
-
-  @Test
-  void testLastHourOfTheMonth() throws Exception {
-    final OffsetDateTime heyDay =
-        OffsetDateTime.of(2023, 10, 31, 23, 0, 0, 0, ZoneOffset.of("+02:00"));
-
-    Utilities.increaseTime(engine, Duration.between(OffsetDateTime.now(), heyDay));
-
-    client.newCreateInstanceCommand().bpmnProcessId(PROCESS_ID).latestVersion().send().join();
-
-    final ActivateJobsResponse response = Utilities.activateSingleJob(client, "SimpleLog01");
-    final long key = response.getJobs().get(0).getKey();
-
-    client.newCompleteCommand(key).send().join();
-
-    waitForProcessInstanceCompleted();
-  }
-
-  @Test
-  void testLastMinuteOfTheMonth() throws Exception {
-    final OffsetDateTime heyDay =
-        OffsetDateTime.of(2023, 10, 31, 23, 59, 0, 0, ZoneOffset.of("+02:00"));
-
-    Utilities.increaseTime(engine, Duration.between(OffsetDateTime.now(), heyDay));
-
-    client.newCreateInstanceCommand().bpmnProcessId(PROCESS_ID).latestVersion().send().join();
-
-    final ActivateJobsResponse response = Utilities.activateSingleJob(client, "SimpleLog01");
-    final long key = response.getJobs().get(0).getKey();
-
-    client.newCompleteCommand(key).send().join();
-
-    waitForProcessInstanceCompleted();
-  }
-
-  @Test
-  void testLastSecondOfTheMonth() throws Exception {
-    final OffsetDateTime heyDay =
-        OffsetDateTime.of(2023, 10, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"));
-
-    Utilities.increaseTime(engine, Duration.between(OffsetDateTime.now(), heyDay));
-
-    client.newCreateInstanceCommand().bpmnProcessId(PROCESS_ID).latestVersion().send().join();
-
-    final ActivateJobsResponse response = Utilities.activateSingleJob(client, "SimpleLog01");
-    final long key = response.getJobs().get(0).getKey();
-
-    client.newCompleteCommand(key).send().join();
-
-    waitForProcessInstanceCompleted();
-  }
-
-  @Test
-  void testLastSecondOfTheYear() throws Exception {
-    final OffsetDateTime heyDay =
-        OffsetDateTime.of(2023, 12, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"));
-
-    Utilities.increaseTime(engine, Duration.between(OffsetDateTime.now(), heyDay));
+    Utilities.increaseTime(engine, Duration.between(OffsetDateTime.now(), nowDate));
 
     client.newCreateInstanceCommand().bpmnProcessId(PROCESS_ID).latestVersion().send().join();
 
