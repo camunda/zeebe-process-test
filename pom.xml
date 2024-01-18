@@ -99,11 +99,11 @@
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
 
     <plugin.version.dependency>3.6.1</plugin.version.dependency>
-    <plugin.version.flatten>1.5.0</plugin.version.flatten>
+    <plugin.version.flatten>1.6.0</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
 
     <!-- when updating this version, also change it in .idea/externalDependencies.xml -->
-    <plugin.version.googlejavaformat>1.18.1</plugin.version.googlejavaformat>
+    <plugin.version.googlejavaformat>1.19.2</plugin.version.googlejavaformat>
 
     <plugin.version.jacoco>0.8.11</plugin.version.jacoco>
     <plugin.version.javadoc>3.6.2</plugin.version.javadoc>
