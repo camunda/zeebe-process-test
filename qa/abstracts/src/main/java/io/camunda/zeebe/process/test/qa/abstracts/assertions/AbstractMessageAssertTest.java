@@ -136,7 +136,12 @@ public abstract class AbstractMessageAssertTest {
       // when
       final PublishMessageResponse response =
           Utilities.sendMessage(
-              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+              engine,
+              client,
+              ProcessPackMessageEvent.MESSAGE_NAME,
+              CORRELATION_KEY,
+              Duration.ofMinutes(1),
+              Collections.emptyMap());
 
       // then
       BpmnAssert.assertThat(response).hasNotExpired();
@@ -273,7 +278,12 @@ public abstract class AbstractMessageAssertTest {
       // when
       final PublishMessageResponse response =
           Utilities.sendMessage(
-              engine, client, ProcessPackMessageEvent.MESSAGE_NAME, CORRELATION_KEY);
+              engine,
+              client,
+              ProcessPackMessageEvent.MESSAGE_NAME,
+              CORRELATION_KEY,
+              Duration.ofMinutes(1),
+              Collections.emptyMap());
 
       // then
       assertThatThrownBy(() -> BpmnAssert.assertThat(response).hasExpired())
