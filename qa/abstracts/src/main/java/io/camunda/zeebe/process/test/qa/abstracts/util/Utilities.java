@@ -124,7 +124,7 @@ public class Utilities {
       final String correlationKey)
       throws InterruptedException, TimeoutException {
     return sendMessage(
-        engine, client, messageName, correlationKey, Duration.ofMinutes(1), Collections.emptyMap());
+        engine, client, messageName, correlationKey, Duration.ZERO, Collections.emptyMap());
   }
 
   public static PublishMessageResponse sendMessage(
