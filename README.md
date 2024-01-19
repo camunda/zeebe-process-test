@@ -315,6 +315,28 @@ Optional<FormMetadataValue> latestForm = findLatestFormById("<form id>");
 
 [Examples](examples/README.md)
 
+## Troubleshooting
+
+### The encoding for some characters is not working
+
+If your test fails when being run on a Windows machine, please make sure the test is executed with the charset UTF-8.
+
+For maven, the surefire plugin needs to be configured accordingly:
+
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <configuration>
+        <argLine>-Dfile.encoding=UTF-8</argLine>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+```
+
 ## Engine lifecycle
 
 The lifecycle of the engine will be fully managed by the extension. The lifecycle for both
