@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+/** This class contains utility methods for our own tests. */
 public class Utilities {
 
   public static DeploymentEvent deployResource(final ZeebeClient client, final String resource) {
@@ -117,6 +118,23 @@ public class Utilities {
     engine.waitForBusyState(duration);
   }
 
+  /**
+   * Publishes a message with the given name and correlation key. Waits for the engine to be idle
+   * afterward to ensure that the message publication is processed.
+   *
+   * <p>The message is published without a time to live and without variables. If you need to set a
+   * time to live or variables, use {@link #sendMessage(ZeebeTestEngine, ZeebeClient, String,
+   * String, Duration, Map)} instead.
+   *
+   * @param engine the engine to wait for to be idle
+   * @param client the client to use to publish the message
+   * @param messageName the name of the message to publish
+   * @param correlationKey the correlation key of the message to publish
+   * @return the response of the publish message command
+   * @throws InterruptedException if the thread is interrupted while waiting for the engine to be
+   *     idle
+   * @throws TimeoutException if the engine does not become idle within the timeout
+   */
   public static PublishMessageResponse sendMessage(
       final ZeebeTestEngine engine,
       final ZeebeClient client,
@@ -124,9 +142,27 @@ public class Utilities {
       final String correlationKey)
       throws InterruptedException, TimeoutException {
     return sendMessage(
-        engine, client, messageName, correlationKey, Duration.ofMinutes(1), Collections.emptyMap());
+        engine, client, messageName, correlationKey, Duration.ZERO, Collections.emptyMap());
   }
 
+  /**
+   * Publishes a message with the given name, correlation key, time to live, and variables. Waits
+   * for the engine to be idle afterward to ensure that the message publication is processed.
+   *
+   * <p>If you do not need to set a time to live or variables, use {@link
+   * #sendMessage(ZeebeTestEngine, ZeebeClient, String, String)} instead.
+   *
+   * @param engine the engine to wait for to be idle
+   * @param client the client to use to publish the message
+   * @param messageName the name of the message to publish
+   * @param correlationKey the correlation key of the message to publish
+   * @param timeToLive the time until the message expires after publication
+   * @param variables the variables to pass along as payload of the message to publish
+   * @return the response of the publish message command
+   * @throws InterruptedException if the thread is interrupted while waiting for the engine to be
+   *     idle
+   * @throws TimeoutException if the engine does not become idle within the timeout
+   */
   public static PublishMessageResponse sendMessage(
       final ZeebeTestEngine engine,
       final ZeebeClient client,
