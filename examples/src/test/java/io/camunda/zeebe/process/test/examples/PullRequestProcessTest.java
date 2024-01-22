@@ -225,12 +225,33 @@ public class PullRequestProcessTest {
   private PublishMessageResponse sendMessage(
       final String messageName, final String correlationKey, final Map<String, Object> variables)
       throws InterruptedException, TimeoutException {
+
+    /*
+     To avoid flaky tests, we recommend publishing messages without a time to live when using time
+     manipulation in the same test case. Alternatively, you could plan out the timings of your time
+     manipulation and the published message's expiry.
+
+     In these tests, we assume that a timer event has triggered after the {@code increaseTime}
+     method returns. However, this is not guaranteed if a time to live is set because the message
+     could expire. Depending on the time to live, the message can expire due to time manipulation.
+
+     The {@code increaseTime} method will return after waiting for the engine to become idle again.
+     However, message expiry can cause the engine to be busy followed by being idle again. So, the
+     increaseTime method can return before the timer event has triggered when a message expires
+     due to time manipulation. This can be the cause of a flaky test.
+
+     Note that by default, the time to live is set to 1 hour.
+     See {@code ZeebeClientBuilder#defaultTimeToLive}.
+    */
+    final Duration timeToLive = Duration.ZERO;
+
     final PublishMessageResponse response =
         client
             .newPublishMessageCommand()
             .messageName(messageName)
             .correlationKey(correlationKey)
             .variables(variables)
+            .timeToLive(timeToLive)
             .send()
             .join();
     waitForIdleState(Duration.ofSeconds(1));
