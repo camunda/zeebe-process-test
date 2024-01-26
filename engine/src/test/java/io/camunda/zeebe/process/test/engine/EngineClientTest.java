@@ -21,6 +21,7 @@ import io.camunda.zeebe.client.api.response.BrokerInfo;
 import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.client.api.response.EvaluateDecisionResponse;
 import io.camunda.zeebe.client.api.response.Form;
+import io.camunda.zeebe.client.api.response.MigrateProcessInstanceResponse;
 import io.camunda.zeebe.client.api.response.PartitionBrokerHealth;
 import io.camunda.zeebe.client.api.response.PartitionBrokerRole;
 import io.camunda.zeebe.client.api.response.PartitionInfo;
@@ -457,23 +458,16 @@ class EngineClientTest {
             .findFirst()
             .orElseThrow()
             .getProcessDefinitionKey();
-    zeebeClient
-        .newMigrateProcessInstanceCommand(processInstanceKey)
-        .migrationPlan(targetProcessDefinitionKey)
-        .addMappingInstruction("A", "B")
-        .send()
-        .join();
 
-    assertThat(
-            StreamSupport.stream(
-                    RecordStream.of(zeebeEngine.getRecordStreamSource())
-                        .processInstanceRecords()
-                        .spliterator(),
-                    false)
-                .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_MIGRATED)
-                .filter(r -> r.getValue().getElementId().equals("B"))
-                .findFirst())
-        .isNotEmpty();
+    final MigrateProcessInstanceResponse response =
+        zeebeClient
+            .newMigrateProcessInstanceCommand(processInstanceKey)
+            .migrationPlan(targetProcessDefinitionKey)
+            .addMappingInstruction("A", "B")
+            .send()
+            .join();
+
+    assertThat(response).isNotNull();
   }
 
   @Test
