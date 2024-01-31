@@ -35,9 +35,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** This class contains utility methods for our own tests. */
 public class Utilities {
+
+  private static final Logger LOG = LoggerFactory.getLogger(Utilities.class);
 
   public static DeploymentEvent deployResource(final ZeebeClient client, final String resource) {
     return deployResources(client, resource);
@@ -188,12 +192,24 @@ public class Utilities {
       throws InterruptedException {
     try {
       waitForIdleState(engine, Duration.ofSeconds(1));
-      engine.increaseTime(duration);
+    } catch (final TimeoutException e) {
+      // #960 Logging warning for unexpected case when 1 second was not enough
+      LOG.warn("Timeout reached when waiting for idle state", e);
+    }
+
+    engine.increaseTime(duration);
+
+    try {
       waitForBusyState(engine, Duration.ofSeconds(1));
+    } catch (final TimeoutException e) {
+      // #960 Logging warning for unexpected case when 1 second was not enough
+      LOG.warn("Timeout reached while waiting for busy state after time increase", e);
+    }
+    try {
       waitForIdleState(engine, Duration.ofSeconds(1));
     } catch (final TimeoutException e) {
-      // Do nothing. We've waited up to 1 second for processing to start, if it didn't start in this
-      // time the engine probably has not got anything left to process.
+      // #960 Logging warning for unexpected case when 1 second was not enough
+      LOG.warn("Timeout reached while waiting for idle state after time increase", e);
     }
   }
 

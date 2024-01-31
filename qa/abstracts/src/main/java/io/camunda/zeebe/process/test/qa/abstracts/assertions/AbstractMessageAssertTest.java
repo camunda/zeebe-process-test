@@ -22,6 +22,7 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMessageEvent;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMessageStartEvent;
@@ -307,6 +308,9 @@ public abstract class AbstractMessageAssertTest {
               timeToLive,
               Collections.emptyMap());
       Utilities.increaseTime(engine, timeToLive.plusMinutes(1));
+
+      // Logging current stream of events for assert troubleshooting
+      RecordStream.of(engine.getRecordStreamSource()).print(true);
 
       // then
       assertThatThrownBy(() -> BpmnAssert.assertThat(response).hasNotExpired())
