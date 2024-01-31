@@ -309,7 +309,7 @@ public abstract class AbstractMessageAssertTest {
               Collections.emptyMap());
       Utilities.increaseTime(engine, timeToLive.plusMinutes(1));
 
-      // Logging current stream of events for assert troubleshooting
+      // #960 logging current stream of events for assert troubleshooting
       RecordStream.of(engine.getRecordStreamSource()).print(true);
 
       // then
