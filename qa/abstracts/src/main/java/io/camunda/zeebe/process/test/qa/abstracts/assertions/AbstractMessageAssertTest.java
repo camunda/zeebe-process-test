@@ -22,6 +22,7 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
+import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMessageEvent;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackMessageStartEvent;
@@ -309,9 +310,17 @@ public abstract class AbstractMessageAssertTest {
       Utilities.increaseTime(engine, timeToLive.plusMinutes(1));
 
       // then
-      assertThatThrownBy(() -> BpmnAssert.assertThat(response).hasNotExpired())
-          .isInstanceOf(AssertionError.class)
-          .hasMessage("Message with key %d has expired", response.getMessageKey());
+      try {
+        assertThatThrownBy(() -> BpmnAssert.assertThat(response).hasNotExpired())
+            .isInstanceOf(AssertionError.class)
+            .hasMessage("Message with key %d has expired", response.getMessageKey());
+      } catch (final Exception e) {
+        // Logging current stream of events for assert troubleshooting for this flaky test
+        // https://github.com/camunda/zeebe-process-test/issues/960
+        // this code should be removed once the flakiness is resolved
+        RecordStream.of(engine.getRecordStreamSource()).print(true);
+        throw e;
+      }
     }
 
     @Test
