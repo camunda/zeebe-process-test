@@ -17,7 +17,7 @@ and provide you with a set of assertions you can use to verify your process beha
 
 ### Dependency
 
-Zeepe Process Test provides you with two dependencies. Which one you need to use is dependent on the
+Zeebe Process Test provides you with two dependencies. Which one you need to use is dependent on the
 Java version you are using.
 
 #### Embedded (JDK 21+)
