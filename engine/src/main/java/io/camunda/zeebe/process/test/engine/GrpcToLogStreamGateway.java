@@ -47,6 +47,7 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesResponse;
+import io.camunda.zeebe.msgpack.value.StringValue;
 import io.camunda.zeebe.msgpack.value.ValueArray;
 import io.camunda.zeebe.protocol.impl.encoding.MsgPackConverter;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
@@ -85,6 +86,7 @@ import io.camunda.zeebe.protocol.record.value.VariableDocumentUpdateSemantic;
 import io.camunda.zeebe.util.VersionUtil;
 import io.camunda.zeebe.util.buffer.BufferUtil;
 import io.grpc.stub.StreamObserver;
+import java.util.List;
 
 class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
@@ -126,6 +128,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     jobBatchRecord.setWorker(request.getWorker());
     jobBatchRecord.setTimeout(request.getTimeout());
     jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
+    setJobBatchRecordVariables(jobBatchRecord, request.getFetchVariableList());
 
     writer.writeCommandWithoutKey(jobBatchRecord, recordMetadata);
   }
@@ -506,6 +509,14 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
             .requestId(requestId)
             .valueType(ValueType.SIGNAL)
             .intent(SignalIntent.BROADCAST));
+  }
+
+  private void setJobBatchRecordVariables(
+      final JobBatchRecord jobBatchRecord, final List<String> fetchVariables) {
+    final ValueArray<StringValue> variables = jobBatchRecord.variables();
+    fetchVariables.stream()
+        .map(BufferUtil::wrapString)
+        .forEach(buffer -> variables.add().wrap(buffer));
   }
 
   private ProcessInstanceModificationRecord createProcessInstanceModificationRecord(
