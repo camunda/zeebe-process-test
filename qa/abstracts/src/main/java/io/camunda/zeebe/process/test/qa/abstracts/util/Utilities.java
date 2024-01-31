@@ -193,8 +193,12 @@ public class Utilities {
     try {
       waitForIdleState(engine, Duration.ofSeconds(1));
     } catch (final TimeoutException e) {
-      // #960 Logging warning for unexpected case when 1 second was not enough
-      LOG.warn("Timeout reached when waiting for idle state", e);
+      // Logging warning for unexpected case while 1 second was not enough.
+      // This is done for troubleshooting the following issue:
+      // https://github.com/camunda/zeebe-process-test/issues/960
+      // These changes should be reverted when the root cause of the flakiness of
+      // the UnhappyPathTests.testHasNotExpiredFailure is clear
+      LOG.warn("Timeout reached while waiting for idle state", e);
     }
 
     engine.increaseTime(duration);
@@ -202,13 +206,21 @@ public class Utilities {
     try {
       waitForBusyState(engine, Duration.ofSeconds(1));
     } catch (final TimeoutException e) {
-      // #960 Logging warning for unexpected case when 1 second was not enough
+      // Logging warning for unexpected case when 1 second was not enough.
+      // This is done for troubleshooting the following issue:
+      // https://github.com/camunda/zeebe-process-test/issues/960
+      // These changes should be reverted when the root cause of the flakiness of
+      // the UnhappyPathTests.testHasNotExpiredFailure is clear
       LOG.warn("Timeout reached while waiting for busy state after time increase", e);
     }
     try {
       waitForIdleState(engine, Duration.ofSeconds(1));
     } catch (final TimeoutException e) {
-      // #960 Logging warning for unexpected case when 1 second was not enough
+      // Logging warning for unexpected case when 1 second was not enough.
+      // This is done for troubleshooting the following issue:
+      // https://github.com/camunda/zeebe-process-test/issues/960
+      // These changes should be reverted when the root cause of the flakiness of
+      // the UnhappyPathTests.testHasNotExpiredFailure is clear
       LOG.warn("Timeout reached while waiting for idle state after time increase", e);
     }
   }

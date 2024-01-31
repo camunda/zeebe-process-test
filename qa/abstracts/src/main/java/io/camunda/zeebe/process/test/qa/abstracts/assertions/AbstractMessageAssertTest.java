@@ -309,13 +309,18 @@ public abstract class AbstractMessageAssertTest {
               Collections.emptyMap());
       Utilities.increaseTime(engine, timeToLive.plusMinutes(1));
 
-      // #960 logging current stream of events for assert troubleshooting
-      RecordStream.of(engine.getRecordStreamSource()).print(true);
-
       // then
-      assertThatThrownBy(() -> BpmnAssert.assertThat(response).hasNotExpired())
-          .isInstanceOf(AssertionError.class)
-          .hasMessage("Message with key %d has expired", response.getMessageKey());
+      try {
+        assertThatThrownBy(() -> BpmnAssert.assertThat(response).hasNotExpired())
+            .isInstanceOf(AssertionError.class)
+            .hasMessage("Message with key %d has expired", response.getMessageKey());
+      } catch (final Exception e) {
+        // Logging current stream of events for assert troubleshooting for this flaky test
+        // https://github.com/camunda/zeebe-process-test/issues/960
+        // this code should be removed once the flakiness is resolved
+        RecordStream.of(engine.getRecordStreamSource()).print(true);
+        throw e;
+      }
     }
 
     @Test
