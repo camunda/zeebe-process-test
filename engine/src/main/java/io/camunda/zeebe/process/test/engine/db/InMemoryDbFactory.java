@@ -9,22 +9,23 @@ package io.camunda.zeebe.process.test.engine.db;
 
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.db.ZeebeDbFactory;
+import io.camunda.zeebe.protocol.EnumValue;
 import java.io.File;
 
-public class InMemoryDbFactory<ColumnFamilyTpe extends Enum<ColumnFamilyTpe>>
-    implements ZeebeDbFactory<ColumnFamilyTpe> {
+public class InMemoryDbFactory<ColumnFamilyType extends Enum<? extends EnumValue> & EnumValue>
+    implements ZeebeDbFactory<ColumnFamilyType> {
 
-  public ZeebeDb<ColumnFamilyTpe> createDb() {
+  public ZeebeDb<ColumnFamilyType> createDb() {
     return createDb(null);
   }
 
   @Override
-  public ZeebeDb<ColumnFamilyTpe> createDb(final File pathName) {
+  public ZeebeDb<ColumnFamilyType> createDb(final File pathName) {
     return new InMemoryDb<>();
   }
 
   @Override
-  public ZeebeDb<ColumnFamilyTpe> openSnapshotOnlyDb(final File path) {
+  public ZeebeDb<ColumnFamilyType> openSnapshotOnlyDb(final File path) {
     throw new UnsupportedOperationException("Snapshots are not supported with in-memory databases");
   }
 }
