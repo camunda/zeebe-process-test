@@ -102,6 +102,7 @@ import io.camunda.zeebe.util.VersionUtil;
 import io.camunda.zeebe.util.buffer.BufferUtil;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
@@ -151,6 +152,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     jobBatchRecord.setWorker(request.getWorker());
     jobBatchRecord.setTimeout(request.getTimeout());
     jobBatchRecord.setMaxJobsToActivate(request.getMaxJobsToActivate());
+    setJobBatchRecordVariables(jobBatchRecord, request.getFetchVariableList());
 
     writer.writeCommandWithoutKey(jobBatchRecord, recordMetadata);
   }
@@ -599,6 +601,14 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
             .requestId(requestId)
             .valueType(ValueType.SIGNAL)
             .intent(SignalIntent.BROADCAST));
+  }
+
+  private void setJobBatchRecordVariables(
+      final JobBatchRecord jobBatchRecord, final List<String> fetchVariables) {
+    final ValueArray<StringValue> variables = jobBatchRecord.variables();
+    fetchVariables.stream()
+        .map(BufferUtil::wrapString)
+        .forEach(buffer -> variables.add().wrap(buffer));
   }
 
   private ProcessInstanceModificationRecord createProcessInstanceModificationRecord(
