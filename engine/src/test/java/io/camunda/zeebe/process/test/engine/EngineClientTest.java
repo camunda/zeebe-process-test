@@ -897,6 +897,58 @@ class EngineClientTest {
   }
 
   @Test
+  void shouldReturnOnlySpecifiedVariablesOnJobActivation() {
+    // given
+    zeebeClient
+        .newDeployResourceCommand()
+        .addProcessModel(
+            Bpmn.createExecutableProcess("simpleProcess")
+                .startEvent()
+                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .endEvent()
+                .done(),
+            "simpleProcess.bpmn")
+        .send()
+        .join();
+
+    zeebeClient
+        .newCreateInstanceCommand()
+        .bpmnProcessId("simpleProcess")
+        .latestVersion()
+        .variables(
+            Map.ofEntries(
+                Map.entry("var_a", "val_a"),
+                Map.entry("var_b", "val_b"),
+                Map.entry("var_c", "val_c"),
+                Map.entry("var_d", "val_d")))
+        .send()
+        .join();
+
+    Awaitility.await()
+        .untilAsserted(
+            () -> {
+              // when
+              final ActivateJobsResponse activateJobsResponse =
+                  zeebeClient
+                      .newActivateJobsCommand()
+                      .jobType("jobType")
+                      .maxJobsToActivate(32)
+                      .timeout(Duration.ofMinutes(1))
+                      .workerName("yolo")
+                      .fetchVariables(List.of("var_b", "var_d"))
+                      .send()
+                      .join();
+
+              // then
+              final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
+              assertThat(jobs)
+                  .first()
+                  .extracting(ActivatedJob::getVariablesAsMap)
+                  .isEqualTo(Map.of("var_b", "val_b", "var_d", "val_d"));
+            });
+  }
+
+  @Test
   void shouldUpdateDeadlineOnJob() {
     // given
     zeebeClient
