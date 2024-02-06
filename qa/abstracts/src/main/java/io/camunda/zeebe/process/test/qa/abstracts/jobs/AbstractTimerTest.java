@@ -32,14 +32,13 @@ import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractTimerTest {
 
@@ -50,24 +49,28 @@ public abstract class AbstractTimerTest {
   private ZeebeTestEngine engine;
   private RecordStream recordStream;
 
-  private static Stream<Arguments> dates() {
-    return Stream.of(
-        Arguments.of(OffsetDateTime.of(2023, 10, 5, 15, 50, 0, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 10, 31, 0, 0, 0, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 10, 31, 23, 0, 0, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 10, 31, 23, 59, 0, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 10, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 12, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"))));
-  }
-
   @BeforeEach
   void deployProcesses() {
     final DeploymentEvent deploymentEvent = Utilities.deployResource(client, RESOURCE);
     BpmnAssert.assertThat(deploymentEvent).containsProcessesByResourceName(RESOURCE);
   }
 
-  @ParameterizedTest
-  @MethodSource("dates")
+  @Test
+  void shouldCompareTimersDueDatesCorrectlyForDifferentNowDates() throws Exception {
+    final List<OffsetDateTime> dates =
+        Arrays.asList(
+            OffsetDateTime.of(2023, 10, 5, 15, 50, 0, 0, ZoneOffset.of("+02:00")),
+            OffsetDateTime.of(2023, 10, 31, 0, 0, 0, 0, ZoneOffset.of("+02:00")),
+            OffsetDateTime.of(2023, 10, 31, 23, 0, 0, 0, ZoneOffset.of("+02:00")),
+            OffsetDateTime.of(2023, 10, 31, 23, 59, 0, 0, ZoneOffset.of("+02:00")),
+            OffsetDateTime.of(2023, 10, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00")),
+            OffsetDateTime.of(2023, 12, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00")));
+
+    for (final OffsetDateTime nowDate : dates) {
+      shouldCompareTimersDueDatesCorrectlyForDifferentNowDates(nowDate);
+    }
+  }
+
   void shouldCompareTimersDueDatesCorrectlyForDifferentNowDates(final OffsetDateTime nowDate)
       throws Exception {
 
