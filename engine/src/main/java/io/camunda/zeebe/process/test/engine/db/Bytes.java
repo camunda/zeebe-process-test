@@ -21,6 +21,11 @@ final class Bytes implements Comparable<Bytes> {
   }
 
   @Override
+  public int hashCode() {
+    return Arrays.hashCode(byteArray);
+  }
+
+  @Override
   public boolean equals(final Object o) {
     if (this == o) {
       return true;
@@ -35,40 +40,8 @@ final class Bytes implements Comparable<Bytes> {
   }
 
   @Override
-  public int hashCode() {
-    return Arrays.hashCode(byteArray);
-  }
-
-  @Override
   public int compareTo(final Bytes other) {
-
-    final int EQUAL = 0;
-    final int SMALLER = -1;
-    final int BIGGER = 1;
-
-    final byte[] otherByteArray = other.byteArray;
-
-    for (int i = 0; i < byteArray.length; i++) {
-      if (i >= otherByteArray.length) {
-        return BIGGER;
-      }
-
-      final byte ourByte = byteArray[i];
-      final byte otherByte = otherByteArray[i];
-
-      if (ourByte < otherByte) {
-        return SMALLER;
-      } else if (ourByte > otherByte) {
-        return BIGGER;
-      } // else { // = equals -> continue }
-    }
-
-    if (byteArray.length == otherByteArray.length) {
-      return EQUAL;
-    } else {
-      // the other must be a longer array then
-      return SMALLER;
-    }
+    return Arrays.compareUnsigned(byteArray, other.byteArray);
   }
 
   byte[] toBytes() {
