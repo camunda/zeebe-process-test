@@ -9,6 +9,7 @@ package io.camunda.zeebe.process.test.engine.db;
 
 import io.camunda.zeebe.db.*;
 import io.camunda.zeebe.db.impl.DbNil;
+import io.camunda.zeebe.protocol.EnumValue;
 import java.io.File;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -28,7 +29,7 @@ import java.util.TreeMap;
  *
  * @param <ColumnFamilyType>
  */
-final class InMemoryDb<ColumnFamilyType extends Enum<ColumnFamilyType>>
+final class InMemoryDb<ColumnFamilyType extends Enum<ColumnFamilyType> & EnumValue>
     implements ZeebeDb<ColumnFamilyType> {
 
   private final TreeMap<Bytes, Bytes> database = new TreeMap<>();
