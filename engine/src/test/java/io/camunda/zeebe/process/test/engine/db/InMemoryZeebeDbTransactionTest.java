@@ -15,6 +15,7 @@ import io.camunda.zeebe.db.TransactionContext;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.db.ZeebeDbTransaction;
 import io.camunda.zeebe.db.impl.DbLong;
+import io.camunda.zeebe.protocol.EnumValue;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -512,10 +513,21 @@ public final class InMemoryZeebeDbTransactionTest {
         });
   }
 
-  private enum ColumnFamilies {
-    DEFAULT, // rocksDB needs a default column family
-    ONE,
-    TWO,
-    THREE
+  private enum ColumnFamilies implements EnumValue {
+    DEFAULT(0), // rocksDB needs a default column family
+    ONE(1),
+    TWO(2),
+    THREE(3);
+
+    private final int value;
+
+    ColumnFamilies(final int value) {
+      this.value = value;
+    }
+
+    @Override
+    public int getValue() {
+      return value;
+    }
   }
 }
