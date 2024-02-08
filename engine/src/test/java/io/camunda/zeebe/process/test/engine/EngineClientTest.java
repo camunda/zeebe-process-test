@@ -772,6 +772,7 @@ class EngineClientTest {
                 .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
                 .boundaryEvent("error")
                 .error("0xCAFE")
+                .zeebeOutputExpression("error_var", "error_var")
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
@@ -809,6 +810,7 @@ class EngineClientTest {
                   .newThrowErrorCommand(job.getKey())
                   .errorCode("0xCAFE")
                   .errorMessage("What just happened.")
+                  .variable("error_var", "Out of coffee")
                   .send()
                   .join();
 
@@ -831,6 +833,23 @@ class EngineClientTest {
                                 .findFirst();
 
                         assertThat(boundaryEvent).isNotEmpty();
+
+                        final var errorVariable =
+                            StreamSupport.stream(
+                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
+                                        .variableRecords()
+                                        .spliterator(),
+                                    false)
+                                .filter(r -> r.getValue().getName().equals("error_var"))
+                                .findFirst();
+
+                        assertThat(errorVariable)
+                            .describedAs("Expect that the error variable is set")
+                            .isPresent()
+                            .hasValueSatisfying(
+                                record ->
+                                    assertThat(record.getValue().getValue())
+                                        .isEqualTo("\"Out of coffee\""));
                       });
             });
   }
