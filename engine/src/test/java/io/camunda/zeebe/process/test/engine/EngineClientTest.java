@@ -725,10 +725,10 @@ class EngineClientTest {
         .newCreateInstanceCommand()
         .bpmnProcessId("simpleProcess")
         .latestVersion()
-        .variables(Map.of("test", 1))
         .send()
         .join();
 
+    // when
     Awaitility.await()
         .untilAsserted(
             () -> {
@@ -739,7 +739,6 @@ class EngineClientTest {
                       .maxJobsToActivate(32)
                       .timeout(Duration.ofMinutes(1))
                       .workerName("yolo")
-                      .fetchVariables(List.of("test"))
                       .send()
                       .join();
 
@@ -747,7 +746,6 @@ class EngineClientTest {
               assertThat(jobs).isNotEmpty();
               final ActivatedJob job = jobs.get(0);
 
-              // when - then
               zeebeClient
                   .newThrowErrorCommand(job.getKey())
                   .errorCode("0xCAFE")
@@ -755,44 +753,43 @@ class EngineClientTest {
                   .variable("error_var", "Out of coffee")
                   .send()
                   .join();
+            });
 
-              Awaitility.await()
-                  .untilAsserted(
-                      () -> {
-                        final Optional<Record<ProcessInstanceRecordValue>> boundaryEvent =
-                            StreamSupport.stream(
-                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
-                                        .processInstanceRecords()
-                                        .spliterator(),
-                                    false)
-                                .filter(
-                                    r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
-                                .filter(
-                                    r ->
-                                        r.getValue().getBpmnElementType()
-                                            == BpmnElementType.BOUNDARY_EVENT)
-                                .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.ERROR)
-                                .findFirst();
+    // then
+    Awaitility.await()
+        .untilAsserted(
+            () -> {
+              final Optional<Record<ProcessInstanceRecordValue>> boundaryEvent =
+                  StreamSupport.stream(
+                          RecordStream.of(zeebeEngine.getRecordStreamSource())
+                              .processInstanceRecords()
+                              .spliterator(),
+                          false)
+                      .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
+                      .filter(
+                          r -> r.getValue().getBpmnElementType() == BpmnElementType.BOUNDARY_EVENT)
+                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.ERROR)
+                      .findFirst();
 
-                        assertThat(boundaryEvent).isNotEmpty();
+              assertThat(boundaryEvent)
+                  .describedAs("Expect that the error boundary event is completed")
+                  .isNotEmpty();
 
-                        final var errorVariable =
-                            StreamSupport.stream(
-                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
-                                        .variableRecords()
-                                        .spliterator(),
-                                    false)
-                                .filter(r -> r.getValue().getName().equals("error_var"))
-                                .findFirst();
+              final var errorVariable =
+                  StreamSupport.stream(
+                          RecordStream.of(zeebeEngine.getRecordStreamSource())
+                              .variableRecords()
+                              .spliterator(),
+                          false)
+                      .filter(r -> r.getValue().getName().equals("error_var"))
+                      .findFirst();
 
-                        assertThat(errorVariable)
-                            .describedAs("Expect that the error variable is set")
-                            .isPresent()
-                            .hasValueSatisfying(
-                                record ->
-                                    assertThat(record.getValue().getValue())
-                                        .isEqualTo("\"Out of coffee\""));
-                      });
+              assertThat(errorVariable)
+                  .describedAs("Expect that the error variable is set")
+                  .isPresent()
+                  .hasValueSatisfying(
+                      record ->
+                          assertThat(record.getValue().getValue()).isEqualTo("\"Out of coffee\""));
             });
   }
 
