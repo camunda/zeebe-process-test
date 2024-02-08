@@ -327,6 +327,11 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     jobRecord.setErrorCode(BufferUtil.wrapString(request.getErrorCode()));
     jobRecord.setErrorMessage(request.getErrorMessage());
 
+    final String variables = request.getVariables();
+    if (!variables.isEmpty()) {
+      jobRecord.setVariables(BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+    }
+
     writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
   }
 
