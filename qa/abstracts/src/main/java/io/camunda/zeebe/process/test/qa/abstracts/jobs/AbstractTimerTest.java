@@ -67,12 +67,11 @@ public abstract class AbstractTimerTest {
             OffsetDateTime.of(2023, 12, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00")));
 
     for (final OffsetDateTime nowDate : dates) {
-      shouldCompareTimersDueDatesCorrectlyForDifferentNowDates(nowDate);
+      completeProcessAfterAdjustingNowTime(nowDate);
     }
   }
 
-  void shouldCompareTimersDueDatesCorrectlyForDifferentNowDates(final OffsetDateTime nowDate)
-      throws Exception {
+  private void completeProcessAfterAdjustingNowTime(final OffsetDateTime nowDate) throws Exception {
 
     Utilities.increaseTime(engine, Duration.between(OffsetDateTime.now(), nowDate));
 
