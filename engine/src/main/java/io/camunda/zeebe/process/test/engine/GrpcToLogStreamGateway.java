@@ -170,7 +170,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
     final String variables = request.getVariables();
     if (!variables.isEmpty()) {
-      jobRecord.setVariables(BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+      jobRecord.setVariables(convertVariablesToMessagePack(variables));
     }
 
     writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
@@ -329,7 +329,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
     final String variables = request.getVariables();
     if (!variables.isEmpty()) {
-      jobRecord.setVariables(BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+      jobRecord.setVariables(convertVariablesToMessagePack(variables));
     }
 
     writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
@@ -356,8 +356,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     messageRecord.setTimeToLive(request.getTimeToLive());
     final String variables = request.getVariables();
     if (!variables.isEmpty()) {
-      messageRecord.setVariables(
-          BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+      messageRecord.setVariables(convertVariablesToMessagePack(variables));
     }
 
     writer.writeCommandWithoutKey(messageRecord, recordMetadata);
@@ -398,8 +397,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
     final String variables = request.getVariables();
     if (!variables.isEmpty()) {
-      variableDocumentRecord.setVariables(
-          BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+      variableDocumentRecord.setVariables(convertVariablesToMessagePack(variables));
     }
 
     variableDocumentRecord.setScopeKey(request.getElementInstanceKey());
@@ -504,8 +502,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     final SignalRecord command = new SignalRecord().setSignalName(request.getSignalName());
 
     if (!request.getVariables().isEmpty()) {
-      command.setVariables(
-          BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(request.getVariables())));
+      command.setVariables(convertVariablesToMessagePack(request.getVariables()));
     }
 
     writer.writeCommandWithoutKey(
@@ -537,9 +534,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
         instruction.addVariableInstruction(
             new ProcessInstanceModificationVariableInstruction()
                 .setElementId(variable.getScopeId())
-                .setVariables(
-                    BufferUtil.wrapArray(
-                        MsgPackConverter.convertToMsgPack(variable.getVariables()))));
+                .setVariables(convertVariablesToMessagePack(variable.getVariables())));
       }
 
       record.addActivateInstruction(instruction);
@@ -576,8 +571,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
     final String variables = request.getVariables();
     if (!variables.isEmpty()) {
-      processInstanceCreationRecord.setVariables(
-          BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+      processInstanceCreationRecord.setVariables(convertVariablesToMessagePack(variables));
     }
     return processInstanceCreationRecord;
   }
@@ -594,10 +588,14 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
     final String variables = request.getVariables();
     if (!variables.isEmpty()) {
-      record.setVariables(BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables)));
+      record.setVariables(convertVariablesToMessagePack(variables));
     }
 
     return record;
+  }
+
+  private static DirectBuffer convertVariablesToMessagePack(final String variables) {
+    return BufferUtil.wrapArray(MsgPackConverter.convertToMsgPack(variables));
   }
 
   public String getAddress() {
