@@ -87,6 +87,7 @@ import io.camunda.zeebe.util.VersionUtil;
 import io.camunda.zeebe.util.buffer.BufferUtil;
 import io.grpc.stub.StreamObserver;
 import java.util.List;
+import org.agrona.DirectBuffer;
 
 class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
 
