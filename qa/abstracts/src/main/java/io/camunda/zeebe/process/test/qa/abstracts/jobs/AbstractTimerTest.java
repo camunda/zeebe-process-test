@@ -78,7 +78,12 @@ public abstract class AbstractTimerTest {
 
     client.newCreateInstanceCommand().bpmnProcessId(PROCESS_ID).latestVersion().send().join();
 
-    final ActivateJobsResponse response = Utilities.activateSingleJob(client, "SimpleLog01");
+    final ActivateJobsResponse response =
+        Awaitility.await()
+            .until(
+                () -> Utilities.activateSingleJob(client, "SimpleLog01"),
+                r -> r.getJobs().size() == 1);
+
     final long key = response.getJobs().get(0).getKey();
 
     client.newCompleteCommand(key).send().join();
