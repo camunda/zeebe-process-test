@@ -749,7 +749,7 @@ class EngineClientTest {
                   .newThrowErrorCommand(job.getKey())
                   .errorCode("0xCAFE")
                   .errorMessage("What just happened.")
-                  .variable("error_var", "Out of coffee")
+                  .variables(Map.of("error_var", "Out of coffee"))
                   .send()
                   .join();
             });
