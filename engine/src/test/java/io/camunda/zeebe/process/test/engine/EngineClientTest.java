@@ -9,6 +9,7 @@ package io.camunda.zeebe.process.test.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -36,8 +37,10 @@ import io.camunda.zeebe.process.test.filters.JobRecordStreamFilter;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
+import io.camunda.zeebe.protocol.record.intent.Intent;
 import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
+import io.camunda.zeebe.protocol.record.intent.SignalIntent;
 import io.camunda.zeebe.protocol.record.intent.TimerIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.BpmnEventType;
@@ -68,12 +71,14 @@ class EngineClientTest {
 
   private ZeebeTestEngine zeebeEngine;
   private ZeebeClient zeebeClient;
+  private GrpcResponseWriter grpcResponseWriter;
 
   @BeforeEach
   void setupGrpcServer() {
     zeebeEngine = EngineFactory.create();
     zeebeEngine.start();
     zeebeClient = zeebeEngine.createClient();
+    grpcResponseWriter = ((InMemoryEngine) zeebeEngine).getGrpcResponseWriter();
   }
 
   @AfterEach
@@ -1229,6 +1234,29 @@ class EngineClientTest {
 
     // then
     assertThat(response.getKey()).isPositive();
+  }
+
+  @Test
+  public void shouldNotSendResponseWhenThereNoCorrespondingRequest() throws InterruptedException {
+    // given
+    zeebeClient
+        .newDeployResourceCommand()
+        .addProcessModel(
+            Bpmn.createExecutableProcess("process")
+                .startEvent()
+                .intermediateThrowEvent("signal", b -> b.signal("signalName"))
+                .endEvent()
+                .done(),
+            "process.bpmn")
+        .send()
+        .join();
+
+    // when
+    zeebeClient.newCreateInstanceCommand().bpmnProcessId("process").latestVersion().send().join();
+
+    // then
+    final List<Intent> responseIntents = grpcResponseWriter.getIntents();
+    assertFalse(responseIntents.contains(SignalIntent.BROADCASTED));
   }
 
   @Test
