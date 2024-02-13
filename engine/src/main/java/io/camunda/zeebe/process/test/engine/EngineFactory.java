@@ -99,7 +99,8 @@ public class EngineFactory {
         scheduler,
         recordStream,
         clock,
-        engineStateMonitor);
+        engineStateMonitor,
+        grpcResponseWriter);
   }
 
   private static ControlledActorClock createActorClock() {

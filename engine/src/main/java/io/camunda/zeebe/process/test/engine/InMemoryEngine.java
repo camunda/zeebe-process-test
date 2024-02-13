@@ -41,6 +41,7 @@ public class InMemoryEngine implements ZeebeTestEngine {
   private final RecordStreamSource recordStream;
   private final ControlledActorClock clock;
   private final EngineStateMonitor engineStateMonitor;
+  private final GrpcResponseWriter grpcResponseWriter;
 
   public InMemoryEngine(
       final Server grpcServer,
@@ -51,7 +52,8 @@ public class InMemoryEngine implements ZeebeTestEngine {
       final ActorScheduler scheduler,
       final RecordStreamSource recordStream,
       final ControlledActorClock clock,
-      final EngineStateMonitor engineStateMonitor) {
+      final EngineStateMonitor engineStateMonitor,
+      final GrpcResponseWriter grpcResponseWriter) {
     this.grpcServer = grpcServer;
     this.streamProcessor = streamProcessor;
     this.gateway = gateway;
@@ -61,6 +63,7 @@ public class InMemoryEngine implements ZeebeTestEngine {
     this.recordStream = recordStream;
     this.clock = clock;
     this.engineStateMonitor = engineStateMonitor;
+    this.grpcResponseWriter = grpcResponseWriter;
   }
 
   @Override
@@ -151,5 +154,9 @@ public class InMemoryEngine implements ZeebeTestEngine {
       // Do nothing. ExecutionExceptions won't appear. The function only completes the future, which
       // in itself does not throw any exceptions.
     }
+  }
+
+  public GrpcResponseWriter getGrpcResponseWriter() {
+    return grpcResponseWriter;
   }
 }
