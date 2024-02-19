@@ -9,7 +9,6 @@ package io.camunda.zeebe.process.test.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -1238,7 +1237,7 @@ class EngineClientTest {
   }
 
   @Test
-  public void shouldNotSendResponseWhenThereNoCorrespondingRequest() {
+  public void shouldNotSendResponseWhenNoCorrespondingRequest() {
     // given
     zeebeClient
         .newDeployResourceCommand()
@@ -1273,7 +1272,7 @@ class EngineClientTest {
               assertThat(processCompleted).isNotEmpty();
             });
 
-    assertFalse(responseIntents.contains(SignalIntent.BROADCASTED));
+    assertThat(responseIntents).doesNotContain(SignalIntent.BROADCASTED);
   }
 
   @Test
