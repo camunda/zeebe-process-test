@@ -110,13 +110,13 @@ class GrpcResponseWriter implements CommandResponseWriter {
     }
 
     try {
+      if (requestListener != null) {
+        requestListener.accept(intent);
+      }
       final Request request = gatewayRequestStore.removeRequest(requestId);
       final GeneratedMessageV3 response =
           responseMapper.map(request.requestType(), valueBufferView, key, intent);
       sendResponse(request, response);
-      if (requestListener != null) {
-        requestListener.accept(intent);
-      }
     } catch (final Exception e) {
       throw new RuntimeException(e);
     }
