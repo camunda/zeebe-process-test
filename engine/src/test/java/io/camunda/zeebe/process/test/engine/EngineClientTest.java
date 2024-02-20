@@ -71,12 +71,10 @@ class EngineClientTest {
 
   private ZeebeTestEngine zeebeEngine;
   private ZeebeClient zeebeClient;
-  private List<Intent> responseIntents;
 
   @BeforeEach
   void setupGrpcServer() {
-    responseIntents = new ArrayList<>();
-    zeebeEngine = EngineFactory.create(responseIntents::add);
+    zeebeEngine = EngineFactory.create();
     zeebeEngine.start();
     zeebeClient = zeebeEngine.createClient();
   }
@@ -1238,6 +1236,11 @@ class EngineClientTest {
 
   @Test
   public void shouldNotSendResponseWhenNoCorrespondingRequest() {
+    final List<Intent> responseIntents = new ArrayList<>();
+    zeebeEngine = EngineFactory.create(responseIntents::add);
+    zeebeEngine.start();
+    zeebeClient = zeebeEngine.createClient();
+
     // given
     zeebeClient
         .newDeployResourceCommand()
