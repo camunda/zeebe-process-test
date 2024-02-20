@@ -20,6 +20,7 @@ import io.camunda.zeebe.logstreams.storage.LogStorage;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.db.InMemoryDbFactory;
 import io.camunda.zeebe.protocol.ZbColumnFamilies;
+import io.camunda.zeebe.protocol.record.intent.Intent;
 import io.camunda.zeebe.scheduler.Actor;
 import io.camunda.zeebe.scheduler.ActorScheduler;
 import io.camunda.zeebe.scheduler.ActorSchedulingService;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class EngineFactory {
 
@@ -50,7 +52,15 @@ public class EngineFactory {
     return freePort;
   }
 
+  public static ZeebeTestEngine create(final Consumer<Intent> requestListener) {
+    return create(findFreePort(), requestListener);
+  }
+
   public static ZeebeTestEngine create(final int port) {
+    return create(port, null);
+  }
+
+  private static ZeebeTestEngine create(final int port, final Consumer<Intent> requestListener) {
     final int partitionId = 1;
     final int partitionCount = 1;
 
@@ -70,7 +80,7 @@ public class EngineFactory {
     final Server grpcServer = ServerBuilder.forPort(port).addService(gateway).build();
 
     final GrpcResponseWriter grpcResponseWriter =
-        new GrpcResponseWriter(gateway, gatewayRequestStore);
+        new GrpcResponseWriter(gateway, gatewayRequestStore, requestListener);
 
     final ZeebeDb<ZbColumnFamilies> zeebeDb = createDatabase();
 

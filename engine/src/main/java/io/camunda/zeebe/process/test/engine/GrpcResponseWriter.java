@@ -19,6 +19,7 @@ import io.camunda.zeebe.util.buffer.BufferUtil;
 import io.camunda.zeebe.util.buffer.BufferWriter;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
+import java.util.function.Consumer;
 import org.agrona.DirectBuffer;
 import org.agrona.ExpandableArrayBuffer;
 import org.agrona.MutableDirectBuffer;
@@ -38,11 +39,15 @@ class GrpcResponseWriter implements CommandResponseWriter {
   private String rejectionReason = "";
   private final MutableDirectBuffer valueBuffer = new ExpandableArrayBuffer();
   private final GrpcResponseMapper responseMapper = new GrpcResponseMapper();
+  private final Consumer<Intent> requestListener;
 
   public GrpcResponseWriter(
-      final GrpcToLogStreamGateway gateway, final GatewayRequestStore gatewayRequestStore) {
+      final GrpcToLogStreamGateway gateway,
+      final GatewayRequestStore gatewayRequestStore,
+      final Consumer<Intent> requestListener) {
     this.gateway = gateway;
     this.gatewayRequestStore = gatewayRequestStore;
+    this.requestListener = requestListener;
   }
 
   @Override
@@ -105,6 +110,9 @@ class GrpcResponseWriter implements CommandResponseWriter {
     }
 
     try {
+      if (requestListener != null) {
+        requestListener.accept(intent);
+      }
       final Request request = gatewayRequestStore.removeRequest(requestId);
       final GeneratedMessageV3 response =
           responseMapper.map(request.requestType(), valueBufferView, key, intent);

@@ -36,8 +36,10 @@ import io.camunda.zeebe.process.test.filters.JobRecordStreamFilter;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
+import io.camunda.zeebe.protocol.record.intent.Intent;
 import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceIntent;
+import io.camunda.zeebe.protocol.record.intent.SignalIntent;
 import io.camunda.zeebe.protocol.record.intent.TimerIntent;
 import io.camunda.zeebe.protocol.record.value.BpmnElementType;
 import io.camunda.zeebe.protocol.record.value.BpmnEventType;
@@ -46,6 +48,7 @@ import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
 import io.camunda.zeebe.util.VersionUtil;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1229,6 +1232,50 @@ class EngineClientTest {
 
     // then
     assertThat(response.getKey()).isPositive();
+  }
+
+  @Test
+  public void shouldNotSendResponseWhenNoCorrespondingRequest() {
+    final List<Intent> responseIntents = new ArrayList<>();
+    zeebeEngine = EngineFactory.create(responseIntents::add);
+    zeebeEngine.start();
+    zeebeClient = zeebeEngine.createClient();
+
+    // given
+    zeebeClient
+        .newDeployResourceCommand()
+        .addProcessModel(
+            Bpmn.createExecutableProcess("process")
+                .startEvent()
+                .intermediateThrowEvent("signal", b -> b.signal("signalName"))
+                .endEvent()
+                .done(),
+            "process.bpmn")
+        .send()
+        .join();
+
+    // when
+    zeebeClient.newCreateInstanceCommand().bpmnProcessId("process").latestVersion().send().join();
+
+    // then
+    Awaitility.await()
+        .untilAsserted(
+            () -> {
+              final Optional<Record<ProcessInstanceRecordValue>> processCompleted =
+                  StreamSupport.stream(
+                          RecordStream.of(zeebeEngine.getRecordStreamSource())
+                              .processInstanceRecords()
+                              .spliterator(),
+                          false)
+                      .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
+                      .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
+                      .findFirst();
+
+              assertThat(processCompleted).isNotEmpty();
+            });
+
+    assertThat(responseIntents).doesNotContain(SignalIntent.BROADCASTED);
   }
 
   @Test
