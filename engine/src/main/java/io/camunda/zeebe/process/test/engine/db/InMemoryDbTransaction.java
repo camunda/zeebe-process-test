@@ -108,6 +108,7 @@ final class InMemoryDbTransaction implements ZeebeDbTransaction, InMemoryDbState
   @Override
   public boolean contains(final FullyQualifiedKey fullyQualifiedKey) {
     final Bytes keyBytes = fullyQualifiedKey.getKeyBytes();
-    return transactionCache.containsKey(keyBytes) || database.containsKey(keyBytes);
+    return !deletedKeys.contains(keyBytes)
+        && (transactionCache.containsKey(keyBytes) || database.containsKey(keyBytes));
   }
 }
