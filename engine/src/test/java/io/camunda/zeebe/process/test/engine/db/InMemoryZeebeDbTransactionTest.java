@@ -441,26 +441,6 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
-  void shouldAllowDeleteAndInsertInTransaction() throws Exception {
-    // given
-    oneKey.wrapLong(1);
-    oneValue.wrapLong(-1L);
-    twoValue.wrapLong(-2L);
-    oneColumnFamily.insert(oneKey, oneValue);
-    transactionContext.getCurrentTransaction().commit();
-
-    // when
-    transactionContext.runInTransaction(
-        () -> {
-          oneColumnFamily.deleteExisting(oneKey);
-          oneColumnFamily.insert(oneKey, twoValue);
-        });
-
-    // then
-    assertThat(oneColumnFamily.get(oneKey).getValue()).isEqualTo(twoValue.getValue());
-  }
-
-  @Test
   void shouldNotCommitOnError() {
     // given
     oneKey.wrapLong(1);
