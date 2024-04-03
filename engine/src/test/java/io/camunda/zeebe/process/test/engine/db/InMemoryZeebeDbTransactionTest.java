@@ -441,6 +441,49 @@ public final class InMemoryZeebeDbTransactionTest {
   }
 
   @Test
+  void shouldAllowDeleteAndInsertInTransaction() throws Exception {
+    // given
+    oneKey.wrapLong(1);
+    oneValue.wrapLong(-1L);
+    twoValue.wrapLong(-2L);
+    oneColumnFamily.insert(oneKey, oneValue);
+    transactionContext.getCurrentTransaction().commit();
+
+    // when
+    transactionContext.runInTransaction(
+        () -> {
+          oneColumnFamily.deleteExisting(oneKey);
+          oneColumnFamily.insert(oneKey, twoValue);
+        });
+
+    // then
+    assertThat(oneColumnFamily.get(oneKey).getValue()).isEqualTo(twoValue.getValue());
+  }
+
+  @Test
+  void shouldNotGetByKeyIfDeletedInTransaction() throws Exception {
+    // given
+    oneKey.wrapLong(1);
+    oneValue.wrapLong(-1L);
+    twoValue.wrapLong(-2L);
+    oneColumnFamily.insert(oneKey, oneValue);
+    transactionContext.getCurrentTransaction().commit();
+
+    // when
+    transactionContext.runInTransaction(
+        () -> {
+          oneColumnFamily.deleteExisting(oneKey);
+
+          if (oneColumnFamily.get(oneKey) != null) {
+            fail("Should not be able to get deleted key.");
+          }
+        });
+
+    // then
+    assertThat(oneColumnFamily.get(oneKey)).isNull();
+  }
+
+  @Test
   void shouldNotCommitOnError() {
     // given
     oneKey.wrapLong(1);
