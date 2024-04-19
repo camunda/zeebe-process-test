@@ -69,7 +69,7 @@
     <dependency.classgraph.version>4.8.171</dependency.classgraph.version>
     <dependency.commons.version>3.14.0</dependency.commons.version>
     <dependency.errorprone.version>2.26.1</dependency.errorprone.version>
-    <dependency.feel.version>1.17.5</dependency.feel.version>
+    <dependency.feel.version>1.17.6</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>33.1.0-jre</dependency.guava.version>
     <dependency.immutables.version>2.10.1</dependency.immutables.version>
@@ -81,7 +81,7 @@
     <dependency.mockito.version>4.11.0</dependency.mockito.version>
     <dependency.netty.version>4.1.109.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
-    <dependency.proto.version>2.37.1</dependency.proto.version>
+    <dependency.proto.version>2.38.0</dependency.proto.version>
     <dependency.protobuf.version>3.25.3</dependency.protobuf.version>
     <dependency.revapi.version>0.28.1</dependency.revapi.version>
     <dependency.scala.version>2.13.13</dependency.scala.version>
