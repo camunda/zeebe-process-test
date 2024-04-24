@@ -64,7 +64,7 @@
     <dependency.agrona.version>1.21.1</dependency.agrona.version>
     <dependency.assertj.version>3.25.3</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
-    <dependency.bytebuddy.version>1.14.13</dependency.bytebuddy.version>
+    <dependency.bytebuddy.version>1.14.14</dependency.bytebuddy.version>
     <dependency.camundamodel.version>7.19.0</dependency.camundamodel.version>
     <dependency.classgraph.version>4.8.171</dependency.classgraph.version>
     <dependency.commons.version>3.14.0</dependency.commons.version>
