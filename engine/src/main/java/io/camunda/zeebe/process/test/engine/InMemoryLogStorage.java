@@ -51,17 +51,13 @@ class InMemoryLogStorage implements LogStorage {
       final long highestPosition,
       final ByteBuffer blockBuffer,
       final AppendListener listener) {
-    try {
-      logEntries.add(blockBuffer);
-      final int index = logEntries.size();
-      positionIndexMapping.put(lowestPosition, index);
-      listener.onWrite(index);
+    logEntries.add(blockBuffer);
+    final int index = logEntries.size();
+    positionIndexMapping.put(lowestPosition, index);
+    listener.onWrite(index);
 
-      listener.onCommit(index);
-      commitListeners.forEach(LogStorage.CommitListener::onCommit);
-    } catch (final Exception e) {
-      listener.onWriteError(e);
-    }
+    listener.onCommit(index);
+    commitListeners.forEach(CommitListener::onCommit);
   }
 
   @Override
