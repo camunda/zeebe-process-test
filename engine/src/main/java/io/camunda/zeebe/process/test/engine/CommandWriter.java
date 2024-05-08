@@ -10,6 +10,7 @@ package io.camunda.zeebe.process.test.engine;
 
 import io.camunda.zeebe.logstreams.log.LogAppendEntry;
 import io.camunda.zeebe.logstreams.log.LogStreamWriter;
+import io.camunda.zeebe.logstreams.log.WriteContext;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
 import io.camunda.zeebe.protocol.impl.record.UnifiedRecordValue;
 
@@ -22,14 +23,14 @@ record CommandWriter(LogStreamWriter writer) {
   void writeCommandWithKey(
       final Long key, final UnifiedRecordValue command, final RecordMetadata recordMetadata) {
     synchronized (writer) {
-      writer.tryWrite(LogAppendEntry.of(key, recordMetadata, command));
+      writer.tryWrite(WriteContext.internal(), LogAppendEntry.of(key, recordMetadata, command));
     }
   }
 
   void writeCommandWithoutKey(
       final UnifiedRecordValue command, final RecordMetadata recordMetadata) {
     synchronized (writer) {
-      writer.tryWrite(LogAppendEntry.of(recordMetadata, command));
+      writer.tryWrite(WriteContext.internal(), LogAppendEntry.of(recordMetadata, command));
     }
   }
 }
