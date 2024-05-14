@@ -54,9 +54,9 @@ class InMemoryLogStorage implements LogStorage {
     logEntries.add(blockBuffer);
     final int index = logEntries.size();
     positionIndexMapping.put(lowestPosition, index);
-    listener.onWrite(index);
+    listener.onWrite(index, highestPosition);
 
-    listener.onCommit(index);
+    listener.onCommit(index, highestPosition);
     commitListeners.forEach(CommitListener::onCommit);
   }
 
