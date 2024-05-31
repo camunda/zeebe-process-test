@@ -5,6 +5,11 @@
 This project allows you to unit test your Camunda Platform 8 BPMN processes. It will start a Zeebe test engine
 and provide you with a set of assertions you can use to verify your process behaves as expected.
 
+> [!Note]
+> Heads up! We are building a new Java testing library for Camunda 8.6. The new library will replace Zeebe Process Test.
+> New features: Access to Camunda's new REST API, official Spring integration, process coverage, and more ([ref](https://github.com/camunda/issues/issues/751)).
+> Stay tuned for updates. 🚀    
+
 ## Prerequisites
 
 * Java 21+ (17+ for <=`8.3.x`) when running with an embedded engine (`zeebe-process-test-extension`)
