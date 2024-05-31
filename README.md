@@ -7,7 +7,7 @@ and provide you with a set of assertions you can use to verify your process beha
 
 > [!Note]
 > Heads up! We are building a new Java testing library for Camunda 8.6. The new library will replace Zeebe Process Test.
-> New features: Access to Camunda's new REST API, official Spring integration, process coverage, and more ([ref](https://github.com/camunda/issues/issues/751)).
+> New features: Access to Camunda's new REST API, official Spring integration, process coverage, improved UX, and more ([ref](https://github.com/camunda/issues/issues/751)).
 > Stay tuned for updates. 🚀    
 
 ## Prerequisites
