@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 camunda services GmbH (info@camunda.com)
+ * Copyright © 2024 camunda services GmbH (info@camunda.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package io.camunda.zeebe.process.test.assertions;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.MapAssert.assertThatMap;
 
 import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -27,7 +28,9 @@ import io.camunda.zeebe.protocol.record.intent.MessageStartEventSubscriptionInte
 import io.camunda.zeebe.protocol.record.intent.ProcessMessageSubscriptionIntent;
 import io.camunda.zeebe.protocol.record.value.MessageStartEventSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessMessageSubscriptionRecordValue;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.assertj.core.api.AbstractAssert;
@@ -36,7 +39,7 @@ import org.assertj.core.api.Assertions;
 /** Assertions for {@link PublishMessageResponse} instances */
 public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageResponse> {
 
-  private RecordStream recordStream;
+  private final RecordStream recordStream;
 
   protected MessageAssert(final PublishMessageResponse actual, final RecordStream recordStream) {
     super(actual, MessageAssert.class);
@@ -233,5 +236,52 @@ public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageR
         .stream()
         .map(record -> record.getValue().getProcessInstanceKey())
         .collect(Collectors.toList());
+  }
+
+  private Map<String, Object> getVariables() {
+    return StreamFilter.processMessageSubscription(recordStream)
+        .withMessageKey(actual.getMessageKey())
+        .withRejectionType(RejectionType.NULL_VAL)
+        .stream()
+        .map(record -> record.getValue().getVariables())
+        .findFirst()
+        .orElse(Collections.emptyMap());
+  }
+
+  /**
+   * Verifies the message has the given variable.
+   *
+   * @param name The name of the variable
+   * @return this ${@link MessageAssert}
+   */
+  public MessageAssert hasVariable(final String name) {
+    final Map<String, Object> variables = getVariables();
+    assertThatMap(variables)
+        .withFailMessage(
+            "Unable to find variable with name '%s'. Available variables are: %s",
+            name, variables.keySet())
+        .containsKeys(name);
+    return this;
+  }
+
+  /**
+   * Verifies the message has the given variable with the specified value.
+   *
+   * @param name The name of the variable
+   * @param value The value of the variable
+   * @return this ${@link MessageAssert}
+   */
+  public MessageAssert hasVariableWithValue(final String name, final Object value) {
+    hasVariable(name);
+
+    final Object actualValue = getVariables().get(name);
+    assertThat(actualValue)
+        .withFailMessage(
+            "The variable '%s' does not have the expected value.%n"
+                + "expected: %s%n"
+                + "but was: %s",
+            name, value, actualValue)
+        .isEqualTo(value);
+    return this;
   }
 }
