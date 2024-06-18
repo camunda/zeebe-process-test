@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 camunda services GmbH (info@camunda.com)
+ * Copyright © 2021 camunda services GmbH (info@camunda.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.camunda.zeebe.process.test.assertions;
 
 import static org.assertj.core.api.Assertions.assertThatCode;

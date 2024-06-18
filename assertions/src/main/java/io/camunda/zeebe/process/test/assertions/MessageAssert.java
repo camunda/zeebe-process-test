@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 camunda services GmbH (info@camunda.com)
+ * Copyright © 2021 camunda services GmbH (info@camunda.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
