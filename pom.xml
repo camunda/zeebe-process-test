@@ -453,6 +453,13 @@
         <artifactId>spring-core</artifactId>
         <version>${dependency.spring.version}</version>
       </dependency>
+
+      <!-- pin version to avoid dependency convergence issues -->
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5</artifactId>
+        <version>5.2.5</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
