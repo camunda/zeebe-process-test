@@ -29,6 +29,7 @@ import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
 import io.camunda.zeebe.protocol.record.value.JobBatchRecordValue;
 import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageBatchRecordValue;
+import io.camunda.zeebe.protocol.record.value.MessageCorrelationRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageStartEventSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageSubscriptionRecordValue;
@@ -125,6 +126,7 @@ public class RecordStreamLogger {
         ValueType.PROCESS_INSTANCE_MIGRATION, this::logProcessInstanceMigrationRecordValue);
     valueTypeLoggers.put(
         ValueType.COMPENSATION_SUBSCRIPTION, this::logCompensationSubscriptionRecordValue);
+    valueTypeLoggers.put(ValueType.MESSAGE_CORRELATION, this::logMessageCorrelationRecordValue);
   }
 
   public void log() {
@@ -485,6 +487,15 @@ public class RecordStreamLogger {
     joiner.add(String.format("(Process instance key: %d)", value.getProcessInstanceKey()));
     joiner.add(String.format("(Process definition key: %d)", value.getProcessDefinitionKey()));
     joiner.add(String.format("(Compensable activity id: %s)", value.getCompensableActivityId()));
+    return joiner.toString();
+  }
+
+  private String logMessageCorrelationRecordValue(final Record<?> record) {
+    final MessageCorrelationRecordValue value = (MessageCorrelationRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(Process instance key: %d)", value.getProcessInstanceKey()));
+    joiner.add(String.format("(Message name: %s)", value.getName()));
+    joiner.add(String.format("(Message correlation key id: %s)", value.getCorrelationKey()));
     return joiner.toString();
   }
 
