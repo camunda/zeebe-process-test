@@ -1,10 +1,24 @@
 name: Build and test
 on:
-  pull_request: { }
   push:
     branches:
-      - 'staging'
+      - main
+      - stable/*
+      - release-*
+  pull_request: { }
+  merge_group: { }
   workflow_call: { }
+
+concurrency:
+  cancel-in-progress: true
+  group: "${{ github.workflow }}-${{ github.ref }}"
+
+defaults:
+  run:
+    # use bash shell by default to ensure pipefail behavior is the default
+    # see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#exit-codes-and-error-action-preference
+    shell: bash
+
 jobs:
   code-formatting:
     name: check code formatting
@@ -160,7 +174,7 @@ jobs:
     # Once we're using the merge queue feature, I think we can simplify this workflow a lot by relying
     # on dependabot merging PRs via its commands, as it will always wait for checks to be green before
     # merging.
-    name: Auto-merge dependabot and camundait PRs
+    name: Auto-merge dependabot, camundait, and backport PRs
     runs-on: ubuntu-latest
     needs: [ test-summary ]
     if: github.repository == 'camunda/zeebe-process-test' && (github.actor == 'dependabot[bot]' || github.actor == 'camundait' || github.actor == 'backport-action')
@@ -178,13 +192,19 @@ jobs:
       - id: approve-and-merge-dependabot
         name: Approve and merge dependabot PR
         if: github.actor == 'dependabot[bot]' && (steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor')
-        run: gh pr review ${{ github.event.pull_request.number }} --approve -b "bors merge"
+        run: >
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --merge "$PR_URL"
         env:
-          GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - id: approve-and-merge-backport
         name: Approve and merge backport PR
         if: github.actor != 'dependabot[bot]'
-        run: gh pr review ${{ github.event.pull_request.number }} --approve -b "bors merge"
+        run: >
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --merge "$PR_URL"
         env:
-          GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
