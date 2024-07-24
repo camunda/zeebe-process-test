@@ -192,14 +192,18 @@ jobs:
       - id: approve-and-merge-dependabot
         name: Approve and merge dependabot PR
         if: github.actor == 'dependabot[bot]' && (steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor')
-        run: gh pr merge --auto --merge "$PR_URL"
+        run: >
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - id: approve-and-merge-backport
         name: Approve and merge backport PR
         if: github.actor != 'dependabot[bot]'
-        run: gh pr merge --auto --merge "$PR_URL"
+        run: >
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
