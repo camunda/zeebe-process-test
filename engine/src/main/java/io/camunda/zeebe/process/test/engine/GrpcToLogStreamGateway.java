@@ -52,6 +52,8 @@ import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ThrowErrorRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ThrowErrorResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyResponse;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRequest;
+import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesRequest;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobRetriesResponse;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.UpdateJobTimeoutRequest;
@@ -565,6 +567,25 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
             .intent(JobIntent.UPDATE_TIMEOUT);
 
     final JobRecord jobRecord = new JobRecord();
+    jobRecord.setTimeout(request.getTimeout());
+
+    writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
+  }
+
+  @Override
+  public void updateJob(
+      final UpdateJobRequest request, final StreamObserver<UpdateJobResponse> responseObserver) {
+    final Long requestId =
+        gatewayRequestStore.registerNewRequest(request.getClass(), responseObserver);
+
+    final RecordMetadata recordMetadata =
+        prepareRecordMetadata()
+            .requestId(requestId)
+            .valueType(ValueType.JOB)
+            .intent(JobIntent.UPDATE);
+
+    final JobRecord jobRecord = new JobRecord();
+    jobRecord.setRetries(request.getRetries());
     jobRecord.setTimeout(request.getTimeout());
 
     writer.writeCommandWithKey(request.getJobKey(), jobRecord, recordMetadata);
