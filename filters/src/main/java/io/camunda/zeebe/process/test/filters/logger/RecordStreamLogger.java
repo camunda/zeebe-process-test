@@ -20,6 +20,7 @@ import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
 import io.camunda.zeebe.protocol.record.ValueType;
+import io.camunda.zeebe.protocol.record.value.ClockRecordValue;
 import io.camunda.zeebe.protocol.record.value.CommandDistributionRecordValue;
 import io.camunda.zeebe.protocol.record.value.CompensationSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.DeploymentRecordValue;
@@ -48,6 +49,7 @@ import io.camunda.zeebe.protocol.record.value.ResourceDeletionRecordValue;
 import io.camunda.zeebe.protocol.record.value.SignalRecordValue;
 import io.camunda.zeebe.protocol.record.value.SignalSubscriptionRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
+import io.camunda.zeebe.protocol.record.value.UserRecordValue;
 import io.camunda.zeebe.protocol.record.value.UserTaskRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableDocumentRecordValue;
 import io.camunda.zeebe.protocol.record.value.VariableRecordValue;
@@ -127,6 +129,8 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(
         ValueType.COMPENSATION_SUBSCRIPTION, this::logCompensationSubscriptionRecordValue);
     valueTypeLoggers.put(ValueType.MESSAGE_CORRELATION, this::logMessageCorrelationRecordValue);
+    valueTypeLoggers.put(ValueType.USER, this::logUsersRecordValue);
+    valueTypeLoggers.put(ValueType.CLOCK, this::logClockRecordValue);
   }
 
   public void log() {
@@ -501,5 +505,22 @@ public class RecordStreamLogger {
 
   protected Map<ValueType, Function<Record<?>, String>> getValueTypeLoggers() {
     return valueTypeLoggers;
+  }
+
+  private String logUsersRecordValue(final Record<?> record) {
+    final UserRecordValue value = (UserRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(Username: %s)", value.getUsername()));
+    joiner.add(String.format("(Name: %s)", value.getName()));
+    joiner.add(String.format("(Email: %s)", value.getEmail()));
+    joiner.add(String.format("(Password: %s)", value.getPassword()));
+    return joiner.toString();
+  }
+
+  private String logClockRecordValue(final Record<?> record) {
+    final ClockRecordValue value = (ClockRecordValue) record.getValue();
+    final StringJoiner joiner = new StringJoiner(", ", "", "");
+    joiner.add(String.format("(Time: %d", value.getTime()));
+    return joiner.toString();
   }
 }
