@@ -24,6 +24,7 @@ import io.camunda.zeebe.scheduler.ActorScheduler;
 import io.camunda.zeebe.scheduler.ActorSchedulingService;
 import io.camunda.zeebe.scheduler.clock.ActorClock;
 import io.camunda.zeebe.scheduler.clock.ControlledActorClock;
+import io.camunda.zeebe.stream.impl.ControllableStreamClockImpl;
 import io.camunda.zeebe.stream.impl.StreamProcessor;
 import io.camunda.zeebe.util.FeatureFlags;
 import io.grpc.Server;
@@ -65,7 +66,7 @@ public class EngineFactory {
     final ActorScheduler scheduler = createAndStartActorScheduler(clock);
 
     final InMemoryLogStorage logStorage = new InMemoryLogStorage();
-    final LogStream logStream = createLogStream(logStorage, scheduler, partitionId);
+    final LogStream logStream = createLogStream(logStorage, scheduler, partitionId, clock);
 
     final CommandWriter commandWriter = new CommandWriter(logStream.newLogStreamWriter());
     final CommandSender commandSender = new CommandSender(commandWriter);
@@ -89,7 +90,8 @@ public class EngineFactory {
             grpcResponseWriter,
             partitionCount,
             commandSender,
-            jobStreamer);
+            jobStreamer,
+            clock);
 
     final EngineStateMonitor engineStateMonitor =
         new EngineStateMonitor(logStorage, streamProcessor);
@@ -121,11 +123,15 @@ public class EngineFactory {
   }
 
   private static LogStream createLogStream(
-      final LogStorage logStorage, final ActorSchedulingService scheduler, final int partitionId) {
+      final LogStorage logStorage,
+      final ActorSchedulingService scheduler,
+      final int partitionId,
+      final ActorClock clock) {
     return LogStream.builder()
         .withPartitionId(partitionId)
         .withLogStorage(logStorage)
         .withActorSchedulingService(scheduler)
+        .withClock(clock)
         .build();
   }
 
@@ -141,7 +147,8 @@ public class EngineFactory {
       final GrpcResponseWriter grpcResponseWriter,
       final int partitionCount,
       final CommandSender commandSender,
-      final JobStreamer jobStreamer) {
+      final JobStreamer jobStreamer,
+      final ActorClock clock) {
     return StreamProcessor.builder()
         .logStream(logStream)
         .zeebeDb(database)
@@ -160,6 +167,7 @@ public class EngineFactory {
                             jobStreamer),
                     new EngineConfiguration())))
         .actorSchedulingService(scheduler)
+        .clock(new ControllableStreamClockImpl(clock))
         .build();
   }
 }
