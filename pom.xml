@@ -79,6 +79,7 @@
     <dependency.jna.version>5.14.0</dependency.jna.version>
     <dependency.junit.version>5.10.2</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
+    <dependency.micrometer.version>1.13.3</dependency.micrometer.version>
     <dependency.mockito.version>4.11.0</dependency.mockito.version>
     <dependency.netty.version>4.1.110.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
@@ -334,6 +335,14 @@
         <groupId>io.github.classgraph</groupId>
         <artifactId>classgraph</artifactId>
         <version>${dependency.classgraph.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-bom</artifactId>
+        <version>${dependency.micrometer.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <!-- Only for dependency convergence issues -->

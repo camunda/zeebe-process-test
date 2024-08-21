@@ -29,6 +29,7 @@ import io.camunda.zeebe.stream.impl.StreamProcessor;
 import io.camunda.zeebe.util.FeatureFlags;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
@@ -168,6 +169,7 @@ public class EngineFactory {
                     new EngineConfiguration())))
         .actorSchedulingService(scheduler)
         .clock(new ControllableStreamClockImpl(clock))
+        .meterRegistry(new SimpleMeterRegistry())
         .build();
   }
 }
