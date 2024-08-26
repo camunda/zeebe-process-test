@@ -131,6 +131,7 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.MESSAGE_CORRELATION, this::logMessageCorrelationRecordValue);
     valueTypeLoggers.put(ValueType.USER, this::logUsersRecordValue);
     valueTypeLoggers.put(ValueType.CLOCK, this::logClockRecordValue);
+    valueTypeLoggers.put(ValueType.AUTHORIZATION, record -> "");
   }
 
   public void log() {
