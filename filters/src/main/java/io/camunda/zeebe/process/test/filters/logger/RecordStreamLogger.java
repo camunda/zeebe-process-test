@@ -100,17 +100,17 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.ESCALATION, this::logEscalationRecordValue);
 
     // These records don't have any interesting extra information for the user to log
-    valueTypeLoggers.put(ValueType.DEPLOYMENT_DISTRIBUTION, record -> "");
-    valueTypeLoggers.put(ValueType.SBE_UNKNOWN, record -> "");
-    valueTypeLoggers.put(ValueType.NULL_VAL, record -> "");
+    valueTypeLoggers.put(ValueType.DEPLOYMENT_DISTRIBUTION, Object::toString);
+    valueTypeLoggers.put(ValueType.SBE_UNKNOWN, Object::toString);
+    valueTypeLoggers.put(ValueType.NULL_VAL, Object::toString);
 
     // DMN will not be part of the initial 1.4 release
-    valueTypeLoggers.put(ValueType.DECISION, record -> "");
-    valueTypeLoggers.put(ValueType.DECISION_REQUIREMENTS, record -> "");
-    valueTypeLoggers.put(ValueType.DECISION_EVALUATION, record -> "");
+    valueTypeLoggers.put(ValueType.DECISION, Object::toString);
+    valueTypeLoggers.put(ValueType.DECISION_REQUIREMENTS, Object::toString);
+    valueTypeLoggers.put(ValueType.DECISION_EVALUATION, Object::toString);
 
     // checkpoint isn't meant to be read by the engine
-    valueTypeLoggers.put(ValueType.CHECKPOINT, record -> "");
+    valueTypeLoggers.put(ValueType.CHECKPOINT, Object::toString);
 
     valueTypeLoggers.put(
         ValueType.PROCESS_INSTANCE_MODIFICATION, this::logProcessInstanceModificationRecordValue);
@@ -121,7 +121,7 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.RESOURCE_DELETION, this::logResourceDeletionRecordValue);
 
     valueTypeLoggers.put(ValueType.COMMAND_DISTRIBUTION, this::logCommandDistributionRecordValue);
-    valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_BATCH, record -> "");
+    valueTypeLoggers.put(ValueType.PROCESS_INSTANCE_BATCH, Object::toString);
     valueTypeLoggers.put(ValueType.FORM, this::logFormRecordValue);
     valueTypeLoggers.put(ValueType.USER_TASK, this::logUserTaskRecordValue);
     valueTypeLoggers.put(
@@ -131,7 +131,7 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.MESSAGE_CORRELATION, this::logMessageCorrelationRecordValue);
     valueTypeLoggers.put(ValueType.USER, this::logUsersRecordValue);
     valueTypeLoggers.put(ValueType.CLOCK, this::logClockRecordValue);
-    valueTypeLoggers.put(ValueType.AUTHORIZATION, record -> "");
+    valueTypeLoggers.put(ValueType.AUTHORIZATION, Object::toString);
   }
 
   public void log() {
