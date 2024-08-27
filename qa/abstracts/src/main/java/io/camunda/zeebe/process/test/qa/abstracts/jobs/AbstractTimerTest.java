@@ -52,12 +52,12 @@ public abstract class AbstractTimerTest {
 
   private static Stream<Arguments> dates() {
     return Stream.of(
-        Arguments.of(OffsetDateTime.of(2023, 10, 5, 15, 50, 0, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 10, 31, 0, 0, 0, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 10, 31, 23, 0, 0, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 10, 31, 23, 59, 0, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 10, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"))),
-        Arguments.of(OffsetDateTime.of(2023, 12, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"))));
+        Arguments.of(OffsetDateTime.of(2024, 10, 5, 15, 50, 0, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2024, 10, 31, 0, 0, 0, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2024, 10, 31, 23, 0, 0, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2024, 10, 31, 23, 59, 0, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2024, 10, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"))),
+        Arguments.of(OffsetDateTime.of(2024, 12, 31, 23, 59, 59, 0, ZoneOffset.of("+02:00"))));
   }
 
   @BeforeEach
