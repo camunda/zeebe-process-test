@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -66,6 +67,7 @@ public abstract class AbstractTimerTest {
     BpmnAssert.assertThat(deploymentEvent).containsProcessesByResourceName(RESOURCE);
   }
 
+  @Disabled("https://github.com/camunda/zeebe-process-test/issues/1230")
   @ParameterizedTest
   @MethodSource("dates")
   void shouldCompareTimersDueDatesCorrectlyForDifferentNowDates(final OffsetDateTime nowDate)
