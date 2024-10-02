@@ -65,7 +65,7 @@
     <dependency.assertj.version>3.25.3</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
     <dependency.bytebuddy.version>1.14.16</dependency.bytebuddy.version>
-    <dependency.camundamodel.version>7.19.0</dependency.camundamodel.version>
+    <dependency.camundamodel.version>7.22.0-alpha5</dependency.camundamodel.version>
     <dependency.classgraph.version>4.8.174</dependency.classgraph.version>
     <dependency.commons.version>3.14.0</dependency.commons.version>
     <dependency.errorprone.version>2.29.0</dependency.errorprone.version>
@@ -91,7 +91,7 @@
     <dependency.snakeyaml.version>2.2</dependency.snakeyaml.version>
     <dependency.spring.version>6.1.8</dependency.spring.version>
     <dependency.testcontainers.version>1.19.8</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.6.0-rc1</dependency.zeebe.version>
+    <dependency.zeebe.version>8.6.0</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
