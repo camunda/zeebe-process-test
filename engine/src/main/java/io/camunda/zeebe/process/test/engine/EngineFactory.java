@@ -67,7 +67,7 @@ public class EngineFactory {
     final ActorScheduler scheduler = createAndStartActorScheduler(clock);
 
     final InMemoryLogStorage logStorage = new InMemoryLogStorage();
-    final LogStream logStream = createLogStream(logStorage, scheduler, partitionId, clock);
+    final LogStream logStream = createLogStream(logStorage, partitionId, clock);
 
     final CommandWriter commandWriter = new CommandWriter(logStream.newLogStreamWriter());
     final CommandSender commandSender = new CommandSender(commandWriter);
@@ -124,10 +124,7 @@ public class EngineFactory {
   }
 
   private static LogStream createLogStream(
-      final LogStorage logStorage,
-      final ActorSchedulingService scheduler,
-      final int partitionId,
-      final ActorClock clock) {
+      final LogStorage logStorage, final int partitionId, final ActorClock clock) {
     return LogStream.builder()
         .withPartitionId(partitionId)
         .withLogStorage(logStorage)
