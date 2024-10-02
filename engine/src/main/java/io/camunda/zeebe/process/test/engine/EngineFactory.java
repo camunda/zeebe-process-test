@@ -131,7 +131,6 @@ public class EngineFactory {
     return LogStream.builder()
         .withPartitionId(partitionId)
         .withLogStorage(logStorage)
-        .withActorSchedulingService(scheduler)
         .withClock(clock)
         .build();
   }
