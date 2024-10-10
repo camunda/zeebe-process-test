@@ -65,7 +65,7 @@
     <dependency.assertj.version>3.25.3</dependency.assertj.version>
     <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
     <dependency.bytebuddy.version>1.14.16</dependency.bytebuddy.version>
-    <dependency.camundamodel.version>7.19.0</dependency.camundamodel.version>
+    <dependency.camundamodel.version>7.22.0</dependency.camundamodel.version>
     <dependency.classgraph.version>4.8.174</dependency.classgraph.version>
     <dependency.commons.version>3.14.0</dependency.commons.version>
     <dependency.errorprone.version>2.29.0</dependency.errorprone.version>
