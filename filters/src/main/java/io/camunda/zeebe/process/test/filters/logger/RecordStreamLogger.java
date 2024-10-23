@@ -135,6 +135,8 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.ROLE, Object::toString);
     valueTypeLoggers.put(ValueType.TENANT, Object::toString);
     valueTypeLoggers.put(ValueType.SCALE, Object::toString);
+    valueTypeLoggers.put(ValueType.GROUP, Object::toString);
+    valueTypeLoggers.put(ValueType.MAPPING, Object::toString);
   }
 
   public void log() {
