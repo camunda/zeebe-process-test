@@ -477,14 +477,14 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-      <id>camunda-nexus</id>
+      <id>camunda-nexus-zeebe</id>
       <url>https://artifacts.camunda.com/artifactory/zeebe-io/</url>
     </repository>
     <repository>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-      <id>camunda-nexus</id>
+      <id>camunda-nexus-zeebe-snapshots</id>
       <url>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</url>
     </repository>
   </repositories>
