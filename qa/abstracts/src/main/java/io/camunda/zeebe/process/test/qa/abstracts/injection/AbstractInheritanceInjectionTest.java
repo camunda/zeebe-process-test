@@ -19,6 +19,7 @@ package io.camunda.zeebe.process.test.qa.abstracts.injection;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.Topology;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import org.junit.jupiter.api.Test;
 
@@ -30,5 +31,11 @@ public abstract class AbstractInheritanceInjectionTest {
   void testFieldsAreInjectedSuccessfully() {
     assertThat(client).isNotNull();
     assertThat(engine).isNotNull();
+  }
+
+  @Test
+  void testClientCanSendCommand() {
+    final Topology topology = client.newTopologyRequest().send().join();
+    assertThat(topology.getGatewayVersion()).isNotNull();
   }
 }
