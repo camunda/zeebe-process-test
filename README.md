@@ -65,6 +65,10 @@ Using Maven profiles you can also [switch the test dependencies based on the ava
 
 ### Spring support
 
+> [!Note]
+> Spring support with Zeebe Process Test uses the community-supported Spring Zeebe SDK.
+> Spring support is not available for Camunda 8.6+. 
+
 If you use the Spring framework or Spring Boot and you want to write tests, please use `spring-zeebe-test` as a wrapper around this library. This will hook everything into the Spring lifecycle. See [Spring Zeebe: Writing test cases](https://github.com/camunda-community-hub/spring-zeebe#writing-test-cases) for details.
 
 ### Annotation
