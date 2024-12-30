@@ -199,6 +199,12 @@
 
       <dependency>
         <groupId>io.camunda</groupId>
+        <artifactId>camunda-security-core</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
         <artifactId>zeebe-msgpack-value</artifactId>
         <version>${dependency.zeebe.version}</version>
       </dependency>
