@@ -20,8 +20,8 @@ import static io.camunda.zeebe.process.test.inspections.ProcessDefinitionInspect
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.DeploymentEvent;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackNamedElements;
@@ -83,7 +83,7 @@ public abstract class AbstractProcessInspectionsTest {
         .isInstanceOf(AssertionError.class);
   }
 
-  public abstract ZeebeClient getClient();
+  public abstract CamundaClient getClient();
 
   public abstract ZeebeTestEngine getEngine();
 }

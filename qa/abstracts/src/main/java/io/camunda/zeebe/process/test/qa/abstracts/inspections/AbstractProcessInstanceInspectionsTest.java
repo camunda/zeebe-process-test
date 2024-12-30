@@ -15,8 +15,8 @@
  */
 package io.camunda.zeebe.process.test.qa.abstracts.inspections;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.inspections.InspectionUtility;
@@ -79,7 +79,7 @@ public abstract class AbstractProcessInstanceInspectionsTest {
     Assertions.assertThat(firstProcessInstance).isEmpty();
   }
 
-  public abstract ZeebeClient getClient();
+  public abstract CamundaClient getClient();
 
   public abstract ZeebeTestEngine getEngine();
 }

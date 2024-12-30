@@ -16,16 +16,16 @@
 
 package io.camunda.zeebe.process.test.qa.abstracts.mapper;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.JsonMapper;
-import io.camunda.zeebe.client.api.command.InternalClientException;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.JsonMapper;
+import io.camunda.client.api.command.InternalClientException;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractMapperNotSerializationDeserializationTest {
-  protected ZeebeClient client;
+  protected CamundaClient client;
   protected ZeebeTestEngine engine;
 
   @Test
