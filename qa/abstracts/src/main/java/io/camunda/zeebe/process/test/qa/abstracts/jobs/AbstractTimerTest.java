@@ -18,9 +18,9 @@ package io.camunda.zeebe.process.test.qa.abstracts.jobs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
-import io.camunda.zeebe.client.api.response.DeploymentEvent;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ActivateJobsResponse;
+import io.camunda.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -47,7 +47,7 @@ public abstract class AbstractTimerTest {
   private static final String RESOURCE = "test_timer_events.bpmn";
   private static final String PROCESS_ID = "Process_Timer_Test_01";
 
-  private ZeebeClient client;
+  private CamundaClient client;
   private ZeebeTestEngine engine;
   private RecordStream recordStream;
 
