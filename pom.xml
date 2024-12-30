@@ -98,7 +98,7 @@
     <nexus.release.repository>https://artifacts.camunda.com/artifactory/zeebe-io/</nexus.release.repository>
     <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
     <nexus.snapshot.repository>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</nexus.snapshot.repository>
-    <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
+    <nexus.snapshot.repository.id>camunda-nexus-snapshots</nexus.snapshot.repository.id>
 
     <plugin.version.dependency>3.6.1</plugin.version.dependency>
     <plugin.version.flatten>1.6.0</plugin.version.flatten>
@@ -480,8 +480,8 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-      <id>camunda-nexus</id>
-      <url>https://artifacts.camunda.com/artifactory/zeebe-io/</url>
+      <id>${nexus.release.repository.id}</id>
+      <url>${nexus.release.repository}</url>
     </repository>
     <repository>
       <releases>
@@ -490,8 +490,8 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-      <id>camunda-nexus-snapshots</id>
-      <url>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</url>
+      <id>${nexus.snapshot.repository.id}</id>
+      <url>${nexus.snapshot.repository}</url>
     </repository>
   </repositories>
 
