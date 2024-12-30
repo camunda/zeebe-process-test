@@ -40,13 +40,13 @@ public class ProcessRecordStreamFilter {
     return stream.map(Record::getValue);
   }
 
-  public ProcessRecordStreamFilter withBpmnProcessId(String bpmnProcessId) {
+  public ProcessRecordStreamFilter withBpmnProcessId(final String bpmnProcessId) {
     return new ProcessRecordStreamFilter(
         stream.filter(
             record -> Objects.equals(record.getValue().getBpmnProcessId(), bpmnProcessId)));
   }
 
-  public ProcessRecordStreamFilter withDeployment(DeploymentEvent deployment) {
+  public ProcessRecordStreamFilter withDeployment(final DeploymentEvent deployment) {
     return new ProcessRecordStreamFilter(
         stream.filter(
             record ->
