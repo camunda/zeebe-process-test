@@ -140,6 +140,11 @@
       <artifactId>micrometer-core</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>camunda-security-core</artifactId>
+    </dependency>
+
     <!-- Test Scope -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
