@@ -51,6 +51,7 @@
     <module>filters</module>
     <module>qa</module>
     <module>examples</module>
+    <module>spring-test</module>
   </modules>
 
   <scm>
@@ -91,7 +92,7 @@
     <dependency.snakeyaml.version>2.2</dependency.snakeyaml.version>
     <dependency.spring.version>6.1.8</dependency.spring.version>
     <dependency.testcontainers.version>1.19.8</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.6.6</dependency.zeebe.version>
+    <dependency.zeebe.version>8.6.7-rc1</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
@@ -170,6 +171,12 @@
       </dependency>
 
       <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>spring-boot-starter-camunda-test-common</artifactId>
+        <version>8.6.7-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
         <version>${dependency.junit.version}</version>
@@ -189,6 +196,12 @@
         <version>${dependency.zeebe.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>spring-boot-starter-camunda-sdk</artifactId>
+        <version>${dependency.zeebe.version}</version>
       </dependency>
 
       <dependency>
@@ -420,6 +433,11 @@
         <groupId>org.apache.httpcomponents.core5</groupId>
         <artifactId>httpcore5</artifactId>
         <version>${dependency.httpcore5.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains</groupId>
+        <artifactId>annotations</artifactId>
+        <version>24.1.0</version>
       </dependency>
       <!-- This should be able to be removed after 1.4.0-alpha2 -->
       <dependency>
