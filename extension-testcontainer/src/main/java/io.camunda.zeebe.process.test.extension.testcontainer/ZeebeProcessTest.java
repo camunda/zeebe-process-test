@@ -37,8 +37,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *         <li>ZeebeTestEngine - This is the engine that will run your process. It will provide some
  *             basic functionality to help you write your tests, such as waiting for an idle state
  *             and increasing the time.
- *         <li>ZeebeClient - This is the client that allows you to send commands to the engine, such
- *             as starting a process instance. The interface of this client is identical to the
+ *         <li>CamundaClient - This is the client that allows you to send commands to the engine,
+ *             such as starting a process instance. The interface of this client is identical to the
  *             interface you use to connect to a real Zeebe engine.
  *         <li>RecordStream - This gives you access to all the records that are processed by the
  *             engine. Assertions use the records for verifying expectations. This grants you the
