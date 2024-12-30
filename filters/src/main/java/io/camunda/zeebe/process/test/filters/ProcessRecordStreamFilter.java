@@ -16,7 +16,7 @@
 
 package io.camunda.zeebe.process.test.filters;
 
-import io.camunda.zeebe.client.api.response.DeploymentEvent;
+import io.camunda.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.ProcessIntent;
 import io.camunda.zeebe.protocol.record.value.deployment.Process;
@@ -40,13 +40,13 @@ public class ProcessRecordStreamFilter {
     return stream.map(Record::getValue);
   }
 
-  public ProcessRecordStreamFilter withBpmnProcessId(String bpmnProcessId) {
+  public ProcessRecordStreamFilter withBpmnProcessId(final String bpmnProcessId) {
     return new ProcessRecordStreamFilter(
         stream.filter(
             record -> Objects.equals(record.getValue().getBpmnProcessId(), bpmnProcessId)));
   }
 
-  public ProcessRecordStreamFilter withDeployment(DeploymentEvent deployment) {
+  public ProcessRecordStreamFilter withDeployment(final DeploymentEvent deployment) {
     return new ProcessRecordStreamFilter(
         stream.filter(
             record ->

@@ -132,6 +132,14 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.USER, this::logUsersRecordValue);
     valueTypeLoggers.put(ValueType.CLOCK, this::logClockRecordValue);
     valueTypeLoggers.put(ValueType.AUTHORIZATION, Object::toString);
+    valueTypeLoggers.put(ValueType.ROLE, Object::toString);
+    valueTypeLoggers.put(ValueType.TENANT, Object::toString);
+    valueTypeLoggers.put(ValueType.SCALE, Object::toString);
+    valueTypeLoggers.put(ValueType.GROUP, Object::toString);
+    valueTypeLoggers.put(ValueType.MAPPING, Object::toString);
+    valueTypeLoggers.put(ValueType.REDISTRIBUTION, Object::toString);
+    valueTypeLoggers.put(ValueType.IDENTITY_SETUP, Object::toString);
+    valueTypeLoggers.put(ValueType.RESOURCE, Object::toString);
   }
 
   public void log() {
