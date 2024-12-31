@@ -15,7 +15,7 @@
  */
 package io.camunda.zeebe.spring.test.proxy;
 
-import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.client.CamundaClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Proxy;
@@ -28,16 +28,16 @@ public class TestProxyConfiguration {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Bean
-  public ZeebeClientProxy zeebeClientProxy() {
-    return new ZeebeClientProxy();
+  public CamundaClientProxy camundaClientProxy() {
+    return new CamundaClientProxy();
   }
 
   @Bean
   @Primary
-  public ZeebeClient proxiedZeebeClient(ZeebeClientProxy zeebeClientProxy) {
-    return (ZeebeClient)
+  public CamundaClient proxiedCamundaClient(final CamundaClientProxy camundaClientProxy) {
+    return (CamundaClient)
         Proxy.newProxyInstance(
-            this.getClass().getClassLoader(), new Class[] {ZeebeClient.class}, zeebeClientProxy);
+            getClass().getClassLoader(), new Class[] {CamundaClient.class}, camundaClientProxy);
   }
 
   @Bean
@@ -49,8 +49,6 @@ public class TestProxyConfiguration {
   public ZeebeTestEngine proxiedZeebeTestEngine(final ZeebeTestEngineProxy zeebeTestEngineProxy) {
     return (ZeebeTestEngine)
         Proxy.newProxyInstance(
-            this.getClass().getClassLoader(),
-            new Class[] {ZeebeTestEngine.class},
-            zeebeTestEngineProxy);
+            getClass().getClassLoader(), new Class[] {ZeebeTestEngine.class}, zeebeTestEngineProxy);
   }
 }

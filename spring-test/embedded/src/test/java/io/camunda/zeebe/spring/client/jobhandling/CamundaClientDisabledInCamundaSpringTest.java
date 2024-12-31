@@ -17,7 +17,7 @@ package io.camunda.zeebe.spring.client.jobhandling;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.client.CamundaClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import org.junit.jupiter.api.Test;
@@ -26,20 +26,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
 @SpringBootTest(
-    classes = {ZeebeClientDisabledInZeebeSpringTest.class},
-    properties = {"zeebe.client.enabled=false"})
+    classes = {CamundaClientDisabledInCamundaSpringTest.class},
+    properties = {"camunda.client.zeebe.enabled=false"})
 @ZeebeSpringTest
-public class ZeebeClientDisabledInZeebeSpringTest {
+public class CamundaClientDisabledInCamundaSpringTest {
 
   @Autowired private ApplicationContext ctx;
 
   @Test
   public void testStartup() {
-    // a testcase with @ZeebeSpringTests ALWAYS creates a ZeebeEngine and a ZeebeClient (!), even
+    // a testcase with @ZeebeSpringTests ALWAYS creates a ZeebeEngine and a CamundaClient (!), even
     // when "zeebe.client.enabled=false" is configured
-    // In essence, this is an invalid configuration state - when you don't want to use ZeebeClient,
+    // In essence, this is an invalid configuration state - when you don't want to use
+    // CamundaClient,
     // don't use @ZeebeSpringTest
-    assertEquals(1, ctx.getBeanNamesForType(ZeebeClient.class).length);
+    assertEquals(1, ctx.getBeanNamesForType(CamundaClient.class).length);
     assertEquals(1, ctx.getBeanNamesForType(ZeebeTestEngine.class).length);
   }
 }

@@ -17,7 +17,7 @@ package io.camunda.zeebe.spring.test;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -34,7 +34,7 @@ public class ZeebeTestThreadSupport {
   private static final Integer DEFAULT_TIMES_PASSED = 1;
   private static final Long DEFAULT_INTERVAL_MILLIS = 100L;
 
-  public static void setEngineForCurrentThread(ZeebeTestEngine engine) {
+  public static void setEngineForCurrentThread(final ZeebeTestEngine engine) {
     ENGINES.set(engine);
   }
 
@@ -42,31 +42,32 @@ public class ZeebeTestThreadSupport {
     ENGINES.remove();
   }
 
-  public static void waitForProcessInstanceCompleted(ProcessInstanceEvent processInstance) {
+  public static void waitForProcessInstanceCompleted(final ProcessInstanceEvent processInstance) {
     waitForProcessInstanceCompleted(processInstance.getProcessInstanceKey(), DEFAULT_DURATION);
   }
 
   public static void waitForProcessInstanceCompleted(
-      ProcessInstanceEvent processInstance, Duration duration) {
+      final ProcessInstanceEvent processInstance, final Duration duration) {
     waitForProcessInstanceCompleted(processInstance.getProcessInstanceKey(), duration);
   }
 
-  public static void waitForProcessInstanceCompleted(long processInstanceKey) {
+  public static void waitForProcessInstanceCompleted(final long processInstanceKey) {
     waitForProcessInstanceCompleted(
         new InspectedProcessInstance(processInstanceKey), DEFAULT_DURATION);
   }
 
-  public static void waitForProcessInstanceCompleted(long processInstanceKey, Duration duration) {
+  public static void waitForProcessInstanceCompleted(
+      final long processInstanceKey, final Duration duration) {
     waitForProcessInstanceCompleted(new InspectedProcessInstance(processInstanceKey), duration);
   }
 
   public static void waitForProcessInstanceCompleted(
-      InspectedProcessInstance inspectedProcessInstance) {
+      final InspectedProcessInstance inspectedProcessInstance) {
     waitForProcessInstanceCompleted(inspectedProcessInstance, DEFAULT_DURATION);
   }
 
   public static void waitForProcessInstanceCompleted(
-      InspectedProcessInstance inspectedProcessInstance, Duration duration) {
+      final InspectedProcessInstance inspectedProcessInstance, Duration duration) {
     // get it in the thread of the test
     final ZeebeTestEngine engine = ENGINES.get();
     if (engine == null) {
@@ -90,43 +91,45 @@ public class ZeebeTestThreadSupport {
   }
 
   public static void waitForProcessInstanceHasPassedElement(
-      ProcessInstanceEvent processInstance, String elementId) {
+      final ProcessInstanceEvent processInstance, final String elementId) {
     waitForProcessInstanceHasPassedElement(
         processInstance.getProcessInstanceKey(), elementId, DEFAULT_DURATION);
   }
 
   public static void waitForProcessInstanceHasPassedElement(
-      ProcessInstanceEvent processInstance, String elementId, Duration duration) {
+      final ProcessInstanceEvent processInstance, final String elementId, final Duration duration) {
     waitForProcessInstanceHasPassedElement(
         processInstance.getProcessInstanceKey(), elementId, duration);
   }
 
   public static void waitForProcessInstanceHasPassedElement(
-      long processInstanceKey, String elementId) {
+      final long processInstanceKey, final String elementId) {
     waitForProcessInstanceHasPassedElement(
         new InspectedProcessInstance(processInstanceKey), elementId, DEFAULT_DURATION);
   }
 
   public static void waitForProcessInstanceHasPassedElement(
-      long processInstanceKey, String elementId, Duration duration) {
+      final long processInstanceKey, final String elementId, final Duration duration) {
     waitForProcessInstanceHasPassedElement(
         new InspectedProcessInstance(processInstanceKey), elementId, duration);
   }
 
   public static void waitForProcessInstanceHasPassedElement(
-      InspectedProcessInstance inspectedProcessInstance, String elementId) {
+      final InspectedProcessInstance inspectedProcessInstance, final String elementId) {
     waitForProcessInstanceHasPassedElement(inspectedProcessInstance, elementId, DEFAULT_DURATION);
   }
 
   public static void waitForProcessInstanceHasPassedElement(
-      InspectedProcessInstance inspectedProcessInstance, String elementId, Duration duration) {
+      final InspectedProcessInstance inspectedProcessInstance,
+      final String elementId,
+      final Duration duration) {
     waitForProcessInstanceHasPassedElement(
         inspectedProcessInstance, elementId, duration, DEFAULT_TIMES_PASSED);
   }
 
   public static void waitForProcessInstanceHasPassedElement(
-      InspectedProcessInstance inspectedProcessInstance,
-      String elementId,
+      final InspectedProcessInstance inspectedProcessInstance,
+      final String elementId,
       Duration duration,
       final int times) {
     final ZeebeTestEngine engine = ENGINES.get();

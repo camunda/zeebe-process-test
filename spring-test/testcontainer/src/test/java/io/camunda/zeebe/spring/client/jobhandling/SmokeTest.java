@@ -19,10 +19,10 @@ import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.client.api.worker.JobClient;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
@@ -42,24 +42,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 @ZeebeSpringTest
 public class SmokeTest {
 
-  @Autowired private ZeebeClient client;
-
-  @Autowired private ZeebeTestEngine engine;
-
   private static boolean calledTest1 = false;
-
   private static boolean calledTest2 = false;
   private static ComplexTypeDTO test2ComplexTypeDTO = null;
   private static String test2Var2 = null;
+  @Autowired private CamundaClient client;
+  @Autowired private ZeebeTestEngine engine;
 
   @JobWorker(name = "test1", type = "test1") // autoComplete is true
-  public void handleTest1(JobClient client, ActivatedJob job) {
+  public void handleTest1(final JobClient client, final ActivatedJob job) {
     calledTest1 = true;
   }
 
   @Test
   public void testAutoComplete() {
-    BpmnModelInstance bpmnModel =
+    final BpmnModelInstance bpmnModel =
         Bpmn.createExecutableProcess("test1")
             .startEvent()
             .serviceTask()
@@ -71,7 +68,7 @@ public class SmokeTest {
 
     final Map<String, Object> variables =
         Collections.singletonMap("magicNumber", "42"); // Todo: 42 instead of "42" fails?
-    ProcessInstanceEvent processInstance = startProcessInstance(client, "test1", variables);
+    final ProcessInstanceEvent processInstance = startProcessInstance(client, "test1", variables);
 
     assertThat(processInstance).isStarted();
     waitForProcessInstanceCompleted(processInstance);
@@ -82,8 +79,8 @@ public class SmokeTest {
   public void handleTest2(
       final JobClient client,
       final ActivatedJob job,
-      @Variable ComplexTypeDTO dto,
-      @Variable String var2) {
+      @Variable final ComplexTypeDTO dto,
+      @Variable final String var2) {
     calledTest2 = true;
     test2ComplexTypeDTO = dto;
     test2Var2 = var2;
@@ -92,7 +89,7 @@ public class SmokeTest {
   @Test
   void testShouldDeserializeComplexTypeZebeeVariable() {
     final String processId = "test2";
-    BpmnModelInstance bpmnModel =
+    final BpmnModelInstance bpmnModel =
         Bpmn.createExecutableProcess(processId)
             .startEvent()
             .serviceTask()
@@ -101,15 +98,15 @@ public class SmokeTest {
             .done();
     client.newDeployResourceCommand().addProcessModel(bpmnModel, processId + ".bpmn").send().join();
 
-    ComplexTypeDTO dto = new ComplexTypeDTO();
+    final ComplexTypeDTO dto = new ComplexTypeDTO();
     dto.setVar1("value1");
     dto.setVar2("value2");
 
-    Map<String, Object> variables = new HashMap<>();
+    final Map<String, Object> variables = new HashMap<>();
     variables.put("dto", dto);
     variables.put("var2", "stringValue");
 
-    ProcessInstanceEvent processInstance = startProcessInstance(client, processId, variables);
+    final ProcessInstanceEvent processInstance = startProcessInstance(client, processId, variables);
     waitForProcessInstanceCompleted(processInstance);
 
     assertTrue(calledTest2);
@@ -121,12 +118,13 @@ public class SmokeTest {
     assertEquals("stringValue", test2Var2);
   }
 
-  private ProcessInstanceEvent startProcessInstance(ZeebeClient client, String bpmnProcessId) {
+  private ProcessInstanceEvent startProcessInstance(
+      final CamundaClient client, final String bpmnProcessId) {
     return startProcessInstance(client, bpmnProcessId, new HashMap<>());
   }
 
   private ProcessInstanceEvent startProcessInstance(
-      ZeebeClient client, String bpmnProcessId, Map<String, Object> variables) {
+      final CamundaClient client, final String bpmnProcessId, final Map<String, Object> variables) {
     return client
         .newCreateInstanceCommand()
         .bpmnProcessId(bpmnProcessId)
@@ -144,7 +142,7 @@ public class SmokeTest {
       return var1;
     }
 
-    public void setVar1(String var1) {
+    public void setVar1(final String var1) {
       this.var1 = var1;
     }
 
@@ -152,7 +150,7 @@ public class SmokeTest {
       return var2;
     }
 
-    public void setVar2(String var2) {
+    public void setVar2(final String var2) {
       this.var2 = var2;
     }
   }

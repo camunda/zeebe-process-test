@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.client.api.worker.JobClient;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
@@ -57,62 +57,39 @@ import org.springframework.context.annotation.Bean;
 @ZeebeSpringTest
 public class JobHandlerTest {
 
-  @Autowired private ZeebeClient client;
-
-  @Autowired private SimpleMetricsRecorder metrics;
-
-  @TestConfiguration
-  public static class ZeebeCustomizerDisableWorkerConfiguration {
-    @Bean
-    public ZeebeWorkerValueCustomizer zeebeWorkerValueCustomizer() {
-      return zeebeWorker -> {
-        if (zeebeWorker.getType().equals("test4")) {
-          zeebeWorker.setEnabled(false);
-        }
-      };
-    }
-  }
-
-  @TestConfiguration
-  @AutoConfigureBefore(MetricsDefaultConfiguration.class)
-  public static class TestMetricsConfiguration {
-    @Bean
-    public MetricsRecorder testMetricsRecorder() {
-      return new SimpleMetricsRecorder();
-    }
-  }
-
   private static boolean calledTest1 = false;
   private static boolean calledTest2 = false;
   private static boolean calledTest3 = false;
   private static boolean calledTest4 = false;
-
   private static boolean calledTest6 = false;
   private static boolean calledTest7 = false;
   private static String test7Var = null;
   private static ComplexTypeDTO test6ComplexTypeDTO = null;
   private static String test6Var2 = null;
+  @Autowired private CamundaClient client;
+  @Autowired private SimpleMetricsRecorder metrics;
+  @Autowired private JobWorkerManager jobWorkerManager;
 
   @JobWorker(name = "test1", type = "test1", autoComplete = true)
-  public void handleTest1(JobClient client, ActivatedJob job) {
+  public void handleTest1(final JobClient client, final ActivatedJob job) {
     calledTest1 = true;
   }
 
   @Test
   public void testAutoComplete() {
-    long activatedAtStart =
+    final long activatedAtStart =
         metrics.getCount(
             MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, "test1");
-    long completedAtStart =
+    final long completedAtStart =
         metrics.getCount(
             MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, "test1");
-    long failedAtStart =
+    final long failedAtStart =
         metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, "test1");
-    long bpmnErrorAtStart =
+    final long bpmnErrorAtStart =
         metrics.getCount(
             MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_BPMN_ERROR, "test1");
 
-    BpmnModelInstance bpmnModel =
+    final BpmnModelInstance bpmnModel =
         Bpmn.createExecutableProcess("test1")
             .startEvent()
             .serviceTask()
@@ -124,7 +101,7 @@ public class JobHandlerTest {
 
     final Map<String, Object> variables =
         Collections.singletonMap("magicNumber", "42"); // Todo: 42 instead of "42" fails?
-    ProcessInstanceEvent processInstance = startProcessInstance(client, "test1", variables);
+    final ProcessInstanceEvent processInstance = startProcessInstance(client, "test1", variables);
 
     waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest1);
@@ -147,13 +124,11 @@ public class JobHandlerTest {
   }
 
   @JobWorker(type = "test2", autoComplete = true)
-  public void handleTest2(JobClient client, ActivatedJob job) {
+  public void handleTest2(final JobClient client, final ActivatedJob job) {
     // Complete it here to trigger a not found in the auto complete, which will be ignored
     client.newCompleteCommand(job.getKey()).send().join();
     calledTest2 = true;
   }
-
-  @Autowired private JobWorkerManager jobWorkerManager;
 
   @Test
   public void testWorkerDefaultName() {
@@ -166,7 +141,7 @@ public class JobHandlerTest {
 
   @Test
   public void testAutoCompleteOnAlreadyCompletedJob() {
-    BpmnModelInstance bpmnModel =
+    final BpmnModelInstance bpmnModel =
         Bpmn.createExecutableProcess("test2")
             .startEvent()
             .serviceTask()
@@ -174,7 +149,7 @@ public class JobHandlerTest {
             .endEvent()
             .done();
     client.newDeployResourceCommand().addProcessModel(bpmnModel, "test2.bpmn").send().join();
-    ProcessInstanceEvent processInstance = startProcessInstance(client, "test2");
+    final ProcessInstanceEvent processInstance = startProcessInstance(client, "test2");
     // assertThat(processInstance).isStarted();
     waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest2);
@@ -265,8 +240,8 @@ public class JobHandlerTest {
   public void handleTest6(
       final JobClient client,
       final ActivatedJob job,
-      @Variable ComplexTypeDTO dto,
-      @Variable String var2) {
+      @Variable final ComplexTypeDTO dto,
+      @Variable final String var2) {
     calledTest6 = true;
     test6ComplexTypeDTO = dto;
     test6Var2 = var2;
@@ -275,7 +250,7 @@ public class JobHandlerTest {
   @Test
   void testShouldDeserializeComplexTypeZebeeVariable() {
     final String processId = "test6";
-    BpmnModelInstance bpmnModel =
+    final BpmnModelInstance bpmnModel =
         Bpmn.createExecutableProcess(processId)
             .startEvent()
             .serviceTask()
@@ -283,9 +258,9 @@ public class JobHandlerTest {
             .endEvent()
             .done();
     client.newDeployResourceCommand().addProcessModel(bpmnModel, processId + ".bpmn").send().join();
-    Map<String, Object> variables =
+    final Map<String, Object> variables =
         Map.of("dto", Map.of("var1", "value1", "var2", "value2"), "var2", "stringValue");
-    ProcessInstanceEvent processInstance = startProcessInstance(client, processId, variables);
+    final ProcessInstanceEvent processInstance = startProcessInstance(client, processId, variables);
     waitForProcessInstanceCompleted(processInstance);
 
     assertTrue(calledTest6);
@@ -298,14 +273,14 @@ public class JobHandlerTest {
   }
 
   @JobWorker(type = "test7")
-  public void handleTest7(@Variable(name = "class") String variableWithKeywordAsName) {
+  public void handleTest7(@Variable(name = "class") final String variableWithKeywordAsName) {
     calledTest7 = true;
     test7Var = variableWithKeywordAsName;
   }
 
   @Test
   void shouldInjectVariableWithKeywordAsName() {
-    BpmnModelInstance bpmnModel =
+    final BpmnModelInstance bpmnModel =
         Bpmn.createExecutableProcess("test7")
             .startEvent()
             .serviceTask()
@@ -313,7 +288,7 @@ public class JobHandlerTest {
             .endEvent()
             .done();
     client.newDeployResourceCommand().addProcessModel(bpmnModel, "test7.bpmn").send().join();
-    ProcessInstanceEvent processInstance =
+    final ProcessInstanceEvent processInstance =
         startProcessInstance(client, "test7", Map.of("class", "alpha"));
     waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest7);
@@ -321,12 +296,13 @@ public class JobHandlerTest {
     assertEquals("alpha", test7Var);
   }
 
-  private ProcessInstanceEvent startProcessInstance(ZeebeClient client, String bpmnProcessId) {
+  private ProcessInstanceEvent startProcessInstance(
+      final CamundaClient client, final String bpmnProcessId) {
     return startProcessInstance(client, bpmnProcessId, new HashMap<>());
   }
 
   private ProcessInstanceEvent startProcessInstance(
-      ZeebeClient client, String bpmnProcessId, Map<String, Object> variables) {
+      final CamundaClient client, final String bpmnProcessId, final Map<String, Object> variables) {
     return client
         .newCreateInstanceCommand()
         .bpmnProcessId(bpmnProcessId)
@@ -334,6 +310,27 @@ public class JobHandlerTest {
         .variables(variables)
         .send()
         .join();
+  }
+
+  @TestConfiguration
+  public static class ZeebeCustomizerDisableWorkerConfiguration {
+    @Bean
+    public ZeebeWorkerValueCustomizer zeebeWorkerValueCustomizer() {
+      return zeebeWorker -> {
+        if (zeebeWorker.getType().equals("test4")) {
+          zeebeWorker.setEnabled(false);
+        }
+      };
+    }
+  }
+
+  @TestConfiguration
+  @AutoConfigureBefore(MetricsDefaultConfiguration.class)
+  public static class TestMetricsConfiguration {
+    @Bean
+    public MetricsRecorder testMetricsRecorder() {
+      return new SimpleMetricsRecorder();
+    }
   }
 
   private static class ComplexTypeDTO {
@@ -344,7 +341,7 @@ public class JobHandlerTest {
       return var1;
     }
 
-    public void setVar1(String var1) {
+    public void setVar1(final String var1) {
       this.var1 = var1;
     }
 
@@ -352,7 +349,7 @@ public class JobHandlerTest {
       return var2;
     }
 
-    public void setVar2(String var2) {
+    public void setVar2(final String var2) {
       this.var2 = var2;
     }
   }
