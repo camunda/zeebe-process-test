@@ -17,9 +17,9 @@ package io.camunda.zeebe.process.test.qa.abstracts.assertions;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.client.api.response.PublishMessageResponse;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -42,7 +42,7 @@ public abstract class AbstractMessageAssertTest {
   @Nested
   class HappyPathTests {
 
-    private ZeebeClient client;
+    private CamundaClient client;
     private ZeebeTestEngine engine;
 
     @Test
@@ -188,7 +188,7 @@ public abstract class AbstractMessageAssertTest {
   @Nested
   class UnhappyPathTests {
 
-    private ZeebeClient client;
+    private CamundaClient client;
     private ZeebeTestEngine engine;
 
     @Test

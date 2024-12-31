@@ -15,7 +15,7 @@
  */
 package io.camunda.zeebe.process.test.qa.embedded.multithread;
 
-import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.client.CamundaClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -25,11 +25,11 @@ import io.camunda.zeebe.process.test.qa.abstracts.multithread.AbstractMultiThrea
 class MultiThreadTest extends AbstractMultiThreadTest {
 
   private ZeebeTestEngine engine;
-  private ZeebeClient client;
+  private CamundaClient client;
   private RecordStream recordStream;
 
   @Override
-  public ZeebeClient getClient() {
+  public CamundaClient getClient() {
     return client;
   }
 

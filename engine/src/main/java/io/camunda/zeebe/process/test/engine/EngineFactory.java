@@ -7,6 +7,7 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
+import io.camunda.security.configuration.SecurityConfiguration;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.engine.Engine;
 import io.camunda.zeebe.engine.EngineConfiguration;
@@ -162,7 +163,8 @@ public class EngineFactory {
                             commandSender,
                             FeatureFlags.createDefault(),
                             jobStreamer),
-                    new EngineConfiguration())))
+                    new EngineConfiguration(),
+                    new SecurityConfiguration())))
         .actorSchedulingService(scheduler)
         .clock(new ControllableStreamClockImpl(clock))
         .meterRegistry(new SimpleMeterRegistry())

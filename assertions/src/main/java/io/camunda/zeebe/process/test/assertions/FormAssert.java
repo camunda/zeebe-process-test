@@ -18,7 +18,7 @@ package io.camunda.zeebe.process.test.assertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.zeebe.client.api.response.Form;
+import io.camunda.client.api.response.Form;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;

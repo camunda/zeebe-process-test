@@ -18,13 +18,13 @@ package io.camunda.zeebe.process.test.qa.abstracts.injection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.Topology;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.Topology;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractInheritanceInjectionTest {
-  protected ZeebeClient client;
+  protected CamundaClient client;
   protected ZeebeTestEngine engine;
 
   @Test

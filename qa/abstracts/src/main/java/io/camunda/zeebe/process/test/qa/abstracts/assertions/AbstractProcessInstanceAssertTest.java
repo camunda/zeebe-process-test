@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.IncidentAssert;
@@ -59,7 +59,7 @@ public abstract class AbstractProcessInstanceAssertTest {
   @Nested
   class HappyPathTests {
 
-    private ZeebeClient client;
+    private CamundaClient client;
     private ZeebeTestEngine engine;
 
     @Test
@@ -623,7 +623,7 @@ public abstract class AbstractProcessInstanceAssertTest {
   @Nested
   class UnhappyPathTests {
 
-    private ZeebeClient client;
+    private CamundaClient client;
     private ZeebeTestEngine engine;
 
     @Test
@@ -1395,7 +1395,7 @@ public abstract class AbstractProcessInstanceAssertTest {
   @Nested
   class RegressionTests {
 
-    private ZeebeClient client;
+    private CamundaClient client;
     private ZeebeTestEngine engine;
 
     @Test // regression test for #78

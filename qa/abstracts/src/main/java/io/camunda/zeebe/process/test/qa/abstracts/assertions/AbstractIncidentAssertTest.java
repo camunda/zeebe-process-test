@@ -17,10 +17,10 @@ package io.camunda.zeebe.process.test.qa.abstracts.assertions;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ActivateJobsResponse;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.assertions.IncidentAssert;
@@ -46,7 +46,7 @@ public abstract class AbstractIncidentAssertTest {
   @Nested
   class HappyPathTests {
 
-    private ZeebeClient client;
+    private CamundaClient client;
     private ZeebeTestEngine engine;
 
     @Test
@@ -238,7 +238,7 @@ public abstract class AbstractIncidentAssertTest {
   @Nested
   class UnhappyPathTests {
 
-    private ZeebeClient client;
+    private CamundaClient client;
     private ZeebeTestEngine engine;
 
     @Test

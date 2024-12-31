@@ -18,11 +18,11 @@ package io.camunda.zeebe.process.test.examples;
 
 import static java.util.Collections.singletonMap;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.response.DeploymentEvent;
-import io.camunda.zeebe.client.api.response.PublishMessageResponse;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.command.DeployResourceCommandStep1;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.api.response.DeploymentEvent;
+import io.camunda.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
@@ -63,7 +63,7 @@ public class PullRequestProcessTest {
   // injected by ZeebeProcessTest annotation
   private ZeebeTestEngine engine;
   // injected by ZeebeProcessTest annotation
-  private ZeebeClient client;
+  private CamundaClient client;
 
   @BeforeEach
   void deployProcesses() {
@@ -241,7 +241,7 @@ public class PullRequestProcessTest {
      due to time manipulation. This can be the cause of a flaky test.
 
      Note that by default, the time to live is set to 1 hour.
-     See {@code ZeebeClientBuilder#defaultTimeToLive}.
+     See {@code CamundaClientBuilder#defaultTimeToLive}.
     */
     final Duration timeToLive = Duration.ZERO;
 

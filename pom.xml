@@ -81,10 +81,10 @@
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
     <dependency.micrometer.version>1.13.3</dependency.micrometer.version>
     <dependency.mockito.version>4.11.0</dependency.mockito.version>
-    <dependency.netty.version>4.1.110.Final</dependency.netty.version>
+    <dependency.netty.version>4.1.116.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
-    <dependency.proto.version>2.41.0</dependency.proto.version>
-    <dependency.protobuf.version>3.25.3</dependency.protobuf.version>
+    <dependency.proto.version>2.50.0</dependency.proto.version>
+    <dependency.protobuf.version>4.29.2</dependency.protobuf.version>
     <dependency.revapi.version>0.28.1</dependency.revapi.version>
     <dependency.scala.version>2.13.14</dependency.scala.version>
     <dependency.slf4j.version>2.0.13</dependency.slf4j.version>
@@ -119,10 +119,10 @@
 
     <skipChecks>false</skipChecks>
 
-    <!-- Note: needs to be aligned with the version used by io.camunda:zeebe-client-java -->
-    <version.grpc>1.68.0</version.grpc>
+    <!-- Note: needs to be aligned with the version used by io.camunda:camunda-client-java -->
+    <version.grpc>1.69.0</version.grpc>
     <version.java>21</version.java>
-    <version.protobuf>3.19.4</version.protobuf>
+    <version.protobuf>4.29.2</version.protobuf>
   </properties>
 
   <dependencyManagement>
@@ -193,7 +193,13 @@
 
       <dependency>
         <groupId>io.camunda</groupId>
-        <artifactId>zeebe-client-java</artifactId>
+        <artifactId>camunda-client-java</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>camunda-security-core</artifactId>
         <version>${dependency.zeebe.version}</version>
       </dependency>
 
