@@ -17,13 +17,17 @@
     "at any time"
   ],
   "vulnerabilityAlerts": {
-    "labels": ["area/security"],
+    "labels": [
+      "area/security"
+    ],
     "enabled": true
   },
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true,
-    "addLabels": ["automerge"]
+    "addLabels": [
+      "automerge"
+    ]
   },
   "packageRules": [
     {
@@ -31,38 +35,65 @@
       "matchBaseBranches": [
         "/^stable\\/8\\..*/"
       ],
-      "matchUpdateTypes": ["minor", "major"],
+      "matchUpdateTypes": [
+        "minor",
+        "major"
+      ],
       "enabled": false
     },
     {
       "description": "Digest updates cover all use cases since they are used as base, so we disable other types.",
-      "matchManagers": ["dockerfile"],
-      "matchFileNames": ["Dockerfile"],
-      "matchUpdateTypes": ["major", "minor", "patch"],
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "matchFileNames": [
+        "Dockerfile"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
       "enabled": true
     },
     {
-      "matchManagers": ["maven"],
-      "matchPackagePrefixes": ["org.jacoco"],
-      "allowedVersions": "!/0.8.9/"
+      "matchManagers": [
+        "maven"
+      ],
+      "allowedVersions": "!/0.8.9/",
+      "matchPackageNames": [
+        "org.jacoco{/,}**"
+      ]
     },
     {
       "description": "Exclude BPMN model dependencies which target JDK 11 (since this library targets JDK 8)",
-      "matchManagers": ["maven"],
-      "matchPackagePrefixes": ["org.camunda.bpmn.model"],
-      "allowedVersions": "<7.20.0"
+      "matchManagers": [
+        "maven"
+      ],
+      "allowedVersions": "<7.20.0",
+      "matchPackageNames": [
+        "org.camunda.bpmn.model{/,}**"
+      ]
     },
     {
       "description": "Exclude SNAPSHOT versions, renovate may suggest them for pre-release values.",
-      "matchManagers": ["maven"],
-      "matchPackagePatterns": [".*"],
-      "allowedVersions": "!/-SNAPSHOT$/"
+      "matchManagers": [
+        "maven"
+      ],
+      "allowedVersions": "!/-SNAPSHOT$/",
+      "matchPackageNames": [
+        "/.*/"
+      ]
     },
     {
       "description": "Automerge all updates with green CI.",
-      "matchPackagePatterns": ["*"],
       "automerge": true,
-      "addLabels": ["automerge"]
+      "addLabels": [
+        "automerge"
+      ],
+      "matchPackageNames": [
+        "*"
+      ]
     }
   ]
 }
