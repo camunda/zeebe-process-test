@@ -493,6 +493,13 @@
         <artifactId>spring-core</artifactId>
         <version>${dependency.spring.version}</version>
       </dependency>
+
+      <!-- fix dependency convergence between guava and spring-boot-starter-camunda-test-common -->
+      <dependency>
+        <groupId>org.checkerframework</groupId>
+        <artifactId>checker-qual</artifactId>
+        <version>3.48.4</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
