@@ -12,7 +12,7 @@
   <name>Spring Boot Starter Camunda Test commons</name>
 
   <properties>
-    <version.checker-qual>3.42.0</version.checker-qual>
+    <version.checker-qual>3.48.4</version.checker-qual>
   </properties>
 
   <dependencies>
