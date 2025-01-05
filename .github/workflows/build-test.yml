@@ -113,18 +113,9 @@ jobs:
           IMAGE_NAME_KEY: container.image.name
           IMAGE_TAG_KEY: container.image.tag
 
-      - name: Downgrade Java environment
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 8
-          cache: maven
-
-      # Deleting .mvn/jvm.config is a workaround for JDK8, which does not support the --add-exports options
       - name: Build
         id: build
         run: |
-          rm .mvn/jvm.config
           mvn clean -B -U -pl ":zeebe-process-test-qa-testcontainers" -P !localBuild -am "-Dsurefire.rerunFailingTestsCount=5" install -DskipChecks
 
       - name: Archive Test Results
