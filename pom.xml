@@ -72,7 +72,7 @@
     <dependency.errorprone.version>2.36.0</dependency.errorprone.version>
     <dependency.feel.version>1.17.7</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
-    <dependency.guava.version>33.2.0-jre</dependency.guava.version>
+    <dependency.guava.version>33.4.0-jre</dependency.guava.version>
     <dependency.httpcore5.version>5.3.1</dependency.httpcore5.version>
     <dependency.immutables.version>2.10.1</dependency.immutables.version>
     <dependency.jackson.version>2.18.2</dependency.jackson.version>
