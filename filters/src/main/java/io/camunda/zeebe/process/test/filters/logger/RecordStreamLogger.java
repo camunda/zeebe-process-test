@@ -139,6 +139,7 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.MAPPING, Object::toString);
     valueTypeLoggers.put(ValueType.REDISTRIBUTION, Object::toString);
     valueTypeLoggers.put(ValueType.IDENTITY_SETUP, Object::toString);
+    valueTypeLoggers.put(ValueType.RESOURCE, Object::toString);
   }
 
   public void log() {

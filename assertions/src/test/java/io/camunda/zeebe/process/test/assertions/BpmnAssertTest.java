@@ -18,11 +18,11 @@ package io.camunda.zeebe.process.test.assertions;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.response.DeploymentEvent;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
-import io.camunda.zeebe.client.api.response.PublishMessageResponse;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.api.response.DeploymentEvent;
+import io.camunda.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.api.response.ProcessInstanceResult;
+import io.camunda.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.inspections.model.InspectedProcessInstance;
 import org.junit.jupiter.api.AfterEach;
@@ -46,10 +46,10 @@ class BpmnAssertTest {
   @DisplayName("Should return ProcessInstanceAssert for ProcessInstanceEvent")
   void testAssertThatProcessInstanceEventReturnsProcessInstanceAssert() {
     // given
-    ProcessInstanceEvent event = mock(ProcessInstanceEvent.class);
+    final ProcessInstanceEvent event = mock(ProcessInstanceEvent.class);
 
     // when
-    ProcessInstanceAssert assertions = BpmnAssert.assertThat(event);
+    final ProcessInstanceAssert assertions = BpmnAssert.assertThat(event);
 
     // then
     assertThat(assertions).isInstanceOf(ProcessInstanceAssert.class);
@@ -59,10 +59,10 @@ class BpmnAssertTest {
   @DisplayName("Should return ProcessInstanceAssert for ProcessInstanceResult")
   void testAssertThatProcessInstanceResultReturnsProcessInstanceAssert() {
     // given
-    ProcessInstanceResult result = mock(ProcessInstanceResult.class);
+    final ProcessInstanceResult result = mock(ProcessInstanceResult.class);
 
     // when
-    ProcessInstanceAssert assertions = BpmnAssert.assertThat(result);
+    final ProcessInstanceAssert assertions = BpmnAssert.assertThat(result);
 
     // then
     assertThat(assertions).isInstanceOf(ProcessInstanceAssert.class);
@@ -72,10 +72,10 @@ class BpmnAssertTest {
   @DisplayName("Should return ProcessInstanceAssert for InspectedProcessInstance")
   void testAssertThatInspectedProcessInstanceReturnsProcessInstanceAssert() {
     // given
-    InspectedProcessInstance inspected = mock(InspectedProcessInstance.class);
+    final InspectedProcessInstance inspected = mock(InspectedProcessInstance.class);
 
     // when
-    ProcessInstanceAssert assertions = BpmnAssert.assertThat(inspected);
+    final ProcessInstanceAssert assertions = BpmnAssert.assertThat(inspected);
 
     // then
     assertThat(assertions).isInstanceOf(ProcessInstanceAssert.class);
@@ -85,10 +85,10 @@ class BpmnAssertTest {
   @DisplayName("Should return JobAssert for ActivatedJob")
   void testAssertThatActivatedJobReturnsJobAssert() {
     // given
-    ActivatedJob job = mock(ActivatedJob.class);
+    final ActivatedJob job = mock(ActivatedJob.class);
 
     // when
-    JobAssert assertions = BpmnAssert.assertThat(job);
+    final JobAssert assertions = BpmnAssert.assertThat(job);
 
     // then
     assertThat(assertions).isInstanceOf(JobAssert.class);
@@ -98,10 +98,10 @@ class BpmnAssertTest {
   @DisplayName("Should return DeploymentAssert for DeploymentEvent")
   void testAssertThatDeploymentEventReturnsDeploymentAssert() {
     // given
-    DeploymentEvent event = mock(DeploymentEvent.class);
+    final DeploymentEvent event = mock(DeploymentEvent.class);
 
     // when
-    DeploymentAssert assertions = BpmnAssert.assertThat(event);
+    final DeploymentAssert assertions = BpmnAssert.assertThat(event);
 
     // then
     assertThat(assertions).isInstanceOf(DeploymentAssert.class);
@@ -111,10 +111,10 @@ class BpmnAssertTest {
   @DisplayName("Should return MessageAssert for PublishMessageResponse")
   void testAssertThatPublishMessageResponseReturnsMessageAssert() {
     // given
-    PublishMessageResponse event = mock(PublishMessageResponse.class);
+    final PublishMessageResponse event = mock(PublishMessageResponse.class);
 
     // when
-    MessageAssert assertions = BpmnAssert.assertThat(event);
+    final MessageAssert assertions = BpmnAssert.assertThat(event);
 
     // then
     assertThat(assertions).isInstanceOf(MessageAssert.class);

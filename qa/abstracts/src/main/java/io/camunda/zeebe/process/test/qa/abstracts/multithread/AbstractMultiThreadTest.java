@@ -19,8 +19,8 @@ import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.deployResource;
 import static io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.startProcessInstance;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -75,7 +75,7 @@ public abstract class AbstractMultiThreadTest {
     }
   }
 
-  public abstract ZeebeClient getClient();
+  public abstract CamundaClient getClient();
 
   public abstract ZeebeTestEngine getEngine();
 

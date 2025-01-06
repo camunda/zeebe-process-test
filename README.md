@@ -5,18 +5,16 @@
 This project allows you to unit test your Camunda Platform 8 BPMN processes. It will start a Zeebe test engine
 and provide you with a set of assertions you can use to verify your process behaves as expected.
 
-> [!Note]
-> Heads up! We are building a new Java testing library for Camunda 8.6+. The new library will replace Zeebe Process Test eventually.
-> New features: Access to Camunda's new REST API, official Spring integration, process coverage, improved UX, and more ([ref](https://github.com/camunda/issues/issues/751)).
-> Stay tuned for updates. 🚀
+> [!NOTE]
+> Heads up! We created a new Java testing library for Camunda 8.6+: Camunda Process Test. The new library will replace Zeebe Process Test eventually.
+> New features: Access to Camunda's new REST API, official Spring integration, improved UX, and more.
+> See the [documentation](https://docs.camunda.io/docs/apis-tools/testing/getting-started/) on how to get started. 🚀
 
 ## Prerequisites
 
 * Java 21+ (17+ for <=`8.3.x`) when running with an embedded engine (`zeebe-process-test-extension`)
 * Java 8+ and Docker when running using testcontainers (`zeebe-process-test-extension-testcontainer`)
 * JUnit 5
-
-**NOTE**: If you use **Spring** and want to write tests, please use `spring-zeebe-test` as a wrapper around Zeebe Process Test to hook everything into the Spring lifecycle. See [Spring Zeebe: Writing test cases](https://github.com/camunda-community-hub/spring-zeebe#writing-test-cases) for details.
 
 ## Getting Started
 
@@ -65,7 +63,11 @@ Using Maven profiles you can also [switch the test dependencies based on the ava
 
 ### Spring support
 
-If you use the Spring framework or Spring Boot and you want to write tests, please use `spring-zeebe-test` as a wrapper around this library. This will hook everything into the Spring lifecycle. See [Spring Zeebe: Writing test cases](https://github.com/camunda-community-hub/spring-zeebe#writing-test-cases) for details.
+If you use [Spring-Zeebe](https://github.com/camunda-community-hub/spring-zeebe) (community-maintained project) and want to write tests, please use `spring-zeebe-test` as a wrapper around Zeebe Process Test to hook everything into the Spring lifecycle. See [Spring Zeebe: Writing test cases](https://github.com/camunda-community-hub/spring-zeebe#writing-test-cases) for details.
+
+> [!IMPORTANT]
+> Zeebe Process Test has no integration for the [Camunda Spring SDK](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/). You could still use the library but without hooking into the Spring lifecycle.
+> Alternatively, you could migrate to the new [Camunda Process Test](https://docs.camunda.io/docs/apis-tools/testing/getting-started/) library that has support for the Spring SDK.
 
 ### Annotation
 
@@ -78,7 +80,7 @@ Annotate your test class with the `@ZeebeProcessTest` annotation. This annotatio
 3. It will (optionally) inject 3 fields in your test class:
    1. `ZeebeTestEngine` - This is the engine that will run your process. It will provide some basic functionality
       to help you write your tests, such as waiting for an idle state and increasing the time.
-   2. `ZeebeClient` - This is the client that allows you to  send commands to the engine, such as
+   2. `CamundaClient` - This is the client that allows you to  send commands to the engine, such as
       starting a process instance. The interface of this client is identical to the interface you
       use to connect to a real Zeebe engine.
    3. `RecordStream` - This gives you access to all the records that are processed by the engine.
@@ -96,7 +98,7 @@ import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 @ZeebeProcessTest
 class DeploymentAssertTest {
   private ZeebeTestEngine engine;
-  private ZeebeClient client;
+  private CamundaClient client;
   private RecordStream recordStream;
 }
 ```
@@ -240,7 +242,7 @@ A custom `ObjectMapper` can be provided to the `Zeebe Client`
 @ZeebeProcessTest
 class MyProcessTest {
   private ZeebeTestEngine engine;
-  private ZeebeClient client;
+  private CamundaClient client;
   private ObjectMapper mapper = setupMapper();
 
 
