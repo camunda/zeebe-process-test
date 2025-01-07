@@ -22,7 +22,6 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestWatcher;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,18 +122,18 @@ public class ZeebeProcessTestExtension
                   + "found %s. Please make sure at most one field of type %s has been declared in the"
                   + " test class.",
               clazz.getSimpleName(), fields.size(), clazz.getSimpleName()));
-    } else if (fields.size() == 0) {
+    } else if (fields.isEmpty()) {
       final Class<?> superclass = requiredTestClass.getSuperclass();
       return superclass == null ? Optional.empty() : getField(superclass, clazz);
     } else {
-      return Optional.of(fields.get(0));
+      return Optional.of(fields.getFirst());
     }
   }
 
   private void injectField(
       final ExtensionContext extensionContext, final Field field, final Object object) {
     try {
-      ReflectionUtils.makeAccessible(field);
+      field.setAccessible(true);
       field.set(extensionContext.getRequiredTestInstance(), object);
     } catch (final IllegalAccessException e) {
       throw new RuntimeException(e);
@@ -159,7 +158,7 @@ public class ZeebeProcessTestExtension
     }
 
     final var customMapper = customMapperOpt.get();
-    ReflectionUtils.makeAccessible(customMapper);
+    customMapper.setAccessible(true);
     try {
       return (ObjectMapper) customMapper.get(context.getRequiredTestInstance());
     } catch (final IllegalAccessException e) {
