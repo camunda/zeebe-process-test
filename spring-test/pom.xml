@@ -22,7 +22,7 @@
 
   <properties>
     <plugin.version.license>4.6</plugin.version.license>
-    <version.spring-boot>3.3.7</version.spring-boot>
+    <version.spring-boot>3.4.1</version.spring-boot>
   </properties>
 
   <dependencyManagement>
