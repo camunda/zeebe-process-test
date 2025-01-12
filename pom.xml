@@ -51,6 +51,7 @@
     <module>filters</module>
     <module>qa</module>
     <module>examples</module>
+    <module>spring-test</module>
   </modules>
 
   <scm>
@@ -61,36 +62,36 @@
   </scm>
 
   <properties>
-    <dependency.agrona.version>1.21.1</dependency.agrona.version>
-    <dependency.assertj.version>3.25.3</dependency.assertj.version>
-    <dependency.awaitility.version>4.2.0</dependency.awaitility.version>
-    <dependency.bytebuddy.version>1.14.16</dependency.bytebuddy.version>
+    <dependency.agrona.version>1.23.1</dependency.agrona.version>
+    <dependency.assertj.version>3.27.2</dependency.assertj.version>
+    <dependency.awaitility.version>4.2.2</dependency.awaitility.version>
+    <dependency.bytebuddy.version>1.15.11</dependency.bytebuddy.version>
     <dependency.camundamodel.version>7.19.0</dependency.camundamodel.version>
-    <dependency.classgraph.version>4.8.174</dependency.classgraph.version>
-    <dependency.commons.version>3.14.0</dependency.commons.version>
-    <dependency.errorprone.version>2.29.0</dependency.errorprone.version>
-    <dependency.feel.version>1.17.7</dependency.feel.version>
+    <dependency.classgraph.version>4.8.179</dependency.classgraph.version>
+    <dependency.commons.version>3.17.0</dependency.commons.version>
+    <dependency.errorprone.version>2.36.0</dependency.errorprone.version>
+    <dependency.feel.version>1.19.0</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
-    <dependency.guava.version>33.2.0-jre</dependency.guava.version>
-    <dependency.httpcore5.version>5.2.5</dependency.httpcore5.version>
+    <dependency.guava.version>33.4.0-jre</dependency.guava.version>
+    <dependency.httpcore5.version>5.3.1</dependency.httpcore5.version>
     <dependency.immutables.version>2.10.1</dependency.immutables.version>
-    <dependency.jackson.version>2.17.0</dependency.jackson.version>
+    <dependency.jackson.version>2.18.2</dependency.jackson.version>
     <dependency.javax.version>1.3.2</dependency.javax.version>
-    <dependency.jna.version>5.14.0</dependency.jna.version>
-    <dependency.junit.version>5.11.3</dependency.junit.version>
+    <dependency.jna.version>5.16.0</dependency.jna.version>
+    <dependency.junit.version>5.11.4</dependency.junit.version>
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
-    <dependency.micrometer.version>1.13.3</dependency.micrometer.version>
-    <dependency.mockito.version>4.11.0</dependency.mockito.version>
+    <dependency.micrometer.version>1.14.2</dependency.micrometer.version>
+    <dependency.mockito.version>5.15.2</dependency.mockito.version>
     <dependency.netty.version>4.1.116.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.50.0</dependency.proto.version>
     <dependency.protobuf.version>4.29.2</dependency.protobuf.version>
     <dependency.revapi.version>0.28.1</dependency.revapi.version>
-    <dependency.scala.version>2.13.14</dependency.scala.version>
-    <dependency.slf4j.version>2.0.13</dependency.slf4j.version>
-    <dependency.snakeyaml.version>2.2</dependency.snakeyaml.version>
-    <dependency.spring.version>6.1.8</dependency.spring.version>
-    <dependency.testcontainers.version>1.19.8</dependency.testcontainers.version>
+    <dependency.scala.version>2.13.15</dependency.scala.version>
+    <dependency.slf4j.version>2.0.16</dependency.slf4j.version>
+    <dependency.snakeyaml.version>2.3</dependency.snakeyaml.version>
+    <dependency.spring.version>6.1.14</dependency.spring.version>
+    <dependency.testcontainers.version>1.20.4</dependency.testcontainers.version>
     <dependency.zeebe.version>8.7.0-alpha3</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
@@ -98,24 +99,24 @@
     <nexus.release.repository>https://artifacts.camunda.com/artifactory/zeebe-io/</nexus.release.repository>
     <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
     <nexus.snapshot.repository>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</nexus.snapshot.repository>
-    <nexus.snapshot.repository.id>camunda-nexus-snapshots</nexus.snapshot.repository.id>
+    <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
 
-    <plugin.version.dependency>3.6.1</plugin.version.dependency>
+    <plugin.version.dependency>3.8.1</plugin.version.dependency>
     <plugin.version.flatten>1.6.0</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
 
     <!-- when updating this version, also change it in .idea/externalDependencies.xml -->
-    <plugin.version.googlejavaformat>1.22.0</plugin.version.googlejavaformat>
+    <plugin.version.googlejavaformat>1.25.2</plugin.version.googlejavaformat>
 
     <plugin.version.jacoco>0.8.12</plugin.version.jacoco>
-    <plugin.version.javadoc>3.6.3</plugin.version.javadoc>
-    <plugin.version.license>4.5</plugin.version.license>
-    <plugin.version.maven-enforcer>3.4.1</plugin.version.maven-enforcer>
-    <plugin.version.maven-help>3.4.0</plugin.version.maven-help>
+    <plugin.version.javadoc>3.11.2</plugin.version.javadoc>
+    <plugin.version.license>4.6</plugin.version.license>
+    <plugin.version.maven-enforcer>3.5.0</plugin.version.maven-enforcer>
+    <plugin.version.maven-help>3.5.1</plugin.version.maven-help>
     <plugin.version.os-maven>1.7.1</plugin.version.os-maven>
     <plugin.version.revapi>0.15.0</plugin.version.revapi>
-    <plugin.version.spotless>2.30.0</plugin.version.spotless>
-    <plugin.version.surefire>3.2.5</plugin.version.surefire>
+    <plugin.version.spotless>2.44.1</plugin.version.spotless>
+    <plugin.version.surefire>3.5.2</plugin.version.surefire>
 
     <skipChecks>false</skipChecks>
 
@@ -170,6 +171,12 @@
       </dependency>
 
       <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>spring-boot-starter-camunda-test-common</artifactId>
+        <version>8.7.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
         <version>${dependency.junit.version}</version>
@@ -189,6 +196,12 @@
         <version>${dependency.zeebe.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>spring-boot-starter-camunda-sdk</artifactId>
+        <version>${dependency.zeebe.version}</version>
       </dependency>
 
       <dependency>
@@ -427,6 +440,11 @@
         <artifactId>httpcore5</artifactId>
         <version>${dependency.httpcore5.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jetbrains</groupId>
+        <artifactId>annotations</artifactId>
+        <version>26.0.1</version>
+      </dependency>
       <!-- This should be able to be removed after 1.4.0-alpha2 -->
       <dependency>
         <groupId>org.camunda.feel</groupId>
@@ -475,6 +493,13 @@
         <artifactId>spring-core</artifactId>
         <version>${dependency.spring.version}</version>
       </dependency>
+
+      <!-- fix dependency convergence between guava and spring-boot-starter-camunda-test-common -->
+      <dependency>
+        <groupId>org.checkerframework</groupId>
+        <artifactId>checker-qual</artifactId>
+        <version>3.48.4</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -486,7 +511,7 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-      <id>${nexus.release.repository.id}</id>
+      <id>${nexus.release.repository.id}-release</id>
       <url>${nexus.release.repository}</url>
     </repository>
     <repository>
