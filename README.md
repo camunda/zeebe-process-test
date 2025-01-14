@@ -66,7 +66,7 @@ Using Maven profiles you can also [switch the test dependencies based on the ava
 If you use [Spring-Zeebe](https://github.com/camunda-community-hub/spring-zeebe) (community-maintained project) for releases up to 8.5.x and want to write tests, please use `spring-zeebe-test` as a wrapper around Zeebe Process Test to hook everything into the Spring lifecycle. See [Spring Zeebe: Writing test cases](https://github.com/camunda-community-hub/spring-zeebe#writing-test-cases) for details.
 
 > [!IMPORTANT]
-> With the release of the official [Camunda Spring SDK 8.6.7](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/) you need to update your maven dependencies to make use of the new [testing modules](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started#writing-test-cases).
+> With Zeebe Process Test 8.6.7, we added testing modules for the official [Camunda Spring SDK](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/). You need to update your Maven dependencies to use the new modules. See the [documentation](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started#writing-test-cases) for details.
 
 ### Annotation
 
