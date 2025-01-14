@@ -63,11 +63,10 @@ Using Maven profiles you can also [switch the test dependencies based on the ava
 
 ### Spring support
 
-If you use [Spring-Zeebe](https://github.com/camunda-community-hub/spring-zeebe) (community-maintained project) and want to write tests, please use `spring-zeebe-test` as a wrapper around Zeebe Process Test to hook everything into the Spring lifecycle. See [Spring Zeebe: Writing test cases](https://github.com/camunda-community-hub/spring-zeebe#writing-test-cases) for details.
+If you use [Spring-Zeebe](https://github.com/camunda-community-hub/spring-zeebe) (community-maintained project) for releases up to 8.5.x and want to write tests, please use `spring-zeebe-test` as a wrapper around Zeebe Process Test to hook everything into the Spring lifecycle. See [Spring Zeebe: Writing test cases](https://github.com/camunda-community-hub/spring-zeebe#writing-test-cases) for details.
 
 > [!IMPORTANT]
-> Zeebe Process Test has no integration for the [Camunda Spring SDK](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/). You could still use the library but without hooking into the Spring lifecycle.
-> Alternatively, you could migrate to the new [Camunda Process Test](https://docs.camunda.io/docs/apis-tools/testing/getting-started/) library that has support for the Spring SDK.
+> With the release of the official [Camunda Spring SDK 8.6.7](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/) you need to update your maven dependencies to make use of the new [testing modules](https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started#writing-test-cases).
 
 ### Annotation
 
