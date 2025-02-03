@@ -93,7 +93,7 @@
     <dependency.spring-boot.version>3.3.7</dependency.spring-boot.version>
     <dependency.spring.version>6.1.14</dependency.spring.version>
     <dependency.testcontainers.version>1.20.4</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.7.0-SNAPSHOT</dependency.zeebe.version>
+    <dependency.zeebe.version>8.8.0-SNAPSHOT</dependency.zeebe.version>
 
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
