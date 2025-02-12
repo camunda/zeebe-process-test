@@ -142,7 +142,7 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine</artifactId>
-        <version>8.6.8</version>
+        <version>8.6.9</version>
       </dependency>
 
       <dependency>
