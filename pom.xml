@@ -459,6 +459,15 @@
         <artifactId>httpcore5</artifactId>
         <version>5.2.5</version>
       </dependency>
+
+      <!-- to avoid dependency convergence issue, pin to same version as zeebe's -->
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-bom</artifactId>
+        <version>1.13.11</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
