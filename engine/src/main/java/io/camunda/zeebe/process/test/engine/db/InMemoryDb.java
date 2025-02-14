@@ -10,6 +10,7 @@ package io.camunda.zeebe.process.test.engine.db;
 import io.camunda.zeebe.db.*;
 import io.camunda.zeebe.db.impl.DbNil;
 import io.camunda.zeebe.protocol.EnumValue;
+import io.camunda.zeebe.util.micrometer.MicrometerUtil;
 import io.camunda.zeebe.util.micrometer.StatefulMeterRegistry;
 import java.io.File;
 import java.util.Optional;
@@ -34,7 +35,11 @@ final class InMemoryDb<ColumnFamilyType extends Enum<? extends EnumValue> & Enum
     implements ZeebeDb<ColumnFamilyType> {
 
   private final TreeMap<Bytes, Bytes> database = new TreeMap<>();
-  private final StatefulMeterRegistry meterRegistry = new StatefulMeterRegistry();
+  private final StatefulMeterRegistry meterRegistry;
+
+  public InMemoryDb(final StatefulMeterRegistry meterRegistry) {
+    this.meterRegistry = meterRegistry;
+  }
 
   @Override
   public <KeyType extends DbKey, ValueType extends DbValue>
@@ -74,5 +79,6 @@ final class InMemoryDb<ColumnFamilyType extends Enum<? extends EnumValue> & Enum
   @Override
   public void close() {
     database.clear();
+    MicrometerUtil.discard(meterRegistry);
   }
 }
