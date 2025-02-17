@@ -89,7 +89,6 @@
     <dependency.slf4j.version>2.0.16</dependency.slf4j.version>
     <dependency.snakeyaml.version>2.2</dependency.snakeyaml.version>
     <dependency.spring-boot.version>3.4.2</dependency.spring-boot.version>
-    <dependency.spring.version>6.1.14</dependency.spring.version>
     <dependency.testcontainers.version>1.19.8</dependency.testcontainers.version>
     <dependency.zeebe.version>8.7.0-SNAPSHOT</dependency.zeebe.version>
 
@@ -468,18 +467,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${dependency.commons.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>${dependency.spring.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
-        <version>${dependency.spring.version}</version>
       </dependency>
 
       <dependency>
