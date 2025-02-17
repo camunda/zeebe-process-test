@@ -30,6 +30,8 @@ import io.camunda.zeebe.stream.impl.StreamProcessor;
 import io.camunda.zeebe.util.FeatureFlags;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
@@ -64,11 +66,12 @@ public class EngineFactory {
     final int partitionId = 1;
     final int partitionCount = 1;
 
+    final var meterRegistry = new SimpleMeterRegistry();
     final ControlledActorClock clock = createActorClock();
     final ActorScheduler scheduler = createAndStartActorScheduler(clock);
 
     final InMemoryLogStorage logStorage = new InMemoryLogStorage();
-    final LogStream logStream = createLogStream(logStorage, scheduler, partitionId);
+    final LogStream logStream = createLogStream(logStorage, scheduler, partitionId, meterRegistry);
 
     final CommandWriter commandWriter = new CommandWriter(logStream.newLogStreamWriter().join());
     final CommandSender commandSender = new CommandSender(commandWriter);
@@ -82,7 +85,7 @@ public class EngineFactory {
     final GrpcResponseWriter grpcResponseWriter =
         new GrpcResponseWriter(gateway, gatewayRequestStore, requestListener);
 
-    final ZeebeDb<ZbColumnFamilies> zeebeDb = createDatabase();
+    final ZeebeDb<ZbColumnFamilies> zeebeDb = createDatabase(meterRegistry);
 
     final StreamProcessor streamProcessor =
         createStreamProcessor(
@@ -92,7 +95,8 @@ public class EngineFactory {
             grpcResponseWriter,
             partitionCount,
             commandSender,
-            jobStreamer);
+            jobStreamer,
+            meterRegistry);
 
     final EngineStateMonitor engineStateMonitor =
         new EngineStateMonitor(logStorage, streamProcessor);
@@ -124,11 +128,15 @@ public class EngineFactory {
   }
 
   private static LogStream createLogStream(
-      final LogStorage logStorage, final ActorSchedulingService scheduler, final int partitionId) {
+      final LogStorage logStorage,
+      final ActorSchedulingService scheduler,
+      final int partitionId,
+      final MeterRegistry meterRegistry) {
     final LogStreamBuilder builder =
         LogStream.builder()
             .withPartitionId(partitionId)
             .withLogStorage(logStorage)
+            .withMeterRegistry(meterRegistry)
             .withActorSchedulingService(scheduler);
 
     final CompletableFuture<LogStream> theFuture = new CompletableFuture<>();
@@ -150,8 +158,8 @@ public class EngineFactory {
     return theFuture.join();
   }
 
-  private static ZeebeDb<ZbColumnFamilies> createDatabase() {
-    final InMemoryDbFactory<ZbColumnFamilies> factory = new InMemoryDbFactory<>();
+  private static ZeebeDb<ZbColumnFamilies> createDatabase(final MeterRegistry meterRegistry) {
+    final InMemoryDbFactory<ZbColumnFamilies> factory = new InMemoryDbFactory<>(meterRegistry);
     return factory.createDb();
   }
 
@@ -162,7 +170,8 @@ public class EngineFactory {
       final GrpcResponseWriter grpcResponseWriter,
       final int partitionCount,
       final CommandSender commandSender,
-      final JobStreamer jobStreamer) {
+      final JobStreamer jobStreamer,
+      final MeterRegistry meterRegistry) {
     return StreamProcessor.builder()
         .logStream(logStream)
         .zeebeDb(database)
@@ -181,6 +190,7 @@ public class EngineFactory {
                             jobStreamer),
                     new EngineConfiguration())))
         .actorSchedulingService(scheduler)
+        .meterRegistry(meterRegistry)
         .build();
   }
 }

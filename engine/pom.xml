@@ -136,6 +136,11 @@
       <artifactId>guava</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
+    </dependency>
+
     <!-- Test Scope -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>

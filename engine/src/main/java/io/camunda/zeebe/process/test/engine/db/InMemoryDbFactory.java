@@ -10,10 +10,24 @@ package io.camunda.zeebe.process.test.engine.db;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.db.ZeebeDbFactory;
 import io.camunda.zeebe.protocol.EnumValue;
+import io.camunda.zeebe.util.micrometer.StatefulMeterRegistry;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.File;
 
 public class InMemoryDbFactory<ColumnFamilyType extends Enum<? extends EnumValue> & EnumValue>
     implements ZeebeDbFactory<ColumnFamilyType> {
+
+  private final MeterRegistry meterRegistry;
+
+  public InMemoryDbFactory() {
+    this(new SimpleMeterRegistry());
+  }
+
+  public InMemoryDbFactory(final MeterRegistry meterRegistry) {
+    this.meterRegistry = meterRegistry;
+  }
 
   public ZeebeDb<ColumnFamilyType> createDb() {
     return createDb(null);
@@ -21,7 +35,8 @@ public class InMemoryDbFactory<ColumnFamilyType extends Enum<? extends EnumValue
 
   @Override
   public ZeebeDb<ColumnFamilyType> createDb(final File pathName) {
-    return new InMemoryDb<>();
+    final var stateful = new StatefulMeterRegistry(meterRegistry, Tags.empty());
+    return new InMemoryDb<>(stateful);
   }
 
   @Override
