@@ -8,84 +8,84 @@
           "ignore": true,
           "regex": true,
           "code": "java.method.returnTypeChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.method.parameterTypeParameterChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.method.parameterTypeChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.field.typeChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.class.noLongerImplementsInterface",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.class.superTypeTypeParametersChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.method.returnTypeChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.method.parameterTypeParameterChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.method.parameterTypeChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.field.typeChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.class.noLongerImplementsInterface",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         },
         {
           "ignore": true,
           "regex": true,
           "code": "java.class.superTypeTypeParametersChanged",
-          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.7.*",
+          "newArchive": "io.camunda:zeebe-process-test-assertions:jar:8.8.*",
           "justification": "Migration from zeebe-client-java to camunda-client-java"
         }
       ]
