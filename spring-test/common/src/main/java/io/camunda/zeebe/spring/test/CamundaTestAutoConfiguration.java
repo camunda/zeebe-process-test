@@ -15,8 +15,8 @@
  */
 package io.camunda.zeebe.spring.test;
 
-import io.camunda.zeebe.spring.client.configuration.CamundaAutoConfiguration;
-import io.camunda.zeebe.spring.client.testsupport.SpringZeebeTestContext;
+import io.camunda.spring.client.configuration.CamundaAutoConfiguration;
+import io.camunda.spring.client.testsupport.CamundaSpringProcessTestContext;
 import io.camunda.zeebe.spring.test.configuration.ZeebeTestDefaultConfiguration;
 import io.camunda.zeebe.spring.test.proxy.TestProxyConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -34,8 +34,8 @@ import org.springframework.context.annotation.Bean;
 public class CamundaTestAutoConfiguration {
 
   @Bean
-  public SpringZeebeTestContext enableTestContext() {
+  public CamundaSpringProcessTestContext enableTestContext() {
     // add marker bean to Spring context that we are running in a test case
-    return new SpringZeebeTestContext();
+    return new CamundaSpringProcessTestContext();
   }
 }
