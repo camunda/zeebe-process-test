@@ -26,15 +26,16 @@ import io.camunda.client.CamundaClient;
 import io.camunda.client.api.response.ActivatedJob;
 import io.camunda.client.api.response.ProcessInstanceEvent;
 import io.camunda.client.api.worker.JobClient;
+import io.camunda.spring.client.annotation.JobWorker;
+import io.camunda.spring.client.annotation.Variable;
+import io.camunda.spring.client.annotation.customizer.JobWorkerValueCustomizer;
+import io.camunda.spring.client.configuration.MetricsDefaultConfiguration;
+import io.camunda.spring.client.jobhandling.JobWorkerManager;
+import io.camunda.spring.client.metrics.MetricsRecorder;
+import io.camunda.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.client.annotation.Variable;
-import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
-import io.camunda.zeebe.spring.client.configuration.MetricsDefaultConfiguration;
-import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
-import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import java.time.Duration;
 import java.util.Collections;
@@ -198,8 +199,7 @@ public class JobHandlerTest {
   }
 
   /**
-   * Worker disabled in {@link
-   * ZeebeCustomizerDisableWorkerConfiguration#zeebeWorkerValueCustomizer()}
+   * Worker disabled in {@link ZeebeCustomizerDisableWorkerConfiguration#jobWorkerValueCustomizer()}
    */
   @Test
   void shouldNotActivateJobInPropertiesDisabledWorker() {
@@ -315,7 +315,7 @@ public class JobHandlerTest {
   @TestConfiguration
   public static class ZeebeCustomizerDisableWorkerConfiguration {
     @Bean
-    public ZeebeWorkerValueCustomizer zeebeWorkerValueCustomizer() {
+    public JobWorkerValueCustomizer jobWorkerValueCustomizer() {
       return zeebeWorker -> {
         if (zeebeWorker.getType().equals("test4")) {
           zeebeWorker.setEnabled(false);
