@@ -130,6 +130,7 @@ public class EngineFactory {
         .withPartitionId(partitionId)
         .withLogStorage(logStorage)
         .withClock(clock)
+        .withMeterRegistry(new SimpleMeterRegistry())
         .build();
   }
 
