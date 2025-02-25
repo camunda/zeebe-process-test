@@ -41,6 +41,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -53,8 +54,7 @@ import org.springframework.context.annotation.Bean;
       JobHandlerTest.class,
       JobHandlerTest.TestMetricsConfiguration.class,
       JobHandlerTest.ZeebeCustomizerDisableWorkerConfiguration.class
-    },
-    properties = {"zeebe.client.worker.default-type=DefaultType"})
+    })
 @ZeebeSpringTest
 public class JobHandlerTest {
 
@@ -231,11 +231,6 @@ public class JobHandlerTest {
   @JobWorker(name = "test5", autoComplete = false)
   public void handeTest5() {}
 
-  @Test
-  public void testWorkerDefaultType() {
-    assertTrue(jobWorkerManager.findJobWorkerConfigByType("DefaultType").isPresent());
-  }
-
   @JobWorker(name = "test6", type = "test6", pollInterval = 10)
   public void handleTest6(
       final JobClient client,
@@ -351,6 +346,23 @@ public class JobHandlerTest {
 
     public void setVar2(final String var2) {
       this.var2 = var2;
+    }
+  }
+
+  @SpringBootTest(
+      classes = {DefaultWorkerTest.class, JobHandlerTest.TestMetricsConfiguration.class},
+      properties = {"camunda.client.worker.defaults.type=DefaultType"})
+  @ZeebeSpringTest
+  @Nested
+  final class DefaultWorkerTest {
+    @Autowired private JobWorkerManager jobWorkerManager;
+
+    @JobWorker
+    public void handleDefault(@Variable(name = "class") final String variableWithKeywordAsName) {}
+
+    @Test
+    public void testWorkerDefaultType() {
+      assertTrue(jobWorkerManager.findJobWorkerConfigByType("DefaultType").isPresent());
     }
   }
 }
