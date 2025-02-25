@@ -133,6 +133,7 @@ public class EngineFactory {
         .withLogStorage(logStorage)
         .withActorSchedulingService(scheduler)
         .withClock(clock)
+        .withMeterRegistry(new SimpleMeterRegistry())
         .build();
   }
 
