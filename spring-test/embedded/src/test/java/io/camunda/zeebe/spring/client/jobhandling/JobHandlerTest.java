@@ -26,20 +26,22 @@ import io.camunda.client.CamundaClient;
 import io.camunda.client.api.response.ActivatedJob;
 import io.camunda.client.api.response.ProcessInstanceEvent;
 import io.camunda.client.api.worker.JobClient;
+import io.camunda.spring.client.annotation.JobWorker;
+import io.camunda.spring.client.annotation.Variable;
+import io.camunda.spring.client.annotation.customizer.JobWorkerValueCustomizer;
+import io.camunda.spring.client.configuration.MetricsDefaultConfiguration;
+import io.camunda.spring.client.jobhandling.JobWorkerManager;
+import io.camunda.spring.client.metrics.MetricsRecorder;
+import io.camunda.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.client.annotation.Variable;
-import io.camunda.zeebe.spring.client.annotation.customizer.ZeebeWorkerValueCustomizer;
-import io.camunda.zeebe.spring.client.configuration.MetricsDefaultConfiguration;
-import io.camunda.zeebe.spring.client.metrics.MetricsRecorder;
-import io.camunda.zeebe.spring.client.metrics.SimpleMetricsRecorder;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -52,8 +54,7 @@ import org.springframework.context.annotation.Bean;
       JobHandlerTest.class,
       JobHandlerTest.TestMetricsConfiguration.class,
       JobHandlerTest.ZeebeCustomizerDisableWorkerConfiguration.class
-    },
-    properties = {"zeebe.client.worker.default-type=DefaultType"})
+    })
 @ZeebeSpringTest
 public class JobHandlerTest {
 
@@ -198,8 +199,7 @@ public class JobHandlerTest {
   }
 
   /**
-   * Worker disabled in {@link
-   * ZeebeCustomizerDisableWorkerConfiguration#zeebeWorkerValueCustomizer()}
+   * Worker disabled in {@link ZeebeCustomizerDisableWorkerConfiguration#jobWorkerValueCustomizer()}
    */
   @Test
   void shouldNotActivateJobInPropertiesDisabledWorker() {
@@ -230,11 +230,6 @@ public class JobHandlerTest {
 
   @JobWorker(name = "test5", autoComplete = false)
   public void handeTest5() {}
-
-  @Test
-  public void testWorkerDefaultType() {
-    assertTrue(jobWorkerManager.findJobWorkerConfigByType("DefaultType").isPresent());
-  }
 
   @JobWorker(name = "test6", type = "test6", pollInterval = 10)
   public void handleTest6(
@@ -315,7 +310,7 @@ public class JobHandlerTest {
   @TestConfiguration
   public static class ZeebeCustomizerDisableWorkerConfiguration {
     @Bean
-    public ZeebeWorkerValueCustomizer zeebeWorkerValueCustomizer() {
+    public JobWorkerValueCustomizer jobWorkerValueCustomizer() {
       return zeebeWorker -> {
         if (zeebeWorker.getType().equals("test4")) {
           zeebeWorker.setEnabled(false);
@@ -351,6 +346,23 @@ public class JobHandlerTest {
 
     public void setVar2(final String var2) {
       this.var2 = var2;
+    }
+  }
+
+  @SpringBootTest(
+      classes = {DefaultWorkerTest.class, JobHandlerTest.TestMetricsConfiguration.class},
+      properties = {"camunda.client.worker.defaults.type=DefaultType"})
+  @ZeebeSpringTest
+  @Nested
+  final class DefaultWorkerTest {
+    @Autowired private JobWorkerManager jobWorkerManager;
+
+    @JobWorker
+    public void handleDefault(@Variable(name = "class") final String variableWithKeywordAsName) {}
+
+    @Test
+    public void testWorkerDefaultType() {
+      assertTrue(jobWorkerManager.findJobWorkerConfigByType("DefaultType").isPresent());
     }
   }
 }
