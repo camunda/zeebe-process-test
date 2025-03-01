@@ -167,7 +167,7 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine-protocol</artifactId>
-        <version>8.6.10-SNAPSHOT</version>
+        <version>8.6.10</version>
       </dependency>
 
       <dependency>
