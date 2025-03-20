@@ -140,6 +140,9 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.REDISTRIBUTION, Object::toString);
     valueTypeLoggers.put(ValueType.IDENTITY_SETUP, Object::toString);
     valueTypeLoggers.put(ValueType.RESOURCE, Object::toString);
+    valueTypeLoggers.put(ValueType.BATCH_OPERATION_CREATION, Object::toString);
+    valueTypeLoggers.put(ValueType.BATCH_OPERATION_EXECUTION, Object::toString);
+    valueTypeLoggers.put(ValueType.BATCH_OPERATION_CHUNK, Object::toString);
   }
 
   public void log() {
