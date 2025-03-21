@@ -20,7 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.camunda.zeebe.protocol.record.ImmutableRecord;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
+import io.camunda.zeebe.protocol.record.RecordValue;
+import io.camunda.zeebe.protocol.record.RejectionType;
 import io.camunda.zeebe.protocol.record.ValueType;
+import io.camunda.zeebe.protocol.record.intent.Intent;
 import io.camunda.zeebe.protocol.record.intent.JobIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceCreationIntent;
 import io.camunda.zeebe.protocol.record.intent.ProcessInstanceMigrationIntent;
@@ -33,9 +36,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Stream;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -54,23 +55,6 @@ class RecordStreamLoggerTest {
     TYPED_TEST_VARIABLES.put("nullProperty", null);
   }
 
-  @Test
-  void testAllValueTypesAreMapped() {
-    final Map<ValueType, Function<Record<?>, String>> valueTypeLoggers =
-        new RecordStreamLogger(null).getValueTypeLoggers();
-
-    final SoftAssertions softly = new SoftAssertions();
-    Arrays.asList(ValueType.values())
-        .forEach(
-            valueType ->
-                softly
-                    .assertThat(valueTypeLoggers.containsKey(valueType))
-                    .withFailMessage("No value type logger defined for value type '%s'", valueType)
-                    .isTrue());
-
-    softly.assertAll();
-  }
-
   @ParameterizedTest(name = "{0}")
   @MethodSource("provideVariables")
   void testLogVariable(final String key, final Object value) {
@@ -79,6 +63,21 @@ class RecordStreamLoggerTest {
     final String result = logger.logVariables(Collections.singletonMap(key, value));
 
     assertThat(result).isEqualTo(String.format("(Variables: [%s -> %s])", key, value));
+  }
+
+  @Test
+  void testLogUnknownRecordAsJson() {
+    final RecordStreamLogger logger = new RecordStreamLogger(null);
+    final UnknownRecordValueRecord record = new UnknownRecordValueRecord();
+
+    final String result = logger.logRecord(record);
+
+    assertThat(result)
+        .contains(record.getRecordType().name())
+        .contains(record.getValueType().name())
+        .contains(record.getIntent().name())
+        .describedAs("Expect that the log contains the full json representation of the value")
+        .contains(record.getValue().toJson());
   }
 
   @Test
@@ -210,5 +209,96 @@ class RecordStreamLoggerTest {
                             .build())
                     .build()),
             "(Process instance key: 123), (Target process definition key: 456), (Mapping instructions: A -> A, B -> C)"));
+  }
+
+  private static class UnknownRecordValue implements RecordValue {
+
+    @Override
+    public String toJson() {
+      return "{ \"foo\": \"bar\" }";
+    }
+  }
+
+  private static class UnknownRecordValueRecord implements Record<UnknownRecordValue> {
+
+    @Override
+    public long getPosition() {
+      return 0;
+    }
+
+    @Override
+    public long getSourceRecordPosition() {
+      return 0;
+    }
+
+    @Override
+    public long getKey() {
+      return 0;
+    }
+
+    @Override
+    public long getTimestamp() {
+      return 0;
+    }
+
+    @Override
+    public Intent getIntent() {
+      return Intent.UNKNOWN;
+    }
+
+    @Override
+    public int getPartitionId() {
+      return 0;
+    }
+
+    @Override
+    public RecordType getRecordType() {
+      return RecordType.EVENT;
+    }
+
+    @Override
+    public RejectionType getRejectionType() {
+      return null;
+    }
+
+    @Override
+    public String getRejectionReason() {
+      return "";
+    }
+
+    @Override
+    public String getBrokerVersion() {
+      return "";
+    }
+
+    @Override
+    public Map<String, Object> getAuthorizations() {
+      return new HashMap<>();
+    }
+
+    @Override
+    public int getRecordVersion() {
+      return 0;
+    }
+
+    @Override
+    public ValueType getValueType() {
+      return ValueType.SBE_UNKNOWN;
+    }
+
+    @Override
+    public UnknownRecordValue getValue() {
+      return new UnknownRecordValue();
+    }
+
+    @Override
+    public long getOperationReference() {
+      return 0;
+    }
+
+    @Override
+    public String toString() {
+      return getValue().toJson();
+    }
   }
 }
