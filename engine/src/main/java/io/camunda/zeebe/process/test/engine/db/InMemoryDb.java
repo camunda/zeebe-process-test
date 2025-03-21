@@ -10,6 +10,8 @@ package io.camunda.zeebe.process.test.engine.db;
 import io.camunda.zeebe.db.*;
 import io.camunda.zeebe.db.impl.DbNil;
 import io.camunda.zeebe.protocol.EnumValue;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.File;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -57,6 +59,11 @@ final class InMemoryDb<ColumnFamilyType extends Enum<? extends EnumValue> & Enum
   @Override
   public TransactionContext createContext() {
     return new InMemoryDbTransactionContext(database);
+  }
+
+  @Override
+  public MeterRegistry getMeterRegistry() {
+    return new SimpleMeterRegistry();
   }
 
   @Override
