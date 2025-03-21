@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -101,7 +102,6 @@ public class RecordStreamLogger {
 
     // These records don't have any interesting extra information for the user to log
     valueTypeLoggers.put(ValueType.DEPLOYMENT_DISTRIBUTION, Object::toString);
-    valueTypeLoggers.put(ValueType.SBE_UNKNOWN, Object::toString);
     valueTypeLoggers.put(ValueType.NULL_VAL, Object::toString);
 
     // DMN will not be part of the initial 1.4 release
@@ -169,7 +169,7 @@ public class RecordStreamLogger {
   }
 
   private String logRecordDetails(final Record<?> record) {
-    return valueTypeLoggers.getOrDefault(record.getValueType(), var -> "").apply(record);
+    return valueTypeLoggers.getOrDefault(record.getValueType(), Objects::toString).apply(record);
   }
 
   private String logJobRecordValue(final Record<?> record) {
