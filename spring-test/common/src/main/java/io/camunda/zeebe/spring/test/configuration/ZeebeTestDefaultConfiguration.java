@@ -20,6 +20,8 @@ import static io.camunda.spring.client.configuration.CamundaAutoConfiguration.DE
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.client.api.JsonMapper;
 import io.camunda.client.impl.CamundaObjectMapper;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -36,5 +38,11 @@ public class ZeebeTestDefaultConfiguration {
   @ConditionalOnMissingBean
   public ObjectMapper objectMapper() {
     return DEFAULT_OBJECT_MAPPER;
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public MeterRegistry meterRegistry() {
+    return new SimpleMeterRegistry();
   }
 }
