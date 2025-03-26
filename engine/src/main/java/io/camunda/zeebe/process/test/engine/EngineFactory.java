@@ -163,7 +163,8 @@ public class EngineFactory {
                             new SubscriptionCommandSender(context.getPartitionId(), commandSender),
                             commandSender,
                             FeatureFlags.createDefault(),
-                            jobStreamer),
+                            jobStreamer,
+                            new NoResultsSearchClientsProxy()),
                     new EngineConfiguration(),
                     new SecurityConfiguration())))
         .actorSchedulingService(scheduler)
