@@ -457,7 +457,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents.core5</groupId>
         <artifactId>httpcore5</artifactId>
-        <version>5.3.3</version>
+        <version>5.3.4</version>
       </dependency>
 
       <!-- to avoid dependency convergence issue, pin to same version as zeebe's -->
