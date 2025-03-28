@@ -137,7 +137,7 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-assertions</artifactId>
-        <version>8.6.10</version>
+        <version>8.6.12</version>
       </dependency>
 
       <dependency>
