@@ -104,7 +104,7 @@
     <!-- when updating this version, also change it in .idea/externalDependencies.xml -->
     <plugin.version.googlejavaformat>1.18.0</plugin.version.googlejavaformat>
 
-    <plugin.version.jacoco>0.8.12</plugin.version.jacoco>
+    <plugin.version.jacoco>0.8.13</plugin.version.jacoco>
     <plugin.version.javadoc>3.6.0</plugin.version.javadoc>
     <plugin.version.license>4.3</plugin.version.license>
     <plugin.version.maven-enforcer>3.4.1</plugin.version.maven-enforcer>
