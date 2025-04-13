@@ -160,7 +160,7 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-filters</artifactId>
-        <version>8.7.1-SNAPSHOT</version>
+        <version>8.7.1</version>
       </dependency>
 
       <dependency>
