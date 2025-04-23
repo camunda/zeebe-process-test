@@ -21,7 +21,7 @@ import io.camunda.search.entities.GroupEntity;
 import io.camunda.search.entities.IncidentEntity;
 import io.camunda.search.entities.MappingEntity;
 import io.camunda.search.entities.ProcessDefinitionEntity;
-import io.camunda.search.entities.ProcessDefinitionFlowNodeStatisticsEntity;
+import io.camunda.search.entities.ProcessFlowNodeStatisticsEntity;
 import io.camunda.search.entities.ProcessInstanceEntity;
 import io.camunda.search.entities.RoleEntity;
 import io.camunda.search.entities.TenantEntity;
@@ -146,7 +146,7 @@ class NoResultsSearchClientsProxy implements SearchClientsProxy {
   }
 
   @Override
-  public List<ProcessDefinitionFlowNodeStatisticsEntity> processDefinitionFlowNodeStatistics(
+  public List<ProcessFlowNodeStatisticsEntity> processDefinitionFlowNodeStatistics(
       final ProcessDefinitionStatisticsFilter filter) {
     return List.of();
   }
@@ -155,6 +155,12 @@ class NoResultsSearchClientsProxy implements SearchClientsProxy {
   public SearchQueryResult<ProcessInstanceEntity> searchProcessInstances(
       final ProcessInstanceQuery query) {
     return (SearchQueryResult<ProcessInstanceEntity>) EMPTY_SEARCH_QUERY_RESULT;
+  }
+
+  @Override
+  public List<ProcessFlowNodeStatisticsEntity> processInstanceFlowNodeStatistics(
+      final long processInstanceKey) {
+    return List.of();
   }
 
   @Override
