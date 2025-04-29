@@ -52,6 +52,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootTest(
     classes = {
       JobHandlerTest.class,
+      JobHandlerTest.WorkerConfig.class,
       JobHandlerTest.TestMetricsConfiguration.class,
       JobHandlerTest.ZeebeCustomizerDisableWorkerConfiguration.class
     })
@@ -70,11 +71,6 @@ public class JobHandlerTest {
   @Autowired private CamundaClient client;
   @Autowired private SimpleMetricsRecorder metrics;
   @Autowired private JobWorkerManager jobWorkerManager;
-
-  @JobWorker(name = "test1", type = "test1", autoComplete = true)
-  public void handleTest1(final JobClient client, final ActivatedJob job) {
-    calledTest1 = true;
-  }
 
   @Test
   public void testAutoComplete() {
@@ -124,19 +120,11 @@ public class JobHandlerTest {
             MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_BPMN_ERROR, "test1"));
   }
 
-  @JobWorker(type = "test2", autoComplete = true)
-  public void handleTest2(final JobClient client, final ActivatedJob job) {
-    // Complete it here to trigger a not found in the auto complete, which will be ignored
-    client.newCompleteCommand(job.getKey()).send().join();
-    calledTest2 = true;
-  }
-
   @Test
   public void testWorkerDefaultName() {
     assertTrue(
         jobWorkerManager
-            .findJobWorkerConfigByName(
-                "io.camunda.zeebe.spring.client.jobhandling.JobHandlerTest.ORIGINAL#handleTest2")
+            .findJobWorkerConfigByName("jobHandlerTest.WorkerConfig#handleTest2")
             .isPresent());
   }
 
@@ -154,16 +142,6 @@ public class JobHandlerTest {
     // assertThat(processInstance).isStarted();
     waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest2);
-  }
-
-  @JobWorker(
-      name = "test3",
-      type = "test3",
-      autoComplete = true,
-      pollInterval = 10,
-      enabled = false)
-  public void handeTest3Disabled(final JobClient client, final ActivatedJob job) {
-    calledTest3 = true;
   }
 
   @Test
@@ -191,11 +169,6 @@ public class JobHandlerTest {
     waitForProcessInstanceCompleted(processInstance);
     // The double-check that we didn't go to the worker.
     assertThat(calledTest3).isFalse();
-  }
-
-  @JobWorker(name = "test4", type = "test4", autoComplete = true, pollInterval = 10)
-  public void handeTest4(final JobClient client, final ActivatedJob job) {
-    calledTest4 = true;
   }
 
   /**
@@ -228,20 +201,6 @@ public class JobHandlerTest {
     assertThat(calledTest4).isFalse();
   }
 
-  @JobWorker(name = "test5", autoComplete = false)
-  public void handeTest5() {}
-
-  @JobWorker(name = "test6", type = "test6", pollInterval = 10)
-  public void handleTest6(
-      final JobClient client,
-      final ActivatedJob job,
-      @Variable final ComplexTypeDTO dto,
-      @Variable final String var2) {
-    calledTest6 = true;
-    test6ComplexTypeDTO = dto;
-    test6Var2 = var2;
-  }
-
   @Test
   void testShouldDeserializeComplexTypeZebeeVariable() {
     final String processId = "test6";
@@ -265,12 +224,6 @@ public class JobHandlerTest {
     assertEquals("value2", test6ComplexTypeDTO.getVar2());
     assertNotNull(test6Var2);
     assertEquals("stringValue", test6Var2);
-  }
-
-  @JobWorker(type = "test7")
-  public void handleTest7(@Variable(name = "class") final String variableWithKeywordAsName) {
-    calledTest7 = true;
-    test7Var = variableWithKeywordAsName;
   }
 
   @Test
@@ -328,6 +281,56 @@ public class JobHandlerTest {
     }
   }
 
+  @TestConfiguration
+  public static class WorkerConfig {
+    @JobWorker(name = "test1", type = "test1", autoComplete = true)
+    public void handleTest1(final JobClient client, final ActivatedJob job) {
+      calledTest1 = true;
+    }
+
+    @JobWorker(type = "test2", autoComplete = true)
+    public void handleTest2(final JobClient client, final ActivatedJob job) {
+      // Complete it here to trigger a not found in the auto complete, which will be ignored
+      client.newCompleteCommand(job.getKey()).send().join();
+      calledTest2 = true;
+    }
+
+    @JobWorker(
+        name = "test3",
+        type = "test3",
+        autoComplete = true,
+        pollInterval = 10,
+        enabled = false)
+    public void handeTest3Disabled(final JobClient client, final ActivatedJob job) {
+      calledTest3 = true;
+    }
+
+    @JobWorker(name = "test4", type = "test4", autoComplete = true, pollInterval = 10)
+    public void handeTest4(final JobClient client, final ActivatedJob job) {
+      calledTest4 = true;
+    }
+
+    @JobWorker(name = "test5", autoComplete = false)
+    public void handeTest5() {}
+
+    @JobWorker(name = "test6", type = "test6", pollInterval = 10)
+    public void handleTest6(
+        final JobClient client,
+        final ActivatedJob job,
+        @Variable final ComplexTypeDTO dto,
+        @Variable final String var2) {
+      calledTest6 = true;
+      test6ComplexTypeDTO = dto;
+      test6Var2 = var2;
+    }
+
+    @JobWorker(type = "test7")
+    public void handleTest7(@Variable(name = "class") final String variableWithKeywordAsName) {
+      calledTest7 = true;
+      test7Var = variableWithKeywordAsName;
+    }
+  }
+
   private static class ComplexTypeDTO {
     private String var1;
     private String var2;
@@ -350,19 +353,25 @@ public class JobHandlerTest {
   }
 
   @SpringBootTest(
-      classes = {DefaultWorkerTest.class, JobHandlerTest.TestMetricsConfiguration.class},
+      classes = {
+        DefaultWorkerTest.class,
+        DefaultWorkerTest.WorkersConfig.class,
+        JobHandlerTest.TestMetricsConfiguration.class
+      },
       properties = {"camunda.client.worker.defaults.type=DefaultType"})
   @ZeebeSpringTest
   @Nested
   final class DefaultWorkerTest {
     @Autowired private JobWorkerManager jobWorkerManager;
 
-    @JobWorker
-    public void handleDefault(@Variable(name = "class") final String variableWithKeywordAsName) {}
-
     @Test
     public void testWorkerDefaultType() {
       assertTrue(jobWorkerManager.findJobWorkerConfigByType("DefaultType").isPresent());
+    }
+
+    public static class WorkersConfig {
+      @JobWorker
+      public void handleDefault(@Variable(name = "class") final String variableWithKeywordAsName) {}
     }
   }
 }
