@@ -1,5 +1,6 @@
 name: Zeebe SNAPSHOT test
 on:
+  workflow_dispatch: { }
   workflow_call: { }
   schedule:
     - cron: "0 3 * * 1-5"
@@ -30,7 +31,7 @@ jobs:
             NEW_ZEEBE_VERSION=`echo $CURRENT_ZEEBE_VERSION | awk -F. '/[0-9]+\./{$2++;print}' OFS=.`-SNAPSHOT
           fi
           echo $NEW_ZEEBE_VERSION
-          mvn -B -U -pl "-:zeebe-process-test-qa-testcontainers" -P !localBuild "-Dsurefire.rerunFailingTestsCount=5" -Ddependency.zeebe.version=$NEW_ZEEBE_VERSION clean install
+          mvn -B -U -P !localBuild "-Dsurefire.rerunFailingTestsCount=5" -Ddependency.zeebe.version=$NEW_ZEEBE_VERSION clean install
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v4
