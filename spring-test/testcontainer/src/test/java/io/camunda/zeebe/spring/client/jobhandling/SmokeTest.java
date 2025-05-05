@@ -23,11 +23,11 @@ import io.camunda.client.CamundaClient;
 import io.camunda.client.api.response.ActivatedJob;
 import io.camunda.client.api.response.ProcessInstanceEvent;
 import io.camunda.client.api.worker.JobClient;
+import io.camunda.spring.client.annotation.JobWorker;
+import io.camunda.spring.client.annotation.Variable;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,10 +35,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
 
 @SpringBootTest(
-    classes = {SmokeTest.class},
-    properties = {"zeebe.client.worker.default-type=DefaultType"})
+    classes = {SmokeTest.WorkerConfig.class},
+    properties = {"camunda.client.worker.defaults.type=DefaultType"})
 @ZeebeSpringTest
 public class SmokeTest {
 
@@ -48,11 +49,6 @@ public class SmokeTest {
   private static String test2Var2 = null;
   @Autowired private CamundaClient client;
   @Autowired private ZeebeTestEngine engine;
-
-  @JobWorker(name = "test1", type = "test1") // autoComplete is true
-  public void handleTest1(final JobClient client, final ActivatedJob job) {
-    calledTest1 = true;
-  }
 
   @Test
   public void testAutoComplete() {
@@ -73,17 +69,6 @@ public class SmokeTest {
     assertThat(processInstance).isStarted();
     waitForProcessInstanceCompleted(processInstance);
     assertTrue(calledTest1);
-  }
-
-  @JobWorker(name = "test2", type = "test2", pollInterval = 10)
-  public void handleTest2(
-      final JobClient client,
-      final ActivatedJob job,
-      @Variable final ComplexTypeDTO dto,
-      @Variable final String var2) {
-    calledTest2 = true;
-    test2ComplexTypeDTO = dto;
-    test2Var2 = var2;
   }
 
   @Test
@@ -132,6 +117,25 @@ public class SmokeTest {
         .variables(variables)
         .send()
         .join();
+  }
+
+  @Configuration
+  public static class WorkerConfig {
+    @JobWorker(name = "test1", type = "test1") // autoComplete is true
+    public void handleTest1(final JobClient client, final ActivatedJob job) {
+      calledTest1 = true;
+    }
+
+    @JobWorker(name = "test2", type = "test2", pollInterval = 10)
+    public void handleTest2(
+        final JobClient client,
+        final ActivatedJob job,
+        @Variable final ComplexTypeDTO dto,
+        @Variable final String var2) {
+      calledTest2 = true;
+      test2ComplexTypeDTO = dto;
+      test2Var2 = var2;
+    }
   }
 
   private static class ComplexTypeDTO {
