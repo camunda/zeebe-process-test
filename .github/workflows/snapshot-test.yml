@@ -37,7 +37,7 @@ jobs:
         if: always()
         with:
           name: Unit Test Results Against Zeebe Snapshot
-          path: "*/target/surefire-reports/"
+          path: "**/target/surefire-reports/"
           retention-days: 7
 
   notify-if-failed:
