@@ -118,7 +118,7 @@
 
     <version.grpc>1.65.1</version.grpc>
     <version.java>17</version.java>
-    <version.protobuf>3.25.6</version.protobuf>
+    <version.protobuf>3.25.7</version.protobuf>
   </properties>
 
   <dependencyManagement>
