@@ -73,7 +73,7 @@ jobs:
         if: always()
         with:
           name: Unit Test Results ${{ matrix.os }}
-          path: "*/target/surefire-reports/"
+          path: "**/target/surefire-reports/"
           retention-days: 7
 
   build-and-test-testcontainers:
@@ -123,7 +123,7 @@ jobs:
         if: always()
         with:
           name: Unit Test Results Testcontainers
-          path: "*/target/surefire-reports/"
+          path: "**/target/surefire-reports/"
           retention-days: 7
 
   test-summary:
