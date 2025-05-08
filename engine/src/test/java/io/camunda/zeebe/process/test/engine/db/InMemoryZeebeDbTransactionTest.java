@@ -15,7 +15,9 @@ import io.camunda.zeebe.db.TransactionContext;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.db.ZeebeDbTransaction;
 import io.camunda.zeebe.db.impl.DbLong;
+import io.camunda.zeebe.protocol.ColumnFamilyScope;
 import io.camunda.zeebe.protocol.EnumValue;
+import io.camunda.zeebe.protocol.ScopedColumnFamily;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -556,7 +558,7 @@ public final class InMemoryZeebeDbTransactionTest {
         });
   }
 
-  private enum ColumnFamilies implements EnumValue {
+  private enum ColumnFamilies implements EnumValue, ScopedColumnFamily {
     DEFAULT(0), // rocksDB needs a default column family
     ONE(1),
     TWO(2),
@@ -571,6 +573,11 @@ public final class InMemoryZeebeDbTransactionTest {
     @Override
     public int getValue() {
       return value;
+    }
+
+    @Override
+    public ColumnFamilyScope partitionScope() {
+      return ColumnFamilyScope.PARTITION_LOCAL;
     }
   }
 }
