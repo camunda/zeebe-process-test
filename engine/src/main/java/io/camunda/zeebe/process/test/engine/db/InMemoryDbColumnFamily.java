@@ -13,7 +13,9 @@ import io.camunda.zeebe.db.DbValue;
 import io.camunda.zeebe.db.KeyValuePairVisitor;
 import io.camunda.zeebe.db.TransactionContext;
 import io.camunda.zeebe.db.ZeebeDbInconsistentException;
+import io.camunda.zeebe.protocol.ColumnFamilyScope;
 import io.camunda.zeebe.protocol.EnumValue;
+import io.camunda.zeebe.protocol.ScopedColumnFamily;
 import io.camunda.zeebe.util.buffer.BufferUtil;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,7 +28,7 @@ import java.util.function.Consumer;
 import org.agrona.DirectBuffer;
 
 final class InMemoryDbColumnFamily<
-        ColumnFamilyNames extends Enum<? extends EnumValue> & EnumValue,
+        ColumnFamilyNames extends Enum<? extends EnumValue> & EnumValue & ScopedColumnFamily,
         KeyType extends DbKey,
         ValueType extends DbValue>
     implements ColumnFamily<KeyType, ValueType> {
@@ -205,6 +207,11 @@ final class InMemoryDbColumnFamily<
   @Override
   public long countEqualPrefix(final DbKey prefix) {
     return countEachInPrefix(prefix);
+  }
+
+  @Override
+  public ColumnFamilyScope partitionScope() {
+    return columnFamily.partitionScope();
   }
 
   private DirectBuffer getValue(final InMemoryDbState state, final DbKey key) {

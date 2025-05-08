@@ -10,9 +10,11 @@ package io.camunda.zeebe.process.test.engine.db;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.db.ZeebeDbFactory;
 import io.camunda.zeebe.protocol.EnumValue;
+import io.camunda.zeebe.protocol.ScopedColumnFamily;
 import java.io.File;
 
-public class InMemoryDbFactory<ColumnFamilyType extends Enum<? extends EnumValue> & EnumValue>
+public class InMemoryDbFactory<
+        ColumnFamilyType extends Enum<? extends EnumValue> & EnumValue & ScopedColumnFamily>
     implements ZeebeDbFactory<ColumnFamilyType> {
 
   public ZeebeDb<ColumnFamilyType> createDb() {

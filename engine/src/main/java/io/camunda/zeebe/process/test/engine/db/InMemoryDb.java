@@ -10,6 +10,7 @@ package io.camunda.zeebe.process.test.engine.db;
 import io.camunda.zeebe.db.*;
 import io.camunda.zeebe.db.impl.DbNil;
 import io.camunda.zeebe.protocol.EnumValue;
+import io.camunda.zeebe.protocol.ScopedColumnFamily;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.File;
@@ -31,7 +32,8 @@ import java.util.TreeMap;
  *
  * @param <ColumnFamilyType>
  */
-final class InMemoryDb<ColumnFamilyType extends Enum<? extends EnumValue> & EnumValue>
+final class InMemoryDb<
+        ColumnFamilyType extends Enum<? extends EnumValue> & EnumValue & ScopedColumnFamily>
     implements ZeebeDb<ColumnFamilyType> {
 
   private final TreeMap<Bytes, Bytes> database = new TreeMap<>();
@@ -62,13 +64,13 @@ final class InMemoryDb<ColumnFamilyType extends Enum<? extends EnumValue> & Enum
   }
 
   @Override
-  public MeterRegistry getMeterRegistry() {
-    return new SimpleMeterRegistry();
+  public boolean isEmpty(final ColumnFamilyType column, final TransactionContext context) {
+    return createColumnFamily(column, context, DbNullKey.INSTANCE, DbNil.INSTANCE).isEmpty();
   }
 
   @Override
-  public boolean isEmpty(final ColumnFamilyType column, final TransactionContext context) {
-    return createColumnFamily(column, context, DbNullKey.INSTANCE, DbNil.INSTANCE).isEmpty();
+  public MeterRegistry getMeterRegistry() {
+    return new SimpleMeterRegistry();
   }
 
   @Override
