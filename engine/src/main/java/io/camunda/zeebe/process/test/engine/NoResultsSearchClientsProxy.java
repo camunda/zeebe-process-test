@@ -81,7 +81,7 @@ class NoResultsSearchClientsProxy implements SearchClientsProxy {
   }
 
   @Override
-  public List<BatchOperationItemEntity> getBatchOperationItems(final Long batchOperationKey) {
+  public List<BatchOperationItemEntity> getBatchOperationItems(final String batchOperationKey) {
     return List.of();
   }
 
