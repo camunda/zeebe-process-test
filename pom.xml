@@ -130,43 +130,43 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-api</artifactId>
-        <version>8.7.1</version>
+        <version>8.7.3-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-assertions</artifactId>
-        <version>8.7.1</version>
+        <version>8.7.3-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine</artifactId>
-        <version>8.7.1</version>
+        <version>8.7.3-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension</artifactId>
-        <version>8.7.1</version>
+        <version>8.7.3-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
-        <version>8.7.1</version>
+        <version>8.7.3-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-filters</artifactId>
-        <version>8.7.1</version>
+        <version>8.7.3-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine-protocol</artifactId>
-        <version>8.7.1</version>
+        <version>8.7.3-SNAPSHOT</version>
       </dependency>
 
       <dependency>
