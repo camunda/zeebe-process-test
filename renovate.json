@@ -86,6 +86,16 @@
       ]
     },
     {
+      "description": "Exclude io.camunda updates, we manage deps to camunda components manually.",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchPackageNames": [
+        "io.camunda{/,}**"
+      ],
+      "enabled": false
+    },
+    {
       "description": "Automerge all updates with green CI.",
       "automerge": true,
       "addLabels": [
