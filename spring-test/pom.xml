@@ -22,6 +22,7 @@
 
   <properties>
     <plugin.version.license>4.6</plugin.version.license>
+    <version.java>17</version.java>
   </properties>
 
   <build>
