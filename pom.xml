@@ -82,7 +82,7 @@
     <dependency.junit4.version>4.13.2</dependency.junit4.version>
     <dependency.micrometer.version>1.13.3</dependency.micrometer.version>
     <dependency.mockito.version>4.11.0</dependency.mockito.version>
-    <dependency.msgpack.version>0.9.8</dependency.msgpack.version>
+    <dependency.msgpack.version>0.9.9</dependency.msgpack.version>
     <dependency.netty.version>4.1.119.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
     <dependency.proto.version>2.44.0</dependency.proto.version>
