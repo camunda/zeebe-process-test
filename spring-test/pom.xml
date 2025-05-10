@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>zeebe-process-test-root</artifactId>
-    <version>8.6.16-SNAPSHOT</version>
+    <version>8.7.3-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -23,6 +23,7 @@
   <properties>
     <plugin.version.license>4.6</plugin.version.license>
     <version.spring-boot>3.3.7</version.spring-boot>
+    <version.java>17</version.java>
   </properties>
 
   <dependencyManagement>
