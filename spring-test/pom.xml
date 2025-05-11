@@ -21,7 +21,7 @@
   </modules>
 
   <properties>
-    <plugin.version.license>4.6</plugin.version.license>
+    <plugin.version.license>5.0.0</plugin.version.license>
   </properties>
 
   <build>
