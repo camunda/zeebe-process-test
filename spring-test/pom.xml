@@ -22,21 +22,7 @@
 
   <properties>
     <plugin.version.license>4.6</plugin.version.license>
-    <version.spring-boot>3.3.7</version.spring-boot>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <!-- Import dependency management from Spring Boot -->
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${version.spring-boot}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <build>
     <plugins>
