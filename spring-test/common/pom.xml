@@ -11,10 +11,6 @@
   <artifactId>spring-boot-starter-camunda-test-common</artifactId>
   <name>Spring Boot Starter Camunda Test commons</name>
 
-  <properties>
-    <version.checker-qual>3.48.4</version.checker-qual>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -54,7 +50,7 @@
     <dependency>
       <groupId>org.checkerframework</groupId>
       <artifactId>checker-qual</artifactId>
-      <version>${version.checker-qual}</version>
+      <version>${dependency.checker-qual.version}</version>
     </dependency>
     <dependency>
       <groupId>org.awaitility</groupId>
