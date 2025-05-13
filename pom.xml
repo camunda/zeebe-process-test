@@ -67,7 +67,7 @@
     <dependency.awaitility.version>4.2.2</dependency.awaitility.version>
     <dependency.bytebuddy.version>1.14.16</dependency.bytebuddy.version>
     <dependency.camundamodel.version>7.22.0</dependency.camundamodel.version>
-    <dependency.checkerframework.version>3.48.4</dependency.checkerframework.version>
+    <dependency.checker-qual.version>3.49.3</dependency.checker-qual.version>
     <dependency.classgraph.version>4.8.179</dependency.classgraph.version>
     <dependency.commons.version>3.14.0</dependency.commons.version>
     <dependency.errorprone.version>2.29.0</dependency.errorprone.version>
@@ -470,10 +470,11 @@
         <version>${dependency.commons.version}</version>
       </dependency>
 
+      <!-- fix dependency convergence between guava and spring-boot-starter-camunda-test-common -->
       <dependency>
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
-        <version>${dependency.checkerframework.version}</version>
+        <version>${dependency.checker-qual.version}</version>
       </dependency>
 
       <dependency>
