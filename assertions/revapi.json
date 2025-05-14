@@ -10,5 +10,12 @@
         ]
       }
     }
+  },
+  {
+    "extension": "revapi.differences",
+    "id": "differences",
+    "configuration": {
+      "differences": []
+    }
   }
 ]
