@@ -1,0 +1,17 @@
+[
+  {
+    "extension": "revapi.differences",
+    "id": "differences",
+    "configuration": {
+      "differences": [
+        {
+          "ignore": true,
+          "regex": true,
+          "code": "java.method.varargOverloadsOnlyDifferInVarargParameter",
+          "classQualifiedName": "io.camunda.zeebe.process.test.assertions.*",
+          "justification": "Inherited from extended assertj class."
+        }
+      ]
+    }
+  }
+]
