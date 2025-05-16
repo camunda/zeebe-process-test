@@ -7,6 +7,7 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
+import io.camunda.search.clients.SearchClientsProxy;
 import io.camunda.security.configuration.SecurityConfiguration;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.engine.Engine;
@@ -164,7 +165,7 @@ public class EngineFactory {
                             commandSender,
                             FeatureFlags.createDefault(),
                             jobStreamer,
-                            new NoResultsSearchClientsProxy()),
+                            SearchClientsProxy.noop()),
                     new EngineConfiguration(),
                     new SecurityConfiguration())))
         .actorSchedulingService(scheduler)
