@@ -69,7 +69,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Please check the related workflow (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) and fix it before it blocks the upcoming release!\n  \\cc @zeebe-medic"
+                    "text": "Please check the related workflow (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) and fix it before it blocks the upcoming release!\n  \\cc @camunda-ex-medic"
                   }
                 }
               ]
