@@ -27,11 +27,6 @@ import org.springframework.context.annotation.Bean;
 /** Fallback values if certain beans are missing */
 public class ZeebeTestDefaultConfiguration {
 
-  public static final ObjectMapper DEFAULT_OBJECT_MAPPER =
-      new ObjectMapper()
-          .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-          .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
-
   @Bean(name = "zeebeJsonMapper")
   @ConditionalOnMissingBean
   public JsonMapper jsonMapper(final ObjectMapper objectMapper) {
@@ -41,6 +36,8 @@ public class ZeebeTestDefaultConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public ObjectMapper objectMapper() {
-    return DEFAULT_OBJECT_MAPPER;
+    return new ObjectMapper()
+        .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
   }
 }
