@@ -15,7 +15,8 @@
  */
 package io.camunda.zeebe.spring.test.configuration;
 
-import static io.camunda.zeebe.spring.client.configuration.CamundaAutoConfiguration.DEFAULT_OBJECT_MAPPER;
+import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.api.JsonMapper;
@@ -25,6 +26,11 @@ import org.springframework.context.annotation.Bean;
 
 /** Fallback values if certain beans are missing */
 public class ZeebeTestDefaultConfiguration {
+
+  public static final ObjectMapper DEFAULT_OBJECT_MAPPER =
+      new ObjectMapper()
+          .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+          .configure(ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
 
   @Bean(name = "zeebeJsonMapper")
   @ConditionalOnMissingBean
