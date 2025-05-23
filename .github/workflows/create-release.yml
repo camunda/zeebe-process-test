@@ -1,0 +1,116 @@
+---
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'releaseVersion:'
+        type: string
+        required: true
+      nextDevelopmentVersion:
+        description: 'nextDevelopmentVersion: e.g. 8.X.X-SNAPSHOT'
+        type: string
+        required: true
+      isLatest:
+        description: 'isLatest: updates the `latest` docker tag'
+        type: boolean
+        required: false
+        default: false
+      releaseBranch:
+        description: 'releaseBranch: defaults to `release-$releaseVersion` if not set'
+        type: string
+        required: false
+        default: ''
+      dryRun:
+        description: 'dryRun: Whether to perform a dry release where no changes/artifacts are pushed'
+        type: boolean
+        required: true
+        default: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      RELEASE_BRANCH: ${{ inputs.releaseBranch != '' && inputs.releaseBranch || format('release-{0}', inputs.releaseVersion) }}
+      RELEASE_VERSION: ${{ inputs.releaseVersion }}
+    steps:
+      - name: Output inputs
+        run: echo "${{ toJSON(github.event.inputs) }}"
+
+      # This step generates a GitHub App token to be used in Git operations as a workaround  for
+      # the known GitHub issue described in https://github.com/camunda/camunda/issues/28522
+      - name: Generate GitHub token
+        id: github-token
+        uses: camunda/infra-global-github-actions/generate-github-app-token-from-vault-secrets@main
+        with:
+          github-app-id-vault-key: MONOREPO_RELEASE_APP_ID
+          github-app-id-vault-path: secret/data/products/camunda/ci/camunda
+          github-app-private-key-vault-key: MONOREPO_RELEASE_APP_PRIVATE_KEY
+          github-app-private-key-vault-path: secret/data/products/camunda/ci/camunda
+          vault-auth-method: approle
+          vault-auth-role-id: ${{ secrets.VAULT_ROLE_ID }}
+          vault-auth-secret-id: ${{ secrets.VAULT_SECRET_ID}}
+          vault-url: ${{ secrets.VAULT_ADDR }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_BRANCH }}
+          # Overriding the default GITHUB_TOKEN with a GitHub App token in order to workaround
+          # the known GitHub issue described in https://github.com/camunda/camunda/issues/28522
+          # NOTES:
+          # - This token will be used for all git operations in this job
+          # - This token expires after 1 hour (https://github.com/actions/create-github-app-token?tab=readme-ov-file#create-github-app-token)
+          token: ${{ steps.github-token.outputs.token }}
+
+      - name: Setup Git user
+        run: |
+          git config --global user.email "github-actions[release]"
+          git config --global user.name "github-actions[release]@users.noreply.github.com"
+
+      - name: Update Zeebe version
+        run: |
+          ./mvnw -B versions:set-property -DgenerateBackupPoms=false -Dproperty=dependency.zeebe.version -DnewVersion="${RELEASE_VERSION}"
+          git commit -am "ci: update Zeebe version to ${RELEASE_VERSION}"
+
+      - name: Push changes to release branch
+        if: ${{ inputs.dryRun == false }}
+        run: |
+          git push origin "${RELEASE_BRANCH}"
+
+      - name: Create Git tag
+        run: |
+          git tag -a -m"${RELEASE_VERSION}" "${RELEASE_VERSION}"
+
+      - name: Push Git tag
+        if: ${{ inputs.dryRun == false }}
+        run: |
+          git push origin "${RELEASE_VERSION}"
+
+      - name: Determine if pre-release
+        id: pre-release
+        run: |
+          shopt -s nocasematch # set matching to case insensitive
+          PRE_RELEASE=false
+          if [[ "${RELEASE_VERSION}" =~ ^.*-(alpha|rc|SNAPSHOT)[\d]*$ ]]; then
+            PRE_RELEASE=true
+          fi
+          shopt -u nocasematch # reset it
+          echo "result=${PRE_RELEASE}" >> $GITHUB_OUTPUT
+
+      - name: Create Github release
+        uses: ncipollo/release-action@v1
+        if: ${{ inputs.dryRun == false }}
+        with:
+          name: ${{ inputs.releaseVersion }}
+          tag: ${{ inputs.releaseVersion }}
+          generateReleaseNotes: true
+          prerelease: ${{ steps.pre-release.outputs.result }}
+          makeLatest: ${{ inputs.isLatest }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
