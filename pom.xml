@@ -93,6 +93,8 @@
     <dependency.testcontainers.version>1.21.0</dependency.testcontainers.version>
     <dependency.zeebe.version>8.8.0-SNAPSHOT</dependency.zeebe.version>
 
+    <failOnFlakyTest>true</failOnFlakyTest>
+
     <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
 
     <nexus.release.repository>https://artifacts.camunda.com/artifactory/zeebe-io/</nexus.release.repository>
@@ -725,6 +727,9 @@
               <goal>extract-flaky-tests</goal>
             </goals>
             <phase>post-integration-test</phase>
+            <configuration>
+              <failBuild>${failOnFlakyTest}</failBuild>
+            </configuration>
           </execution>
         </executions>
       </plugin>
