@@ -66,7 +66,12 @@ jobs:
 
       - name: Build
         id: build
-        run: mvn -B -U -pl "-:zeebe-process-test-qa-testcontainers" -P !localBuild "-Dsurefire.rerunFailingTestsCount=5" clean install
+        run: |
+          mvn -B -U -pl "-:zeebe-process-test-qa-testcontainers" \
+            -P !localBuild \
+            "-Dsurefire.rerunFailingTestsCount=5" \
+            "-DfailOnFlakyTest=${{ ! contains(matrix.os, 'macos') }}" \
+            clean install
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v4
