@@ -120,7 +120,7 @@
 
     <version.grpc>1.65.1</version.grpc>
     <version.java>21</version.java>
-    <version.protobuf>3.25.7</version.protobuf>
+    <version.protobuf>3.25.8</version.protobuf>
   </properties>
 
   <dependencyManagement>
