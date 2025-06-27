@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import org.agrona.DirectBuffer;
 
 final class InMemoryDbColumnFamily<
@@ -103,6 +104,23 @@ final class InMemoryDbColumnFamily<
     if (valueBuffer != null) {
       valueInstance.wrap(valueBuffer, 0, valueBuffer.capacity());
       return valueInstance;
+    }
+
+    return null;
+  }
+
+  @Override
+  public ValueType get(final KeyType key, final Supplier<ValueType> valueSupplier) {
+    final AtomicReference<DirectBuffer> valueBufferRef = new AtomicReference<>(null);
+
+    ensureInOpenTransaction(context, state -> valueBufferRef.set(getValue(state, key)));
+
+    final DirectBuffer valueBuffer = valueBufferRef.get();
+
+    if (valueBuffer != null) {
+      final var newValue = valueSupplier.get();
+      newValue.wrap(valueBuffer, 0, valueBuffer.capacity());
+      return newValue;
     }
 
     return null;
