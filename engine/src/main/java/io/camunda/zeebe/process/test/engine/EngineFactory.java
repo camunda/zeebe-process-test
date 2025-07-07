@@ -149,6 +149,8 @@ public class EngineFactory {
       final CommandSender commandSender,
       final JobStreamer jobStreamer,
       final ActorClock clock) {
+    final SecurityConfiguration securityConfiguration = new SecurityConfiguration();
+    securityConfiguration.getAuthorizations().setEnabled(false);
     return StreamProcessor.builder()
         .logStream(logStream)
         .zeebeDb(database)
@@ -167,7 +169,7 @@ public class EngineFactory {
                             jobStreamer,
                             SearchClientsProxy.noop()),
                     new EngineConfiguration(),
-                    new SecurityConfiguration())))
+                    securityConfiguration)))
         .actorSchedulingService(scheduler)
         .clock(new ControllableStreamClockImpl(clock))
         .meterRegistry(new SimpleMeterRegistry())
