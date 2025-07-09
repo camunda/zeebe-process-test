@@ -180,7 +180,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":success: *Deploying ZPT release ${{ github.event.release.tag_name }}* succeeded!\n"
+                    "text": ":success: *Deploying ZPT release ${{ github.event.release.tag_name }}* succeeded! (excluding Maven Central publishing - this is done separately)\n"
                   }
                 }
               ]
