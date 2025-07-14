@@ -101,10 +101,10 @@ jobs:
         id: branch
         run: |
           if ! [ -z "${{ github.event.release.tag_name }}" ] && [[ "${{ github.event.release.tag_name }}" != *"alpha"* ]]; then
-            MAJOR_MINOR_VERSION=$(echo ${{ github.event.release.tag_name }} | sed -rn 's/^([0-9]+.[0-9]+).[0-9]+.*$/\1/p')
-            test -z "${MAJOR_MINOR_VERSION}" && echo "::error::Tag ${{ github.event.release.tag_name }} does not adhere to semantic versioning" && exit 1
-            echo "branch=stable/${MAJOR_MINOR_VERSION}" >> $GITHUB_OUTPUT
-            echo "Branch = stable/${MAJOR_MINOR_VERSION}"
+            SEMANTIC_VERSION=$(echo ${{ github.event.release.tag_name }} | sed -rn 's/^([0-9]+.[0-9]+.[0-9]+).*$/\1/p')
+            test -z "${SEMANTIC_VERSION}" && echo "::error::Tag ${{ github.event.release.tag_name }} does not adhere to semantic versioning" && exit 1
+            echo "branch=release-${SEMANTIC_VERSION}" >> $GITHUB_OUTPUT
+            echo "Branch = release-${SEMANTIC_VERSION}"
           else
             echo "branch=${{ github.event.repository.default_branch }}" >> $GITHUB_OUTPUT
             echo "Branch = ${{ github.event.repository.default_branch }}"
