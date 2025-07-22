@@ -136,7 +136,7 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.TENANT, Object::toString);
     valueTypeLoggers.put(ValueType.SCALE, Object::toString);
     valueTypeLoggers.put(ValueType.GROUP, Object::toString);
-    valueTypeLoggers.put(ValueType.MAPPING, Object::toString);
+    valueTypeLoggers.put(ValueType.MAPPING_RULE, Object::toString);
     valueTypeLoggers.put(ValueType.IDENTITY_SETUP, Object::toString);
     valueTypeLoggers.put(ValueType.RESOURCE, Object::toString);
     valueTypeLoggers.put(ValueType.BATCH_OPERATION_CREATION, Object::toString);
