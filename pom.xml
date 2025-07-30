@@ -103,7 +103,7 @@
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
 
     <plugin.version.dependency>3.8.1</plugin.version.dependency>
-    <plugin.version.flatten>1.7.1</plugin.version.flatten>
+    <plugin.version.flatten>1.7.2</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
 
     <!-- when updating this version, also change it in .idea/externalDependencies.xml -->
