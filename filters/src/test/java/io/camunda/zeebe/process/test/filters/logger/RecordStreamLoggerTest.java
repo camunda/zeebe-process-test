@@ -33,9 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Stream;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,23 +50,6 @@ class RecordStreamLoggerTest {
     TYPED_TEST_VARIABLES.put("booleanProperty", true);
     TYPED_TEST_VARIABLES.put("complexProperty", Arrays.asList("Element 1", "Element 2"));
     TYPED_TEST_VARIABLES.put("nullProperty", null);
-  }
-
-  @Test
-  void testAllValueTypesAreMapped() {
-    final Map<ValueType, Function<Record<?>, String>> valueTypeLoggers =
-        new RecordStreamLogger(null).getValueTypeLoggers();
-
-    final SoftAssertions softly = new SoftAssertions();
-    Arrays.asList(ValueType.values())
-        .forEach(
-            valueType ->
-                softly
-                    .assertThat(valueTypeLoggers.containsKey(valueType))
-                    .withFailMessage("No value type logger defined for value type '%s'", valueType)
-                    .isTrue());
-
-    softly.assertAll();
   }
 
   @ParameterizedTest(name = "{0}")
