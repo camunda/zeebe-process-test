@@ -21,7 +21,7 @@ jobs:
         contains(github.event.comment.body, '/backport')
       )
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # Token for git actions, e.g. git push, needed to be able to e.g. update workflow files
           token: ${{ secrets.BACKPORT_ACTION_PAT }}
