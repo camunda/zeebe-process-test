@@ -68,7 +68,7 @@ jobs:
           vault-auth-secret-id: ${{ secrets.VAULT_SECRET_ID}}
           vault-url: ${{ secrets.VAULT_ADDR }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ env.RELEASE_BRANCH }}
           # Overriding the default GITHUB_TOKEN with a GitHub App token in order to workaround
