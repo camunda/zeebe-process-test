@@ -76,6 +76,7 @@ public class AbstractZeebeTestExecutionListener {
     // (https://github.com/camunda-community-hub/spring-zeebe/blob/11966be454cc76f3966fb2c0e4114a35487946fc/client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java#L30)?
     final CamundaClientBuilder builder =
         CamundaClient.newClientBuilder()
+            .preferRestOverGrpc(false)
             .gatewayAddress(zeebeEngine.getGatewayAddress())
             .usePlaintext();
     if (testContext.getApplicationContext().getBeanNamesForType(JsonMapper.class).length > 0) {
