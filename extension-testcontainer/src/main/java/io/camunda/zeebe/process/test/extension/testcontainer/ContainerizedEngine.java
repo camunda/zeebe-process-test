@@ -96,6 +96,7 @@ public class ContainerizedEngine implements ZeebeTestEngine {
   public CamundaClient createClient() {
     return CamundaClient.newClientBuilder()
         .applyEnvironmentVariableOverrides(false)
+        .preferRestOverGrpc(false)
         .gatewayAddress(getGatewayAddress())
         .usePlaintext()
         .build();
@@ -106,6 +107,7 @@ public class ContainerizedEngine implements ZeebeTestEngine {
     return CamundaClient.newClientBuilder()
         .withJsonMapper(new CamundaObjectMapper(objectMapper))
         .applyEnvironmentVariableOverrides(false)
+        .preferRestOverGrpc(false)
         .gatewayAddress(getGatewayAddress())
         .usePlaintext()
         .build();
