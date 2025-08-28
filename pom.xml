@@ -91,7 +91,7 @@
     <dependency.snakeyaml.version>2.4</dependency.snakeyaml.version>
     <dependency.spring-boot.version>3.5.5</dependency.spring-boot.version>
     <dependency.testcontainers.version>1.21.3</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.8.0-SNAPSHOT</dependency.zeebe.version>
+    <dependency.zeebe.version>8.8.0-alpha8-rc1</dependency.zeebe.version>
 
     <failOnFlakyTest>true</failOnFlakyTest>
 
