@@ -146,7 +146,7 @@ jobs:
       - name: Create new stable branch for minor
         if: ${{ inputs.releaseType == 'minor' }}
         run: |
-          git checkout --branch "stable/${MINOR_VERSION}"
+          git checkout -b "stable/${MINOR_VERSION}"
 
       - name: Push new stable branch for minor
         if: ${{ inputs.releaseType == 'minor' && inputs.dryRun == false }}
