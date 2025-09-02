@@ -1,8 +1,42 @@
 ---
 name: Create Release
 
-# Used by https://github.com/camunda/zeebe-engineering-processes/blob/main/src/main/resources/release/zeebe-process-test-release.bpmn
 on:
+  # Used for standalone testing
+  workflow_call:
+    inputs:
+      releaseVersion:
+        description: 'releaseVersion: e.g. MAJOR.MINOR.PATCH[-ALPHAn]'
+        type: string
+        required: true
+      minorVersion:
+        description: 'minorVersion: just the MAJOR.MINOR part of the releaseVersion'
+        type: string
+        required: true
+      releaseType:
+        description: 'releaseType: e.g. minor, alpha or patch'
+        type: string
+        required: true
+      nextDevelopmentVersion:
+        description: 'nextDevelopmentVersion: e.g. 8.X.X-SNAPSHOT'
+        type: string
+        required: true
+      isLatest:
+        description: 'isLatest: updates the `latest` docker tag'
+        type: boolean
+        required: false
+        default: false
+      releaseBranch:
+        description: 'releaseBranch: defaults to `release-$releaseVersion` if not set'
+        type: string
+        required: false
+        default: ''
+      dryRun:
+        description: 'dryRun: Whether to perform a dry release where no changes/artifacts are pushed'
+        type: boolean
+        required: true
+        default: false
+  # Used by https://github.com/camunda/zeebe-engineering-processes/blob/main/src/main/resources/release/zeebe-process-test-release.bpmn
   workflow_dispatch:
     inputs:
       releaseVersion:
@@ -51,7 +85,7 @@ jobs:
       MINOR_VERSION: ${{ inputs.minorVersion }}
     steps:
       - name: Output inputs
-        run: echo "${{ toJSON(github.event.inputs) }}"
+        run: echo "${{ toJSON(inputs) }}"
 
       # This step generates a GitHub App token to be used in Git operations as a workaround  for
       # the known GitHub issue described in https://github.com/camunda/camunda/issues/28522
@@ -112,7 +146,11 @@ jobs:
       - name: Create new stable branch for minor
         if: ${{ inputs.releaseType == 'minor' }}
         run: |
-          git checkout --branch "stable/${MINOR_VERSION}"
+          git checkout -b "stable/${MINOR_VERSION}"
+
+      - name: Push new stable branch for minor
+        if: ${{ inputs.releaseType == 'minor' && inputs.dryRun == false }}
+        run: |
           git push origin "stable/${MINOR_VERSION}"
 
       # Same logic as in camunda/camunda
