@@ -659,6 +659,9 @@
             <configuration>
               <failOnWarning>true</failOnWarning>
               <skip>${skipChecks}</skip>
+              <ignoredUnusedDeclaredDependencies>
+                <dependency>org.slf4j:slf4j-simple:jar:2.0.16</dependency>
+              </ignoredUnusedDeclaredDependencies>
             </configuration>
           </execution>
         </executions>
@@ -723,6 +726,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${plugin.version.surefire}</version>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
       </plugin>
 
       <!-- Flaky Tests plugin -->
