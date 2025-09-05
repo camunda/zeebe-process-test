@@ -24,7 +24,6 @@ import org.springframework.core.Ordered;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
-import org.springframework.test.util.TestSocketUtils;
 
 /** Test execution listener binding the Zeebe engine to current test context. */
 public class ZeebeTestExecutionListener extends AbstractZeebeTestExecutionListener
@@ -35,20 +34,18 @@ public class ZeebeTestExecutionListener extends AbstractZeebeTestExecutionListen
 
   private ZeebeTestEngine zeebeEngine;
 
-  public void beforeTestMethod(@NonNull TestContext testContext) {
-    int randomPort =
-        TestSocketUtils
-            .findAvailableTcpPort(); // can be replaced with TestSocketUtils once available:
-    // https://github.com/spring-projects/spring-framework/pull/29132
-
-    LOGGER.info("Create Zeebe in-memory engine for test run on random port: " + randomPort + "...");
-    zeebeEngine = EngineFactory.create(randomPort);
+  @Override
+  public void beforeTestMethod(@NonNull final TestContext testContext) {
+    LOGGER.info("Creating Zeebe in-memory engine...");
+    zeebeEngine = EngineFactory.create();
     zeebeEngine.start();
+    LOGGER.info("Successfully started Zeebe in-memory engine.");
 
     setupWithZeebeEngine(testContext, zeebeEngine);
   }
 
-  public void afterTestMethod(@NonNull TestContext testContext) {
+  @Override
+  public void afterTestMethod(@NonNull final TestContext testContext) {
     cleanup(testContext, zeebeEngine);
     zeebeEngine.stop();
   }

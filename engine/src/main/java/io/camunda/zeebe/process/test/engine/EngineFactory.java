@@ -36,8 +36,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EngineFactory {
+  private static final Logger LOG = LoggerFactory.getLogger(EngineFactory.class);
 
   public static ZeebeTestEngine create() {
     return create(findFreePort());
@@ -47,6 +50,7 @@ public class EngineFactory {
     final int freePort;
     try (final var serverSocket = new ServerSocket(0)) {
       freePort = serverSocket.getLocalPort();
+      LOG.info("Obtained free port for Zeebe in-memory engine from ephemeral range: {}", freePort);
     } catch (final IOException e) {
       throw new RuntimeException(e);
     }
