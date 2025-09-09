@@ -18,8 +18,8 @@ package io.camunda.zeebe.spring.test;
 import io.camunda.client.CamundaClient;
 import io.camunda.client.CamundaClientBuilder;
 import io.camunda.client.api.JsonMapper;
-import io.camunda.spring.client.event.CamundaClientClosingEvent;
-import io.camunda.spring.client.event.CamundaClientCreatedEvent;
+import io.camunda.client.spring.event.CamundaClientClosingSpringEvent;
+import io.camunda.client.spring.event.CamundaClientCreatedSpringEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -65,7 +65,7 @@ public class AbstractZeebeTestExecutionListener {
         .swapZeebeClient(camundaClient);
     testContext
         .getApplicationContext()
-        .publishEvent(new CamundaClientCreatedEvent(this, camundaClient));
+        .publishEvent(new CamundaClientCreatedSpringEvent(this, camundaClient));
 
     LOGGER.info("...deployments and workers started.");
   }
@@ -116,7 +116,7 @@ public class AbstractZeebeTestExecutionListener {
 
     testContext
         .getApplicationContext()
-        .publishEvent(new CamundaClientClosingEvent(this, camundaClient));
+        .publishEvent(new CamundaClientClosingSpringEvent(this, camundaClient));
     testContext.getApplicationContext().getBean(CamundaClientProxy.class).removeZeebeClient();
     camundaClient.close();
     testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).removeZeebeEngine();
