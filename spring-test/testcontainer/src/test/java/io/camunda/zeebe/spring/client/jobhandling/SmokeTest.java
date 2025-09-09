@@ -20,11 +20,11 @@ import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcess
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.camunda.client.CamundaClient;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.annotation.Variable;
 import io.camunda.client.api.response.ActivatedJob;
 import io.camunda.client.api.response.ProcessInstanceEvent;
 import io.camunda.client.api.worker.JobClient;
-import io.camunda.spring.client.annotation.JobWorker;
-import io.camunda.spring.client.annotation.Variable;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
