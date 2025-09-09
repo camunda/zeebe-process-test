@@ -15,8 +15,8 @@
  */
 package io.camunda.zeebe.spring.test;
 
-import io.camunda.spring.client.configuration.CamundaAutoConfiguration;
-import io.camunda.spring.client.testsupport.CamundaSpringProcessTestContext;
+import io.camunda.client.spring.configuration.CamundaAutoConfiguration;
+import io.camunda.client.spring.testsupport.CamundaSpringProcessTestContext;
 import io.camunda.zeebe.spring.test.configuration.ZeebeTestDefaultConfiguration;
 import io.camunda.zeebe.spring.test.proxy.TestProxyConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
