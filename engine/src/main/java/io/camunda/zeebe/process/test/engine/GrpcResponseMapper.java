@@ -8,7 +8,7 @@
 
 package io.camunda.zeebe.process.test.engine;
 
-import com.google.protobuf.GeneratedMessage;
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 import io.camunda.zeebe.gateway.protocol.GatewayOuterClass.ActivateJobsRequest;
@@ -82,7 +82,7 @@ class GrpcResponseMapper {
   private long key;
   private Intent intent;
 
-  private final Map<Class<? extends GeneratedMessage>, Callable<GeneratedMessage>> mappers =
+  private final Map<Class<? extends GeneratedMessageV3>, Callable<GeneratedMessageV3>> mappers =
       Map.ofEntries(
           Map.entry(ActivateJobsRequest.class, this::createJobBatchResponse),
           Map.entry(CancelProcessInstanceRequest.class, this::createCancelInstanceResponse),
@@ -106,8 +106,8 @@ class GrpcResponseMapper {
               MigrateProcessInstanceRequest.class, this::createMigrateProcessInstanceResponse),
           Map.entry(BroadcastSignalRequest.class, this::createBroadcastSignalResponse));
 
-  GeneratedMessage map(
-      final Class<? extends GeneratedMessage> requestType,
+  GeneratedMessageV3 map(
+      final Class<? extends GeneratedMessageV3> requestType,
       final DirectBuffer valueBufferView,
       final long key,
       final Intent intent) {
@@ -142,7 +142,7 @@ class GrpcResponseMapper {
         .build();
   }
 
-  private GeneratedMessage createDeployResourceResponse() {
+  private GeneratedMessageV3 createDeployResourceResponse() {
     final DeploymentRecord deployment = new DeploymentRecord();
     deployment.wrap(valueBufferView);
 
@@ -197,7 +197,7 @@ class GrpcResponseMapper {
     return builder.build();
   }
 
-  private GeneratedMessage evaluateDecisionResponse() {
+  private GeneratedMessageV3 evaluateDecisionResponse() {
     final DecisionEvaluationRecord evaluationRecord = new DecisionEvaluationRecord();
     evaluationRecord.wrap(valueBufferView);
 
@@ -265,7 +265,7 @@ class GrpcResponseMapper {
         .build();
   }
 
-  private GeneratedMessage createProcessInstanceResponse() {
+  private GeneratedMessageV3 createProcessInstanceResponse() {
     final ProcessInstanceCreationRecord processInstance = new ProcessInstanceCreationRecord();
     processInstance.wrap(valueBufferView);
 
@@ -277,7 +277,7 @@ class GrpcResponseMapper {
         .build();
   }
 
-  private GeneratedMessage createProcessInstanceWithResultResponse() {
+  private GeneratedMessageV3 createProcessInstanceWithResultResponse() {
     final ProcessInstanceResultRecord processInstanceResult = new ProcessInstanceResultRecord();
     processInstanceResult.wrap(valueBufferView);
 
@@ -290,44 +290,44 @@ class GrpcResponseMapper {
         .build();
   }
 
-  private GeneratedMessage createCancelInstanceResponse() {
+  private GeneratedMessageV3 createCancelInstanceResponse() {
     return CancelProcessInstanceResponse.newBuilder().build();
   }
 
-  private GeneratedMessage createModifyProcessInstanceResponse() {
+  private GeneratedMessageV3 createModifyProcessInstanceResponse() {
     return ModifyProcessInstanceResponse.newBuilder().build();
   }
 
-  private GeneratedMessage createMigrateProcessInstanceResponse() {
+  private GeneratedMessageV3 createMigrateProcessInstanceResponse() {
     return MigrateProcessInstanceResponse.getDefaultInstance();
   }
 
-  private GeneratedMessage createBroadcastSignalResponse() {
+  private GeneratedMessageV3 createBroadcastSignalResponse() {
     final SignalRecord signal = new SignalRecord();
     signal.wrap(valueBufferView);
 
     return BroadcastSignalResponse.newBuilder().setKey(key).build();
   }
 
-  private GeneratedMessage createResolveIncidentResponse() {
+  private GeneratedMessageV3 createResolveIncidentResponse() {
     final IncidentRecord incident = new IncidentRecord();
     incident.wrap(valueBufferView);
 
     return ResolveIncidentResponse.newBuilder().build();
   }
 
-  private GeneratedMessage createSetVariablesResponse() {
+  private GeneratedMessageV3 createSetVariablesResponse() {
     final VariableDocumentRecord variableDocumentRecord = new VariableDocumentRecord();
     variableDocumentRecord.wrap(valueBufferView);
 
     return SetVariablesResponse.newBuilder().setKey(key).build();
   }
 
-  private GeneratedMessage createMessageResponse() {
+  private GeneratedMessageV3 createMessageResponse() {
     return PublishMessageResponse.newBuilder().setKey(key).build();
   }
 
-  private GeneratedMessage createJobBatchResponse() {
+  private GeneratedMessageV3 createJobBatchResponse() {
     final JobBatchRecord jobBatch = new JobBatchRecord();
     jobBatch.wrap(valueBufferView);
 
@@ -364,23 +364,23 @@ class GrpcResponseMapper {
         .build();
   }
 
-  private GeneratedMessage createCompleteJobResponse() {
+  private GeneratedMessageV3 createCompleteJobResponse() {
     return CompleteJobResponse.newBuilder().build();
   }
 
-  private GeneratedMessage createFailJobResponse() {
+  private GeneratedMessageV3 createFailJobResponse() {
     return FailJobResponse.newBuilder().build();
   }
 
-  private GeneratedMessage createJobThrowErrorResponse() {
+  private GeneratedMessageV3 createJobThrowErrorResponse() {
     return ThrowErrorResponse.newBuilder().build();
   }
 
-  private GeneratedMessage createJobUpdateRetriesResponse() {
+  private GeneratedMessageV3 createJobUpdateRetriesResponse() {
     return UpdateJobRetriesResponse.newBuilder().build();
   }
 
-  private GeneratedMessage createJobUpdateTimeOutResponse() {
+  private GeneratedMessageV3 createJobUpdateTimeOutResponse() {
     return UpdateJobTimeoutResponse.newBuilder().build();
   }
 
