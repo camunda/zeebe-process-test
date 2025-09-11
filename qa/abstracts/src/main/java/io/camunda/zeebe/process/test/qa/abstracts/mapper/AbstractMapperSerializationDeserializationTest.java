@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.camunda.client.CamundaClient;
-import io.camunda.client.api.JsonMapper;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 
 public abstract class AbstractMapperSerializationDeserializationTest {
-  protected CamundaClient client;
+  protected ZeebeClient client;
   protected ZeebeTestEngine engine;
   protected ObjectMapper mapper = configureObjectMapper();
 

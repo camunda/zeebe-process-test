@@ -17,7 +17,7 @@ package io.camunda.zeebe.spring.test;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 
-import io.camunda.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;

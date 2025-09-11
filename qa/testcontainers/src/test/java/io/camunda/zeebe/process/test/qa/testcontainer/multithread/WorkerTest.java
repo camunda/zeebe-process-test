@@ -15,7 +15,7 @@
  */
 package io.camunda.zeebe.process.test.qa.testcontainer.multithread;
 
-import io.camunda.client.CamundaClient;
+import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.abstracts.multithread.AbstractWorkerTest;
@@ -23,11 +23,11 @@ import io.camunda.zeebe.process.test.qa.abstracts.multithread.AbstractWorkerTest
 @ZeebeProcessTest
 class WorkerTest extends AbstractWorkerTest {
 
-  private CamundaClient client;
+  private ZeebeClient client;
   private ZeebeTestEngine engine;
 
   @Override
-  public CamundaClient getClient() {
+  public ZeebeClient getClient() {
     return client;
   }
 

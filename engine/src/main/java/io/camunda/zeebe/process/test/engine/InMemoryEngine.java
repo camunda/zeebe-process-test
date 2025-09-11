@@ -8,8 +8,8 @@
 package io.camunda.zeebe.process.test.engine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.client.CamundaClient;
-import io.camunda.client.impl.CamundaObjectMapper;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.logstreams.log.LogStream;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
@@ -95,8 +95,8 @@ public class InMemoryEngine implements ZeebeTestEngine {
   }
 
   @Override
-  public CamundaClient createClient() {
-    return CamundaClient.newClientBuilder()
+  public ZeebeClient createClient() {
+    return ZeebeClient.newClientBuilder()
         .applyEnvironmentVariableOverrides(false)
         .preferRestOverGrpc(false)
         .gatewayAddress(getGatewayAddress())
@@ -105,9 +105,9 @@ public class InMemoryEngine implements ZeebeTestEngine {
   }
 
   @Override
-  public CamundaClient createClient(final ObjectMapper objectMapper) {
-    return CamundaClient.newClientBuilder()
-        .withJsonMapper(new CamundaObjectMapper(objectMapper))
+  public ZeebeClient createClient(final ObjectMapper objectMapper) {
+    return ZeebeClient.newClientBuilder()
+        .withJsonMapper(new ZeebeObjectMapper(objectMapper))
         .applyEnvironmentVariableOverrides(false)
         .preferRestOverGrpc(false)
         .gatewayAddress(getGatewayAddress())

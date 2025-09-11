@@ -22,20 +22,20 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.camunda.client.CamundaClient;
-import io.camunda.client.annotation.JobWorker;
-import io.camunda.client.annotation.Variable;
 import io.camunda.client.annotation.customizer.JobWorkerValueCustomizer;
-import io.camunda.client.api.response.ActivatedJob;
-import io.camunda.client.api.response.ProcessInstanceEvent;
-import io.camunda.client.api.worker.JobClient;
 import io.camunda.client.jobhandling.JobWorkerManager;
 import io.camunda.client.metrics.MetricsRecorder;
 import io.camunda.client.metrics.SimpleMetricsRecorder;
 import io.camunda.client.spring.configuration.MetricsDefaultConfiguration;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
+import io.camunda.zeebe.spring.client.annotation.JobWorker;
+import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import java.time.Duration;
 import java.util.Collections;
@@ -68,7 +68,7 @@ public class JobHandlerTest {
   private static String test7Var = null;
   private static ComplexTypeDTO test6ComplexTypeDTO = null;
   private static String test6Var2 = null;
-  @Autowired private CamundaClient client;
+  @Autowired private ZeebeClient client;
   @Autowired private SimpleMetricsRecorder metrics;
   @Autowired private JobWorkerManager jobWorkerManager;
 
@@ -245,12 +245,12 @@ public class JobHandlerTest {
   }
 
   private ProcessInstanceEvent startProcessInstance(
-      final CamundaClient client, final String bpmnProcessId) {
+      final ZeebeClient client, final String bpmnProcessId) {
     return startProcessInstance(client, bpmnProcessId, new HashMap<>());
   }
 
   private ProcessInstanceEvent startProcessInstance(
-      final CamundaClient client, final String bpmnProcessId, final Map<String, Object> variables) {
+      final ZeebeClient client, final String bpmnProcessId, final Map<String, Object> variables) {
     return client
         .newCreateInstanceCommand()
         .bpmnProcessId(bpmnProcessId)

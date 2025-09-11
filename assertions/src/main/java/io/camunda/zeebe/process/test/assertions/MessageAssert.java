@@ -17,7 +17,7 @@ package io.camunda.zeebe.process.test.assertions;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import io.camunda.client.api.response.PublishMessageResponse;
+import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
 import io.camunda.zeebe.protocol.record.Record;
@@ -36,7 +36,7 @@ import org.assertj.core.api.Assertions;
 /** Assertions for {@link PublishMessageResponse} instances */
 public class MessageAssert extends AbstractAssert<MessageAssert, PublishMessageResponse> {
 
-  private final RecordStream recordStream;
+  private RecordStream recordStream;
 
   protected MessageAssert(final PublishMessageResponse actual, final RecordStream recordStream) {
     super(actual, MessageAssert.class);

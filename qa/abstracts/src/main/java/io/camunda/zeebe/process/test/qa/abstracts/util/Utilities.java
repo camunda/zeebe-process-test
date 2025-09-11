@@ -15,13 +15,13 @@
  */
 package io.camunda.zeebe.process.test.qa.abstracts.util;
 
-import io.camunda.client.CamundaClient;
-import io.camunda.client.api.command.DeployResourceCommandStep1;
-import io.camunda.client.api.response.ActivateJobsResponse;
-import io.camunda.client.api.response.DeploymentEvent;
-import io.camunda.client.api.response.ProcessInstanceEvent;
-import io.camunda.client.api.response.ProcessInstanceResult;
-import io.camunda.client.api.response.PublishMessageResponse;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
+import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
+import io.camunda.zeebe.client.api.response.DeploymentEvent;
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
+import io.camunda.zeebe.client.api.response.PublishMessageResponse;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.filters.RecordStream;
 import io.camunda.zeebe.process.test.filters.StreamFilter;
@@ -43,12 +43,12 @@ public class Utilities {
 
   private static final Logger LOG = LoggerFactory.getLogger(Utilities.class);
 
-  public static DeploymentEvent deployResource(final CamundaClient client, final String resource) {
+  public static DeploymentEvent deployResource(final ZeebeClient client, final String resource) {
     return deployResources(client, resource);
   }
 
   public static DeploymentEvent deployResources(
-      final CamundaClient client, final String... resources) {
+      final ZeebeClient client, final String... resources) {
     final DeployResourceCommandStep1 commandStep1 = client.newDeployResourceCommand();
 
     DeployResourceCommandStep1.DeployResourceCommandStep2 commandStep2 = null;
@@ -64,14 +64,14 @@ public class Utilities {
   }
 
   public static ProcessInstanceEvent startProcessInstance(
-      final ZeebeTestEngine engine, final CamundaClient client, final String processId)
+      final ZeebeTestEngine engine, final ZeebeClient client, final String processId)
       throws InterruptedException, TimeoutException {
     return startProcessInstance(engine, client, processId, new HashMap<>());
   }
 
   public static ProcessInstanceEvent startProcessInstance(
       final ZeebeTestEngine engine,
-      final CamundaClient client,
+      final ZeebeClient client,
       final String processId,
       final Map<String, Object> variables)
       throws InterruptedException, TimeoutException {
@@ -89,7 +89,7 @@ public class Utilities {
 
   public static ProcessInstanceResult startProcessInstanceWithResult(
       final ZeebeTestEngine engine,
-      final CamundaClient client,
+      final ZeebeClient client,
       final String processId,
       final Map<String, Object> variables)
       throws InterruptedException, TimeoutException {
@@ -108,7 +108,7 @@ public class Utilities {
   }
 
   public static ActivateJobsResponse activateSingleJob(
-      final CamundaClient client, final String jobType) {
+      final ZeebeClient client, final String jobType) {
     return client.newActivateJobsCommand().jobType(jobType).maxJobsToActivate(1).send().join();
   }
 
@@ -127,7 +127,7 @@ public class Utilities {
    * afterward to ensure that the message publication is processed.
    *
    * <p>The message is published without a time to live and without variables. If you need to set a
-   * time to live or variables, use {@link #sendMessage(ZeebeTestEngine, CamundaClient, String,
+   * time to live or variables, use {@link #sendMessage(ZeebeTestEngine, ZeebeClient, String,
    * String, Duration, Map)} instead.
    *
    * @param engine the engine to wait for to be idle
@@ -141,7 +141,7 @@ public class Utilities {
    */
   public static PublishMessageResponse sendMessage(
       final ZeebeTestEngine engine,
-      final CamundaClient client,
+      final ZeebeClient client,
       final String messageName,
       final String correlationKey)
       throws InterruptedException, TimeoutException {
@@ -154,7 +154,7 @@ public class Utilities {
    * for the engine to be idle afterward to ensure that the message publication is processed.
    *
    * <p>If you do not need to set a time to live or variables, use {@link
-   * #sendMessage(ZeebeTestEngine, CamundaClient, String, String)} instead.
+   * #sendMessage(ZeebeTestEngine, ZeebeClient, String, String)} instead.
    *
    * @param engine the engine to wait for to be idle
    * @param client the client to use to publish the message
@@ -169,7 +169,7 @@ public class Utilities {
    */
   public static PublishMessageResponse sendMessage(
       final ZeebeTestEngine engine,
-      final CamundaClient client,
+      final ZeebeClient client,
       final String messageName,
       final String correlationKey,
       final Duration timeToLive,
@@ -226,7 +226,7 @@ public class Utilities {
   }
 
   public static void completeTask(
-      final ZeebeTestEngine engine, final CamundaClient client, final String taskId)
+      final ZeebeTestEngine engine, final ZeebeClient client, final String taskId)
       throws InterruptedException, TimeoutException {
     final List<Record<JobRecordValue>> records =
         StreamFilter.jobRecords(RecordStream.of(engine.getRecordStreamSource()))
@@ -255,7 +255,7 @@ public class Utilities {
 
   public static void throwErrorCommand(
       final ZeebeTestEngine engine,
-      final CamundaClient client,
+      final ZeebeClient client,
       final long key,
       final String errorCode,
       final String errorMessage)

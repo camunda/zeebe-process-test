@@ -18,7 +18,7 @@ package io.camunda.zeebe.process.test.qa.abstracts.inspections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.camunda.client.CamundaClient;
+import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.inspections.FormInspectionsUtility;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 public abstract class AbstractFormInspectionsTest {
 
-  private CamundaClient client;
+  private ZeebeClient client;
   private ZeebeTestEngine engine;
 
   @Test

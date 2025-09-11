@@ -16,18 +16,18 @@
 
 package io.camunda.zeebe.process.test.qa.embedded.inspections;
 
-import io.camunda.client.CamundaClient;
+import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.extension.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.abstracts.inspections.AbstractProcessInspectionsTest;
 
 @ZeebeProcessTest
 public class ProcessInspectionsTest extends AbstractProcessInspectionsTest {
-  private CamundaClient client;
+  private ZeebeClient client;
   private ZeebeTestEngine engine;
 
   @Override
-  public CamundaClient getClient() {
+  public ZeebeClient getClient() {
     return client;
   }
 

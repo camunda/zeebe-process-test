@@ -15,7 +15,14 @@
     "extension": "revapi.differences",
     "id": "differences",
     "configuration": {
-      "differences": []
+      "differences": [
+        {
+          "ignore": true,
+          "code": "java.method.addedToInterface",
+          "new": "method io.camunda.zeebe.client.ZeebeClient io.camunda.zeebe.process.test.api.ZeebeTestEngine::createClient(com.fasterxml.jackson.databind.ObjectMapper)",
+          "justification": ""
+        }
+      ]
     }
   }
 ]

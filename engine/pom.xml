@@ -53,7 +53,7 @@
 
     <dependency>
       <groupId>io.camunda</groupId>
-      <artifactId>camunda-client-java</artifactId>
+      <artifactId>zeebe-client-java</artifactId>
     </dependency>
 
     <dependency>
@@ -89,6 +89,11 @@
     <dependency>
       <groupId>io.camunda</groupId>
       <artifactId>camunda-search-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>camunda-security-core</artifactId>
     </dependency>
 
     <dependency>
@@ -144,11 +149,6 @@
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.camunda</groupId>
-      <artifactId>camunda-security-core</artifactId>
     </dependency>
 
     <!-- Test Scope -->
