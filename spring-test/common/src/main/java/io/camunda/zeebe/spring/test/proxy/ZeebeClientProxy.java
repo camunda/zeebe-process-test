@@ -15,20 +15,20 @@
  */
 package io.camunda.zeebe.spring.test.proxy;
 
-import io.camunda.client.CamundaClient;
+import io.camunda.zeebe.client.ZeebeClient;
 import java.lang.reflect.Method;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Dynamic proxy to delegate to a {@link CamundaClient} which allows to swap the CamundaClient
- * object under the hood. This is used in test environments, where the Zeebe engine is
- * re-initialized for every test case.
+ * Dynamic proxy to delegate to a {@link io.camunda.zeebe.client.ZeebeClient} which allows to swap
+ * the ZeebeClient object under the hood. This is used in test environments, where the Zeebe engine
+ * is re-initialized for every test case.
  */
-public class CamundaClientProxy extends AbstractInvocationHandler {
+public class ZeebeClientProxy extends AbstractInvocationHandler {
 
-  private CamundaClient delegate;
+  private ZeebeClient delegate;
 
-  public void swapZeebeClient(final CamundaClient client) {
+  public void swapZeebeClient(final ZeebeClient client) {
     delegate = client;
   }
 
@@ -43,7 +43,7 @@ public class CamundaClientProxy extends AbstractInvocationHandler {
       throw new RuntimeException(
           "Cannot invoke "
               + method
-              + " on CamundaClient, as CamundaClient is currently not initialized. Maybe you run outside of a testcase?");
+              + " on ZeebeClient, as ZeebeClient is currently not initialized. Maybe you run outside of a testcase?");
     }
     return method.invoke(delegate, args);
   }

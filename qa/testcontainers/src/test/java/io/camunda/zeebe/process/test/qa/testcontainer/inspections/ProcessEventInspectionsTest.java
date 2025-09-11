@@ -15,7 +15,7 @@
  */
 package io.camunda.zeebe.process.test.qa.testcontainer.inspections;
 
-import io.camunda.client.CamundaClient;
+import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.extension.testcontainer.ZeebeProcessTest;
 import io.camunda.zeebe.process.test.qa.abstracts.inspections.AbstractProcessEventInspectionsTest;
@@ -23,11 +23,11 @@ import io.camunda.zeebe.process.test.qa.abstracts.inspections.AbstractProcessEve
 @ZeebeProcessTest
 class ProcessEventInspectionsTest extends AbstractProcessEventInspectionsTest {
 
-  private CamundaClient client;
+  private ZeebeClient client;
   private ZeebeTestEngine engine;
 
   @Override
-  public CamundaClient getClient() {
+  public ZeebeClient getClient() {
     return client;
   }
 

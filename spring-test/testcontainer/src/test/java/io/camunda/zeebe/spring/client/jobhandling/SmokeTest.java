@@ -19,12 +19,12 @@ import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.camunda.client.CamundaClient;
 import io.camunda.client.annotation.JobWorker;
 import io.camunda.client.annotation.Variable;
-import io.camunda.client.api.response.ActivatedJob;
-import io.camunda.client.api.response.ProcessInstanceEvent;
-import io.camunda.client.api.worker.JobClient;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
@@ -47,7 +47,7 @@ public class SmokeTest {
   private static boolean calledTest2 = false;
   private static ComplexTypeDTO test2ComplexTypeDTO = null;
   private static String test2Var2 = null;
-  @Autowired private CamundaClient client;
+  @Autowired private ZeebeClient client;
   @Autowired private ZeebeTestEngine engine;
 
   @Test
@@ -104,12 +104,12 @@ public class SmokeTest {
   }
 
   private ProcessInstanceEvent startProcessInstance(
-      final CamundaClient client, final String bpmnProcessId) {
+      final ZeebeClient client, final String bpmnProcessId) {
     return startProcessInstance(client, bpmnProcessId, new HashMap<>());
   }
 
   private ProcessInstanceEvent startProcessInstance(
-      final CamundaClient client, final String bpmnProcessId, final Map<String, Object> variables) {
+      final ZeebeClient client, final String bpmnProcessId, final Map<String, Object> variables) {
     return client
         .newCreateInstanceCommand()
         .bpmnProcessId(bpmnProcessId)

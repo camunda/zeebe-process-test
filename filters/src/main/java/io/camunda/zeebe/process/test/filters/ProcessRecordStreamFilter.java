@@ -16,7 +16,7 @@
 
 package io.camunda.zeebe.process.test.filters;
 
-import io.camunda.client.api.response.DeploymentEvent;
+import io.camunda.zeebe.client.api.response.DeploymentEvent;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.intent.ProcessIntent;
 import io.camunda.zeebe.protocol.record.value.deployment.Process;
