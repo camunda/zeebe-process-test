@@ -15,15 +15,15 @@
  */
 package io.camunda.zeebe.spring.test;
 
-import io.camunda.client.CamundaClient;
-import io.camunda.client.CamundaClientBuilder;
-import io.camunda.client.api.JsonMapper;
-import io.camunda.client.spring.event.CamundaClientClosingSpringEvent;
-import io.camunda.client.spring.event.CamundaClientCreatedSpringEvent;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.ZeebeClientBuilder;
+import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
-import io.camunda.zeebe.spring.test.proxy.CamundaClientProxy;
+import io.camunda.zeebe.spring.client.event.ZeebeClientClosingEvent;
+import io.camunda.zeebe.spring.client.event.ZeebeClientCreatedEvent;
+import io.camunda.zeebe.spring.test.proxy.ZeebeClientProxy;
 import io.camunda.zeebe.spring.test.proxy.ZeebeTestEngineProxy;
 import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
@@ -39,9 +39,9 @@ public class AbstractZeebeTestExecutionListener {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private CamundaClient camundaClient;
+  private ZeebeClient zeebeClient;
 
-  /** Registers the ZeebeEngine for test case in relevant places and creates the CamundaClient */
+  /** Registers the ZeebeEngine for test case in relevant places and creates the ZeebeClient */
   public void setupWithZeebeEngine(
       final TestContext testContext, final ZeebeTestEngine zeebeEngine) {
 
@@ -57,25 +57,25 @@ public class AbstractZeebeTestExecutionListener {
     LOGGER.info("Test engine setup. Now starting deployments and workers...");
 
     // Not using zeebeEngine.createClient(); to be able to set JsonMapper
-    camundaClient = createClient(testContext, zeebeEngine);
+    zeebeClient = createClient(testContext, zeebeEngine);
 
     testContext
         .getApplicationContext()
-        .getBean(CamundaClientProxy.class)
-        .swapZeebeClient(camundaClient);
+        .getBean(ZeebeClientProxy.class)
+        .swapZeebeClient(zeebeClient);
     testContext
         .getApplicationContext()
-        .publishEvent(new CamundaClientCreatedSpringEvent(this, camundaClient));
+        .publishEvent(new ZeebeClientCreatedEvent(this, zeebeClient));
 
     LOGGER.info("...deployments and workers started.");
   }
 
-  public CamundaClient createClient(
+  public ZeebeClient createClient(
       final TestContext testContext, final ZeebeTestEngine zeebeEngine) {
     // Maybe use more of the normal config properties
     // (https://github.com/camunda-community-hub/spring-zeebe/blob/11966be454cc76f3966fb2c0e4114a35487946fc/client/spring-zeebe-starter/src/main/java/io/camunda/zeebe/spring/client/config/ZeebeClientStarterAutoConfiguration.java#L30)?
-    final CamundaClientBuilder builder =
-        CamundaClient.newClientBuilder()
+    final ZeebeClientBuilder builder =
+        ZeebeClient.newClientBuilder()
             .preferRestOverGrpc(false)
             .gatewayAddress(zeebeEngine.getGatewayAddress())
             .usePlaintext();
@@ -116,9 +116,9 @@ public class AbstractZeebeTestExecutionListener {
 
     testContext
         .getApplicationContext()
-        .publishEvent(new CamundaClientClosingSpringEvent(this, camundaClient));
-    testContext.getApplicationContext().getBean(CamundaClientProxy.class).removeZeebeClient();
-    camundaClient.close();
+        .publishEvent(new ZeebeClientClosingEvent(this, zeebeClient));
+    testContext.getApplicationContext().getBean(ZeebeClientProxy.class).removeZeebeClient();
+    zeebeClient.close();
     testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).removeZeebeEngine();
   }
 }

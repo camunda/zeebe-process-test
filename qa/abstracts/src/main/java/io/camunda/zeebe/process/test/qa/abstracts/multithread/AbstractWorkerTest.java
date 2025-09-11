@@ -17,8 +17,8 @@ package io.camunda.zeebe.process.test.qa.abstracts.multithread;
 
 import static io.camunda.zeebe.process.test.assertions.BpmnAssert.assertThat;
 
-import io.camunda.client.CamundaClient;
-import io.camunda.client.api.response.ProcessInstanceResult;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities.ProcessPackLoopingServiceTask;
@@ -55,7 +55,7 @@ public abstract class AbstractWorkerTest {
         .isCompleted();
   }
 
-  public abstract CamundaClient getClient();
+  public abstract ZeebeClient getClient();
 
   public abstract ZeebeTestEngine getEngine();
 }

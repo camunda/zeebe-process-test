@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.camunda.client.CamundaClient;
-import io.camunda.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.qa.abstracts.util.Utilities;
@@ -52,7 +52,7 @@ public abstract class AbstractCustomObjectMapperTest {
   @Nested
   class HappyPathTests {
 
-    private CamundaClient client;
+    private ZeebeClient client;
     private ZeebeTestEngine engine;
 
     private final ObjectMapper objectMapper = configureObjectMapper();
