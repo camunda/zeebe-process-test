@@ -18,8 +18,8 @@ package io.camunda.zeebe.process.test.extension.testcontainer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.client.CamundaClient;
-import io.camunda.client.impl.CamundaObjectMapper;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.camunda.zeebe.process.test.api.RecordStreamSource;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.engine.protocol.EngineControlGrpc;
@@ -93,8 +93,8 @@ public class ContainerizedEngine implements ZeebeTestEngine {
   }
 
   @Override
-  public CamundaClient createClient() {
-    return CamundaClient.newClientBuilder()
+  public ZeebeClient createClient() {
+    return ZeebeClient.newClientBuilder()
         .applyEnvironmentVariableOverrides(false)
         .preferRestOverGrpc(false)
         .gatewayAddress(getGatewayAddress())
@@ -103,9 +103,9 @@ public class ContainerizedEngine implements ZeebeTestEngine {
   }
 
   @Override
-  public CamundaClient createClient(final ObjectMapper objectMapper) {
-    return CamundaClient.newClientBuilder()
-        .withJsonMapper(new CamundaObjectMapper(objectMapper))
+  public ZeebeClient createClient(final ObjectMapper objectMapper) {
+    return ZeebeClient.newClientBuilder()
+        .withJsonMapper(new ZeebeObjectMapper(objectMapper))
         .applyEnvironmentVariableOverrides(false)
         .preferRestOverGrpc(false)
         .gatewayAddress(getGatewayAddress())
