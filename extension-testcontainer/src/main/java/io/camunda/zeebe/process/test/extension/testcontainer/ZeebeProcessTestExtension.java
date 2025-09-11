@@ -16,7 +16,7 @@
 package io.camunda.zeebe.process.test.extension.testcontainer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.client.CamundaClient;
+import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.process.test.ObjectMapperConfig;
 import io.camunda.zeebe.process.test.assertions.BpmnAssert;
 import io.camunda.zeebe.process.test.filters.RecordStream;
@@ -84,7 +84,7 @@ public class ZeebeProcessTestExtension
 
     final ObjectMapper objectMapper = getObjectMapper(extensionContext);
     ObjectMapperConfig.initObjectMapper(objectMapper);
-    final CamundaClient client = engine.createClient(objectMapper);
+    final ZeebeClient client = engine.createClient(objectMapper);
     final RecordStream recordStream = RecordStream.of(new RecordStreamSourceImpl(engine));
     BpmnAssert.initRecordStream(recordStream);
 
@@ -102,7 +102,7 @@ public class ZeebeProcessTestExtension
   @Override
   public void afterEach(final ExtensionContext extensionContext) {
     final Object clientContent = getStore(extensionContext).get(KEY_ZEEBE_CLIENT);
-    final CamundaClient client = (CamundaClient) clientContent;
+    final ZeebeClient client = (ZeebeClient) clientContent;
     client.close();
 
     final Object engineContent = getStore(extensionContext.getParent().get()).get(KEY_ZEEBE_ENGINE);
