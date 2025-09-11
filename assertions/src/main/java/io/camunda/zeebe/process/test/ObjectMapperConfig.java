@@ -17,25 +17,25 @@
 package io.camunda.zeebe.process.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.client.impl.CamundaObjectMapper;
+import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 
 /** Shared custom {@link ObjectMapper} configured by the user */
 public class ObjectMapperConfig {
 
-  private static final ThreadLocal<CamundaObjectMapper> objectMapper = new ThreadLocal<>();
+  private static final ThreadLocal<ZeebeObjectMapper> objectMapper = new ThreadLocal<>();
 
   static {
-    objectMapper.set(new CamundaObjectMapper());
+    objectMapper.set(new ZeebeObjectMapper());
   }
 
   /**
    * @return the configured {@link ObjectMapper}.
    */
-  public static CamundaObjectMapper getObjectMapper() {
+  public static ZeebeObjectMapper getObjectMapper() {
     return ObjectMapperConfig.objectMapper.get();
   }
 
   public static void initObjectMapper(final ObjectMapper objectMapper) {
-    ObjectMapperConfig.objectMapper.set(new CamundaObjectMapper(objectMapper));
+    ObjectMapperConfig.objectMapper.set(new ZeebeObjectMapper(objectMapper));
   }
 }
