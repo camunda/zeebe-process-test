@@ -203,12 +203,12 @@
         <groupId>io.camunda</groupId>
         <artifactId>camunda-spring-boot-starter</artifactId>
         <version>${dependency.zeebe.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>io.camunda</groupId>
-            <artifactId>camunda-client-java</artifactId>
-          </exclusion>
-        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>camunda-client-java</artifactId>
+        <version>${dependency.zeebe.version}</version>
       </dependency>
 
       <dependency>
