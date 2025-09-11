@@ -19,6 +19,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_EMPTY
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.client.impl.CamundaObjectMapper;
 import io.camunda.zeebe.client.api.JsonMapper;
 import io.camunda.zeebe.client.impl.ZeebeObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -29,10 +30,16 @@ import org.springframework.context.annotation.Bean;
 /** Fallback values if certain beans are missing */
 public class ZeebeTestDefaultConfiguration {
 
-  @Bean(name = "camundaJsonMapper")
+  @Bean(name = "zeebeJsonMapper")
   @ConditionalOnMissingBean
   public JsonMapper jsonMapper(final ObjectMapper objectMapper) {
     return new ZeebeObjectMapper(objectMapper);
+  }
+
+  @Bean(name = "camundaJsonMapper")
+  @ConditionalOnMissingBean
+  public io.camunda.client.api.JsonMapper camundaJsonMapper(final ObjectMapper objectMapper) {
+    return new CamundaObjectMapper(objectMapper);
   }
 
   @Bean
