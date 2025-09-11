@@ -8,7 +8,7 @@
 
 package io.camunda.zeebe.process.test.engine;
 
-import com.google.protobuf.GeneratedMessage;
+import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.stub.StreamObserver;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +24,7 @@ class GatewayRequestStore {
   private final AtomicLong requestIdGenerator = new AtomicLong();
 
   Long registerNewRequest(
-      final Class<? extends GeneratedMessage> requestType,
+      final Class<? extends GeneratedMessageV3> requestType,
       final StreamObserver<?> responseObserver) {
     final long currentRequestId = requestIdGenerator.incrementAndGet();
     requestMap.put(currentRequestId, new Request(requestType, responseObserver));
@@ -36,5 +36,5 @@ class GatewayRequestStore {
   }
 
   record Request(
-      Class<? extends GeneratedMessage> requestType, StreamObserver<?> responseObserver) {}
+      Class<? extends GeneratedMessageV3> requestType, StreamObserver<?> responseObserver) {}
 }

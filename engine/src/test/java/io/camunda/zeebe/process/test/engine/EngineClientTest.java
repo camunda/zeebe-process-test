@@ -11,25 +11,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.google.common.util.concurrent.Uninterruptibles;
-import io.camunda.client.CamundaClient;
-import io.camunda.client.api.CamundaFuture;
-import io.camunda.client.api.command.ClientException;
-import io.camunda.client.api.response.ActivateJobsResponse;
-import io.camunda.client.api.response.ActivatedJob;
-import io.camunda.client.api.response.BroadcastSignalResponse;
-import io.camunda.client.api.response.BrokerInfo;
-import io.camunda.client.api.response.DeploymentEvent;
-import io.camunda.client.api.response.EvaluateDecisionResponse;
-import io.camunda.client.api.response.Form;
-import io.camunda.client.api.response.MigrateProcessInstanceResponse;
-import io.camunda.client.api.response.PartitionBrokerHealth;
-import io.camunda.client.api.response.PartitionBrokerRole;
-import io.camunda.client.api.response.PartitionInfo;
-import io.camunda.client.api.response.Process;
-import io.camunda.client.api.response.ProcessInstanceEvent;
-import io.camunda.client.api.response.ProcessInstanceResult;
-import io.camunda.client.api.response.SetVariablesResponse;
-import io.camunda.client.api.response.Topology;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.ZeebeFuture;
+import io.camunda.zeebe.client.api.command.ClientException;
+import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.client.api.response.BroadcastSignalResponse;
+import io.camunda.zeebe.client.api.response.BrokerInfo;
+import io.camunda.zeebe.client.api.response.DeploymentEvent;
+import io.camunda.zeebe.client.api.response.EvaluateDecisionResponse;
+import io.camunda.zeebe.client.api.response.Form;
+import io.camunda.zeebe.client.api.response.MigrateProcessInstanceResponse;
+import io.camunda.zeebe.client.api.response.PartitionBrokerHealth;
+import io.camunda.zeebe.client.api.response.PartitionBrokerRole;
+import io.camunda.zeebe.client.api.response.PartitionInfo;
+import io.camunda.zeebe.client.api.response.Process;
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
+import io.camunda.zeebe.client.api.response.SetVariablesResponse;
+import io.camunda.zeebe.client.api.response.Topology;
 import io.camunda.zeebe.model.bpmn.Bpmn;
 import io.camunda.zeebe.process.test.api.ZeebeTestEngine;
 import io.camunda.zeebe.process.test.filters.JobRecordStreamFilter;
@@ -70,7 +70,7 @@ class EngineClientTest {
   private static final String DMN_RESOURCE = "dmn/drg-force-user.dmn";
 
   private ZeebeTestEngine zeebeEngine;
-  private CamundaClient zeebeClient;
+  private ZeebeClient zeebeClient;
 
   @BeforeEach
   void setupGrpcServer() {
@@ -125,8 +125,8 @@ class EngineClientTest {
   @Test
   void shouldUseGatewayAddressToBuildClient() {
     // given
-    final CamundaClient client =
-        CamundaClient.newClientBuilder()
+    final ZeebeClient client =
+        ZeebeClient.newClientBuilder()
             .applyEnvironmentVariableOverrides(false)
             .usePlaintext()
             .gatewayAddress(zeebeEngine.getGatewayAddress())
@@ -156,7 +156,7 @@ class EngineClientTest {
         .send()
         .join();
 
-    final CamundaFuture<ProcessInstanceResult> processInstanceResult =
+    final ZeebeFuture<ProcessInstanceResult> processInstanceResult =
         zeebeClient
             .newCreateInstanceCommand()
             .bpmnProcessId("process")
@@ -265,7 +265,7 @@ class EngineClientTest {
     // given
 
     // when
-    final CamundaFuture<ProcessInstanceEvent> future =
+    final ZeebeFuture<ProcessInstanceEvent> future =
         zeebeClient.newCreateInstanceCommand().bpmnProcessId("process").latestVersion().send();
 
     // then
