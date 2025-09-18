@@ -143,16 +143,6 @@ jobs:
         run: |
           git push origin "${RELEASE_VERSION}"
 
-      - name: Create new stable branch for minor
-        if: ${{ inputs.releaseType == 'minor' }}
-        run: |
-          git checkout -b "stable/${MINOR_VERSION}"
-
-      - name: Push new stable branch for minor
-        if: ${{ inputs.releaseType == 'minor' && inputs.dryRun == false }}
-        run: |
-          git push origin "stable/${MINOR_VERSION}"
-
       # Same logic as in camunda/camunda
       - name: Determine if pre-release
         id: pre-release
