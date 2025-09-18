@@ -8,6 +8,7 @@
 package io.camunda.zeebe.process.test.engine;
 
 import io.camunda.search.clients.SearchClientsProxy;
+import io.camunda.security.auth.BrokerRequestAuthorizationConverter;
 import io.camunda.security.configuration.SecurityConfiguration;
 import io.camunda.zeebe.db.ZeebeDb;
 import io.camunda.zeebe.engine.Engine;
@@ -171,7 +172,8 @@ public class EngineFactory {
                             commandSender,
                             FeatureFlags.createDefault(),
                             jobStreamer,
-                            SearchClientsProxy.noop()),
+                            SearchClientsProxy.noop(),
+                            new BrokerRequestAuthorizationConverter(securityConfiguration)),
                     new EngineConfiguration(),
                     securityConfiguration)))
         .actorSchedulingService(scheduler)
