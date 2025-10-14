@@ -7,6 +7,7 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
+import io.camunda.zeebe.protocol.impl.encoding.AuthInfo;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
 import io.camunda.zeebe.protocol.impl.record.UnifiedRecordValue;
 import io.camunda.zeebe.protocol.record.RecordType;
@@ -39,6 +40,17 @@ final class CommandSender implements InterPartitionCommandSender {
       final Intent intent,
       final Long recordKey,
       final UnifiedRecordValue command) {
+    sendCommand(receiverPartitionId, valueType, intent, recordKey, command, null);
+  }
+
+  @Override
+  public void sendCommand(
+      final int receiverPartitionId,
+      final ValueType valueType,
+      final Intent intent,
+      final Long recordKey,
+      final UnifiedRecordValue command,
+      final AuthInfo authInfo) {
     final RecordMetadata metadata =
         new RecordMetadata().recordType(RecordType.COMMAND).intent(intent).valueType(valueType);
     writer.writeCommandWithKey(recordKey, command, metadata);
