@@ -22,6 +22,11 @@ public class InMemoryDbFactory<
   }
 
   @Override
+  public ZeebeDb<ColumnFamilyType> createDb(final File pathName, final boolean avoidFlush) {
+    return createDb(pathName);
+  }
+
+  @Override
   public ZeebeDb<ColumnFamilyType> createDb(final File pathName) {
     return new InMemoryDb<>();
   }
