@@ -17,12 +17,16 @@ package io.camunda.zeebe.spring.client.jobhandling;
 
 import static io.camunda.zeebe.spring.test.ZeebeTestThreadSupport.waitForProcessInstanceCompleted;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.camunda.client.annotation.customizer.JobWorkerValueCustomizer;
+import io.camunda.client.annotation.value.JobWorkerValue;
+import io.camunda.client.annotation.value.JobWorkerValue.SourceAware;
+import io.camunda.client.annotation.value.JobWorkerValue.SourceAware.FromOverrideProperty;
 import io.camunda.client.jobhandling.JobWorkerManager;
 import io.camunda.client.metrics.MetricsRecorder;
 import io.camunda.client.metrics.SimpleMetricsRecorder;
@@ -122,10 +126,10 @@ public class JobHandlerTest {
 
   @Test
   public void testWorkerDefaultName() {
-    assertTrue(
-        jobWorkerManager
-            .findJobWorkerConfigByName("jobHandlerTest.WorkerConfig#handleTest2")
-            .isPresent());
+    assertThat(jobWorkerManager.getJobWorker("test2"))
+        .extracting(JobWorkerValue::getName)
+        .extracting(SourceAware::value)
+        .isEqualTo("jobHandlerTest.WorkerConfig#handleTest2");
   }
 
   @Test
@@ -265,8 +269,8 @@ public class JobHandlerTest {
     @Bean
     public JobWorkerValueCustomizer jobWorkerValueCustomizer() {
       return zeebeWorker -> {
-        if (zeebeWorker.getType().equals("test4")) {
-          zeebeWorker.setEnabled(false);
+        if (zeebeWorker.getType().value().equals("test4")) {
+          zeebeWorker.setEnabled(new FromOverrideProperty<>(false));
         }
       };
     }
@@ -366,7 +370,7 @@ public class JobHandlerTest {
 
     @Test
     public void testWorkerDefaultType() {
-      assertTrue(jobWorkerManager.findJobWorkerConfigByType("DefaultType").isPresent());
+      assertDoesNotThrow(() -> jobWorkerManager.getJobWorker("DefaultType"));
     }
 
     public static class WorkersConfig {
