@@ -28,8 +28,6 @@ import io.camunda.client.annotation.value.JobWorkerValue;
 import io.camunda.client.annotation.value.JobWorkerValue.SourceAware;
 import io.camunda.client.annotation.value.JobWorkerValue.SourceAware.FromOverrideProperty;
 import io.camunda.client.jobhandling.JobWorkerManager;
-import io.camunda.client.metrics.MetricsRecorder;
-import io.camunda.client.metrics.SimpleMetricsRecorder;
 import io.camunda.client.spring.configuration.MetricsDefaultConfiguration;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -40,6 +38,7 @@ import io.camunda.zeebe.model.bpmn.BpmnModelInstance;
 import io.camunda.zeebe.model.bpmn.builder.ServiceTaskBuilder;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
+import io.camunda.zeebe.spring.test.SimpleMetricsRecorder;
 import io.camunda.zeebe.spring.test.ZeebeSpringTest;
 import java.time.Duration;
 import java.util.Collections;
@@ -72,23 +71,26 @@ public class JobHandlerTest {
   private static String test7Var = null;
   private static ComplexTypeDTO test6ComplexTypeDTO = null;
   private static String test6Var2 = null;
-  @Autowired private ZeebeClient client;
   @Autowired private SimpleMetricsRecorder metrics;
+  @Autowired private ZeebeClient client;
   @Autowired private JobWorkerManager jobWorkerManager;
 
   @Test
   public void testAutoComplete() {
     final long activatedAtStart =
         metrics.getCount(
-            MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, "test1");
+            SimpleMetricsRecorder.METRIC_NAME_JOB, SimpleMetricsRecorder.ACTION_COMPLETED, "test1");
     final long completedAtStart =
         metrics.getCount(
-            MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, "test1");
+            SimpleMetricsRecorder.METRIC_NAME_JOB, SimpleMetricsRecorder.ACTION_COMPLETED, "test1");
     final long failedAtStart =
-        metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, "test1");
+        metrics.getCount(
+            SimpleMetricsRecorder.METRIC_NAME_JOB, SimpleMetricsRecorder.ACTION_FAILED, "test1");
     final long bpmnErrorAtStart =
         metrics.getCount(
-            MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_BPMN_ERROR, "test1");
+            SimpleMetricsRecorder.METRIC_NAME_JOB,
+            SimpleMetricsRecorder.ACTION_BPMN_ERROR,
+            "test1");
 
     final BpmnModelInstance bpmnModel =
         Bpmn.createExecutableProcess("test1")
@@ -110,18 +112,25 @@ public class JobHandlerTest {
     assertEquals(
         activatedAtStart + 1,
         metrics.getCount(
-            MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_ACTIVATED, "test1"));
+            SimpleMetricsRecorder.METRIC_NAME_JOB,
+            SimpleMetricsRecorder.ACTION_ACTIVATED,
+            "test1"));
     assertEquals(
         completedAtStart + 1,
         metrics.getCount(
-            MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_COMPLETED, "test1"));
+            SimpleMetricsRecorder.METRIC_NAME_JOB,
+            SimpleMetricsRecorder.ACTION_COMPLETED,
+            "test1"));
     assertEquals(
         failedAtStart,
-        metrics.getCount(MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_FAILED, "test1"));
+        metrics.getCount(
+            SimpleMetricsRecorder.METRIC_NAME_JOB, SimpleMetricsRecorder.ACTION_FAILED, "test1"));
     assertEquals(
         bpmnErrorAtStart,
         metrics.getCount(
-            MetricsRecorder.METRIC_NAME_JOB, MetricsRecorder.ACTION_BPMN_ERROR, "test1"));
+            SimpleMetricsRecorder.METRIC_NAME_JOB,
+            SimpleMetricsRecorder.ACTION_BPMN_ERROR,
+            "test1"));
   }
 
   @Test
@@ -279,8 +288,8 @@ public class JobHandlerTest {
   @TestConfiguration
   @AutoConfigureBefore(MetricsDefaultConfiguration.class)
   public static class TestMetricsConfiguration {
-    @Bean
-    public MetricsRecorder testMetricsRecorder() {
+    @Bean(name = "noopMetricsRecorder")
+    public SimpleMetricsRecorder testMetricsRecorder() {
       return new SimpleMetricsRecorder();
     }
   }
