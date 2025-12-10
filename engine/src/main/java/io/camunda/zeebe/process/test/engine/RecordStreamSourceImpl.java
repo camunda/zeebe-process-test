@@ -14,7 +14,6 @@ import io.camunda.zeebe.protocol.impl.record.CopiedRecord;
 import io.camunda.zeebe.protocol.impl.record.RecordMetadata;
 import io.camunda.zeebe.protocol.impl.record.UnifiedRecordValue;
 import io.camunda.zeebe.protocol.record.Record;
-import io.camunda.zeebe.stream.impl.TypedEventRegistry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -60,11 +59,7 @@ class RecordStreamSourceImpl implements RecordStreamSource {
 
     final UnifiedRecordValue value;
     try {
-      value =
-          TypedEventRegistry.EVENT_REGISTRY
-              .get(metadata.getValueType())
-              .getDeclaredConstructor()
-              .newInstance();
+      value = UnifiedRecordValue.allRecordsMap().get(metadata.getValueType());
     } catch (final Exception e) {
       throw new RuntimeException(e);
     }
