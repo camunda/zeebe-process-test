@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class GrpcToLogStreamGatewayTest {
 
-  static final List<String> UNSUPPORTED_METHODS = List.of();
+  static final List<String> UNSUPPORTED_METHODS = List.of("evaluateConditional");
 
   static final List<String> IGNORED_METHODS =
       List.of(
