@@ -68,7 +68,7 @@
     <dependency.bytebuddy.version>1.14.16</dependency.bytebuddy.version>
     <dependency.camundamodel.version>7.22.0</dependency.camundamodel.version>
     <dependency.checker-qual.version>3.49.5</dependency.checker-qual.version>
-    <dependency.classgraph.version>4.8.181</dependency.classgraph.version>
+    <dependency.classgraph.version>4.8.184</dependency.classgraph.version>
     <dependency.commons.version>3.18.0</dependency.commons.version>
     <dependency.errorprone.version>2.29.0</dependency.errorprone.version>
     <dependency.feel.version>1.17.7</dependency.feel.version>
