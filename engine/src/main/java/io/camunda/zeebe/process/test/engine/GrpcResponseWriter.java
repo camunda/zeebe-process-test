@@ -7,7 +7,7 @@
  */
 package io.camunda.zeebe.process.test.engine;
 
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.GeneratedMessage;
 import com.google.rpc.Status;
 import io.camunda.zeebe.process.test.engine.GatewayRequestStore.Request;
 import io.camunda.zeebe.protocol.record.RecordType;
@@ -114,7 +114,7 @@ class GrpcResponseWriter implements CommandResponseWriter {
         requestListener.accept(intent);
       }
       final Request request = gatewayRequestStore.removeRequest(requestId);
-      final GeneratedMessageV3 response =
+      final GeneratedMessage response =
           responseMapper.map(request.requestType(), valueBufferView, key, intent);
       sendResponse(request, response);
     } catch (final Exception e) {
@@ -122,16 +122,16 @@ class GrpcResponseWriter implements CommandResponseWriter {
     }
   }
 
-  private void sendResponse(final Request request, final GeneratedMessageV3 response) {
-    final StreamObserver<GeneratedMessageV3> streamObserver =
-        (StreamObserver<GeneratedMessageV3>) request.responseObserver();
+  private void sendResponse(final Request request, final GeneratedMessage response) {
+    final StreamObserver<GeneratedMessage> streamObserver =
+        (StreamObserver<GeneratedMessage>) request.responseObserver();
     streamObserver.onNext(response);
     streamObserver.onCompleted();
   }
 
   private void sendError(final Request request, final Status error) {
-    final StreamObserver<GeneratedMessageV3> streamObserver =
-        (StreamObserver<GeneratedMessageV3>) request.responseObserver();
+    final StreamObserver<GeneratedMessage> streamObserver =
+        (StreamObserver<GeneratedMessage>) request.responseObserver();
     streamObserver.onError(StatusProto.toStatusException(error));
   }
 }
