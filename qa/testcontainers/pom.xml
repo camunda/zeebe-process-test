@@ -13,7 +13,7 @@
 
   <properties>
     <!-- needed as newer model releases don't support jdk 8 -->
-    <dependency.camundamodel.version>7.19.0</dependency.camundamodel.version>
+    <dependency.camundamodel.version>7.24.0</dependency.camundamodel.version>
     <version.java>8</version.java>
   </properties>
 
