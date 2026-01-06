@@ -25,7 +25,7 @@
 
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-process-test-root</artifactId>
-  <version>8.6.35-SNAPSHOT</version>
+  <version>8.6.36-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Zeebe Process Test Root</name>
@@ -84,14 +84,14 @@
     <dependency.mockito.version>4.11.0</dependency.mockito.version>
     <dependency.netty.version>4.1.119.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
-    <dependency.proto.version>2.44.0</dependency.proto.version>
+    <dependency.proto.version>2.59.2</dependency.proto.version>
     <dependency.revapi.version>0.28.4</dependency.revapi.version>
     <dependency.scala.version>2.13.18</dependency.scala.version>
     <dependency.slf4j.version>2.0.17</dependency.slf4j.version>
     <dependency.snakeyaml.version>2.2</dependency.snakeyaml.version>
     <dependency.spring-boot.version>3.4.5</dependency.spring-boot.version>
     <dependency.testcontainers.version>2.0.3</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.6.34</dependency.zeebe.version>
+    <dependency.zeebe.version>8.6.35</dependency.zeebe.version>
 
     <failOnFlakyTest>true</failOnFlakyTest>
 
@@ -124,7 +124,7 @@
     <!-- Note: needs to be aligned with the version used by io.camunda:zeebe-client-java -->
     <version.grpc>1.76.2</version.grpc>
     <version.java>21</version.java>
-    <version.protobuf>3.25.8</version.protobuf>
+    <version.protobuf>4.31.1</version.protobuf>
   </properties>
 
   <dependencyManagement>
@@ -132,49 +132,49 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-api</artifactId>
-        <version>8.6.35-SNAPSHOT</version>
+        <version>8.6.36-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-assertions</artifactId>
-        <version>8.6.35-SNAPSHOT</version>
+        <version>8.6.36-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine</artifactId>
-        <version>8.6.35-SNAPSHOT</version>
+        <version>8.6.36-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension</artifactId>
-        <version>8.6.35-SNAPSHOT</version>
+        <version>8.6.36-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
-        <version>8.6.35-SNAPSHOT</version>
+        <version>8.6.36-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-filters</artifactId>
-        <version>8.6.35-SNAPSHOT</version>
+        <version>8.6.36-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine-protocol</artifactId>
-        <version>8.6.35-SNAPSHOT</version>
+        <version>8.6.36-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>spring-boot-starter-camunda-test-common</artifactId>
-        <version>8.6.35-SNAPSHOT</version>
+        <version>8.6.36-SNAPSHOT</version>
       </dependency>
 
       <dependency>
