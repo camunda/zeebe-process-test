@@ -68,4 +68,13 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>spring-boot-4.0</id>
+      <properties>
+        <dependency.spring-boot.version>4.0.1</dependency.spring-boot.version>
+      </properties>
+    </profile>
+  </profiles>
 </project>
