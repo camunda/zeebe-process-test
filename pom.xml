@@ -84,7 +84,7 @@
     <dependency.mockito.version>4.11.0</dependency.mockito.version>
     <dependency.netty.version>4.1.119.Final</dependency.netty.version>
     <dependency.osgi.version>6.0.0</dependency.osgi.version>
-    <dependency.proto.version>2.44.0</dependency.proto.version>
+    <dependency.proto.version>2.59.2</dependency.proto.version>
     <dependency.revapi.version>0.28.4</dependency.revapi.version>
     <dependency.scala.version>2.13.18</dependency.scala.version>
     <dependency.slf4j.version>2.0.17</dependency.slf4j.version>
@@ -124,7 +124,7 @@
     <!-- Note: needs to be aligned with the version used by io.camunda:zeebe-client-java -->
     <version.grpc>1.76.2</version.grpc>
     <version.java>21</version.java>
-    <version.protobuf>3.25.8</version.protobuf>
+    <version.protobuf>4.31.1</version.protobuf>
   </properties>
 
   <dependencyManagement>
