@@ -43,7 +43,7 @@ jobs:
         run: mvn license:check
 
   build-and-test-embedded:
-    name: Run tests on ${{ matrix.os }}
+    name: Run tests on ${{ matrix.os }} and Spring-Boot ${{ matrix.spring-boot-version }}
     timeout-minutes: 15
     needs: code-formatting
     runs-on: ${{ matrix.os }}
