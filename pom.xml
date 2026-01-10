@@ -124,7 +124,7 @@
     <!-- Note: needs to be aligned with the version used by io.camunda:zeebe-client-java -->
     <version.grpc>1.78.0</version.grpc>
     <version.java>21</version.java>
-    <version.protobuf>4.33.2</version.protobuf>
+    <version.protobuf>4.33.3</version.protobuf>
   </properties>
 
   <dependencyManagement>
