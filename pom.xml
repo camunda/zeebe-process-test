@@ -89,7 +89,7 @@
     <dependency.scala.version>3.8.1</dependency.scala.version>
     <dependency.slf4j.version>2.0.17</dependency.slf4j.version>
     <dependency.snakeyaml.version>2.5</dependency.snakeyaml.version>
-    <dependency.spring-boot.version>4.0.1</dependency.spring-boot.version>
+    <dependency.spring-boot.version>4.0.2</dependency.spring-boot.version>
     <dependency.testcontainers.version>2.0.3</dependency.testcontainers.version>
     <dependency.zeebe.version>8.9.0-SNAPSHOT</dependency.zeebe.version>
 
