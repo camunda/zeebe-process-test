@@ -19,7 +19,7 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>zeebe-process-test-qa</artifactId>
-    <version>8.6.36</version>
+    <version>8.6.37-SNAPSHOT</version>
   </parent>
 
   <artifactId>zeebe-process-test-qa-embedded</artifactId>
