@@ -25,7 +25,7 @@
 
   <groupId>io.camunda</groupId>
   <artifactId>zeebe-process-test-root</artifactId>
-  <version>8.7.23-SNAPSHOT</version>
+  <version>8.7.24-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Zeebe Process Test Root</name>
@@ -91,7 +91,7 @@
     <dependency.snakeyaml.version>2.2</dependency.snakeyaml.version>
     <dependency.spring-boot.version>3.4.5</dependency.spring-boot.version>
     <dependency.testcontainers.version>2.0.3</dependency.testcontainers.version>
-    <dependency.zeebe.version>8.7.22</dependency.zeebe.version>
+    <dependency.zeebe.version>8.7.23</dependency.zeebe.version>
 
     <failOnFlakyTest>true</failOnFlakyTest>
 
@@ -132,49 +132,49 @@
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-api</artifactId>
-        <version>8.7.23-SNAPSHOT</version>
+        <version>8.7.24-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-assertions</artifactId>
-        <version>8.7.23-SNAPSHOT</version>
+        <version>8.7.24-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine</artifactId>
-        <version>8.7.23-SNAPSHOT</version>
+        <version>8.7.24-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension</artifactId>
-        <version>8.7.23-SNAPSHOT</version>
+        <version>8.7.24-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
-        <version>8.7.23-SNAPSHOT</version>
+        <version>8.7.24-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-filters</artifactId>
-        <version>8.7.23-SNAPSHOT</version>
+        <version>8.7.24-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-process-test-engine-protocol</artifactId>
-        <version>8.7.23-SNAPSHOT</version>
+        <version>8.7.24-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>spring-boot-starter-camunda-test-common</artifactId>
-        <version>8.7.23-SNAPSHOT</version>
+        <version>8.7.24-SNAPSHOT</version>
       </dependency>
 
       <dependency>
