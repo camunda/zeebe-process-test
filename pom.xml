@@ -70,7 +70,7 @@
     <dependency.checker-qual.version>3.53.1</dependency.checker-qual.version>
     <dependency.classgraph.version>4.8.184</dependency.classgraph.version>
     <dependency.commons.version>3.20.0</dependency.commons.version>
-    <dependency.errorprone.version>2.46.0</dependency.errorprone.version>
+    <dependency.errorprone.version>2.47.0</dependency.errorprone.version>
     <dependency.feel.version>1.20.0</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>33.5.0-jre</dependency.guava.version>
