@@ -107,7 +107,7 @@
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
 
     <!-- when updating this version, also change it in .idea/externalDependencies.xml -->
-    <plugin.version.googlejavaformat>1.33.0</plugin.version.googlejavaformat>
+    <plugin.version.googlejavaformat>1.34.1</plugin.version.googlejavaformat>
 
     <plugin.version.jacoco>0.8.14</plugin.version.jacoco>
     <plugin.version.javadoc>3.12.0</plugin.version.javadoc>
