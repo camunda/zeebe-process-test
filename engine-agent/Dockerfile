@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.9_10-jdk-jammy
+FROM eclipse-temurin:21.0.10_7-jdk-jammy
 
 COPY target/*-jar-with-dependencies.jar /zeebe-process-test-engine.jar
 
