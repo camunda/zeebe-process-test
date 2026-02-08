@@ -102,7 +102,7 @@
     <nexus.snapshot.repository>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</nexus.snapshot.repository>
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
 
-    <plugin.version.dependency>3.9.0</plugin.version.dependency>
+    <plugin.version.dependency>3.10.0</plugin.version.dependency>
     <plugin.version.flatten>1.7.3</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
 
