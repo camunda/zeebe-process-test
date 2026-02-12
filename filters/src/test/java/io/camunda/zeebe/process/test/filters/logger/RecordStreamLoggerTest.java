@@ -17,6 +17,7 @@ package io.camunda.zeebe.process.test.filters.logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.camunda.zeebe.protocol.record.Agent;
 import io.camunda.zeebe.protocol.record.ImmutableRecord;
 import io.camunda.zeebe.protocol.record.Record;
 import io.camunda.zeebe.protocol.record.RecordType;
@@ -274,6 +275,11 @@ class RecordStreamLoggerTest {
     @Override
     public Map<String, Object> getAuthorizations() {
       return new HashMap<>();
+    }
+
+    @Override
+    public Agent getAgent() {
+      return null;
     }
 
     @Override
