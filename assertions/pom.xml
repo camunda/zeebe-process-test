@@ -5,12 +5,12 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>zeebe-process-test-root</artifactId>
-    <version>8.8.13-SNAPSHOT</version>
+    <version>8.8.13</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>zeebe-process-test-assertions</artifactId>
-  <version>8.8.13-SNAPSHOT</version>
+  <version>8.8.13</version>
   <packaging>jar</packaging>
 
   <name>Zeebe Process Test Assertions</name>
