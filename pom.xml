@@ -71,7 +71,7 @@
     <dependency.classgraph.version>4.8.184</dependency.classgraph.version>
     <dependency.commons.version>3.20.0</dependency.commons.version>
     <dependency.errorprone.version>2.47.0</dependency.errorprone.version>
-    <dependency.feel.version>1.20.1</dependency.feel.version>
+    <dependency.feel.version>1.20.2</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>33.5.0-jre</dependency.guava.version>
     <dependency.immutables.version>2.12.1</dependency.immutables.version>
