@@ -75,7 +75,7 @@
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>33.5.0-jre</dependency.guava.version>
     <dependency.immutables.version>2.12.1</dependency.immutables.version>
-    <dependency.jackson.version>2.21.0</dependency.jackson.version>
+    <dependency.jackson.version>2.21.1</dependency.jackson.version>
     <dependency.javax.version>1.3.2</dependency.javax.version>
     <dependency.jna.version>5.18.1</dependency.jna.version>
     <dependency.junit.version>6.0.3</dependency.junit.version>
