@@ -117,7 +117,7 @@
     <plugin.version.os-maven>1.7.1</plugin.version.os-maven>
     <plugin.version.revapi>0.15.1</plugin.version.revapi>
     <plugin.version.spotless>2.46.1</plugin.version.spotless>
-    <plugin.version.surefire>3.5.4</plugin.version.surefire>
+    <plugin.version.surefire>3.5.5</plugin.version.surefire>
 
     <skipChecks>false</skipChecks>
 
