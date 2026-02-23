@@ -34,6 +34,10 @@ import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.TestContext;
 
 /**
@@ -81,6 +85,13 @@ public class AbstractZeebeTestExecutionListener {
         .getApplicationContext()
         .getBean(CamundaClientProxy.class)
         .swapZeebeClient(camundaClient);
+
+    // Register the test class as a synthetic bean definition so that annotation processors
+    // (e.g. DeploymentAnnotationProcessor, JobWorkerAnnotationProcessor) discover it when
+    // iterating getBeanDefinitionNames() during onStart(). Test classes are not normally
+    // registered as Spring bean definitions.
+    registerTestClassAsBeanDefinition(testContext);
+
     testContext
         .getApplicationContext()
         .publishEvent(new CamundaClientCreatedSpringEvent(this, camundaClient) {});
@@ -161,6 +172,61 @@ public class AbstractZeebeTestExecutionListener {
     testContext.getApplicationContext().getBean(CamundaClientProxy.class).removeCamundaClient();
     camundaClient.close();
 
+    unregisterTestClassBeanDefinition(testContext);
+
     testContext.getApplicationContext().getBean(ZeebeTestEngineProxy.class).removeZeebeEngine();
+  }
+
+  /**
+   * Registers the test class as a synthetic bean definition in the {@link
+   * DefaultListableBeanFactory} so that {@link
+   * io.camunda.client.spring.annotation.processor.AbstractCamundaAnnotationProcessor#onStart}
+   * discovers it when iterating {@code getBeanDefinitionNames()}. The bean definition uses an
+   * instance supplier that returns the existing test instance managed by JUnit, avoiding any Spring
+   * lifecycle interference.
+   */
+  private void registerTestClassAsBeanDefinition(final TestContext testContext) {
+    try {
+      if (testContext.getApplicationContext()
+          instanceof ConfigurableApplicationContext configurableContext) {
+        final ConfigurableListableBeanFactory beanFactory = configurableContext.getBeanFactory();
+        if (beanFactory instanceof DefaultListableBeanFactory defaultBeanFactory) {
+          final Class<?> testClass = testContext.getTestClass();
+          final String beanName = testClass.getName();
+          if (!defaultBeanFactory.containsBeanDefinition(beanName)) {
+            final GenericBeanDefinition bd = new GenericBeanDefinition();
+            bd.setBeanClass(testClass);
+            bd.setInstanceSupplier(testContext::getTestInstance);
+            defaultBeanFactory.registerBeanDefinition(beanName, bd);
+            LOGGER.debug("Registered test class {} as bean definition", beanName);
+          }
+        }
+      }
+    } catch (final Exception e) {
+      LOGGER.debug("Could not register test class as bean definition: {}", e.getMessage());
+    }
+  }
+
+  /**
+   * Removes the synthetic bean definition for the test class that was registered by {@link
+   * #registerTestClassAsBeanDefinition}. Called during cleanup to avoid stale definitions across
+   * test methods.
+   */
+  private void unregisterTestClassBeanDefinition(final TestContext testContext) {
+    try {
+      if (testContext.getApplicationContext()
+          instanceof ConfigurableApplicationContext configurableContext) {
+        final ConfigurableListableBeanFactory beanFactory = configurableContext.getBeanFactory();
+        if (beanFactory instanceof DefaultListableBeanFactory defaultBeanFactory) {
+          final String beanName = testContext.getTestClass().getName();
+          if (defaultBeanFactory.containsBeanDefinition(beanName)) {
+            defaultBeanFactory.removeBeanDefinition(beanName);
+            LOGGER.debug("Unregistered test class bean definition {}", beanName);
+          }
+        }
+      }
+    } catch (final Exception e) {
+      LOGGER.debug("Could not unregister test class bean definition: {}", e.getMessage());
+    }
   }
 }
