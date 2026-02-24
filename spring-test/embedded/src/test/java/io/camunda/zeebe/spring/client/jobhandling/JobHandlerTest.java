@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.camunda.client.annotation.customizer.JobWorkerValueCustomizer;
 import io.camunda.client.annotation.value.JobWorkerValue;
-import io.camunda.client.annotation.value.JobWorkerValue.SourceAware;
-import io.camunda.client.annotation.value.JobWorkerValue.SourceAware.FromOverrideProperty;
+import io.camunda.client.annotation.value.SourceAware;
+import io.camunda.client.annotation.value.SourceAware.FromOverrideProperty;
 import io.camunda.client.jobhandling.JobWorkerManager;
 import io.camunda.client.spring.configuration.MetricsDefaultConfiguration;
 import io.camunda.zeebe.client.ZeebeClient;
