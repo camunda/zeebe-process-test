@@ -171,6 +171,13 @@ final class InMemoryDbColumnFamily<
   }
 
   @Override
+  public void whileTrueReverse(
+      final KeyType startAtKey, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    whileEqualPrefixReverse(
+        context, startAtKey, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
+  }
+
+  @Override
   public void deleteExisting(final KeyType key) {
     ensureInOpenTransaction(
         context,
@@ -320,6 +327,59 @@ final class InMemoryDbColumnFamily<
                   final byte[] seekTargetBytes = seekTargetBuffer.array();
                   final Iterator<Map.Entry<Bytes, Bytes>> iterator =
                       state.newIterator().seek(seekTargetBytes, seekTargetBytes.length).iterate();
+
+                  final byte[] prefixKeyBytes = prefixKey.toBytes();
+                  while (iterator.hasNext()) {
+                    final Map.Entry<Bytes, Bytes> entry = iterator.next();
+
+                    final byte[] keyBytes = entry.getKey().toBytes();
+                    if (!BufferUtil.startsWith(
+                        prefixKeyBytes, 0, prefixKeyBytes.length, keyBytes, 0, keyBytes.length)) {
+                      continue;
+                    }
+
+                    final DirectBuffer keyViewBuffer =
+                        FullyQualifiedKey.wrapKey(entry.getKey().toBytes());
+
+                    keyInstance.wrap(keyViewBuffer, 0, keyViewBuffer.capacity());
+
+                    final DirectBuffer valueViewBuffer =
+                        BufferUtil.wrapArray(entry.getValue().toBytes());
+                    valueInstance.wrap(valueViewBuffer, 0, valueViewBuffer.capacity());
+
+                    final boolean shouldVisitNext = visitor.visit(keyInstance, valueInstance);
+
+                    if (!shouldVisitNext) {
+                      return;
+                    }
+                  }
+                }));
+  }
+
+  private void whileEqualPrefixReverse(
+      final TransactionContext context,
+      final DbKey startAt,
+      final DbKey prefix,
+      final KeyType keyInstance,
+      final ValueType valueInstance,
+      final KeyValuePairVisitor<KeyType, ValueType> visitor) {
+    final var seekTarget = Objects.requireNonNullElse(startAt, prefix);
+    Objects.requireNonNull(prefix);
+    Objects.requireNonNull(visitor);
+
+    iterationContext.withPrefixKey(
+        prefix,
+        prefixKey ->
+            ensureInOpenTransaction(
+                context,
+                state -> {
+                  final var seekTargetBuffer = iterationContext.keyWithColumnFamily(seekTarget);
+                  final byte[] seekTargetBytes = seekTargetBuffer.array();
+                  final Iterator<Map.Entry<Bytes, Bytes>> iterator =
+                      state
+                          .newIterator()
+                          .seekReverse(seekTargetBytes, seekTargetBytes.length)
+                          .iterateReverse();
 
                   final byte[] prefixKeyBytes = prefixKey.toBytes();
                   while (iterator.hasNext()) {
