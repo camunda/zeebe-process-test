@@ -74,7 +74,7 @@ jobs:
             clean install
 
       - name: Archive Test Results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Unit Test Results ${{ matrix.os }}
@@ -124,7 +124,7 @@ jobs:
           mvn clean -B -U -pl ":zeebe-process-test-qa-testcontainers,:spring-boot-starter-camunda-test-testcontainer" -P !localBuild -am "-Dsurefire.rerunFailingTestsCount=5" install -DskipChecks
 
       - name: Archive Test Results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Unit Test Results Testcontainers
@@ -150,7 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Upload
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: Event File
           path: ${{ github.event_path }}
