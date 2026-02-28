@@ -34,7 +34,7 @@ jobs:
           mvn -B -U -P !localBuild "-Dsurefire.rerunFailingTestsCount=5" -Ddependency.zeebe.version=$NEW_ZEEBE_VERSION clean install
 
       - name: Archive Test Results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: Unit Test Results Against Zeebe Snapshot
