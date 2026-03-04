@@ -5,14 +5,36 @@ on:
   schedule:
     - cron: "0 3 * * 1-5"
 jobs:
-  test-against-zeebe-snapshot:
-    name: Run tests against Zeebe SNAPSHOT version
-    timeout-minutes: 15
+  get-branches:
+    name: Get branches
     runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.get-branches.outputs.branches }}
+    steps:
+      - name: Get branches
+        id: get-branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          STABLE=$(gh api repos/${{ github.repository }}/branches --paginate --jq '[.[].name | select(startswith("stable/"))]')
+          BRANCHES=$(echo "$STABLE" | jq -c '. + ["main"]')
+          echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
+
+  test-against-zeebe-snapshot:
+    name: Run tests against Zeebe SNAPSHOT version (${{ matrix.branch }})
+    timeout-minutes: 15
+    needs: get-branches
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJson(needs.get-branches.outputs.branches) }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ matrix.branch }}
 
       - name: Set up Java environment
         uses: actions/setup-java@v5
@@ -27,6 +49,8 @@ jobs:
             NEW_ZEEBE_VERSION=$(echo $CURRENT_ZEEBE_VERSION | sed "s/alpha.*/SNAPSHOT/")
           elif grep -q "SNAPSHOT" <<< "$CURRENT_ZEEBE_VERSION"; then
             NEW_ZEEBE_VERSION=$CURRENT_ZEEBE_VERSION
+          elif [[ "${{ matrix.branch }}" == stable/* ]]; then
+            NEW_ZEEBE_VERSION=`echo $CURRENT_ZEEBE_VERSION | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.`-SNAPSHOT
           else
             NEW_ZEEBE_VERSION=`echo $CURRENT_ZEEBE_VERSION | awk -F. '/[0-9]+\./{$2++;print}' OFS=.`-SNAPSHOT
           fi
@@ -37,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: Unit Test Results Against Zeebe Snapshot
+          name: Unit Test Results Against Zeebe Snapshot (${{ matrix.branch }})
           path: "**/target/surefire-reports/"
           retention-days: 7
 
@@ -47,6 +71,13 @@ jobs:
     needs: [test-against-zeebe-snapshot]
     if: failure()
     steps:
+      - name: Get failed branches
+        id: failed-branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FAILED=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --paginate --jq '[.jobs[] | select(.conclusion == "failure") | .name | capture("\\((?<branch>[^)]+)\\)") | .branch] | unique | join(", ")')
+          echo "branches=$FAILED" >> $GITHUB_OUTPUT
       - id: slack-notify
         name: Send slack notification
         uses: slackapi/slack-github-action@v2.1.1
@@ -57,12 +88,12 @@ jobs:
           payload: |
             {
               "text": ":alarm: `zeebe-process-test` build against Zeebe SNAPSHOT version failed! :alarm:",
-             	"blocks": [
+              "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":alarm: `zeebe-process-test` build against Zeebe SNAPSHOT version failed! :alarm:"
+                    "text": ":alarm: `zeebe-process-test` build against Zeebe SNAPSHOT version failed! :alarm:\n\nFailed branches: `${{ steps.failed-branches.outputs.branches }}`"
                   }
                 },
                 {
