@@ -68,6 +68,13 @@ jobs:
     needs: [test-against-zeebe-snapshot]
     if: failure()
     steps:
+      - name: Get failed branches
+        id: failed-branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FAILED=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --paginate --jq '[.jobs[] | select(.conclusion == "failure") | .name | capture("\\((?<branch>[^)]+)\\)") | .branch] | unique | join(", ")')
+          echo "branches=$FAILED" >> $GITHUB_OUTPUT
       - id: slack-notify
         name: Send slack notification
         uses: slackapi/slack-github-action@v2.1.1
@@ -83,7 +90,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":alarm: `zeebe-process-test` stable branch build against Zeebe SNAPSHOT version failed! :alarm:"
+                    "text": ":alarm: `zeebe-process-test` stable branch build against Zeebe SNAPSHOT version failed! :alarm:\n\nFailed branches: `${{ steps.failed-branches.outputs.branches }}`"
                   }
                 },
                 {
