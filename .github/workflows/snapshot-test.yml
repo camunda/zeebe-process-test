@@ -60,11 +60,18 @@ jobs:
           echo $NEW_ZEEBE_VERSION
           mvn -B -U -P !localBuild "-Dsurefire.rerunFailingTestsCount=5" -Ddependency.zeebe.version=$NEW_ZEEBE_VERSION clean install
 
+      - name: Set artifact name
+        if: always()
+        id: artifact
+        run: echo "name=${BRANCH//\//-}" >> $GITHUB_OUTPUT
+        env:
+          BRANCH: ${{ matrix.branch }}
+
       - name: Archive Test Results
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: Unit Test Results Against Zeebe Snapshot (${{ matrix.branch }})
+          name: Unit Test Results Against Zeebe Snapshot (${{ steps.artifact.outputs.name }})
           path: "**/target/surefire-reports/"
           retention-days: 7
 
