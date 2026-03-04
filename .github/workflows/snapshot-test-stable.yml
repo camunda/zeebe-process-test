@@ -78,7 +78,7 @@ jobs:
           payload: |
             {
               "text": ":alarm: `zeebe-process-test` stable branch build against Zeebe SNAPSHOT version failed! :alarm:",
-             	"blocks": [
+              "blocks": [
                 {
                   "type": "section",
                   "text": {
