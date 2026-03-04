@@ -4,6 +4,9 @@ on:
   workflow_call: { }
   schedule:
     - cron: "0 3 * * 1-5"
+permissions:
+  contents: read
+  actions: read
 jobs:
   get-branches:
     name: Get branches
