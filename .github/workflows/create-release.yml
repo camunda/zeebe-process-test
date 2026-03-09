@@ -202,7 +202,7 @@ jobs:
           exportEnv: false # we rely on step outputs, no need for environment variables
           secrets: |
             secret/data/products/camunda/ci/github-actions SLACK_TOPMONOREPORELEASE_WEBHOOK_URL;
-            secret/data/products/camunda/ci/monorepo-release CLIENT_CONFIG_SZPRAAT_TEST | clientConfig
+            secret/data/products/camunda/ci/monorepo-release CLIENT_CONFIG | clientConfig
 
       - name: Report release result to C8
         uses: camunda-community-hub/camunda-platform-8-github-action@8.3.0
@@ -214,7 +214,7 @@ jobs:
           variables: |
             {
               "is_zpt_release_successful": "${{ needs.create-release.result == 'success' }}",
-              "workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              "zpt_workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
 
       - name: Send failure Slack notification
