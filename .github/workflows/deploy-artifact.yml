@@ -196,9 +196,9 @@ jobs:
           exportEnv: false # we rely on step outputs, no need for environment variables
           secrets: |
             secret/data/products/camunda/ci/github-actions SLACK_TOPMONOREPORELEASE_WEBHOOK_URL;
-            secret/data/products/camunda/ci/monorepo-release CLIENT_CONFIG_SZPRAAT_TEST | clientConfig
-      - name: Report release success to C8
-        if: success()  
+            secret/data/products/camunda/ci/monorepo-release CLIENT_CONFIG | clientConfig
+
+      - name: Report deploy result to C8
         uses: camunda-community-hub/camunda-platform-8-github-action@8.3.0
         with:
           clientConfig: ${{ steps.secrets.outputs.clientConfig }}
@@ -207,8 +207,8 @@ jobs:
           correlationKey: ${{ inputs.releaseVersion }}
           variables: |
             {
-              "is_deploy_artifact_successful": "true",
-              "workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              "is_deploy_artifact_successful": "${{ needs.deploy.result == 'success' }}",
+              "zpt_workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }
 
       - name: Send success Slack notification
@@ -231,19 +231,6 @@ jobs:
               ]
             }
 
-      - name: Report release success to C8
-        if: failure()  
-        uses: camunda-community-hub/camunda-platform-8-github-action@8.3.0
-        with:
-          clientConfig: ${{ steps.secrets.outputs.clientConfig }}
-          operation: publishMessage
-          messageName: Deploy result in ZPT
-          correlationKey: ${{ inputs.releaseVersion }}
-          variables: |
-            {
-              "is_deploy_artifact_successful": "false",
-              "workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            }
       - name: Send failure Slack notification
         if: ${{ needs.deploy.result == 'failure' && github.event_name == 'release' }}
         uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
