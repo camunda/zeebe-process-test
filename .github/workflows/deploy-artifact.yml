@@ -11,7 +11,7 @@ on:
     branches: [main]
   release:
     types: [published]
-  # workflow_dispatch is always a dry run — no artifacts are pushed
+  # workflow_dispatch is always a dry run — no artifacts are pushed, and tests are not run. This is useful for testing the workflow, and for manually triggering a deploy without creating a release.
   workflow_dispatch:
     inputs:
       releaseVersion:
@@ -22,11 +22,13 @@ on:
 
 jobs:
   test:
+    if: ${{ github.event_name != 'workflow_dispatch' }}
     uses: ./.github/workflows/build-test.yml
 
   deploy:
     runs-on: ubuntu-latest
     needs: [test]
+    if: ${{ always() && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
 
     env:
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
@@ -34,6 +36,12 @@ jobs:
       IMAGE_NAME: "zeebe-process-test-engine"
 
     steps:
+      - name: Output inputs
+        run: |
+          echo "event_name: ${{ github.event_name }}"
+          echo "releaseVersion: ${{ inputs.releaseVersion }}"
+          echo "DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}"
+
       - name: Checkout
         uses: actions/checkout@v6
 
