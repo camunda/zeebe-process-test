@@ -11,8 +11,8 @@ on:
     branches: [main]
   release:
     types: [published]
-  # workflow_call is always a dry run — no artifacts are pushed
-  workflow_call:
+  # workflow_dispatch is always a dry run — no artifacts are pushed
+  workflow_dispatch:
     inputs:
       releaseVersion:
         description: 'releaseVersion: e.g. MAJOR.MINOR.PATCH[-ALPHAn]'
@@ -29,7 +29,7 @@ jobs:
     needs: [test]
 
     env:
-      DRY_RUN: ${{ github.event_name == 'workflow_call' }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
       OWNER: "camunda"
       IMAGE_NAME: "zeebe-process-test-engine"
 
