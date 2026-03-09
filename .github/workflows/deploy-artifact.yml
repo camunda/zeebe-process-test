@@ -189,7 +189,7 @@ jobs:
         with:
           clientConfig: ${{ steps.secrets.outputs.clientConfig }}
           operation: publishMessage
-          messageName: Release result in ZPT
+          messageName: Deploy result in ZPT
           correlationKey: ${{ inputs.releaseVersion }}
           variables: |
             {
@@ -223,7 +223,7 @@ jobs:
         with:
           clientConfig: ${{ steps.secrets.outputs.clientConfig }}
           operation: publishMessage
-          messageName: Release result in ZPT
+          messageName: Deploy result in ZPT
           correlationKey: ${{ inputs.releaseVersion }}
           variables: |
             {
