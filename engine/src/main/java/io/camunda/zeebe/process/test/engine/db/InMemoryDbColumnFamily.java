@@ -11,6 +11,7 @@ import io.camunda.zeebe.db.ColumnFamily;
 import io.camunda.zeebe.db.DbKey;
 import io.camunda.zeebe.db.DbValue;
 import io.camunda.zeebe.db.KeyValuePairVisitor;
+import io.camunda.zeebe.db.KeyVisitor;
 import io.camunda.zeebe.db.TransactionContext;
 import io.camunda.zeebe.db.ZeebeDbInconsistentException;
 import io.camunda.zeebe.protocol.ColumnFamilyScope;
@@ -175,6 +176,56 @@ final class InMemoryDbColumnFamily<
       final KeyType startAtKey, final KeyValuePairVisitor<KeyType, ValueType> visitor) {
     whileEqualPrefixReverse(
         context, startAtKey, DbNullKey.INSTANCE, keyInstance, valueInstance, visitor);
+  }
+
+  @Override
+  public void forEachKey(final Consumer<KeyType> consumer) {
+    whileEqualPrefixKeyOnly(
+        context,
+        DbNullKey.INSTANCE,
+        keyInstance,
+        key -> {
+          consumer.accept(key);
+          return true;
+        });
+  }
+
+  @Override
+  public void whileTrue(final KeyVisitor<KeyType> visitor) {
+    whileEqualPrefixKeyOnly(context, DbNullKey.INSTANCE, keyInstance, visitor);
+  }
+
+  @Override
+  public void whileTrue(final KeyType startAtKey, final KeyVisitor<KeyType> visitor) {
+    whileEqualPrefixKeyOnly(context, startAtKey, DbNullKey.INSTANCE, keyInstance, visitor);
+  }
+
+  @Override
+  public void whileEqualPrefix(final DbKey keyPrefix, final Consumer<KeyType> consumer) {
+    whileEqualPrefixKeyOnly(
+        context,
+        keyPrefix,
+        keyInstance,
+        key -> {
+          consumer.accept(key);
+          return true;
+        });
+  }
+
+  @Override
+  public void whileEqualPrefix(final DbKey keyPrefix, final KeyVisitor<KeyType> visitor) {
+    whileEqualPrefixKeyOnly(context, keyPrefix, keyInstance, visitor);
+  }
+
+  @Override
+  public void whileEqualPrefix(
+      final DbKey keyPrefix, final KeyType startAtKey, final KeyVisitor<KeyType> visitor) {
+    whileEqualPrefixKeyOnly(context, startAtKey, keyPrefix, keyInstance, visitor);
+  }
+
+  @Override
+  public void whileTrueReverse(final KeyType startAtKey, final KeyVisitor<KeyType> visitor) {
+    whileEqualPrefixReverseKeyOnly(context, startAtKey, DbNullKey.INSTANCE, keyInstance, visitor);
   }
 
   @Override
@@ -401,6 +452,107 @@ final class InMemoryDbColumnFamily<
                     valueInstance.wrap(valueViewBuffer, 0, valueViewBuffer.capacity());
 
                     final boolean shouldVisitNext = visitor.visit(keyInstance, valueInstance);
+
+                    if (!shouldVisitNext) {
+                      return;
+                    }
+                  }
+                }));
+  }
+
+  private void whileEqualPrefixKeyOnly(
+      final TransactionContext context,
+      final DbKey prefix,
+      final KeyType keyInstance,
+      final KeyVisitor<KeyType> visitor) {
+    whileEqualPrefixKeyOnly(context, prefix, prefix, keyInstance, visitor);
+  }
+
+  private void whileEqualPrefixKeyOnly(
+      final TransactionContext context,
+      final DbKey startAt,
+      final DbKey prefix,
+      final KeyType keyInstance,
+      final KeyVisitor<KeyType> visitor) {
+    final var seekTarget = Objects.requireNonNullElse(startAt, prefix);
+    Objects.requireNonNull(prefix);
+    Objects.requireNonNull(visitor);
+
+    iterationContext.withPrefixKey(
+        prefix,
+        prefixKey ->
+            ensureInOpenTransaction(
+                context,
+                state -> {
+                  final var seekTargetBuffer = iterationContext.keyWithColumnFamily(seekTarget);
+                  final byte[] seekTargetBytes = seekTargetBuffer.array();
+                  final Iterator<Map.Entry<Bytes, Bytes>> iterator =
+                      state.newIterator().seek(seekTargetBytes, seekTargetBytes.length).iterate();
+
+                  final byte[] prefixKeyBytes = prefixKey.toBytes();
+                  while (iterator.hasNext()) {
+                    final Map.Entry<Bytes, Bytes> entry = iterator.next();
+
+                    final byte[] keyBytes = entry.getKey().toBytes();
+                    if (!BufferUtil.startsWith(
+                        prefixKeyBytes, 0, prefixKeyBytes.length, keyBytes, 0, keyBytes.length)) {
+                      continue;
+                    }
+
+                    final DirectBuffer keyViewBuffer =
+                        FullyQualifiedKey.wrapKey(entry.getKey().toBytes());
+
+                    keyInstance.wrap(keyViewBuffer, 0, keyViewBuffer.capacity());
+
+                    final boolean shouldVisitNext = visitor.visit(keyInstance);
+
+                    if (!shouldVisitNext) {
+                      return;
+                    }
+                  }
+                }));
+  }
+
+  private void whileEqualPrefixReverseKeyOnly(
+      final TransactionContext context,
+      final DbKey startAt,
+      final DbKey prefix,
+      final KeyType keyInstance,
+      final KeyVisitor<KeyType> visitor) {
+    final var seekTarget = Objects.requireNonNullElse(startAt, prefix);
+    Objects.requireNonNull(prefix);
+    Objects.requireNonNull(visitor);
+
+    iterationContext.withPrefixKey(
+        prefix,
+        prefixKey ->
+            ensureInOpenTransaction(
+                context,
+                state -> {
+                  final var seekTargetBuffer = iterationContext.keyWithColumnFamily(seekTarget);
+                  final byte[] seekTargetBytes = seekTargetBuffer.array();
+                  final Iterator<Map.Entry<Bytes, Bytes>> iterator =
+                      state
+                          .newIterator()
+                          .seekReverse(seekTargetBytes, seekTargetBytes.length)
+                          .iterateReverse();
+
+                  final byte[] prefixKeyBytes = prefixKey.toBytes();
+                  while (iterator.hasNext()) {
+                    final Map.Entry<Bytes, Bytes> entry = iterator.next();
+
+                    final byte[] keyBytes = entry.getKey().toBytes();
+                    if (!BufferUtil.startsWith(
+                        prefixKeyBytes, 0, prefixKeyBytes.length, keyBytes, 0, keyBytes.length)) {
+                      continue;
+                    }
+
+                    final DirectBuffer keyViewBuffer =
+                        FullyQualifiedKey.wrapKey(entry.getKey().toBytes());
+
+                    keyInstance.wrap(keyViewBuffer, 0, keyViewBuffer.capacity());
+
+                    final boolean shouldVisitNext = visitor.visit(keyInstance);
 
                     if (!shouldVisitNext) {
                       return;
