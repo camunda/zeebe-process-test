@@ -55,7 +55,7 @@ jobs:
             NEW_ZEEBE_VERSION=`echo $CURRENT_ZEEBE_VERSION | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.`-SNAPSHOT
           fi
           echo $NEW_ZEEBE_VERSION
-          mvn -B -U -P !localBuild "-Dsurefire.rerunFailingTestsCount=5" -Ddependency.zeebe.version=$NEW_ZEEBE_VERSION clean install
+          mvn -B -U "-Dsurefire.rerunFailingTestsCount=5" -Ddependency.zeebe.version=$NEW_ZEEBE_VERSION clean install
 
       - name: Set artifact name
         if: always()
