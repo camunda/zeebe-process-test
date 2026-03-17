@@ -19,8 +19,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          STABLE=$(gh api repos/${{ github.repository }}/branches --paginate --jq '[.[].name | select(startswith("stable/"))]')
-          BRANCHES=$(echo "$STABLE" | jq -c '. + ["main"]')
+          BRANCHES=$(gh api repos/${{ github.repository }}/branches --paginate --jq '[.[].name | select(startswith("stable/"))]')
           echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
 
   test-against-zeebe-snapshot:
@@ -52,10 +51,8 @@ jobs:
             NEW_ZEEBE_VERSION=$(echo $CURRENT_ZEEBE_VERSION | sed "s/alpha.*/SNAPSHOT/")
           elif grep -q "SNAPSHOT" <<< "$CURRENT_ZEEBE_VERSION"; then
             NEW_ZEEBE_VERSION=$CURRENT_ZEEBE_VERSION
-          elif [[ "${{ matrix.branch }}" == stable/* ]]; then
-            NEW_ZEEBE_VERSION=`echo $CURRENT_ZEEBE_VERSION | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.`-SNAPSHOT
           else
-            NEW_ZEEBE_VERSION=`echo $CURRENT_ZEEBE_VERSION | awk -F. '/[0-9]+\./{$2++;print}' OFS=.`-SNAPSHOT
+            NEW_ZEEBE_VERSION=`echo $CURRENT_ZEEBE_VERSION | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.`-SNAPSHOT
           fi
           echo $NEW_ZEEBE_VERSION
           mvn -B -U -P !localBuild "-Dsurefire.rerunFailingTestsCount=5" -Ddependency.zeebe.version=$NEW_ZEEBE_VERSION clean install
