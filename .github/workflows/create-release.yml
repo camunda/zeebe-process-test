@@ -143,15 +143,21 @@ jobs:
         run: |
           git push origin "${RELEASE_VERSION}"
 
-      - name: Create new stable branch for minor
-        if: ${{ inputs.releaseType == 'minor' }}
-        run: |
-          git checkout -b "stable/${MINOR_VERSION}"
-
-      - name: Push new stable branch for minor
+      - name: Ensure stable branch exists for minor
         if: ${{ inputs.releaseType == 'minor' && inputs.dryRun == false }}
         run: |
-          git push origin "stable/${MINOR_VERSION}"
+          set -euo pipefail
+          MINOR_BRANCH="stable/${MINOR_VERSION}"
+
+          # If branch already exists on origin, do nothing (camunda/camunda-style)
+          if git ls-remote --exit-code --heads origin "${MINOR_BRANCH}" > /dev/null 2>&1; then
+            echo "Branch ${MINOR_BRANCH} already exists on origin; skipping creation."
+            exit 0
+          fi
+
+          # First minor for this line: create and push stable branch from main
+          git checkout -b "${MINOR_BRANCH}" "origin/main"
+          git push origin "${MINOR_BRANCH}"
 
       # Same logic as in camunda/camunda
       - name: Determine if pre-release
