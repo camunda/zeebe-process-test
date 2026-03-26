@@ -156,6 +156,7 @@ jobs:
           fi
 
           # First minor for this line: create and push stable branch from main
+          git fetch origin main
           git checkout -b "${MINOR_BRANCH}" "origin/main"
           git push origin "${MINOR_BRANCH}"
 
