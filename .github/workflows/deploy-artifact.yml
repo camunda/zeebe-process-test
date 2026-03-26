@@ -11,20 +11,37 @@ on:
     branches: [main]
   release:
     types: [published]
+  # workflow_dispatch is always a dry run — no artifacts are pushed, and tests are not run. This is useful for testing the workflow, and for manually triggering a deploy without creating a release.
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'releaseVersion: e.g. MAJOR.MINOR.PATCH[-ALPHAn]'
+        type: string
+        required: false
+        default: ''
 
 jobs:
   test:
     uses: ./.github/workflows/build-test.yml
+    secrets: inherit
 
   deploy:
     runs-on: ubuntu-latest
     needs: [test]
+    if: ${{ always() && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
 
     env:
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
       OWNER: "camunda"
       IMAGE_NAME: "zeebe-process-test-engine"
 
     steps:
+      - name: Output inputs
+        run: |
+          echo "event_name: ${{ github.event_name }}"
+          echo "releaseVersion: ${{ inputs.releaseVersion }}"
+          echo "DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}"
+
       - name: Checkout
         uses: actions/checkout@v5
 
@@ -52,17 +69,26 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
+          server-id: camunda-nexus-release
+          server-username: ARTIFACTS_USR
+          server-password: ARTIFACTS_PSW
+        env:
+          ARTIFACTS_USR: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
+          ARTIFACTS_PSW: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
 
       - name: Build jar
         run: |
           mvn clean package -DskipTests -P !localBuild -pl :zeebe-process-test-engine-agent -am
 
-        # We build a docker image with a specific tag. There are 2 possible scenarios here.
-        # 1. The workflow is triggered by a change on the main branch. The tag should be equal to the project.version.
+        # We build a docker image with a specific tag. There are 3 possible scenarios here.
+        # 1. The workflow is triggered via workflow_call/dispatch with releaseVersion input.
         # 2. The workflow is triggered by a new release. The tag should be the version of the release.
+        # 3. The workflow is triggered by a change on the main branch. The tag should be equal to the project.version.
       - name: Build Docker image
         run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ]; then
+          if [ -n "${{ inputs.releaseVersion }}" ]; then
+            TAG="${{ inputs.releaseVersion }}"
+          elif [ -n "${{ github.event.release.tag_name }}" ]; then
             TAG="${{ github.event.release.tag_name }}"
           else
             TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
@@ -72,8 +98,11 @@ jobs:
 
         # We push the docker image to dockerhub
       - name: Push Docker image
+        if: ${{ env.DRY_RUN == 'false' }}
         run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ]; then
+          if [ -n "${{ inputs.releaseVersion }}" ]; then
+            TAG="${{ inputs.releaseVersion }}"
+          elif [ -n "${{ github.event.release.tag_name }}" ]; then
             TAG="${{ github.event.release.tag_name }}"
           else
             TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
@@ -102,9 +131,10 @@ jobs:
       - name: Decide git branch
         id: branch
         run: |
-          if ! [ -z "${{ github.event.release.tag_name }}" ] && [[ "${{ github.event.release.tag_name }}" != *"alpha"* ]]; then
-            SEMANTIC_VERSION=$(echo ${{ github.event.release.tag_name }} | sed -rn 's/^([0-9]+.[0-9]+.[0-9]+).*$/\1/p')
-            test -z "${SEMANTIC_VERSION}" && echo "::error::Tag ${{ github.event.release.tag_name }} does not adhere to semantic versioning" && exit 1
+          RELEASE_TAG="${{ inputs.releaseVersion || github.event.release.tag_name }}"
+          if [ -n "${RELEASE_TAG}" ] && [[ "${RELEASE_TAG}" != *"alpha"* ]]; then
+            SEMANTIC_VERSION=$(echo "${RELEASE_TAG}" | sed -rn 's/^([0-9]+.[0-9]+.[0-9]+).*$/\1/p')
+            test -z "${SEMANTIC_VERSION}" && echo "::error::Tag ${RELEASE_TAG} does not adhere to semantic versioning" && exit 1
             echo "branch=release-${SEMANTIC_VERSION}" >> $GITHUB_OUTPUT
             echo "Branch = release-${SEMANTIC_VERSION}"
           else
@@ -117,10 +147,11 @@ jobs:
         # overridden by the "Update tag in config" step. This happens when the workflow is triggered by a change on the
         # main branch.
       - name: Build and deploy to Maven
+        if: ${{ env.DRY_RUN == 'false' }}
         id: release
         uses: camunda-community-hub/community-action-maven-release@v2
         with:
-          release-version: ${{ github.event.release.tag_name }}
+          release-version: ${{ inputs.releaseVersion || github.event.release.tag_name }}
           release-profile: community-action-maven-release
           nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
           nexus-psw: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
@@ -136,7 +167,7 @@ jobs:
           branch: ${{ steps.branch.outputs.branch }}
 
       - name: Attach artifacts to GitHub Release (Release only)
-        if: github.event.release
+        if: ${{ github.event.release && env.DRY_RUN == 'false' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -147,10 +178,10 @@ jobs:
           asset_content_type: application/zip
 
   notify-release:
-    name: Send Slack notification on releases
+    name: Send notifications
     runs-on: ubuntu-latest
     needs: [deploy]
-    if: ${{ github.event_name == 'release' }}
+    if: ${{ always() }}
     timeout-minutes: 5
     permissions: {}  # GITHUB_TOKEN unused in this job
     steps:
@@ -167,8 +198,8 @@ jobs:
             secret/data/products/camunda/ci/github-actions SLACK_TOPMONOREPORELEASE_WEBHOOK_URL;
 
       - name: Send success Slack notification
-        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
-        if: success()
+        if: ${{ needs.deploy.result == 'success' && github.event_name == 'release' }}
+        uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
         with:
           webhook: ${{ steps.secrets.outputs.SLACK_TOPMONOREPORELEASE_WEBHOOK_URL }}
           webhook-type: incoming-webhook
@@ -187,8 +218,8 @@ jobs:
             }
 
       - name: Send failure Slack notification
-        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
-        if: failure()
+        if: ${{ needs.deploy.result == 'failure' && github.event_name == 'release' }}
+        uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
         with:
           webhook: ${{ steps.secrets.outputs.SLACK_TOPMONOREPORELEASE_WEBHOOK_URL }}
           webhook-type: incoming-webhook

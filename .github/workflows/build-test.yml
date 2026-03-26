@@ -29,12 +29,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v3.4.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_USR;
+            secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_PSW;
+
       - name: Set up Java environment
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
           cache: maven
+          server-id: camunda-nexus-release
+          server-username: ARTIFACTS_USR
+          server-password: ARTIFACTS_PSW
+        env:
+          ARTIFACTS_USR: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
+          ARTIFACTS_PSW: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
 
       - name: Check format
         run: mvn spotless:check
@@ -59,12 +77,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v3.4.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_USR;
+            secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_PSW;
+
       - name: Set up Java environment
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
           cache: maven
+          server-id: camunda-nexus-release
+          server-username: ARTIFACTS_USR
+          server-password: ARTIFACTS_PSW
+        env:
+          ARTIFACTS_USR: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
+          ARTIFACTS_PSW: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
 
       - name: Build
         id: build
@@ -101,12 +137,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v3.4.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_USR;
+            secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_PSW;
+
       - name: Set up Java environment
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
           cache: maven
+          server-id: camunda-nexus-release
+          server-username: ARTIFACTS_USR
+          server-password: ARTIFACTS_PSW
+        env:
+          ARTIFACTS_USR: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
+          ARTIFACTS_PSW: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
 
       - name: Package
         run: mvn -B -U -P !localBuild clean package -DskipTests
