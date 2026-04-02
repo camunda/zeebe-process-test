@@ -16,8 +16,7 @@ on:
       releaseVersion:
         description: 'releaseVersion: e.g. MAJOR.MINOR.PATCH[-ALPHAn]'
         type: string
-        required: false
-        default: ''
+        required: true
 
 jobs:
   test:
@@ -81,7 +80,7 @@ jobs:
           mvn clean package -DskipTests -P !localBuild -pl :zeebe-process-test-engine-agent -am
 
         # We build a docker image with a specific tag. There are 3 possible scenarios here.
-        # 1. The workflow is triggered via workflow_call/dispatch with releaseVersion input.
+        # 1. The workflow is triggered via workflow_dispatch with releaseVersion input.
         # 2. The workflow is triggered by a new release. The tag should be the version of the release.
         # 3. The workflow is triggered by a change on the main branch. The tag should be equal to the project.version.
       - name: Build Docker image
