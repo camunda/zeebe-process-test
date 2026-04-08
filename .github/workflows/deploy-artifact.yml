@@ -17,11 +17,11 @@ on:
       releaseVersion:
         description: 'releaseVersion: e.g. MAJOR.MINOR.PATCH[-ALPHAn]'
         type: string
-        required: false
-        default: ''
+        required: true
 
 jobs:
   test:
+    if: ${{ github.event_name != 'workflow_dispatch' }}
     uses: ./.github/workflows/build-test.yml
     secrets: inherit
 
@@ -81,7 +81,7 @@ jobs:
           mvn clean package -DskipTests -P !localBuild -pl :zeebe-process-test-engine-agent -am
 
         # We build a docker image with a specific tag. There are 3 possible scenarios here.
-        # 1. The workflow is triggered via workflow_call/dispatch with releaseVersion input.
+        # 1. The workflow is triggered via workflow_dispatch with releaseVersion input.
         # 2. The workflow is triggered by a new release. The tag should be the version of the release.
         # 3. The workflow is triggered by a change on the main branch. The tag should be equal to the project.version.
       - name: Build Docker image
@@ -181,7 +181,7 @@ jobs:
     name: Send notifications
     runs-on: ubuntu-latest
     needs: [deploy]
-    if: ${{ always() }}
+    if: ${{ always() && github.event_name != 'push' }}
     timeout-minutes: 5
     permissions: {}  # GITHUB_TOKEN unused in this job
     steps:
@@ -196,6 +196,20 @@ jobs:
           exportEnv: false # we rely on step outputs, no need for environment variables
           secrets: |
             secret/data/products/camunda/ci/github-actions SLACK_TOPMONOREPORELEASE_WEBHOOK_URL;
+            secret/data/products/camunda/ci/monorepo-release CLIENT_CONFIG | clientConfig
+
+      - name: Report deploy result to C8
+        uses: camunda-community-hub/camunda-platform-8-github-action@0fe490e4cf6f0cf59a5c86a127c4354b4b1fc3b7 # 8.3.0
+        with:
+          clientConfig: ${{ steps.secrets.outputs.clientConfig }}
+          operation: publishMessage
+          messageName: Deploy result in ZPT
+          correlationKey: ${{ inputs.releaseVersion || github.event.release.tag_name }}
+          variables: |
+            {
+              "is_deploy_artifact_successful": "${{ needs.deploy.result == 'success' }}",
+              "zpt_workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
 
       - name: Send success Slack notification
         if: ${{ needs.deploy.result == 'success' && github.event_name == 'release' }}
