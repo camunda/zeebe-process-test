@@ -29,7 +29,6 @@ import io.camunda.zeebe.protocol.record.value.EscalationRecordValue;
 import io.camunda.zeebe.protocol.record.value.IncidentRecordValue;
 import io.camunda.zeebe.protocol.record.value.JobBatchRecordValue;
 import io.camunda.zeebe.protocol.record.value.JobRecordValue;
-import io.camunda.zeebe.protocol.record.value.MessageBatchRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageCorrelationRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageRecordValue;
 import io.camunda.zeebe.protocol.record.value.MessageStartEventSubscriptionRecordValue;
@@ -79,7 +78,6 @@ public class RecordStreamLogger {
     valueTypeLoggers.put(ValueType.PROCESS_INSTANCE, this::logProcessInstanceRecordValue);
     valueTypeLoggers.put(ValueType.INCIDENT, this::logIncidentRecordValue);
     valueTypeLoggers.put(ValueType.MESSAGE, this::logMessageRecordValue);
-    valueTypeLoggers.put(ValueType.MESSAGE_BATCH, this::logMessageBatchRecordValue);
     valueTypeLoggers.put(ValueType.MESSAGE_SUBSCRIPTION, this::logMessageSubscriptionRecordValue);
     valueTypeLoggers.put(
         ValueType.PROCESS_MESSAGE_SUBSCRIPTION, this::logProcessMessageSubscriptionRecordValue);
@@ -102,6 +100,7 @@ public class RecordStreamLogger {
     // These records don't have any interesting extra information for the user to log
     valueTypeLoggers.put(ValueType.DEPLOYMENT_DISTRIBUTION, Object::toString);
     valueTypeLoggers.put(ValueType.SBE_UNKNOWN, Object::toString);
+    valueTypeLoggers.put(ValueType.MESSAGE_BATCH, Object::toString);
     valueTypeLoggers.put(ValueType.NULL_VAL, Object::toString);
 
     // DMN will not be part of the initial 1.4 release
@@ -212,13 +211,6 @@ public class RecordStreamLogger {
     joiner.add(String.format("(Message name: %s)", value.getName()));
     joiner.add(String.format("(Correlation key: %s)", value.getCorrelationKey()));
     joiner.add(logVariables(value.getVariables()));
-    return joiner.toString();
-  }
-
-  private String logMessageBatchRecordValue(final Record<?> record) {
-    final MessageBatchRecordValue value = (MessageBatchRecordValue) record.getValue();
-    final StringJoiner joiner = new StringJoiner(", ", "", "");
-    joiner.add(String.format("(Message Keys: %s)", value.getMessageKeys()));
     return joiner.toString();
   }
 
