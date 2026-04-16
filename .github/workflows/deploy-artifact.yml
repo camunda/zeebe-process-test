@@ -148,7 +148,7 @@ jobs:
       - name: Build and deploy to Maven
         if: ${{ env.DRY_RUN == 'false' }}
         id: release
-        uses: camunda-community-hub/community-action-maven-release@v2
+        uses: camunda-community-hub/community-action-maven-release@b7c917128dfc701a9fae1b294ebbf97c5b4420c3 # v2.0.3
         with:
           release-version: ${{ inputs.releaseVersion || github.event.release.tag_name }}
           release-profile: community-action-maven-release
