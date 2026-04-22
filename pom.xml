@@ -31,6 +31,7 @@
   <name>Zeebe Process Test Root</name>
   <description>This pom should be the parent of all specified modules. It defines all versions and provides
     plugins that are required for the child modules.</description>
+  <url>https://github.com/camunda/zeebe-process-test</url>
   <inceptionYear>2021</inceptionYear>
 
   <licenses>
@@ -39,6 +40,14 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
+
+  <developers>
+    <developer>
+      <name>Camunda Services GmbH</name>
+      <organization>Camunda Services GmbH</organization>
+      <organizationUrl>https://camunda.com</organizationUrl>
+    </developer>
+  </developers>
 
   <modules>
     <module>api</module>

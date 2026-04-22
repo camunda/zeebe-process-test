@@ -25,6 +25,7 @@
   <artifactId>zeebe-process-test-examples</artifactId>
 
   <name>Zeebe Process Test Examples</name>
+  <description>Example process tests demonstrating usage of Zeebe Process Test.</description>
 
   <properties>
     <maven.compiler.source>21</maven.compiler.source>

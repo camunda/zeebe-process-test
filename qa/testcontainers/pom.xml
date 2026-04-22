@@ -10,6 +10,7 @@
   <artifactId>zeebe-process-test-qa-testcontainers</artifactId>
 
   <name>Zeebe Process Test QA Testcontainers</name>
+  <description>QA tests for Zeebe Process Test using Testcontainers.</description>
 
   <properties>
     <!-- needed as newer model releases don't support jdk 8 -->

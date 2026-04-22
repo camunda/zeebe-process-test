@@ -15,12 +15,35 @@
   <name>Zeebe Process Test QA</name>
 
   <description>QA tests for testing the Zeebe Process Test project.</description>
+  <url>https://github.com/camunda/zeebe-process-test</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Camunda Services GmbH</name>
+      <organization>Camunda Services GmbH</organization>
+      <organizationUrl>https://camunda.com</organizationUrl>
+    </developer>
+  </developers>
 
   <modules>
     <module>abstracts</module>
     <module>embedded</module>
     <module>testcontainers</module>
   </modules>
+
+  <scm>
+    <connection>scm:git:git@github.com:camunda/zeebe-process-test.git</connection>
+    <developerConnection>scm:git:git@github.com:camunda/zeebe-process-test.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/camunda/zeebe-process-test</url>
+  </scm>
 
   <dependencyManagement>
     <dependencies>
