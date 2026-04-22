@@ -10,6 +10,7 @@
 
   <artifactId>spring-boot-starter-camunda-test-common</artifactId>
   <name>Spring Boot Starter Camunda Test commons</name>
+  <description>Common components shared between embedded and testcontainer Spring Boot test starters.</description>
 
   <dependencies>
     <dependency>
