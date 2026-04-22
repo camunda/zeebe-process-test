@@ -12,6 +12,7 @@
   <packaging>jar</packaging>
 
   <name>Zeebe Process Test QA Abstracts</name>
+  <description>Abstract QA test cases shared between embedded and testcontainer test modules.</description>
 
   <properties>
     <version.java>8</version.java>

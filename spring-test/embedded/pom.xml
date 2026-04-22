@@ -10,6 +10,7 @@
 
   <artifactId>spring-boot-starter-camunda-test</artifactId>
   <name>Spring Boot Starter Camunda Test Embedded</name>
+  <description>Spring Boot starter for testing Camunda processes using an embedded engine.</description>
 
   <dependencies>
     <dependency>
