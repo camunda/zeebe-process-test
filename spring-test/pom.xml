@@ -13,12 +13,36 @@
   <packaging>pom</packaging>
 
   <name>Spring Boot Starter Camunda Test POM</name>
+  <description>Spring Boot starter for testing Camunda Platform 8 BPMN processes</description>
+  <url>https://github.com/camunda/zeebe-process-test</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Camunda Services GmbH</name>
+      <organization>Camunda Services GmbH</organization>
+      <organizationUrl>https://camunda.com</organizationUrl>
+    </developer>
+  </developers>
 
   <modules>
     <module>common</module>
     <module>embedded</module>
     <module>testcontainer</module>
   </modules>
+
+  <scm>
+    <connection>scm:git:git@github.com:camunda/zeebe-process-test.git</connection>
+    <developerConnection>scm:git:git@github.com:camunda/zeebe-process-test.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/camunda/zeebe-process-test</url>
+  </scm>
 
   <properties>
     <plugin.version.license>5.0.0</plugin.version.license>
