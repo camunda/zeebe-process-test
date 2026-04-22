@@ -25,6 +25,7 @@
   <artifactId>zeebe-process-test-qa-embedded</artifactId>
 
   <name>Zeebe Process Test QA Embedded</name>
+  <description>QA tests for the embedded Zeebe Process Test engine.</description>
 
   <properties>
     <version.java>21</version.java>
