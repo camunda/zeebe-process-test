@@ -1,0 +1,259 @@
+# If this workflow is triggered by a push to main, it deploys a SNAPSHOT
+# If this workflow is triggered by publishing a Release, it
+#        deploys a RELEASE with the selected version
+#        updates the project version by incrementing the patch version
+#        commits the version update change to the repository's default branch (main).
+---
+name: Deploy artifacts
+
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+  # workflow_dispatch is always a dry run — no artifacts are pushed, and tests are not run. This is useful for testing the workflow, and for manually triggering a deploy without creating a release.
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'releaseVersion: e.g. MAJOR.MINOR.PATCH[-ALPHAn]'
+        type: string
+        required: true
+
+jobs:
+  test:
+    if: ${{ github.event_name != 'workflow_dispatch' }}
+    uses: ./.github/workflows/build-test.yml
+    secrets: inherit
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: ${{ always() && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
+
+    env:
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
+      OWNER: "camunda"
+      IMAGE_NAME: "zeebe-process-test-engine"
+
+    steps:
+      - name: Output inputs
+        run: |
+          echo "event_name: ${{ github.event_name }}"
+          echo "releaseVersion: ${{ inputs.releaseVersion }}"
+          echo "DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}"
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v3.4.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/products/zeebe/ci/zeebe-process-test REGISTRY_HUB_DOCKER_COM_USR;
+            secret/data/products/zeebe/ci/zeebe-process-test REGISTRY_HUB_DOCKER_COM_PSW;
+            secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_USR;
+            secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_PSW;
+            secret/data/github.com/organizations/camunda MAVEN_CENTRAL_DEPLOYMENT_USR;
+            secret/data/github.com/organizations/camunda MAVEN_CENTRAL_DEPLOYMENT_PSW;
+            secret/data/github.com/organizations/camunda MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE;
+            secret/data/github.com/organizations/camunda MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC;
+
+      - name: Set up Java environment
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+          server-id: camunda-nexus-release
+          server-username: ARTIFACTS_USR
+          server-password: ARTIFACTS_PSW
+        env:
+          ARTIFACTS_USR: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
+          ARTIFACTS_PSW: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
+
+      - name: Build jar
+        run: |
+          mvn clean package -DskipTests -P !localBuild -pl :zeebe-process-test-engine-agent -am
+
+        # We build a docker image with a specific tag. There are 3 possible scenarios here.
+        # 1. The workflow is triggered via workflow_dispatch with releaseVersion input.
+        # 2. The workflow is triggered by a new release. The tag should be the version of the release.
+        # 3. The workflow is triggered by a change on the main branch. The tag should be equal to the project.version.
+      - name: Build Docker image
+        run: |
+          if [ -n "${{ inputs.releaseVersion }}" ]; then
+            TAG="${{ inputs.releaseVersion }}"
+          elif [ -n "${{ github.event.release.tag_name }}" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          fi
+          cd engine-agent
+          docker build . -t $IMAGE_NAME:$TAG
+
+        # We push the docker image to dockerhub
+      - name: Push Docker image
+        if: ${{ env.DRY_RUN == 'false' }}
+        run: |
+          if [ -n "${{ inputs.releaseVersion }}" ]; then
+            TAG="${{ inputs.releaseVersion }}"
+          elif [ -n "${{ github.event.release.tag_name }}" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          fi
+          echo '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_PSW }}' | docker login -u '${{ steps.secrets.outputs.REGISTRY_HUB_DOCKER_COM_USR }}' --password-stdin
+          echo $IMAGE_NAME
+          echo $TAG
+          IMAGE_ID=$OWNER/$IMAGE_NAME
+          echo $IMAGE_ID
+          docker tag $IMAGE_NAME:$TAG $IMAGE_ID:$TAG
+          docker push $IMAGE_ID:$TAG
+
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v7
+        with:
+          gpg_private_key: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_SEC }}
+          passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+
+      # We want the community-action-maven-release to update the versions on the correct branch. For
+      # this reason an extra step is introduced to decide what branch we should pass to this action.
+      # In the case of a push to the main branch, or an alpha release we should update the main branch.
+      # In other cases a stable/major.minor branch should be available. In this step we first find
+      # the major and minor versions of this tag. If we found them we will set the BRANCH env variable
+      # to stable/major.minor.
+      - name: Decide git branch
+        id: branch
+        run: |
+          RELEASE_TAG="${{ inputs.releaseVersion || github.event.release.tag_name }}"
+          if [ -n "${RELEASE_TAG}" ] && [[ "${RELEASE_TAG}" != *"alpha"* ]]; then
+            SEMANTIC_VERSION=$(echo "${RELEASE_TAG}" | sed -rn 's/^([0-9]+.[0-9]+.[0-9]+).*$/\1/p')
+            test -z "${SEMANTIC_VERSION}" && echo "::error::Tag ${RELEASE_TAG} does not adhere to semantic versioning" && exit 1
+            echo "branch=release-${SEMANTIC_VERSION}" >> $GITHUB_OUTPUT
+            echo "Branch = release-${SEMANTIC_VERSION}"
+          else
+            echo "branch=${{ github.event.repository.default_branch }}" >> $GITHUB_OUTPUT
+            echo "Branch = ${{ github.event.repository.default_branch }}"
+          fi
+
+        # In extension-testcontainer we have a config file which contains the image tag. This is managed by maven and
+        # maven will set this to the project version in this step, unless the placeholder (${project.version}) has been
+        # overridden by the "Update tag in config" step. This happens when the workflow is triggered by a change on the
+        # main branch.
+      - name: Build and deploy to Maven
+        if: ${{ env.DRY_RUN == 'false' }}
+        id: release
+        uses: camunda-community-hub/community-action-maven-release@b7c917128dfc701a9fae1b294ebbf97c5b4420c3 # v2.0.3
+        with:
+          release-version: ${{ inputs.releaseVersion || github.event.release.tag_name }}
+          release-profile: community-action-maven-release
+          nexus-usr: ${{ steps.secrets.outputs.ARTIFACTS_USR }}
+          nexus-psw: ${{ steps.secrets.outputs.ARTIFACTS_PSW }}
+          sonatype-central-portal-usr: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_USR }}
+          sonatype-central-portal-psw: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
+          # maven-usr, maven-psw and maven-url are deprecated; they are required only for publishing to the legacy OSS Sonatype repository.
+          # Once the io.zeebe namespace is migrated to the Sonatype Central Portal, these can be safely removed.
+          maven-usr: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_USR }}
+          maven-psw: ${{ steps.secrets.outputs.MAVEN_CENTRAL_DEPLOYMENT_PSW }}
+          maven-gpg-passphrase: ${{ steps.secrets.outputs.MAVEN_CENTRAL_GPG_SIGNING_KEY_PASSPHRASE }}
+          maven-url: s01.oss.sonatype.org
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.branch.outputs.branch }}
+
+      - name: Attach artifacts to GitHub Release (Release only)
+        if: ${{ github.event.release && env.DRY_RUN == 'false' }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ steps.release.outputs.artifacts_archive_path }}
+          asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
+          asset_content_type: application/zip
+
+  notify-release:
+    name: Send notifications
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: ${{ always() && github.event_name != 'push' }}
+    timeout-minutes: 5
+    permissions: {}  # GITHUB_TOKEN unused in this job
+    steps:
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@4c06c5ccf5c0761b6029f56cfb1dcf5565918a3b # v3.4.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          exportEnv: false # we rely on step outputs, no need for environment variables
+          secrets: |
+            secret/data/products/camunda/ci/github-actions SLACK_TOPMONOREPORELEASE_WEBHOOK_URL;
+            secret/data/products/camunda/ci/monorepo-release CLIENT_CONFIG | clientConfig
+
+      - name: Report deploy result to C8
+        uses: camunda-community-hub/camunda-platform-8-github-action@0fe490e4cf6f0cf59a5c86a127c4354b4b1fc3b7 # 8.3.0
+        with:
+          clientConfig: ${{ steps.secrets.outputs.clientConfig }}
+          operation: publishMessage
+          messageName: Deploy result in ZPT
+          correlationKey: ${{ inputs.releaseVersion || github.event.release.tag_name }}
+          variables: |
+            {
+              "is_deploy_artifact_successful": "${{ needs.deploy.result == 'success' }}",
+              "zpt_workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+
+      - name: Send success Slack notification
+        if: ${{ needs.deploy.result == 'success' && github.event_name == 'release' }}
+        uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
+        with:
+          webhook: ${{ steps.secrets.outputs.SLACK_TOPMONOREPORELEASE_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":success: *Deploying ZPT release ${{ github.event.release.tag_name }}* succeeded! (excluding Maven Central publishing - this is done separately)\n"
+                  }
+                }
+              ]
+            }
+
+      - name: Send failure Slack notification
+        if: ${{ needs.deploy.result == 'failure' && github.event_name == 'release' }}
+        uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
+        with:
+          webhook: ${{ steps.secrets.outputs.SLACK_TOPMONOREPORELEASE_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":alarm: *Deploying ZPT release ${{ github.event.release.tag_name }}* failed!\n"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Please check this <https://github.com/camunda/zeebe-process-test/actions/runs/${{ github.run_id }}|GHA workflow run>."
+                  }
+                }
+              ]
+            }

@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright © 2021 camunda services GmbH (info@camunda.com)
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.camunda.community</groupId>
+    <artifactId>community-hub-release-parent</artifactId>
+    <version>2.1.0</version>
+  </parent>
+
+  <groupId>io.camunda</groupId>
+  <artifactId>zeebe-process-test-root</artifactId>
+  <version>8.10.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Zeebe Process Test Root</name>
+  <description>This pom should be the parent of all specified modules. It defines all versions and provides
+    plugins that are required for the child modules.</description>
+  <url>https://github.com/camunda/zeebe-process-test</url>
+  <inceptionYear>2021</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Camunda Services GmbH</name>
+      <organization>Camunda</organization>
+      <organizationUrl>https://www.camunda.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <modules>
+    <module>api</module>
+    <module>assertions</module>
+    <module>engine</module>
+    <module>engine-agent</module>
+    <module>engine-protocol</module>
+    <module>extension</module>
+    <module>extension-testcontainer</module>
+    <module>filters</module>
+    <module>qa</module>
+    <module>examples</module>
+    <module>spring-test</module>
+  </modules>
+
+  <scm>
+    <connection>scm:git:git@github.com:camunda/zeebe-process-test.git</connection>
+    <developerConnection>scm:git:git@github.com:camunda/zeebe-process-test.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/camunda/zeebe-process-test</url>
+  </scm>
+
+  <properties>
+    <dependency.agrona.version>1.23.1</dependency.agrona.version>
+    <dependency.assertj.version>3.27.3</dependency.assertj.version>
+    <dependency.awaitility.version>4.3.0</dependency.awaitility.version>
+    <dependency.bytebuddy.version>1.18.8-jdk5</dependency.bytebuddy.version>
+    <dependency.camundamodel.version>7.24.0</dependency.camundamodel.version>
+    <dependency.checker-qual.version>4.0.0</dependency.checker-qual.version>
+    <dependency.classgraph.version>4.8.184</dependency.classgraph.version>
+    <dependency.commons.version>3.20.0</dependency.commons.version>
+    <dependency.errorprone.version>2.49.0</dependency.errorprone.version>
+    <dependency.feel.version>1.21.0</dependency.feel.version>
+    <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
+    <dependency.guava.version>33.6.0-jre</dependency.guava.version>
+    <dependency.immutables.version>2.12.1</dependency.immutables.version>
+    <dependency.jackson.version>2.21.2</dependency.jackson.version>
+    <dependency.javax.version>1.3.2</dependency.javax.version>
+    <dependency.jna.version>5.18.1</dependency.jna.version>
+    <dependency.junit.version>6.0.3</dependency.junit.version>
+    <dependency.junit4.version>4.13.2</dependency.junit4.version>
+    <dependency.micrometer.version>1.16.5</dependency.micrometer.version>
+    <dependency.mockito.version>5.23.0</dependency.mockito.version>
+    <dependency.netty.version>4.2.12.Final</dependency.netty.version>
+    <dependency.osgi.version>6.0.0</dependency.osgi.version>
+    <dependency.proto.version>2.70.0</dependency.proto.version>
+    <dependency.revapi.version>0.28.4</dependency.revapi.version>
+    <dependency.scala.version>3.8.3</dependency.scala.version>
+    <dependency.slf4j.version>2.0.17</dependency.slf4j.version>
+    <dependency.snakeyaml.version>2.6</dependency.snakeyaml.version>
+    <dependency.spring-boot.version>4.0.5</dependency.spring-boot.version>
+    <dependency.testcontainers.version>2.0.5</dependency.testcontainers.version>
+    <dependency.zeebe.version>8.9.0-SNAPSHOT</dependency.zeebe.version>
+
+    <failOnFlakyTest>true</failOnFlakyTest>
+
+    <license.header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</license.header>
+
+    <nexus.release.repository>https://artifacts.camunda.com/artifactory/zeebe-io/</nexus.release.repository>
+    <nexus.release.repository.id>camunda-nexus</nexus.release.repository.id>
+    <nexus.snapshot.repository>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</nexus.snapshot.repository>
+    <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
+
+    <plugin.version.dependency>3.10.0</plugin.version.dependency>
+    <plugin.version.flatten>1.7.3</plugin.version.flatten>
+    <plugin.version.fmt>2.9.1</plugin.version.fmt>
+
+    <!-- when updating this version, also change it in .idea/externalDependencies.xml -->
+    <plugin.version.googlejavaformat>1.35.0</plugin.version.googlejavaformat>
+
+    <plugin.version.jacoco>0.8.14</plugin.version.jacoco>
+    <plugin.version.javadoc>3.12.0</plugin.version.javadoc>
+    <plugin.version.license>5.0.0</plugin.version.license>
+    <plugin.version.maven-enforcer>3.6.2</plugin.version.maven-enforcer>
+    <plugin.version.maven-help>3.5.1</plugin.version.maven-help>
+    <plugin.version.os-maven>1.7.1</plugin.version.os-maven>
+    <plugin.version.revapi>0.15.1</plugin.version.revapi>
+    <plugin.version.spotless>3.4.0</plugin.version.spotless>
+    <plugin.version.surefire>3.5.5</plugin.version.surefire>
+
+    <skipChecks>false</skipChecks>
+
+    <!-- Note: needs to be aligned with the version used by io.camunda:zeebe-client-java -->
+    <version.grpc>1.80.0</version.grpc>
+    <version.java>21</version.java>
+    <version.protobuf>4.34.1</version.protobuf>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-api</artifactId>
+        <version>8.10.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-assertions</artifactId>
+        <version>8.10.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-engine</artifactId>
+        <version>8.10.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-extension</artifactId>
+        <version>8.10.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-extension-testcontainer</artifactId>
+        <version>8.10.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-filters</artifactId>
+        <version>8.10.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-process-test-engine-protocol</artifactId>
+        <version>8.10.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>spring-boot-starter-camunda-test-common</artifactId>
+        <version>8.10.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${dependency.junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${dependency.assertj.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-bom</artifactId>
+        <version>${dependency.zeebe.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>camunda-spring-boot-starter</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>camunda-client-java</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-client-java</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>camunda-security-core</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-msgpack-value</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-protocol</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-protocol-impl</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-bpmn-model</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-gateway-protocol</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-db</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-workflow-engine</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-scheduler</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-stream-platform</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-util</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <!-- Specify the version to avoid dependency convergence error due to https://github.com/camunda/zeebe/issues/9280 -->
+      <dependency>
+        <groupId>org.camunda.bpm.model</groupId>
+        <artifactId>camunda-dmn-model</artifactId>
+        <version>${dependency.camundamodel.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.camunda.bpm.model</groupId>
+        <artifactId>camunda-xml-model</artifactId>
+        <version>${dependency.camundamodel.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-logstreams</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-test-util</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-gateway-protocol-impl</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>zeebe-protocol-jackson</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>camunda-search-client</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>camunda-search-domain</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${dependency.slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${dependency.slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>${version.grpc}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>${dependency.javax.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers</artifactId>
+        <version>${dependency.testcontainers.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-junit-jupiter</artifactId>
+        <version>${dependency.testcontainers.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.github.classgraph</groupId>
+        <artifactId>classgraph</artifactId>
+        <version>${dependency.classgraph.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-bom</artifactId>
+        <version>${dependency.micrometer.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- Only for dependency convergence issues -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${dependency.guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${version.protobuf}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>${dependency.jna.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.errorprone</groupId>
+        <artifactId>error_prone_annotations</artifactId>
+        <version>${dependency.errorprone.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+        <version>${dependency.scala.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>${dependency.netty.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${dependency.jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${dependency.junit4.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>${dependency.findbugs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>${dependency.osgi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>${dependency.snakeyaml.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.immutables</groupId>
+        <artifactId>value</artifactId>
+        <version>${dependency.immutables.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${dependency.bytebuddy.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains</groupId>
+        <artifactId>annotations</artifactId>
+        <version>26.1.0</version>
+      </dependency>
+      <!-- This should be able to be removed after 1.4.0-alpha2 -->
+      <dependency>
+        <groupId>org.camunda.feel</groupId>
+        <artifactId>feel-engine</artifactId>
+        <version>${dependency.feel.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.api.grpc</groupId>
+        <artifactId>proto-google-common-protos</artifactId>
+        <version>${dependency.proto.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.agrona</groupId>
+        <artifactId>agrona</artifactId>
+        <version>${dependency.agrona.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${dependency.mockito.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>${dependency.awaitility.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${dependency.commons.version}</version>
+      </dependency>
+
+      <!-- fix dependency convergence between guava and spring-boot-starter-camunda-test-common -->
+      <dependency>
+        <groupId>org.checkerframework</groupId>
+        <artifactId>checker-qual</artifactId>
+        <version>${dependency.checker-qual.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${dependency.spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.17</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>${nexus.release.repository.id}-release</id>
+      <url>${nexus.release.repository}</url>
+    </repository>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>${nexus.snapshot.repository.id}</id>
+      <url>${nexus.snapshot.repository}</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>${plugin.version.spotless}</version>
+          <configuration>
+            <!-- Google code format plugin -->
+            <java>
+              <googleJavaFormat>
+                <version>${plugin.version.googlejavaformat}</version>
+                <style>GOOGLE</style>
+              </googleJavaFormat>
+            </java>
+            <!-- SortPOM plugin -->
+            <pom>
+              <sortPom>
+                <expandEmptyElements>false</expandEmptyElements>
+                <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+                <sortProperties>true</sortProperties>
+              </sortPom>
+            </pom>
+            <applySkip>${skipChecks}</applySkip>
+            <checkSkip>${skipChecks}</checkSkip>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>com.google.googlejavaformat</groupId>
+              <artifactId>google-java-format</artifactId>
+              <version>${plugin.version.googlejavaformat}</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <goals>
+                <goal>apply</goal>
+              </goals>
+              <phase>process-sources</phase>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.revapi</groupId>
+          <artifactId>revapi-maven-plugin</artifactId>
+          <version>${plugin.version.revapi}</version>
+          <configuration>
+            <!-- expands maven properties in the configuration files -->
+            <expandProperties>true</expandProperties>
+            <!-- allows us to pre-defined ignored-changes, even when missing -->
+            <failOnMissingConfigurationFiles>false</failOnMissingConfigurationFiles>
+            <analysisConfigurationFiles>
+              <!-- look for an optional relative configuration file -->
+              <configurationFile>
+                <path>revapi.json</path>
+              </configurationFile>
+              <!-- will pick up a project relative ignored-changes file -->
+              <configurationFile>
+                <path>ignored-changes.json</path>
+              </configurationFile>
+            </analysisConfigurationFiles>
+            <oldVersion>LATEST</oldVersion>
+            <!-- Don't check compatibility against pre-releases -->
+            <versionFormat>^\d+\.\d+\.\d+$</versionFormat>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.revapi</groupId>
+              <artifactId>revapi-java</artifactId>
+              <version>${dependency.revapi.version}</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <phase>verify</phase>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${plugin.version.maven-enforcer}</version>
+        <configuration>
+          <rules>
+            <dependencyConvergence />
+          </rules>
+          <skip>${skipChecks}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${plugin.version.dependency}</version>
+        <executions>
+          <execution>
+            <id>analyze</id>
+            <goals>
+              <goal>analyze-only</goal>
+              <goal>analyze-dep-mgt</goal>
+              <goal>analyze-duplicate</goal>
+            </goals>
+            <configuration>
+              <failOnWarning>true</failOnWarning>
+              <skip>${skipChecks}</skip>
+              <ignoredUnusedDeclaredDependencies>
+                <dependency>org.slf4j:slf4j-simple:jar:2.0.16</dependency>
+              </ignoredUnusedDeclaredDependencies>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${plugin.version.javadoc}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>${plugin.version.spotless}</version>
+        <configuration>
+          <markdown>
+            <includes>
+              <include>**/*.md</include>
+            </includes>
+            <excludes>
+              <exclude>**/target/**/*.md</exclude>
+            </excludes>
+            <flexmark />
+          </markdown>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>apply</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- JaCoCo Plugin -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${plugin.version.jacoco}</version>
+        <executions>
+          <execution>
+            <id>coverage-initialize</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>coverage-report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <phase>post-integration-test</phase>
+          </execution>
+          <!-- Threshold -->
+        </executions>
+      </plugin>
+
+      <!-- Surefire plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${plugin.version.surefire}</version>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>
+
+      <!-- Flaky Tests plugin -->
+      <plugin>
+        <groupId>io.zeebe</groupId>
+        <artifactId>flaky-test-extractor-maven-plugin</artifactId>
+        <version>2.1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>extract-flaky-tests</goal>
+            </goals>
+            <phase>post-integration-test</phase>
+            <configuration>
+              <failBuild>${failOnFlakyTest}</failBuild>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Flatten pom plugin -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>${plugin.version.flatten}</version>
+        <configuration>
+          <flattenMode>ossrh</flattenMode>
+          <!--
+            do not change the outputDirectory; it must remain the same one as the relative project
+            directory, as many plugins expect to resolve the project directory from the current POM
+            file's parent, and any plugin which would run post flatten would resolve the project
+            directory to the wrong one. For example, if you configure it to
+            ${project.build.directory}, then any plugin after will think that the project's
+            directory is not /parent/ but /parent/target, which may affect the execution of plugins
+            (e.g. resource file resolution)
+            -->
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <phase>clean</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- LICENSE PLUGIN -->
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>${plugin.version.license}</version>
+        <configuration>
+          <header>${license.header}</header>
+          <properties>
+            <owner>camunda services GmbH</owner>
+            <email>info@camunda.com</email>
+          </properties>
+          <includes>
+            <include>**/*.java</include>
+          </includes>
+          <mapping>
+            <java>SLASHSTAR_STYLE</java>
+          </mapping>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-help-plugin</artifactId>
+        <version>${plugin.version.maven-help}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <configuration>
+          <stagingProgressTimeoutMinutes>40</stagingProgressTimeoutMinutes>
+        </configuration>
+      </plugin>
+    </plugins>
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>${plugin.version.os-maven}</version>
+      </extension>
+    </extensions>
+  </build>
+
+</project>

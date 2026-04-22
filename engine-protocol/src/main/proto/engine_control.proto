@@ -1,0 +1,100 @@
+syntax = 'proto3';
+package engine_protocol;
+
+option java_multiple_files = false;
+option java_package = "io.camunda.zeebe.process.test.engine.protocol";
+
+message StartEngineRequest {}
+
+message StartEngineResponse {}
+
+message StopEngineRequest {}
+
+message StopEngineResponse {}
+
+message ResetEngineRequest {}
+
+message ResetEngineResponse {}
+
+message IncreaseTimeRequest {
+  // the amount of milliseconds the engine should increase in time
+  int32 milliseconds = 1;
+}
+
+message IncreaseTimeResponse {}
+
+message WaitForIdleStateRequest {
+  // timeout (in ms). The request will be closed if an idle state has not been
+  // achieved withing the timeout.
+  int64 timeout = 1;
+}
+
+message WaitForIdleStateResponse {}
+
+message WaitForBusyStateRequest {
+  // timeout (in ms). The request will be closed if an idle state has not been
+  // achieved withing the timeout.
+  int64 timeout = 1;
+}
+
+message WaitForBusyStateResponse {}
+
+message GetRecordsRequest {}
+
+message RecordResponse {
+  // A JSON representation of a Record.
+  string recordJson = 1;
+}
+
+service EngineControl {
+
+  /*
+    Starts the in-memory engine.
+   */
+  rpc StartEngine (StartEngineRequest) returns (StartEngineResponse);
+
+  /*
+    Stops the in-memory engine.
+   */
+  rpc StopEngine (StopEngineRequest) returns (StopEngineResponse);
+
+  /*
+    Resets the in-memory engine. This is done by recreating the engine entirely.
+    The engine should be reset before executing the next test. This prevents
+    the tests from influencing each other.
+    Using this while running tests concurrently will still cause issues. This is
+    because the first test will be using the engine, whilst the second test will
+    reset it. Therefore, the data from the first test will get lost.
+
+    After resetting the engine still needs to be started.
+   */
+  rpc ResetEngine (ResetEngineRequest) returns (ResetEngineResponse);
+
+  /*
+    Increases the engine time by a specific duration. Increasing the time could
+    be useful for when triggering timers with a date somewhere in the future.
+   */
+  rpc IncreaseTime (IncreaseTimeRequest) returns (IncreaseTimeResponse);
+
+  /*
+    Waits for the engine to have reached an idle state. Idle state is a state in
+     which the process engine makes no progress and is waiting for new commands
+     or events to trigger.
+   */
+  rpc WaitForIdleState (WaitForIdleStateRequest) returns (WaitForIdleStateResponse);
+
+  /*
+    Waits a given timeout for the engine to have reached a busy state.
+   */
+  rpc WaitForBusyState (WaitForBusyStateRequest) returns (WaitForBusyStateResponse);
+
+  /*
+    Get all records from the in-memory engine. These records will be returned
+    in a JSON format. Client-side these should be mapped to Records.
+
+    For an easy way to serialize this JSON back to a Record please refer to:
+    https://github.com/camunda/zeebe/tree/main/protocol-jackson
+   */
+  rpc GetRecords (GetRecordsRequest) returns (stream RecordResponse);
+
+}

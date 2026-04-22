@@ -1,0 +1,109 @@
+{
+  "enabled": true,
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "commitMessagePrefix": "deps:",
+  "baseBranchPatterns": [
+    "/^stable\\/8\\.([6-9]|[1-9][0-9])/",
+    "main"
+  ],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 30,
+  "prHourlyLimit": 2,
+  "updateNotScheduled": false,
+  "schedule": [
+    "at any time"
+  ],
+  "vulnerabilityAlerts": {
+    "labels": [
+      "area/security"
+    ],
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "addLabels": [
+      "automerge"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "Only patch updates for our maintenance branches to avoid breaking changes.",
+      "matchBaseBranches": [
+        "/^stable\\/8\\..*/"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Digest updates cover all use cases since they are used as base, so we disable other types.",
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "matchFileNames": [
+        "Dockerfile"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "enabled": true
+    },
+    {
+      "matchManagers": [
+        "maven"
+      ],
+      "allowedVersions": "!/0.8.9/",
+      "matchPackageNames": [
+        "org.jacoco{/,}**"
+      ]
+    },
+    {
+      "description": "Exclude BPMN model dependencies which target JDK 11 (since this library targets JDK 8)",
+      "matchManagers": [
+        "maven"
+      ],
+      "allowedVersions": "<7.20.0",
+      "matchPackageNames": [
+        "org.camunda.bpmn.model{/,}**"
+      ]
+    },
+    {
+      "description": "Exclude SNAPSHOT versions, renovate may suggest them for pre-release values.",
+      "matchManagers": [
+        "maven"
+      ],
+      "allowedVersions": "!/-SNAPSHOT$/",
+      "matchPackageNames": [
+        "/.*/"
+      ]
+    },
+    {
+      "description": "Exclude io.camunda updates, we manage deps to camunda components manually.",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchPackageNames": [
+        "io.camunda{/,}**"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Automerge all updates with green CI.",
+      "automerge": true,
+      "addLabels": [
+        "automerge"
+      ],
+      "matchPackageNames": [
+        "*"
+      ]
+    }
+  ]
+}
