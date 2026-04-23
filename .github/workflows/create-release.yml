@@ -214,7 +214,8 @@ jobs:
           variables: |
             {
               "is_zpt_release_successful": "${{ needs.create-release.result == 'success' }}",
-              "zpt_workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              "zpt_workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "zpt_repository": "${{ github.repository }}"
             }
 
       - name: Send failure Slack notification
