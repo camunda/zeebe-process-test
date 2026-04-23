@@ -214,7 +214,7 @@ jobs:
 
       - name: Send success Slack notification
         if: ${{ needs.deploy.result == 'success' && github.event_name == 'release' }}
-        uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
+        uses: slackapi/slack-github-action@03ea5433c137af7c0495bc0cad1af10403fc800c # v3.0.2
         with:
           webhook: ${{ steps.secrets.outputs.SLACK_TOPMONOREPORELEASE_WEBHOOK_URL }}
           webhook-type: incoming-webhook
@@ -234,7 +234,7 @@ jobs:
 
       - name: Send failure Slack notification
         if: ${{ needs.deploy.result == 'failure' && github.event_name == 'release' }}
-        uses: slackapi/slack-github-action@af78098f536edbc4de71162a307590698245be95 # v3.0.1
+        uses: slackapi/slack-github-action@03ea5433c137af7c0495bc0cad1af10403fc800c # v3.0.2
         with:
           webhook: ${{ steps.secrets.outputs.SLACK_TOPMONOREPORELEASE_WEBHOOK_URL }}
           webhook-type: incoming-webhook
