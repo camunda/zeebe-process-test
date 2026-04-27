@@ -207,7 +207,8 @@ jobs:
           variables: |
             {
               "is_deploy_artifact_successful": "${{ needs.deploy.result == 'success' }}",
-              "zpt_workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              "zpt_workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "zpt_repository": "${{ github.repository }}"
             }
 
       - name: Send success Slack notification
