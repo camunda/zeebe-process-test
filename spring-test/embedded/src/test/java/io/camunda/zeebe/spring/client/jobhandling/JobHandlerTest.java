@@ -367,7 +367,6 @@ public class JobHandlerTest {
 
   @SpringBootTest(
       classes = {
-        DefaultWorkerTest.class,
         DefaultWorkerTest.WorkersConfig.class,
         JobHandlerTest.TestMetricsConfiguration.class
       },
