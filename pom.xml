@@ -675,7 +675,7 @@
               <failOnWarning>true</failOnWarning>
               <skip>${skipChecks}</skip>
               <ignoredUnusedDeclaredDependencies>
-                <dependency>org.slf4j:slf4j-simple:jar:2.0.16</dependency>
+                <dependency>org.slf4j:slf4j-simple</dependency>
               </ignoredUnusedDeclaredDependencies>
             </configuration>
           </execution>
