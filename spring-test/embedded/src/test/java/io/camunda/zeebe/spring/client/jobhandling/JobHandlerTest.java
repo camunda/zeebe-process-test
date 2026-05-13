@@ -276,7 +276,7 @@ public class JobHandlerTest {
   @AutoConfigureBefore(MetricsDefaultConfiguration.class)
   public static class TestMetricsConfiguration {
     @Bean
-    public MetricsRecorder testMetricsRecorder() {
+    public SimpleMetricsRecorder testMetricsRecorder() {
       return new SimpleMetricsRecorder();
     }
   }
@@ -354,7 +354,6 @@ public class JobHandlerTest {
 
   @SpringBootTest(
       classes = {
-        DefaultWorkerTest.class,
         DefaultWorkerTest.WorkersConfig.class,
         JobHandlerTest.TestMetricsConfiguration.class
       },
