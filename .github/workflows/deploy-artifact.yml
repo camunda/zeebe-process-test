@@ -29,6 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     if: ${{ always() && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
+    permissions:
+      contents: write
+      actions: read
 
     outputs:
       deploymentId: ${{ steps.extract-deployment-id.outputs.deploymentId }}
@@ -182,7 +185,7 @@ jobs:
 
       - name: Extract Maven Central deployment ID
         id: extract-deployment-id
-        if: always() && steps.release.conclusion != 'skipped'
+        if: always()
         # Never block the release on extraction failure — the deployment ID is
         # for downstream automation only; manual recovery is always possible.
         continue-on-error: true
@@ -198,7 +201,7 @@ jobs:
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
             "${api}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs?per_page=100" \
-            | jq -r ".jobs[] | select(.runner_name == \"$RUNNER_NAME\") | .id")
+            | jq -r ".jobs[] | select(.name == \"deploy\") | .id")
 
           deployment_id=$(curl -fsSL \
             -H "Authorization: Bearer ${GH_TOKEN}" \
