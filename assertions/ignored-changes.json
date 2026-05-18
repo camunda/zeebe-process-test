@@ -10,6 +10,30 @@
           "code": "java.method.varargOverloadsOnlyDifferInVarargParameter",
           "classQualifiedName": "io.camunda.zeebe.process.test.assertions.*",
           "justification": "Inherited from extended assertj class."
+        },
+        {
+          "ignore": true,
+          "regex": true,
+          "code": "java.annotation.removed",
+          "classQualifiedName": "io.camunda.zeebe.process.test.assertions.*",
+          "annotation": "@org.assertj.core.util.CheckReturnValue",
+          "justification": "AssertJ moved CheckReturnValue annotation packages; fluent API behavior is unchanged."
+        },
+        {
+          "ignore": true,
+          "regex": true,
+          "code": "java.annotation.added",
+          "classQualifiedName": "io.camunda.zeebe.process.test.assertions.*",
+          "annotation": "@org.assertj.core.annotation.CheckReturnValue",
+          "justification": "AssertJ moved CheckReturnValue annotation packages; fluent API behavior is unchanged."
+        },
+        {
+          "ignore": true,
+          "regex": true,
+          "code": "java.annotation.added",
+          "classQualifiedName": "io.camunda.zeebe.process.test.assertions.*",
+          "annotation": "@org.assertj.core.internal.annotation.Contract(.*)",
+          "justification": "AssertJ added a new annotation to the abstract base class; fluent API behavior is unchanged."
         }
       ]
     }
