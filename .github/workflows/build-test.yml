@@ -71,7 +71,10 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         # Note: `3.5` is an invalid profile just serving as a placeholder for the default version.
-        spring-boot-version: [ 3.5, 4.0]
+        # Values MUST be quoted: unquoted `4.0` is parsed as a YAML float and rendered as `4`,
+        # so `spring-boot-${{ matrix.spring-boot-version }}` would resolve to the non-existent
+        # `spring-boot-4` profile instead of `spring-boot-4.0` (silently testing the default version).
+        spring-boot-version: [ '3.5', '4.0' ]
 
     steps:
       - name: Checkout
@@ -129,7 +132,9 @@ jobs:
       max-parallel: 3
       matrix:
         # Note: `default` is an invalid profile just serving as a placeholder with no effect.
-        spring-boot-version: [ default, 4.0 ]
+        # Quote version values: unquoted `4.0` is parsed as a YAML float and rendered as `4`,
+        # which would resolve to the non-existent `spring-boot-4` profile instead of `spring-boot-4.0`.
+        spring-boot-version: [ default, '4.0' ]
     env:
       IMAGE_NAME: "qa-tests"
 
