@@ -103,6 +103,18 @@
         <dependency.junit.version>6.0.1</dependency.junit.version>
         <dependency.spring-boot.version>4.0.1</dependency.spring-boot.version>
       </properties>
+      <dependencyManagement>
+        <dependencies>
+          <!-- camunda-spring-boot-4-starter brings guava (which pulls failureaccess 1.0.2)
+               alongside failureaccess 1.0.3 directly; pin to 1.0.3 so the enforcer
+               dependencyConvergence rule passes. -->
+          <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>failureaccess</artifactId>
+            <version>1.0.3</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
     </profile>
   </profiles>
 </project>
