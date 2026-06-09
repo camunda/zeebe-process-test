@@ -214,6 +214,14 @@
         <version>${dependency.zeebe.version}</version>
       </dependency>
 
+      <!-- Spring Boot 4 variant of the Camunda Spring SDK starter, selected via the
+           spring-boot-4.0 profile (see spring-test modules). -->
+      <dependency>
+        <groupId>io.camunda</groupId>
+        <artifactId>camunda-spring-boot-4-starter</artifactId>
+        <version>${dependency.zeebe.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>io.camunda</groupId>
         <artifactId>zeebe-client-java</artifactId>
