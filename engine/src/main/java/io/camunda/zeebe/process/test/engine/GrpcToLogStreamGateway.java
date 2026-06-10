@@ -107,6 +107,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
 import org.agrona.DirectBuffer;
 
 class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
@@ -169,7 +170,10 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     jobActivationProperties
         .setWorker(worker, 0, worker.capacity())
         .setTimeout(request.getTimeout())
-        .setFetchVariables(request.getFetchVariableList().stream().map(StringValue::new).toList())
+        .setFetchVariables(
+            request.getFetchVariableList().stream()
+                .map(StringValue::new)
+                .collect(Collectors.toUnmodifiableSet()))
         .setTenantIds(request.getTenantIdsList());
 
     jobStreamer.addStream(jobType, jobActivationProperties, consumer);
