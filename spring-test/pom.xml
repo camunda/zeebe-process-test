@@ -22,6 +22,9 @@
   </modules>
 
   <properties>
+    <!-- Camunda Spring SDK starter artifact; swapped to the Spring Boot 4 variant
+         by the spring-boot-4.0 profile below. -->
+    <camunda.spring-boot.starter.artifactId>spring-boot-starter-camunda-sdk</camunda.spring-boot.starter.artifactId>
     <plugin.version.license>4.6</plugin.version.license>
     <version.java>17</version.java>
   </properties>
@@ -86,6 +89,32 @@
       <properties>
         <dependency.spring-boot.version>3.5.7</dependency.spring-boot.version>
       </properties>
+    </profile>
+    <profile>
+      <id>spring-boot-4.0</id>
+      <properties>
+        <!-- The default spring-boot-starter-camunda-sdk targets Spring Boot 3; the SDK ships
+             a dedicated Spring Boot 4 starter that must be used under Spring Boot 4. -->
+        <camunda.spring-boot.starter.artifactId>camunda-spring-boot-4-starter</camunda.spring-boot.starter.artifactId>
+        <!-- Spring Boot 4 / Spring Framework 7 require JUnit 6. The root pom imports
+             junit-bom before spring-boot-dependencies, so its version wins; align it
+             with the JUnit version managed by spring-boot-dependencies 4.0.1 (6.0.1)
+             to avoid NoSuchMethodError from SpringExtension against JUnit 5 APIs. -->
+        <dependency.junit.version>6.0.1</dependency.junit.version>
+        <dependency.spring-boot.version>4.0.1</dependency.spring-boot.version>
+      </properties>
+      <dependencyManagement>
+        <dependencies>
+          <!-- camunda-spring-boot-4-starter brings guava (which pulls failureaccess 1.0.2)
+               alongside failureaccess 1.0.3 directly; pin to 1.0.3 so the enforcer
+               dependencyConvergence rule passes. -->
+          <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>failureaccess</artifactId>
+            <version>1.0.3</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
     </profile>
   </profiles>
 </project>
