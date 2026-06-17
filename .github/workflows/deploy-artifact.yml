@@ -31,10 +31,6 @@ jobs:
     if: ${{ always() && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
     permissions:
       contents: write
-      actions: read
-
-    outputs:
-      deploymentId: ${{ steps.extract-deployment-id.outputs.deploymentId }}
 
     env:
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
@@ -183,18 +179,31 @@ jobs:
           asset_name: ${{ steps.release.outputs.artifacts_archive_path }}
           asset_content_type: application/zip
 
+
+  notify-release:
+    name: Send notifications
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: ${{ always() && github.event_name != 'push' }}
+    timeout-minutes: 5
+    permissions:
+      actions: read  # needed to fetch the completed deploy job's logs to extract the Maven Central deployment ID
+    steps:
       - name: Extract Maven Central deployment ID
         id: extract-deployment-id
-        if: always()
-        # Never block the release on extraction failure — the deployment ID is
+        # The deploy job is fully completed by the time this job runs, so the
+        # GitHub API returns its finalized log archive — extraction is reliable here.
+        # Never block notifications on extraction failure — the deployment ID is
         # for downstream automation only; manual recovery is always possible.
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           # The central-publishing-maven-plugin only emits the deployment ID via a log line:
           #   "Uploaded bundle successfully, deployment name: ..., deploymentId: <uuid>..."
-          # It is not persisted to disk by the plugin. So we fetch this job's log from the GHA API after the maven step has run and grep it.
+          # It is not persisted to disk by the plugin. We fetch the completed deploy job's
+          # log archive from the GHA API and grep it.
           api="https://api.github.com/repos/${{ github.repository }}"
 
           job_id=$(curl -fsSL \
@@ -214,22 +223,14 @@ jobs:
           if [[ -n "${deployment_id}" ]]; then
             echo "deploymentId=${deployment_id}" >> "$GITHUB_OUTPUT"
             echo "::notice::Maven Central deployment ID: ${deployment_id}"
-          elif [[ "${{ env.DRY_RUN }}" == "true" ]]; then
+          elif [[ "${DRY_RUN}" == "true" ]]; then
             echo "deploymentId=dry-run-${{ inputs.releaseVersion }}" >> "$GITHUB_OUTPUT"
-            echo "\u2139\ufe0f Dry run \u2014 emitting placeholder deployment ID"
+            echo "ℹ️ Dry run — emitting placeholder deployment ID"
           else
             echo "deploymentId=not-found" >> "$GITHUB_OUTPUT"
-            echo "\u2139\ufe0f No Maven Central deployment ID found in build output" >&2
+            echo "ℹ️ No Maven Central deployment ID found in build output" >&2
           fi
 
-  notify-release:
-    name: Send notifications
-    runs-on: ubuntu-latest
-    needs: [deploy]
-    if: ${{ always() && github.event_name != 'push' }}
-    timeout-minutes: 5
-    permissions: {}  # GITHUB_TOKEN unused in this job
-    steps:
       - name: Import Secrets
         id: secrets
         uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc # v4.0.0
@@ -255,7 +256,7 @@ jobs:
               "is_deploy_artifact_successful": "${{ needs.deploy.result == 'success' }}",
               "zpt_workflow_run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
               "zpt_repository": "${{ github.repository }}",
-              "zpt_maven_central_deployment_id": "${{ needs.deploy.outputs.deploymentId }}"
+              "zpt_maven_central_deployment_id": "${{ steps.extract-deployment-id.outputs.deploymentId }}"
             }
 
       - name: Send success Slack notification
