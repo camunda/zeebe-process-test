@@ -743,6 +743,7 @@
         <version>${plugin.version.surefire}</version>
         <configuration>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <argLine>--add-opens java.base/jdk.internal.misc=ALL-UNNAMED</argLine>
         </configuration>
       </plugin>
 
