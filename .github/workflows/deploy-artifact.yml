@@ -45,7 +45,7 @@ jobs:
           echo "DRY_RUN: ${{ github.event_name == 'workflow_dispatch' }}"
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Import Secrets
         id: secrets
