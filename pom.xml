@@ -83,6 +83,9 @@
     <dependency.feel.version>1.20.2</dependency.feel.version>
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>33.5.0-jre</dependency.guava.version>
+    <!-- Align with zeebe-client-java requirements; Spring Boot 4.0.6 pins older versions -->
+    <dependency.httpclient5.version>5.6.1</dependency.httpclient5.version>
+    <dependency.httpcore5.version>5.4.2</dependency.httpcore5.version>
     <dependency.immutables.version>2.12.2</dependency.immutables.version>
     <dependency.jackson.version>2.21.4</dependency.jackson.version>
     <dependency.javax.version>1.3.2</dependency.javax.version>
@@ -510,6 +513,27 @@
         <groupId>org.checkerframework</groupId>
         <artifactId>checker-qual</artifactId>
         <version>${dependency.checker-qual.version}</version>
+      </dependency>
+
+      <!--
+        Override Spring Boot 4.x managed httpclient5/httpcore5 versions.
+        Spring Boot 4.0.6 pins httpclient5=5.5.2 and httpcore5=5.3.6, but
+        zeebe-client-java requires httpclient5>=5.6.0
+      -->
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${dependency.httpclient5.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5</artifactId>
+        <version>${dependency.httpcore5.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5-h2</artifactId>
+        <version>${dependency.httpcore5.version}</version>
       </dependency>
 
       <dependency>
