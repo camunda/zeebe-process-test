@@ -87,6 +87,14 @@ jobs:
       - name: Output inputs
         run: echo "${{ toJSON(inputs) }}"
 
+      - name: Validate release version is not 8.10
+        run: |
+          set -euo pipefail
+          if [[ "${MINOR_VERSION}" == "8.10" ]] || [[ "${RELEASE_VERSION}" =~ ^8\.10\. ]]; then
+            echo "::error::Releases for version 8.10 are disabled while this repository is in maintenance mode. Only bugfix releases for older versions are allowed."
+            exit 1
+          fi
+
       # This step generates a GitHub App token to be used in Git operations as a workaround  for
       # the known GitHub issue described in https://github.com/camunda/camunda/issues/28522
       - name: Generate GitHub token
