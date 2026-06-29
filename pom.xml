@@ -84,7 +84,7 @@
     <dependency.findbugs.version>3.0.2</dependency.findbugs.version>
     <dependency.guava.version>33.5.0-jre</dependency.guava.version>
     <!-- Align with zeebe-client-java requirements; Spring Boot 4.0.6 pins older versions -->
-    <dependency.httpclient5.version>5.6.1</dependency.httpclient5.version>
+    <dependency.httpclient5.version>5.6.2</dependency.httpclient5.version>
     <dependency.httpcore5.version>5.4.3</dependency.httpcore5.version>
     <dependency.immutables.version>2.12.2</dependency.immutables.version>
     <dependency.jackson.version>2.21.4</dependency.jackson.version>
