@@ -25,7 +25,14 @@ import org.springframework.lang.NonNull;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 
-/** Test execution listener binding the Zeebe engine to current test context. */
+/**
+ * Test execution listener binding the Zeebe engine to current test context.
+ *
+ * @deprecated This class is deprecated since Camunda 8.8 and will be removed in a future release.
+ *     Use <a href="https://docs.camunda.io/docs/apis-tools/testing/getting-started/">Camunda
+ *     Process Test</a> instead.
+ */
+@Deprecated(forRemoval = true, since = "8.8")
 public class ZeebeTestExecutionListener extends AbstractZeebeTestExecutionListener
     implements TestExecutionListener, Ordered {
 
