@@ -46,7 +46,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * </ul>
  *
  * @since Java 21
+ * @deprecated This annotation is deprecated since Camunda 8.8 and will be removed in a future
+ *     release. Use <a href="https://docs.camunda.io/docs/apis-tools/testing/getting-started/">Camunda
+ *     Process Test</a> instead.
  */
+@Deprecated(forRemoval = true, since = "8.8")
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
