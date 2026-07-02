@@ -57,7 +57,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * </ul>
  *
  * @since Java 8
+ * @deprecated This annotation is deprecated since version 8.8 and will be removed in a future
+ *     release. Use <a
+ *     href="https://docs.camunda.io/docs/apis-tools/migration-manuals/migrate-to-camunda-process-test/">Camunda
+ *     Process Test</a> instead.
  */
+@Deprecated
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
