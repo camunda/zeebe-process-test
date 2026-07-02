@@ -58,8 +58,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * @since Java 8
  * @deprecated This annotation is deprecated since version 8.8 and will be removed in a future
- *     release. Use <a href="https://docs.camunda.io/docs/apis-tools/testing/getting-started/">Camunda
- *     Process Test</a> instead.
+ *     release. Use <a
+ *     href="https://docs.camunda.io/docs/apis-tools/testing/getting-started/">Camunda Process
+ *     Test</a> instead.
  */
 @Deprecated
 @Target(ElementType.TYPE)
