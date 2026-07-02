@@ -26,7 +26,7 @@ import org.springframework.test.context.TestExecutionListeners;
 /**
  * Annotation for the Spring test.
  *
- * @deprecated This annotation is deprecated since Camunda 8.8 and will be removed in a future
+ * @deprecated This annotation is deprecated since ZPT 8.8 and will be removed in a future
  *     release. Use <a href="https://docs.camunda.io/docs/apis-tools/testing/getting-started/">Camunda
  *     Process Test</a> instead.
  */
