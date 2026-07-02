@@ -28,8 +28,8 @@ import org.springframework.test.context.TestExecutionListeners;
  *
  * @deprecated This annotation is deprecated since version 8.8 and will be removed in a future
  *     release. Use <a
- *     href="https://docs.camunda.io/docs/apis-tools/migration-manuals/migrate-to-camunda-process-test/">Camunda Process
- *     Test</a> instead.
+ *     href="https://docs.camunda.io/docs/apis-tools/migration-manuals/migrate-to-camunda-process-test/">Camunda
+ *     Process Test</a> instead.
  */
 @Deprecated(forRemoval = true, since = "8.8")
 @Target({ElementType.TYPE})
