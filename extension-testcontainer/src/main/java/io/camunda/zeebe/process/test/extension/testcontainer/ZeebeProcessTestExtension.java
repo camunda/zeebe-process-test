@@ -36,7 +36,12 @@ import org.slf4j.LoggerFactory;
 /**
  * This extension is used by the {@link ZeebeProcessTest} annotation. It is responsible for managing
  * the lifecycle of the test engine.
+ *
+ * @deprecated This class is deprecated since Camunda 8.8 and will be removed in a future release.
+ *     Use <a href="https://docs.camunda.io/docs/apis-tools/testing/getting-started/">Camunda
+ *     Process Test</a> instead.
  */
+@Deprecated
 public class ZeebeProcessTestExtension
     implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, TestWatcher {
 
