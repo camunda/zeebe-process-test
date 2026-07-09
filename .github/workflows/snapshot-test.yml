@@ -85,29 +85,40 @@ jobs:
         run: |
           FAILED=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs --paginate --jq '[.jobs[] | select(.conclusion == "failure") | .name | capture("\\((?<branch>[^)]+)\\)") | .branch] | unique | join(", ")')
           echo "branches=$FAILED" >> $GITHUB_OUTPUT
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@79632e33d6953d190b940ffa440bf97821cabd80
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          exportEnv: false
+          secrets: |
+            secret/data/products/camunda/ci/github-actions SLACK_CPT_ZPT_CI_WEBHOOK;    
       - id: slack-notify
         name: Send slack notification
         uses: slackapi/slack-github-action@v3.0.3
+        if: steps.secrets.outputs.SLACK_CPT_ZPT_CI_WEBHOOK != ''
         with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook: ${{ steps.secrets.outputs.SLACK_CPT_ZPT_CI_WEBHOOK }}
           webhook-type: incoming-webhook
           # For posting a rich message using Block Kit
           payload: |
             {
-              "text": ":alarm: `zeebe-process-test` build against Zeebe SNAPSHOT version failed! :alarm:",
               "blocks": [
                 {
+                   "type": "section",
+                   "text": {
+                     "type": "mrkdwn",
+                     "text": ":alarm: *Zeebe Process Test (ZPT) Compatibility Tests Failed*"
+                   }
+                 },
+                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":alarm: `zeebe-process-test` build against Zeebe SNAPSHOT version failed! :alarm:\n\nFailed branches: `${{ steps.failed-branches.outputs.branches }}`"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Please check: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    "text": "Branches: `${{ steps.failed-branches.outputs.branches }}`\nZeebe version: `SNAPSHOT`\nPlease check: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
                   }
                 }
               ]
