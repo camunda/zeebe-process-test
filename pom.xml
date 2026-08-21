@@ -77,7 +77,7 @@
     <dependency.bytebuddy.version>1.18.12-jdk5</dependency.bytebuddy.version>
     <dependency.camundamodel.version>7.24.0</dependency.camundamodel.version>
     <dependency.checker-qual.version>3.53.1</dependency.checker-qual.version>
-    <dependency.classgraph.version>4.8.192</dependency.classgraph.version>
+    <dependency.classgraph.version>4.8.193</dependency.classgraph.version>
     <dependency.commons.version>3.20.0</dependency.commons.version>
     <dependency.errorprone.version>2.47.0</dependency.errorprone.version>
     <dependency.feel.version>1.20.2</dependency.feel.version>
