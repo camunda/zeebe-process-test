@@ -45,7 +45,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 21.0.12+101.0.LTS
           cache: maven
           server-id: camunda-nexus-release
           server-username: ARTIFACTS_USR
@@ -93,7 +93,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 21.0.12+101.0.LTS
           cache: maven
           server-id: camunda-nexus-release
           server-username: ARTIFACTS_USR
@@ -153,7 +153,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 21.0.12+101.0.LTS
           cache: maven
           server-id: camunda-nexus-release
           server-username: ARTIFACTS_USR
