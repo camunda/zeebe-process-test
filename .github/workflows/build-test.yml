@@ -21,6 +21,9 @@ defaults:
 
 jobs:
   code-formatting:
+    permissions:
+      contents: read
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth
     name: check code formatting
     timeout-minutes: 15
     runs-on: ubuntu-latest
@@ -31,12 +34,13 @@ jobs:
 
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@v4.0.0
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc  # v4.0.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: jwt
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
           secrets: |
             secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_USR;
             secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_PSW;
@@ -61,6 +65,9 @@ jobs:
         run: mvn license:check
 
   build-and-test-embedded:
+    permissions:
+      contents: read
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth
     name: Run tests on ${{ matrix.os }}
     timeout-minutes: 15
     needs: code-formatting
@@ -77,12 +84,13 @@ jobs:
 
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@v4.0.0
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc  # v4.0.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: jwt
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
           secrets: |
             secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_USR;
             secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_PSW;
@@ -118,6 +126,9 @@ jobs:
           retention-days: 7
 
   build-and-test-testcontainers:
+    permissions:
+      contents: read
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth
     name: Run tests on ubuntu-latest using testcontainers
     timeout-minutes: 15
     needs: code-formatting
@@ -131,12 +142,13 @@ jobs:
 
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@v4.0.0
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc  # v4.0.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: jwt
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
           secrets: |
             secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_USR;
             secret/data/products/zeebe/ci/zeebe-process-test ARTIFACTS_PSW;
