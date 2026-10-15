@@ -111,6 +111,8 @@
     <nexus.snapshot.repository>https://artifacts.camunda.com/artifactory/zeebe-io-snapshots/</nexus.snapshot.repository>
     <nexus.snapshot.repository.id>camunda-nexus</nexus.snapshot.repository.id>
 
+    <!-- used by the central-sonatype-publish profile below, see the comment there -->
+    <plugin.version.central-publishing>0.12.0</plugin.version.central-publishing>
     <plugin.version.dependency>3.8.1</plugin.version.dependency>
     <plugin.version.flatten>1.7.3</plugin.version.flatten>
     <plugin.version.fmt>2.9.1</plugin.version.fmt>
@@ -849,5 +851,26 @@
       </extension>
     </extensions>
   </build>
+
+  <profiles>
+    <!--
+      Redeclares the parent's profile of the same id to override the plugin version it hard-codes.
+      Maven 3.10 writes maven-metadata-local.xml, _remote.repositories and .locks into the staging
+      directory. Only 0.12.0+ removes them before bundling; with older versions Central rejects the
+      bundle with "Bundle has content that does NOT have a .pom file".
+    -->
+    <profile>
+      <id>central-sonatype-publish</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>${plugin.version.central-publishing}</version>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
