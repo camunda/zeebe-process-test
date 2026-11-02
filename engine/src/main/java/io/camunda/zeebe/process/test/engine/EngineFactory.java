@@ -33,33 +33,16 @@ import io.camunda.zeebe.util.FeatureFlags;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.List;
 import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EngineFactory {
-  private static final Logger LOG = LoggerFactory.getLogger(EngineFactory.class);
-
   public static ZeebeTestEngine create() {
-    return create(findFreePort());
-  }
-
-  private static int findFreePort() {
-    final int freePort;
-    try (final var serverSocket = new ServerSocket(0)) {
-      freePort = serverSocket.getLocalPort();
-      LOG.info("Obtained free port for Zeebe in-memory engine from ephemeral range: {}", freePort);
-    } catch (final IOException e) {
-      throw new RuntimeException(e);
-    }
-    return freePort;
+    return create(0);
   }
 
   public static ZeebeTestEngine create(final Consumer<Intent> requestListener) {
-    return create(findFreePort(), requestListener);
+    return create(0, requestListener);
   }
 
   public static ZeebeTestEngine create(final int port) {

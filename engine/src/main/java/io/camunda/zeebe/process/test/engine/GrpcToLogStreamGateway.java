@@ -114,7 +114,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
   private final CommandWriter writer;
   private final int partitionId;
   private final int partitionCount;
-  private final int port;
+  private volatile int port;
   private final GatewayRequestStore gatewayRequestStore;
   private final InMemoryJobStreamer jobStreamer;
 
@@ -131,6 +131,10 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     this.port = port;
     this.gatewayRequestStore = gatewayRequestStore;
     this.jobStreamer = jobStreamer;
+  }
+
+  void setPort(final int port) {
+    this.port = port;
   }
 
   @Override

@@ -20,6 +20,7 @@ import io.camunda.zeebe.scheduler.clock.ControlledActorClock;
 import io.camunda.zeebe.stream.impl.StreamProcessor;
 import io.grpc.Server;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -67,6 +68,8 @@ public class InMemoryEngine implements ZeebeTestEngine {
   public void start() {
     try {
       grpcServer.start();
+      gateway.setPort(
+          ((InetSocketAddress) grpcServer.getListenSockets().get(0)).getPort());
       streamProcessor.openAsync(false).join();
     } catch (final IOException e) {
       LOG.error("Failed starting in memory engine", e);

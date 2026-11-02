@@ -141,6 +141,24 @@ class EngineClientTest {
   }
 
   @Test
+  void shouldStartMultipleEnginesOnDifferentPorts() {
+    final ZeebeTestEngine anotherEngine = EngineFactory.create();
+    try {
+      anotherEngine.start();
+      final ZeebeClient anotherClient = anotherEngine.createClient();
+      try {
+        assertThat(anotherEngine.getGatewayAddress())
+            .isNotEqualTo(zeebeEngine.getGatewayAddress());
+        assertThat(anotherClient.newTopologyRequest().send().join()).isNotNull();
+      } finally {
+        anotherClient.close();
+      }
+    } finally {
+      anotherEngine.stop();
+    }
+  }
+
+  @Test
   void shouldPublishMessage() {
     // given
     zeebeClient
