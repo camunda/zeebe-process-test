@@ -33,16 +33,22 @@ import io.camunda.zeebe.util.FeatureFlags;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 
 public class EngineFactory {
+  private static final int EPHEMERAL_PORT = 0;
+
   public static ZeebeTestEngine create() {
-    return create(0);
+    return create(EPHEMERAL_PORT);
   }
 
   public static ZeebeTestEngine create(final Consumer<Intent> requestListener) {
-    return create(0, requestListener);
+    return create(EPHEMERAL_PORT, requestListener);
   }
 
   public static ZeebeTestEngine create(final int port) {
@@ -63,10 +69,18 @@ public class EngineFactory {
     final CommandSender commandSender = new CommandSender(commandWriter);
     final GatewayRequestStore gatewayRequestStore = new GatewayRequestStore();
     final InMemoryJobStreamer jobStreamer = new InMemoryJobStreamer(commandWriter);
+    final AtomicReference<Server> grpcServerReference = new AtomicReference<>();
+    final IntSupplier boundPort = () -> getBoundPort(grpcServerReference.get());
     final GrpcToLogStreamGateway gateway =
         new GrpcToLogStreamGateway(
-            commandWriter, partitionId, partitionCount, port, gatewayRequestStore, jobStreamer);
+            commandWriter,
+            partitionId,
+            partitionCount,
+            boundPort,
+            gatewayRequestStore,
+            jobStreamer);
     final Server grpcServer = ServerBuilder.forPort(port).addService(gateway).build();
+    grpcServerReference.set(grpcServer);
 
     final GrpcResponseWriter grpcResponseWriter =
         new GrpcResponseWriter(gateway, gatewayRequestStore, requestListener);
@@ -100,6 +114,22 @@ public class EngineFactory {
         recordStream,
         clock,
         engineStateMonitor);
+  }
+
+  static int getBoundPort(final Server grpcServer) {
+    try {
+      final List<? extends SocketAddress> listenSockets = grpcServer.getListenSockets();
+      if (listenSockets.isEmpty() || !(listenSockets.get(0) instanceof InetSocketAddress address)) {
+        throw new IllegalStateException("The gRPC server has no Internet socket");
+      }
+      final int port = address.getPort();
+      if (port == 0) {
+        throw new IllegalStateException("The gRPC server is not bound to a port");
+      }
+      return port;
+    } catch (final RuntimeException e) {
+      throw new IllegalStateException("Could not retrieve the bound port from the gRPC server", e);
+    }
   }
 
   private static ControlledActorClock createActorClock() {

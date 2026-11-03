@@ -107,6 +107,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.IntSupplier;
 import org.agrona.DirectBuffer;
 
 class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
@@ -114,7 +115,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
   private final CommandWriter writer;
   private final int partitionId;
   private final int partitionCount;
-  private volatile int port;
+  private final IntSupplier portSupplier;
   private final GatewayRequestStore gatewayRequestStore;
   private final InMemoryJobStreamer jobStreamer;
 
@@ -122,13 +123,13 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
       final CommandWriter writer,
       final int partitionId,
       final int partitionCount,
-      final int port,
+      final IntSupplier portSupplier,
       final GatewayRequestStore gatewayRequestStore,
       final InMemoryJobStreamer jobStreamer) {
     this.writer = writer;
     this.partitionId = partitionId;
     this.partitionCount = partitionCount;
-    this.port = port;
+    this.portSupplier = portSupplier;
     this.gatewayRequestStore = gatewayRequestStore;
     this.jobStreamer = jobStreamer;
   }
@@ -471,7 +472,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
         GatewayOuterClass.BrokerInfo.newBuilder()
             .addPartitions(partition)
             .setHost("0.0.0.0")
-            .setPort(port)
+            .setPort(portSupplier.getAsInt())
             .setVersion(VersionUtil.getVersion())
             .build();
 
@@ -695,7 +696,7 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
   }
 
   public String getAddress() {
-    return "0.0.0.0:" + port;
+    return "0.0.0.0:" + portSupplier.getAsInt();
   }
 
   private final class GrpcJobConsumer implements JobConsumer, AutoCloseable {

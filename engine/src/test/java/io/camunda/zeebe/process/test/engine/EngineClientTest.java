@@ -47,6 +47,8 @@ import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
 import io.camunda.zeebe.util.VersionUtil;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -156,6 +158,15 @@ class EngineClientTest {
     } finally {
       anotherEngine.stop();
     }
+  }
+
+  @Test
+  void shouldFailClearlyWhenBoundPortIsUnavailable() {
+    final Server grpcServer = ServerBuilder.forPort(0).build();
+
+    assertThatThrownBy(() -> EngineFactory.getBoundPort(grpcServer))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Could not retrieve the bound port from the gRPC server");
   }
 
   @Test
