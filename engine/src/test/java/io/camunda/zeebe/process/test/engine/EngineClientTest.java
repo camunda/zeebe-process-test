@@ -53,8 +53,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -142,19 +144,70 @@ class EngineClientTest {
 
   @Test
   void shouldStartMultipleEnginesOnDifferentPorts() {
-    final ZeebeTestEngine anotherEngine = EngineFactory.create();
+    final var enginesCreated = new CountDownLatch(2);
+    final var startEngines = new CountDownLatch(1);
+    final var executor = Executors.newFixedThreadPool(2);
+    final var firstEngineFuture =
+        CompletableFuture.supplyAsync(
+            () -> createAndStartEngine(enginesCreated, startEngines), executor);
+    final var secondEngineFuture =
+        CompletableFuture.supplyAsync(
+            () -> createAndStartEngine(enginesCreated, startEngines), executor);
     try {
-      anotherEngine.start();
-      final ZeebeClient anotherClient = anotherEngine.createClient();
+      Uninterruptibles.awaitUninterruptibly(enginesCreated);
+      startEngines.countDown();
+
+      final var firstEngine = firstEngineFuture.join();
+      final var secondEngine = secondEngineFuture.join();
+      final ZeebeClient firstClient = firstEngine.createClient();
       try {
-        assertThat(anotherEngine.getGatewayAddress()).isNotEqualTo(zeebeEngine.getGatewayAddress());
-        assertThat(anotherClient.newTopologyRequest().send().join()).isNotNull();
+        final ZeebeClient secondClient = secondEngine.createClient();
+        try {
+          assertThat(firstEngine.getGatewayAddress())
+              .isNotEqualTo(secondEngine.getGatewayAddress());
+          assertThat(firstClient.newTopologyRequest().send().join()).isNotNull();
+          assertThat(secondClient.newTopologyRequest().send().join()).isNotNull();
+        } finally {
+          secondClient.close();
+        }
       } finally {
-        anotherClient.close();
+        firstClient.close();
       }
     } finally {
-      anotherEngine.stop();
+      startEngines.countDown();
+      executor.shutdown();
+      firstEngineFuture
+          .handle(
+              (engine, error) -> {
+                if (engine != null) {
+                  engine.stop();
+                }
+                return null;
+              })
+          .join();
+      secondEngineFuture
+          .handle(
+              (engine, error) -> {
+                if (engine != null) {
+                  engine.stop();
+                }
+                return null;
+              })
+          .join();
     }
+  }
+
+  private static ZeebeTestEngine createAndStartEngine(
+      final CountDownLatch enginesCreated, final CountDownLatch startEngines) {
+    final ZeebeTestEngine engine;
+    try {
+      engine = EngineFactory.create();
+    } finally {
+      enginesCreated.countDown();
+    }
+    Uninterruptibles.awaitUninterruptibly(startEngines);
+    engine.start();
+    return engine;
   }
 
   @Test
