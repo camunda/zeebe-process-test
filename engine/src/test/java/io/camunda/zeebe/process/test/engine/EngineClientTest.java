@@ -47,8 +47,6 @@ import io.camunda.zeebe.protocol.record.value.JobRecordValue;
 import io.camunda.zeebe.protocol.record.value.ProcessInstanceRecordValue;
 import io.camunda.zeebe.protocol.record.value.TimerRecordValue;
 import io.camunda.zeebe.util.VersionUtil;
-import io.grpc.Server;
-import io.grpc.ServerBuilder;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -149,8 +147,7 @@ class EngineClientTest {
       anotherEngine.start();
       final ZeebeClient anotherClient = anotherEngine.createClient();
       try {
-        assertThat(anotherEngine.getGatewayAddress())
-            .isNotEqualTo(zeebeEngine.getGatewayAddress());
+        assertThat(anotherEngine.getGatewayAddress()).isNotEqualTo(zeebeEngine.getGatewayAddress());
         assertThat(anotherClient.newTopologyRequest().send().join()).isNotNull();
       } finally {
         anotherClient.close();
@@ -158,15 +155,6 @@ class EngineClientTest {
     } finally {
       anotherEngine.stop();
     }
-  }
-
-  @Test
-  void shouldFailClearlyWhenBoundPortIsUnavailable() {
-    final Server grpcServer = ServerBuilder.forPort(0).build();
-
-    assertThatThrownBy(() -> EngineFactory.getBoundPort(grpcServer))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("Could not retrieve the bound port from the gRPC server");
   }
 
   @Test
@@ -362,20 +350,19 @@ class EngineClientTest {
     zeebeClient.newCancelInstanceCommand(processInstance.getProcessInstanceKey()).send().join();
 
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final Optional<Record<ProcessInstanceRecordValue>> first =
-                  StreamSupport.stream(
-                          RecordStream.of(zeebeEngine.getRecordStreamSource())
-                              .processInstanceRecords()
-                              .spliterator(),
-                          false)
-                      .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED)
-                      .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
-                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
-                      .findFirst();
-              assertThat(first).isNotEmpty();
-            });
+        .untilAsserted(() -> {
+          final Optional<Record<ProcessInstanceRecordValue>> first =
+              StreamSupport.stream(
+                      RecordStream.of(zeebeEngine.getRecordStreamSource())
+                          .processInstanceRecords()
+                          .spliterator(),
+                      false)
+                  .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_TERMINATED)
+                  .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                  .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
+                  .findFirst();
+          assertThat(first).isNotEmpty();
+        });
   }
 
   @Test
@@ -644,7 +631,7 @@ class EngineClientTest {
             .addProcessModel(
                 Bpmn.createExecutableProcess("simpleProcess")
                     .startEvent()
-                    .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                    .serviceTask("task", task -> task.zeebeJobType("jobType"))
                     .endEvent()
                     .done(),
                 "simpleProcess.bpmn")
@@ -661,32 +648,31 @@ class EngineClientTest {
             .join();
 
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              // when
-              final ActivateJobsResponse activateJobsResponse =
-                  zeebeClient
-                      .newActivateJobsCommand()
-                      .jobType("jobType")
-                      .maxJobsToActivate(32)
-                      .timeout(Duration.ofMinutes(1))
-                      .workerName("worker")
-                      .fetchVariables(List.of("test"))
-                      .send()
-                      .join();
+        .untilAsserted(() -> {
+          // when
+          final ActivateJobsResponse activateJobsResponse =
+              zeebeClient
+                  .newActivateJobsCommand()
+                  .jobType("jobType")
+                  .maxJobsToActivate(32)
+                  .timeout(Duration.ofMinutes(1))
+                  .workerName("worker")
+                  .fetchVariables(List.of("test"))
+                  .send()
+                  .join();
 
-              // then
-              final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
-              assertThat(jobs).isNotEmpty();
-              assertThat(jobs.get(0).getBpmnProcessId()).isEqualTo("simpleProcess");
-              assertThat(jobs.get(0).getProcessDefinitionKey())
-                  .isEqualTo(deployment.getProcesses().get(0).getProcessDefinitionKey());
-              assertThat(jobs.get(0).getProcessInstanceKey())
-                  .isEqualTo(processInstance.getProcessInstanceKey());
-              assertThat(jobs.get(0).getRetries()).isEqualTo(3);
-              assertThat(jobs.get(0).getType()).isEqualTo("jobType");
-              assertThat(jobs.get(0).getWorker()).isEqualTo("worker");
-            });
+          // then
+          final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
+          assertThat(jobs).isNotEmpty();
+          assertThat(jobs.get(0).getBpmnProcessId()).isEqualTo("simpleProcess");
+          assertThat(jobs.get(0).getProcessDefinitionKey())
+              .isEqualTo(deployment.getProcesses().get(0).getProcessDefinitionKey());
+          assertThat(jobs.get(0).getProcessInstanceKey())
+              .isEqualTo(processInstance.getProcessInstanceKey());
+          assertThat(jobs.get(0).getRetries()).isEqualTo(3);
+          assertThat(jobs.get(0).getType()).isEqualTo("jobType");
+          assertThat(jobs.get(0).getWorker()).isEqualTo("worker");
+        });
   }
 
   @Test
@@ -697,7 +683,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("process")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("test"))
+                .serviceTask("task", task -> task.zeebeJobType("test"))
                 .endEvent()
                 .done(),
             "process.bpmn")
@@ -707,9 +693,8 @@ class EngineClientTest {
     zeebeClient
         .newWorker()
         .jobType("test")
-        .handler(
-            (jobClient, job) ->
-                jobClient.newCompleteCommand(job.getKey()).variables(Map.of("x", 1)).send().join())
+        .handler((jobClient, job) ->
+            jobClient.newCompleteCommand(job.getKey()).variables(Map.of("x", 1)).send().join())
         .open();
 
     // when
@@ -734,7 +719,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
@@ -750,47 +735,45 @@ class EngineClientTest {
         .join();
 
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final ActivateJobsResponse activateJobsResponse =
-                  zeebeClient
-                      .newActivateJobsCommand()
-                      .jobType("jobType")
-                      .maxJobsToActivate(32)
-                      .timeout(Duration.ofMinutes(1))
-                      .workerName("yolo")
-                      .fetchVariables(List.of("test"))
-                      .send()
-                      .join();
-
-              final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
-              assertThat(jobs).isNotEmpty();
-              final ActivatedJob job = jobs.get(0);
-
-              // when - then
+        .untilAsserted(() -> {
+          final ActivateJobsResponse activateJobsResponse =
               zeebeClient
-                  .newFailCommand(job.getKey())
-                  .retries(0)
-                  .errorMessage("This failed oops.")
+                  .newActivateJobsCommand()
+                  .jobType("jobType")
+                  .maxJobsToActivate(32)
+                  .timeout(Duration.ofMinutes(1))
+                  .workerName("yolo")
+                  .fetchVariables(List.of("test"))
                   .send()
                   .join();
 
-              Awaitility.await()
-                  .untilAsserted(
-                      () -> {
-                        final Optional<Record<JobRecordValue>> failedJob =
-                            StreamSupport.stream(
-                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
-                                        .jobRecords()
-                                        .spliterator(),
-                                    false)
-                                .filter(r -> r.getKey() == job.getKey())
-                                .filter(r -> r.getIntent() == JobIntent.FAILED)
-                                .findFirst();
+          final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
+          assertThat(jobs).isNotEmpty();
+          final ActivatedJob job = jobs.get(0);
 
-                        assertThat(failedJob).isNotEmpty();
-                      });
-            });
+          // when - then
+          zeebeClient
+              .newFailCommand(job.getKey())
+              .retries(0)
+              .errorMessage("This failed oops.")
+              .send()
+              .join();
+
+          Awaitility.await()
+              .untilAsserted(() -> {
+                final Optional<Record<JobRecordValue>> failedJob =
+                    StreamSupport.stream(
+                            RecordStream.of(zeebeEngine.getRecordStreamSource())
+                                .jobRecords()
+                                .spliterator(),
+                            false)
+                        .filter(r -> r.getKey() == job.getKey())
+                        .filter(r -> r.getIntent() == JobIntent.FAILED)
+                        .findFirst();
+
+                assertThat(failedJob).isNotEmpty();
+              });
+        });
   }
 
   @Test
@@ -801,7 +784,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .boundaryEvent("error")
                 .error("0xCAFE")
                 .zeebeOutputExpression("error_var", "error_var")
@@ -820,67 +803,63 @@ class EngineClientTest {
 
     // when
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final ActivateJobsResponse activateJobsResponse =
-                  zeebeClient
-                      .newActivateJobsCommand()
-                      .jobType("jobType")
-                      .maxJobsToActivate(32)
-                      .timeout(Duration.ofMinutes(1))
-                      .workerName("yolo")
-                      .send()
-                      .join();
-
-              final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
-              assertThat(jobs).isNotEmpty();
-              final ActivatedJob job = jobs.get(0);
-
+        .untilAsserted(() -> {
+          final ActivateJobsResponse activateJobsResponse =
               zeebeClient
-                  .newThrowErrorCommand(job.getKey())
-                  .errorCode("0xCAFE")
-                  .errorMessage("What just happened.")
-                  .variable("error_var", "Out of coffee")
+                  .newActivateJobsCommand()
+                  .jobType("jobType")
+                  .maxJobsToActivate(32)
+                  .timeout(Duration.ofMinutes(1))
+                  .workerName("yolo")
                   .send()
                   .join();
-            });
+
+          final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
+          assertThat(jobs).isNotEmpty();
+          final ActivatedJob job = jobs.get(0);
+
+          zeebeClient
+              .newThrowErrorCommand(job.getKey())
+              .errorCode("0xCAFE")
+              .errorMessage("What just happened.")
+              .variable("error_var", "Out of coffee")
+              .send()
+              .join();
+        });
 
     // then
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final Optional<Record<ProcessInstanceRecordValue>> boundaryEvent =
-                  StreamSupport.stream(
-                          RecordStream.of(zeebeEngine.getRecordStreamSource())
-                              .processInstanceRecords()
-                              .spliterator(),
-                          false)
-                      .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
-                      .filter(
-                          r -> r.getValue().getBpmnElementType() == BpmnElementType.BOUNDARY_EVENT)
-                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.ERROR)
-                      .findFirst();
+        .untilAsserted(() -> {
+          final Optional<Record<ProcessInstanceRecordValue>> boundaryEvent =
+              StreamSupport.stream(
+                      RecordStream.of(zeebeEngine.getRecordStreamSource())
+                          .processInstanceRecords()
+                          .spliterator(),
+                      false)
+                  .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
+                  .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.BOUNDARY_EVENT)
+                  .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.ERROR)
+                  .findFirst();
 
-              assertThat(boundaryEvent)
-                  .describedAs("Expect that the error boundary event is completed")
-                  .isNotEmpty();
+          assertThat(boundaryEvent)
+              .describedAs("Expect that the error boundary event is completed")
+              .isNotEmpty();
 
-              final var errorVariable =
-                  StreamSupport.stream(
-                          RecordStream.of(zeebeEngine.getRecordStreamSource())
-                              .variableRecords()
-                              .spliterator(),
-                          false)
-                      .filter(r -> r.getValue().getName().equals("error_var"))
-                      .findFirst();
+          final var errorVariable =
+              StreamSupport.stream(
+                      RecordStream.of(zeebeEngine.getRecordStreamSource())
+                          .variableRecords()
+                          .spliterator(),
+                      false)
+                  .filter(r -> r.getValue().getName().equals("error_var"))
+                  .findFirst();
 
-              assertThat(errorVariable)
-                  .describedAs("Expect that the error variable is set")
-                  .isPresent()
-                  .hasValueSatisfying(
-                      record ->
-                          assertThat(record.getValue().getValue()).isEqualTo("\"Out of coffee\""));
-            });
+          assertThat(errorVariable)
+              .describedAs("Expect that the error variable is set")
+              .isPresent()
+              .hasValueSatisfying(record ->
+                  assertThat(record.getValue().getValue()).isEqualTo("\"Out of coffee\""));
+        });
   }
 
   @Test
@@ -891,7 +870,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
@@ -907,41 +886,39 @@ class EngineClientTest {
         .join();
 
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final ActivateJobsResponse activateJobsResponse =
-                  zeebeClient
-                      .newActivateJobsCommand()
-                      .jobType("jobType")
-                      .maxJobsToActivate(32)
-                      .timeout(Duration.ofMinutes(1))
-                      .workerName("yolo")
-                      .fetchVariables(List.of("test"))
-                      .send()
-                      .join();
+        .untilAsserted(() -> {
+          final ActivateJobsResponse activateJobsResponse =
+              zeebeClient
+                  .newActivateJobsCommand()
+                  .jobType("jobType")
+                  .maxJobsToActivate(32)
+                  .timeout(Duration.ofMinutes(1))
+                  .workerName("yolo")
+                  .fetchVariables(List.of("test"))
+                  .send()
+                  .join();
 
-              final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
-              assertThat(jobs).isNotEmpty();
-              final ActivatedJob job = jobs.get(0);
+          final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
+          assertThat(jobs).isNotEmpty();
+          final ActivatedJob job = jobs.get(0);
 
-              // when - then
-              zeebeClient.newUpdateRetriesCommand(job.getKey()).retries(3).send().join();
+          // when - then
+          zeebeClient.newUpdateRetriesCommand(job.getKey()).retries(3).send().join();
 
-              Awaitility.await()
-                  .untilAsserted(
-                      () -> {
-                        final Optional<Record<JobRecordValue>> retriesUpdated =
-                            StreamSupport.stream(
-                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
-                                        .jobRecords()
-                                        .spliterator(),
-                                    false)
-                                .filter(r -> r.getKey() == job.getKey())
-                                .filter(r -> r.getIntent() == JobIntent.RETRIES_UPDATED)
-                                .findFirst();
-                        assertThat(retriesUpdated).isNotEmpty();
-                      });
-            });
+          Awaitility.await()
+              .untilAsserted(() -> {
+                final Optional<Record<JobRecordValue>> retriesUpdated =
+                    StreamSupport.stream(
+                            RecordStream.of(zeebeEngine.getRecordStreamSource())
+                                .jobRecords()
+                                .spliterator(),
+                            false)
+                        .filter(r -> r.getKey() == job.getKey())
+                        .filter(r -> r.getIntent() == JobIntent.RETRIES_UPDATED)
+                        .findFirst();
+                assertThat(retriesUpdated).isNotEmpty();
+              });
+        });
   }
 
   @Test
@@ -952,7 +929,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
@@ -973,27 +950,26 @@ class EngineClientTest {
         .join();
 
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              // when
-              final ActivateJobsResponse activateJobsResponse =
-                  zeebeClient
-                      .newActivateJobsCommand()
-                      .jobType("jobType")
-                      .maxJobsToActivate(32)
-                      .timeout(Duration.ofMinutes(1))
-                      .workerName("yolo")
-                      .fetchVariables(List.of("var_b", "var_d"))
-                      .send()
-                      .join();
+        .untilAsserted(() -> {
+          // when
+          final ActivateJobsResponse activateJobsResponse =
+              zeebeClient
+                  .newActivateJobsCommand()
+                  .jobType("jobType")
+                  .maxJobsToActivate(32)
+                  .timeout(Duration.ofMinutes(1))
+                  .workerName("yolo")
+                  .fetchVariables(List.of("var_b", "var_d"))
+                  .send()
+                  .join();
 
-              // then
-              final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
-              assertThat(jobs)
-                  .first()
-                  .extracting(ActivatedJob::getVariablesAsMap)
-                  .isEqualTo(Map.of("var_b", "val_b", "var_d", "val_d"));
-            });
+          // then
+          final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
+          assertThat(jobs)
+              .first()
+              .extracting(ActivatedJob::getVariablesAsMap)
+              .isEqualTo(Map.of("var_b", "val_b", "var_d", "val_d"));
+        });
   }
 
   @Test
@@ -1004,7 +980,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
@@ -1020,47 +996,45 @@ class EngineClientTest {
         .join();
 
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final ActivateJobsResponse activateJobsResponse =
-                  zeebeClient
-                      .newActivateJobsCommand()
-                      .jobType("jobType")
-                      .maxJobsToActivate(32)
-                      .timeout(Duration.ofMinutes(10))
-                      .workerName("yolo")
-                      .fetchVariables(List.of("test"))
-                      .send()
-                      .join();
-
-              final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
-              assertThat(jobs).isNotEmpty();
-              final ActivatedJob job = jobs.get(0);
-
-              // when - then
+        .untilAsserted(() -> {
+          final ActivateJobsResponse activateJobsResponse =
               zeebeClient
-                  .newUpdateTimeoutCommand(job.getKey())
-                  .timeout(Duration.ofMinutes(11))
+                  .newActivateJobsCommand()
+                  .jobType("jobType")
+                  .maxJobsToActivate(32)
+                  .timeout(Duration.ofMinutes(10))
+                  .workerName("yolo")
+                  .fetchVariables(List.of("test"))
                   .send()
                   .join();
 
-              Awaitility.await()
-                  .untilAsserted(
-                      () -> {
-                        final Optional<Record<JobRecordValue>> timeoutUpdated =
-                            StreamSupport.stream(
-                                    RecordStream.of(zeebeEngine.getRecordStreamSource())
-                                        .jobRecords()
-                                        .spliterator(),
-                                    false)
-                                .filter(r -> r.getKey() == job.getKey())
-                                .filter(r -> r.getIntent() == JobIntent.TIMEOUT_UPDATED)
-                                .findFirst();
-                        assertThat(timeoutUpdated).isNotEmpty();
-                        assertThat(timeoutUpdated.get().getValue().getDeadline())
-                            .isGreaterThan(job.getDeadline());
-                      });
-            });
+          final List<ActivatedJob> jobs = activateJobsResponse.getJobs();
+          assertThat(jobs).isNotEmpty();
+          final ActivatedJob job = jobs.get(0);
+
+          // when - then
+          zeebeClient
+              .newUpdateTimeoutCommand(job.getKey())
+              .timeout(Duration.ofMinutes(11))
+              .send()
+              .join();
+
+          Awaitility.await()
+              .untilAsserted(() -> {
+                final Optional<Record<JobRecordValue>> timeoutUpdated =
+                    StreamSupport.stream(
+                            RecordStream.of(zeebeEngine.getRecordStreamSource())
+                                .jobRecords()
+                                .spliterator(),
+                            false)
+                        .filter(r -> r.getKey() == job.getKey())
+                        .filter(r -> r.getIntent() == JobIntent.TIMEOUT_UPDATED)
+                        .findFirst();
+                assertThat(timeoutUpdated).isNotEmpty();
+                assertThat(timeoutUpdated.get().getValue().getDeadline())
+                    .isGreaterThan(job.getDeadline());
+              });
+        });
   }
 
   @Test
@@ -1086,42 +1060,37 @@ class EngineClientTest {
 
     // then
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final List<Record<ProcessInstanceRecordValue>> processRecords =
-                  StreamSupport.stream(
-                          RecordStream.of(zeebeEngine.getRecordStreamSource())
-                              .processInstanceRecords()
-                              .spliterator(),
-                          false)
-                      .filter(r -> r.getRecordType() == RecordType.EVENT)
-                      .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
-                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
-                      .limit(4)
-                      .collect(Collectors.toList());
+        .untilAsserted(() -> {
+          final List<Record<ProcessInstanceRecordValue>> processRecords =
+              StreamSupport.stream(
+                      RecordStream.of(zeebeEngine.getRecordStreamSource())
+                          .processInstanceRecords()
+                          .spliterator(),
+                      false)
+                  .filter(r -> r.getRecordType() == RecordType.EVENT)
+                  .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                  .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
+                  .limit(4)
+                  .collect(Collectors.toList());
 
-              assertThat(processRecords)
-                  .hasSize(4)
-                  .extracting(Record::getIntent)
-                  .contains(
-                      ProcessInstanceIntent.ELEMENT_ACTIVATING,
-                      ProcessInstanceIntent.ELEMENT_ACTIVATED,
-                      ProcessInstanceIntent.ELEMENT_COMPLETING,
-                      ProcessInstanceIntent.ELEMENT_COMPLETED);
+          assertThat(processRecords)
+              .hasSize(4)
+              .extracting(Record::getIntent)
+              .contains(
+                  ProcessInstanceIntent.ELEMENT_ACTIVATING,
+                  ProcessInstanceIntent.ELEMENT_ACTIVATED,
+                  ProcessInstanceIntent.ELEMENT_COMPLETING,
+                  ProcessInstanceIntent.ELEMENT_COMPLETED);
 
-              final ProcessInstanceRecordValue processInstanceRecord =
-                  processRecords.get(0).getValue();
-              assertThat(processInstanceRecord.getProcessDefinitionKey())
-                  .isEqualTo(processInstance.getProcessDefinitionKey());
-              assertThat(processInstanceRecord.getBpmnProcessId())
-                  .isEqualTo(processInstance.getBpmnProcessId());
-              assertThat(processInstanceRecord.getVersion())
-                  .isEqualTo(processInstance.getVersion());
-              assertThat(processInstanceRecord.getBpmnElementType())
-                  .isEqualTo(BpmnElementType.PROCESS);
-              assertThat(processInstanceRecord.getBpmnEventType())
-                  .isEqualTo(BpmnEventType.UNSPECIFIED);
-            });
+          final ProcessInstanceRecordValue processInstanceRecord = processRecords.get(0).getValue();
+          assertThat(processInstanceRecord.getProcessDefinitionKey())
+              .isEqualTo(processInstance.getProcessDefinitionKey());
+          assertThat(processInstanceRecord.getBpmnProcessId())
+              .isEqualTo(processInstance.getBpmnProcessId());
+          assertThat(processInstanceRecord.getVersion()).isEqualTo(processInstance.getVersion());
+          assertThat(processInstanceRecord.getBpmnElementType()).isEqualTo(BpmnElementType.PROCESS);
+          assertThat(processInstanceRecord.getBpmnEventType()).isEqualTo(BpmnEventType.UNSPECIFIED);
+        });
   }
 
   @Test
@@ -1147,17 +1116,16 @@ class EngineClientTest {
     // then
     final RecordStream recordStream = RecordStream.of(zeebeEngine.getRecordStreamSource());
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final Optional<Record<ProcessInstanceRecordValue>> processRecords =
-                  StreamSupport.stream(recordStream.processInstanceRecords().spliterator(), false)
-                      .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
-                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
-                      .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
-                      .findFirst();
+        .untilAsserted(() -> {
+          final Optional<Record<ProcessInstanceRecordValue>> processRecords =
+              StreamSupport.stream(recordStream.processInstanceRecords().spliterator(), false)
+                  .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                  .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
+                  .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
+                  .findFirst();
 
-              assertThat(processRecords).isNotEmpty();
-            });
+          assertThat(processRecords).isNotEmpty();
+        });
 
     recordStream.print(true);
   }
@@ -1181,39 +1149,37 @@ class EngineClientTest {
     zeebeClient.newCreateInstanceCommand().bpmnProcessId("process").latestVersion().send().join();
 
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final Optional<Record<TimerRecordValue>> timerCreated =
-                  StreamSupport.stream(
-                          RecordStream.of(zeebeEngine.getRecordStreamSource())
-                              .timerRecords()
-                              .spliterator(),
-                          false)
-                      .filter(r -> r.getIntent() == TimerIntent.CREATED)
-                      .findFirst();
+        .untilAsserted(() -> {
+          final Optional<Record<TimerRecordValue>> timerCreated =
+              StreamSupport.stream(
+                      RecordStream.of(zeebeEngine.getRecordStreamSource())
+                          .timerRecords()
+                          .spliterator(),
+                      false)
+                  .filter(r -> r.getIntent() == TimerIntent.CREATED)
+                  .findFirst();
 
-              assertThat(timerCreated).isNotEmpty();
-            });
+          assertThat(timerCreated).isNotEmpty();
+        });
 
     // when
     zeebeEngine.increaseTime(Duration.ofDays(1));
 
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final Optional<Record<ProcessInstanceRecordValue>> processCompleted =
-                  StreamSupport.stream(
-                          RecordStream.of(zeebeEngine.getRecordStreamSource())
-                              .processInstanceRecords()
-                              .spliterator(),
-                          false)
-                      .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
-                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
-                      .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
-                      .findFirst();
+        .untilAsserted(() -> {
+          final Optional<Record<ProcessInstanceRecordValue>> processCompleted =
+              StreamSupport.stream(
+                      RecordStream.of(zeebeEngine.getRecordStreamSource())
+                          .processInstanceRecords()
+                          .spliterator(),
+                      false)
+                  .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                  .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
+                  .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
+                  .findFirst();
 
-              assertThat(processCompleted).isNotEmpty();
-            });
+          assertThat(processCompleted).isNotEmpty();
+        });
   }
 
   @Test
@@ -1288,21 +1254,20 @@ class EngineClientTest {
 
     // then
     Awaitility.await()
-        .untilAsserted(
-            () -> {
-              final Optional<Record<ProcessInstanceRecordValue>> processCompleted =
-                  StreamSupport.stream(
-                          RecordStream.of(zeebeEngine.getRecordStreamSource())
-                              .processInstanceRecords()
-                              .spliterator(),
-                          false)
-                      .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
-                      .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
-                      .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
-                      .findFirst();
+        .untilAsserted(() -> {
+          final Optional<Record<ProcessInstanceRecordValue>> processCompleted =
+              StreamSupport.stream(
+                      RecordStream.of(zeebeEngine.getRecordStreamSource())
+                          .processInstanceRecords()
+                          .spliterator(),
+                      false)
+                  .filter(r -> r.getValue().getBpmnElementType() == BpmnElementType.PROCESS)
+                  .filter(r -> r.getValue().getBpmnEventType() == BpmnEventType.UNSPECIFIED)
+                  .filter(r -> r.getIntent() == ProcessInstanceIntent.ELEMENT_COMPLETED)
+                  .findFirst();
 
-              assertThat(processCompleted).isNotEmpty();
-            });
+          assertThat(processCompleted).isNotEmpty();
+        });
 
     assertThat(responseIntents).doesNotContain(SignalIntent.BROADCASTED);
   }
@@ -1356,22 +1321,20 @@ class EngineClientTest {
     // is asynchronous, we just create some jobs until we receive at least one
     try {
       Awaitility.await("until we've received some jobs")
-          .untilAsserted(
-              () -> {
-                createSingleTaskInstance(Map.of("test", 1));
-                assertThat(jobs).isNotEmpty();
-              });
+          .untilAsserted(() -> {
+            createSingleTaskInstance(Map.of("test", 1));
+            assertThat(jobs).isNotEmpty();
+          });
 
       assertThat(jobs)
-          .allSatisfy(
-              job -> {
-                assertThat(job.getBpmnProcessId()).isEqualTo("simpleProcess");
-                assertThat(job.getProcessDefinitionKey())
-                    .isEqualTo(deployment.getProcesses().get(0).getProcessDefinitionKey());
-                assertThat(job.getRetries()).isEqualTo(3);
-                assertThat(job.getType()).isEqualTo("jobType");
-                assertThat(job.getWorker()).isEqualTo("worker");
-              });
+          .allSatisfy(job -> {
+            assertThat(job.getBpmnProcessId()).isEqualTo("simpleProcess");
+            assertThat(job.getProcessDefinitionKey())
+                .isEqualTo(deployment.getProcesses().get(0).getProcessDefinitionKey());
+            assertThat(job.getRetries()).isEqualTo(3);
+            assertThat(job.getType()).isEqualTo("jobType");
+            assertThat(job.getWorker()).isEqualTo("worker");
+          });
     } finally {
       stream.cancel(true);
     }
@@ -1405,28 +1368,26 @@ class EngineClientTest {
       Awaitility.await("until some jobs are yielded")
           .pollInSameThread()
           .pollInterval(Duration.ofMillis(50))
-          .untilAsserted(
-              () -> {
-                createSingleTaskInstance(variables);
-                new JobRecordStreamFilter(recordStream.jobRecords())
-                    .withIntent(JobIntent.YIELDED).stream()
-                        .forEach(job -> yieldedJobs.put(job.getKey(), job));
-                assertThat(yieldedJobs).isNotEmpty();
-              });
+          .untilAsserted(() -> {
+            createSingleTaskInstance(variables);
+            new JobRecordStreamFilter(recordStream.jobRecords())
+                .withIntent(JobIntent.YIELDED).stream()
+                    .forEach(job -> yieldedJobs.put(job.getKey(), job));
+            assertThat(yieldedJobs).isNotEmpty();
+          });
       latch.countDown();
 
       // since we're not exactly tracking which jobs are yielded, we can only do a coarse validation
       // that the right job was yielded
       assertThat(yieldedJobs)
-          .allSatisfy(
-              (key, job) -> {
-                assertThat(job.getIntent()).isEqualTo(JobIntent.YIELDED);
-                assertThat(job.getValue().getBpmnProcessId()).isEqualTo("simpleProcess");
-                assertThat(job.getValue().getProcessDefinitionKey())
-                    .isEqualTo(deployment.getProcesses().get(0).getProcessDefinitionKey());
-                assertThat(job.getValue().getRetries()).isEqualTo(3);
-                assertThat(job.getValue().getType()).isEqualTo("jobType");
-              });
+          .allSatisfy((key, job) -> {
+            assertThat(job.getIntent()).isEqualTo(JobIntent.YIELDED);
+            assertThat(job.getValue().getBpmnProcessId()).isEqualTo("simpleProcess");
+            assertThat(job.getValue().getProcessDefinitionKey())
+                .isEqualTo(deployment.getProcesses().get(0).getProcessDefinitionKey());
+            assertThat(job.getValue().getRetries()).isEqualTo(3);
+            assertThat(job.getValue().getType()).isEqualTo("jobType");
+          });
     } finally {
       stream.cancel(true);
     }
@@ -1448,7 +1409,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")

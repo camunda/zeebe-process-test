@@ -116,7 +116,7 @@ public class EngineFactory {
         engineStateMonitor);
   }
 
-  static int getBoundPort(final Server grpcServer) {
+  private static int getBoundPort(final Server grpcServer) {
     try {
       final List<? extends SocketAddress> listenSockets = grpcServer.getListenSockets();
       if (listenSockets.isEmpty() || !(listenSockets.get(0) instanceof InetSocketAddress address)) {
