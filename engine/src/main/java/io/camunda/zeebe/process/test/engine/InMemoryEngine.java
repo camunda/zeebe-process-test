@@ -67,7 +67,6 @@ public class InMemoryEngine implements ZeebeTestEngine {
   public void start() {
     try {
       grpcServer.start();
-      EngineFactory.getBoundPort(grpcServer);
       streamProcessor.openAsync(false).join();
     } catch (final IOException e) {
       LOG.error("Failed starting in memory engine", e);
