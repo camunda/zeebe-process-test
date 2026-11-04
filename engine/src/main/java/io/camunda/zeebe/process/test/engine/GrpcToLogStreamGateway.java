@@ -134,9 +134,6 @@ class GrpcToLogStreamGateway extends GatewayGrpc.GatewayImplBase {
     this.jobStreamer = jobStreamer;
   }
 
-  void setPort(final int port) {
-    this.port = port;
-  }
 
   @Override
   public void activateJobs(
