@@ -116,7 +116,8 @@ public class EngineFactory {
   private static int getBoundPort(final Server grpcServer) {
     try {
       final List<? extends SocketAddress> listenSockets = grpcServer.getListenSockets();
-      if (listenSockets.isEmpty() || !(listenSockets.get(0) instanceof InetSocketAddress address)) {
+      if (listenSockets.isEmpty()
+          || !(listenSockets.getFirst() instanceof InetSocketAddress address)) {
         throw new IllegalStateException("The gRPC server has no Internet socket");
       }
       final int port = address.getPort();
