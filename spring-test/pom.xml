@@ -97,6 +97,16 @@
         <dependency.junit.version>6.0.1</dependency.junit.version>
         <dependency.spring-boot.version>4.0.1</dependency.spring-boot.version>
       </properties>
+      <dependencyManagement>
+        <dependencies>
+          <!-- Pin the j2objc-annotations version to resolve dependency conflicts between the Camunda Spring Boot 4 starter and Spring dependencies. -->
+          <dependency>
+            <groupId>com.google.j2objc</groupId>
+            <artifactId>j2objc-annotations</artifactId>
+            <version>3.1</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
     </profile>
   </profiles>
 </project>
