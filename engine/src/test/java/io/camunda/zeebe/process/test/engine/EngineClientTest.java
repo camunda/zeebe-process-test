@@ -53,8 +53,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -138,6 +140,65 @@ class EngineClientTest {
 
     // then
     assertThat(topology).isNotNull();
+  }
+
+  @Test
+  void shouldStartMultipleEnginesOnDifferentPorts() {
+    final var enginesCreated = new CountDownLatch(2);
+    final var startEngines = new CountDownLatch(1);
+    final var executor = Executors.newFixedThreadPool(2);
+    final var firstEngineFuture =
+        CompletableFuture.supplyAsync(
+            () -> createAndStartEngine(enginesCreated, startEngines), executor);
+    final var secondEngineFuture =
+        CompletableFuture.supplyAsync(
+            () -> createAndStartEngine(enginesCreated, startEngines), executor);
+    try {
+      Uninterruptibles.awaitUninterruptibly(enginesCreated);
+      startEngines.countDown();
+
+      final var firstEngine = firstEngineFuture.join();
+      final var secondEngine = secondEngineFuture.join();
+      final ZeebeClient firstClient = firstEngine.createClient();
+      try {
+        final ZeebeClient secondClient = secondEngine.createClient();
+        try {
+          assertThat(firstEngine.getGatewayAddress())
+              .isNotEqualTo(secondEngine.getGatewayAddress());
+          assertThat(firstClient.newTopologyRequest().send().join()).isNotNull();
+          assertThat(secondClient.newTopologyRequest().send().join()).isNotNull();
+        } finally {
+          secondClient.close();
+        }
+      } finally {
+        firstClient.close();
+      }
+    } finally {
+      startEngines.countDown();
+      executor.shutdown();
+      firstEngineFuture.handle(EngineClientTest::closeEngine).join();
+      secondEngineFuture.handle(EngineClientTest::closeEngine).join();
+    }
+  }
+
+  private static ZeebeTestEngine createAndStartEngine(
+      final CountDownLatch enginesCreated, final CountDownLatch startEngines) {
+    final ZeebeTestEngine engine;
+    try {
+      engine = EngineFactory.create();
+    } finally {
+      enginesCreated.countDown();
+    }
+    Uninterruptibles.awaitUninterruptibly(startEngines);
+    engine.start();
+    return engine;
+  }
+
+  private static Object closeEngine(final ZeebeTestEngine engine, final Throwable error) {
+    if (engine != null) {
+      engine.stop();
+    }
+    return null;
   }
 
   @Test
@@ -615,7 +676,7 @@ class EngineClientTest {
             .addProcessModel(
                 Bpmn.createExecutableProcess("simpleProcess")
                     .startEvent()
-                    .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                    .serviceTask("task", task -> task.zeebeJobType("jobType"))
                     .endEvent()
                     .done(),
                 "simpleProcess.bpmn")
@@ -668,7 +729,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("process")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("test"))
+                .serviceTask("task", task -> task.zeebeJobType("test"))
                 .endEvent()
                 .done(),
             "process.bpmn")
@@ -705,7 +766,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
@@ -772,7 +833,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .boundaryEvent("error")
                 .error("0xCAFE")
                 .zeebeOutputExpression("error_var", "error_var")
@@ -862,7 +923,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
@@ -923,7 +984,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
@@ -975,7 +1036,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
@@ -1419,7 +1480,7 @@ class EngineClientTest {
         .addProcessModel(
             Bpmn.createExecutableProcess("simpleProcess")
                 .startEvent()
-                .serviceTask("task", (task) -> task.zeebeJobType("jobType"))
+                .serviceTask("task", task -> task.zeebeJobType("jobType"))
                 .endEvent()
                 .done(),
             "simpleProcess.bpmn")
