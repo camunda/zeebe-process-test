@@ -8,29 +8,22 @@ permissions:
   contents: read
   actions: read
 jobs:
-  get-branches:
-    name: Get branches
-    runs-on: ubuntu-latest
-    outputs:
-      branches: ${{ steps.get-branches.outputs.branches }}
-    steps:
-      - name: Get branches
-        id: get-branches
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          BRANCHES=$(gh api repos/${{ github.repository }}/branches --paginate --jq '[.[].name | select(startswith("stable/"))]')
-          echo "branches=$BRANCHES" >> $GITHUB_OUTPUT
-
   test-against-zeebe-snapshot:
-    name: Run tests against Zeebe SNAPSHOT version (${{ matrix.branch }})
+    name: Run tests against Zeebe SNAPSHOT version (${{ matrix.branch }}${{ matrix.profile && format(' + {0}', matrix.profile) || '' }})
     timeout-minutes: 15
-    needs: get-branches
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        branch: ${{ fromJson(needs.get-branches.outputs.branches) }}
+        include:
+          - branch: stable/8.6
+          - branch: stable/8.7
+          - branch: stable/8.7
+            profile: spring-boot-4.0
+          - branch: stable/8.8
+          - branch: stable/8.8
+            profile: spring-boot-4.0
+          - branch: stable/8.9
 
     steps:
       - name: Checkout
@@ -55,14 +48,21 @@ jobs:
             NEW_ZEEBE_VERSION=`echo $CURRENT_ZEEBE_VERSION | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.`-SNAPSHOT
           fi
           echo $NEW_ZEEBE_VERSION
-          mvn -B -U "-Dsurefire.rerunFailingTestsCount=5" -Ddependency.zeebe.version=$NEW_ZEEBE_VERSION clean install
+          PROFILE_ARG=""
+          if [ -n "$PROFILE" ]; then
+            PROFILE_ARG="-P$PROFILE"
+          fi
+          mvn -B -U $PROFILE_ARG "-Dsurefire.rerunFailingTestsCount=5" -Ddependency.zeebe.version=$NEW_ZEEBE_VERSION clean install
+        env:
+          PROFILE: ${{ matrix.profile }}
 
       - name: Set artifact name
         if: always()
         id: artifact
-        run: echo "name=${BRANCH//\//-}" >> $GITHUB_OUTPUT
+        run: echo "name=${BRANCH//\//-}${PROFILE:+-$PROFILE}" >> $GITHUB_OUTPUT
         env:
           BRANCH: ${{ matrix.branch }}
+          PROFILE: ${{ matrix.profile }}
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v7
