@@ -33,6 +33,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
@@ -66,14 +67,23 @@ public class EngineFactory {
     final CommandSender commandSender = new CommandSender(commandWriter);
     final GatewayRequestStore gatewayRequestStore = new GatewayRequestStore();
     final InMemoryJobStreamer jobStreamer = new InMemoryJobStreamer(commandWriter);
+
+    final AtomicInteger grpcServerPort = new AtomicInteger(-1);
     final AtomicReference<Server> grpcServerReference = new AtomicReference<>();
-    final IntSupplier boundPort = () -> getBoundPort(grpcServerReference.get());
+    final IntSupplier boundPortSupplier =
+        () -> {
+          if (grpcServerPort.get() == -1) {
+            final int boundPort = getBoundPort(grpcServerReference.get());
+            grpcServerPort.set(boundPort);
+          }
+          return grpcServerPort.get();
+        };
     final GrpcToLogStreamGateway gateway =
         new GrpcToLogStreamGateway(
             commandWriter,
             partitionId,
             partitionCount,
-            boundPort,
+            boundPortSupplier,
             gatewayRequestStore,
             jobStreamer);
     final Server grpcServer = ServerBuilder.forPort(port).addService(gateway).build();
