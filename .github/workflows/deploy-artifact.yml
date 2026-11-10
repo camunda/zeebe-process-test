@@ -21,10 +21,16 @@ on:
 
 jobs:
   test:
+    permissions:
+      contents: read
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth
     uses: ./.github/workflows/build-test.yml
     secrets: inherit
 
   deploy:
+    permissions:
+      contents: write  # the Maven release and upload-release-asset use GITHUB_TOKEN
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth
     runs-on: ubuntu-latest
     needs: [test]
     if: ${{ always() && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
@@ -46,12 +52,13 @@ jobs:
 
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@v3.0.0
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc  # v4.0.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: jwt
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
           secrets: |
             secret/data/products/zeebe/ci/zeebe-process-test REGISTRY_HUB_DOCKER_COM_USR;
             secret/data/products/zeebe/ci/zeebe-process-test REGISTRY_HUB_DOCKER_COM_PSW;
@@ -182,16 +189,18 @@ jobs:
     needs: [deploy]
     if: ${{ always() }}
     timeout-minutes: 5
-    permissions: {}  # GITHUB_TOKEN unused in this job
+    permissions:
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth (GITHUB_TOKEN otherwise unused in this job)
     steps:
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@7709c609789c5e27b757a85817483caadbb5939a # v3.3.0
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc  # v4.0.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: jwt
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
           exportEnv: false # we rely on step outputs, no need for environment variables
           secrets: |
             secret/data/products/camunda/ci/github-actions SLACK_TOPMONOREPORELEASE_WEBHOOK_URL;
