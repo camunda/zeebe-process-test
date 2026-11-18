@@ -125,7 +125,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 21.0.13+9.0.LTS
+          java-version: 21.0.13+100000002.0.LTS
           cache: maven
 
       - name: Update Zeebe version
