@@ -95,6 +95,14 @@
       "enabled": false
     },
     {
+      "description": "Wait before proposing any freshly released version. Releases without a timestamp are not delayed, so the required Test summary check has to block them if they are not installable yet.",
+      "matchPackageNames": [
+        "*"
+      ],
+      "minimumReleaseAge": "3 days",
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
       "description": "Automerge all updates with green CI.",
       "automerge": true,
       "addLabels": [
