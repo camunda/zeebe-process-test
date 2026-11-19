@@ -95,6 +95,21 @@
       "enabled": false
     },
     {
+      "description": "Keep `java-version: 21` in the workflows and never pin a JDK patch version. Adoptium publishes each platform's binary days apart, so a pinned version breaks CI and releases on platforms that don't have it yet. With `21`, setup-java uses a 21 build that exists on each runner's platform.",
+      "matchDatasources": [
+        "java-version"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Wait before proposing any freshly released version. Releases without a timestamp are not delayed, so the required Test summary check has to block them if they are not installable yet.",
+      "matchPackageNames": [
+        "*"
+      ],
+      "minimumReleaseAge": "3 days",
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
       "description": "Automerge all updates with green CI.",
       "automerge": true,
       "addLabels": [
