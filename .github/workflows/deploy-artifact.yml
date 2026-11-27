@@ -172,6 +172,11 @@ jobs:
           maven-url: s01.oss.sonatype.org
           github-token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ steps.branch.outputs.branch }}
+          # Maven 3.10 only sends a server's credentials to the origins declared for its id. The action's settings.xml
+          # declares 'central' for repo1.maven.org only, so SNAPSHOT deploys to central.sonatype.com go out without
+          # credentials and get a 401. Restore the id-only matching until the action's settings.xml declares
+          # https://central.sonatype.com in <repositoryOrigins> of the 'central' server.
+          maven-additional-options: -Dmaven.repository.credentialScope=id
 
       - name: Attach artifacts to GitHub Release (Release only)
         if: ${{ github.event.release && env.DRY_RUN == 'false' }}
