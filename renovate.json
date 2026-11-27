@@ -2,7 +2,8 @@
   "enabled": true,
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "github>camunda/infra-global-github-actions:renovate-action-versions.json5"
   ],
   "commitMessagePrefix": "deps:",
   "baseBranchPatterns": [
